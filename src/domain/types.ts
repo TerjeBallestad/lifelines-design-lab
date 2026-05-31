@@ -2,6 +2,10 @@ export type DieFace = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type EllingState = 'calm' | 'tired' | 'prickly';
 export type FrankStance = 'soft' | 'matter_of_fact' | 'pushy';
+export type FrankPosition = 'near_phone' | 'seated_away' | 'absent_setup';
+export type ScriptState = 'missing' | 'placed' | 'used' | 'ignored';
+export type EllingPosition = 'chair' | 'phone' | 'pace' | 'bedroom_door' | 'bedroom';
+
 export type PhoneApproachId =
   | 'none'
   | 'written_script'
@@ -30,7 +34,7 @@ export interface ClientState {
 export interface StateObject {
   id: string;
   label: string;
-  anchor: 'phone' | 'sofa' | 'bedroom' | 'desk';
+  anchor: 'phone' | 'sofa' | 'bedroom' | 'desk' | 'chair';
   description: string;
   pressure: number;
 }
@@ -44,10 +48,27 @@ export interface Approach {
   pressureDelta: number;
 }
 
+export interface DiePoolItem {
+  id: string;
+  face: DieFace;
+  used: boolean;
+}
+
+export interface RoomState {
+  ellingPosition: EllingPosition;
+  frankPosition: FrankPosition;
+  scriptState: ScriptState;
+  doorClosed: boolean;
+  lastFriction: string;
+  bark?: string;
+}
+
 export interface AttemptContext {
   client: ClientState;
   approachId: PhoneApproachId;
   frankStance: FrankStance;
+  frankPosition: FrankPosition;
+  scriptState: ScriptState;
   dieFace: DieFace;
   attemptIndex: number;
 }
@@ -58,6 +79,12 @@ export interface VignetteBeat {
   label: string;
   text: string;
   anchor: StateObject['anchor'];
+  ellingPosition: EllingPosition;
+  frankPosition: FrankPosition;
+  scriptState: ScriptState;
+  doorClosed: boolean;
+  friction: string;
+  bark?: string;
   evidence?: EvidenceFact[];
 }
 
@@ -77,4 +104,5 @@ export interface AttemptResult {
   evidence: EvidenceFact[];
   frankReport: string;
   nextApproachIds: PhoneApproachId[];
+  finalRoom: RoomState;
 }
