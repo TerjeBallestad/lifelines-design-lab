@@ -2,13 +2,7 @@
   "name": "Lifelines Design Lab",
   "port": 3334,
   "dataDir": ".pm/data",
-  "stages": [
-    "inbox",
-    "exploring",
-    "sdd",
-    "planned",
-    "done"
-  ],
+  "stages": ["inbox", "exploring", "sdd", "planned", "done"],
   "entityTypes": {
     "SB": {
       "label": "Issue",

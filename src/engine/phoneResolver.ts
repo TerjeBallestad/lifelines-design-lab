@@ -1,5 +1,12 @@
 import { getApproach } from '../content/phonePractice';
-import type { AttemptContext, AttemptResult, EvidenceFact, OutcomeClass, OutcomeId, VignetteBeat } from '../domain/types';
+import type {
+  AttemptContext,
+  AttemptResult,
+  EvidenceFact,
+  OutcomeClass,
+  OutcomeId,
+  VignetteBeat,
+} from '../domain/types';
 import { hashSeed, seededRandom } from './random';
 
 const outcomes: OutcomeId[] = [
@@ -84,7 +91,11 @@ function fact(id: string, label: string, value: EvidenceFact['value']): Evidence
   return { id, label, value };
 }
 
-function beatsFor(outcome: OutcomeId, context: AttemptContext, delayedSeconds: number): VignetteBeat[] {
+function beatsFor(
+  outcome: OutcomeId,
+  context: AttemptContext,
+  delayedSeconds: number,
+): VignetteBeat[] {
   const intro: VignetteBeat[] = [
     {
       id: 'frank_prompt',
@@ -110,44 +121,142 @@ function beatsFor(outcome: OutcomeId, context: AttemptContext, delayedSeconds: n
     case 'retreat':
       return [
         ...intro,
-        { id: 'delay', actor: 'Room', label: 'Delay', text: `${delayedSeconds} seconds pass. The room gets very practical.`, anchor: 'phone', evidence: [delay] },
-        { id: 'bedroom_retreat', actor: 'Elling', label: 'Bedroom retreat', text: '“Jeg tar den etterpå. Det passer faktisk dårlig nå.” Elling trekker seg til soverommet.', anchor: 'bedroom', evidence: [fact('retreated_to_bedroom', 'Retreated to bedroom', true)] },
+        {
+          id: 'delay',
+          actor: 'Room',
+          label: 'Delay',
+          text: `${delayedSeconds} seconds pass. The room gets very practical.`,
+          anchor: 'phone',
+          evidence: [delay],
+        },
+        {
+          id: 'bedroom_retreat',
+          actor: 'Elling',
+          label: 'Bedroom retreat',
+          text: '“Jeg tar den etterpå. Det passer faktisk dårlig nå.” Elling trekker seg til soverommet.',
+          anchor: 'bedroom',
+          evidence: [fact('retreated_to_bedroom', 'Retreated to bedroom', true)],
+        },
       ];
     case 'anger_retreat':
       return [
         ...intro,
-        { id: 'approach', actor: 'Elling', label: 'Half approach', text: 'Han går halvveis mot telefonen, men kroppen peker allerede vekk.', anchor: 'phone', evidence: [fact('approached_phone', 'Approached phone', true), delay] },
-        { id: 'anger_at_frank', actor: 'Elling', label: 'Anger at Frank', text: '“Du hører jo ikke etter. Jeg sa at telefonen er problemet.”', anchor: 'sofa', evidence: [fact('anger_at_frank', 'Anger directed at Frank', true)] },
-        { id: 'bedroom_retreat', actor: 'Elling', label: 'Bedroom retreat', text: 'Han forlater forsøket før telefonen blir rørt.', anchor: 'bedroom', evidence: [fact('retreated_to_bedroom', 'Retreated to bedroom', true)] },
+        {
+          id: 'approach',
+          actor: 'Elling',
+          label: 'Half approach',
+          text: 'Han går halvveis mot telefonen, men kroppen peker allerede vekk.',
+          anchor: 'phone',
+          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+        },
+        {
+          id: 'anger_at_frank',
+          actor: 'Elling',
+          label: 'Anger at Frank',
+          text: '“Du hører jo ikke etter. Jeg sa at telefonen er problemet.”',
+          anchor: 'sofa',
+          evidence: [fact('anger_at_frank', 'Anger directed at Frank', true)],
+        },
+        {
+          id: 'bedroom_retreat',
+          actor: 'Elling',
+          label: 'Bedroom retreat',
+          text: 'Han forlater forsøket før telefonen blir rørt.',
+          anchor: 'bedroom',
+          evidence: [fact('retreated_to_bedroom', 'Retreated to bedroom', true)],
+        },
       ];
     case 'pomp_defense':
       return [
         ...intro,
-        { id: 'approach', actor: 'Elling', label: 'Approach', text: 'Elling stiller seg nær telefonen, men gjør hendene opptatt med ingenting.', anchor: 'phone', evidence: [fact('approached_phone', 'Approached phone', true), delay] },
-        { id: 'pomp_defense', actor: 'Elling', label: 'Pomp defense', text: '“Prinsipielt sett er det uhøflig å ringe folk uten forvarsel.”', anchor: 'phone', evidence: [fact('framed_as_pointless', 'Framed task as pointless/unreasonable', true)] },
+        {
+          id: 'approach',
+          actor: 'Elling',
+          label: 'Approach',
+          text: 'Elling stiller seg nær telefonen, men gjør hendene opptatt med ingenting.',
+          anchor: 'phone',
+          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+        },
+        {
+          id: 'pomp_defense',
+          actor: 'Elling',
+          label: 'Pomp defense',
+          text: '“Prinsipielt sett er det uhøflig å ringe folk uten forvarsel.”',
+          anchor: 'phone',
+          evidence: [fact('framed_as_pointless', 'Framed task as pointless/unreasonable', true)],
+        },
       ];
     case 'annoyed_compliance':
       return [
         ...intro,
-        { id: 'approach', actor: 'Elling', label: 'Approach', text: 'Han går bort til telefonen med synlig motvilje.', anchor: 'phone', evidence: [fact('approached_phone', 'Approached phone', true), delay] },
-        { id: 'annoyed_compliance', actor: 'Elling', label: 'Annoyed compliance', text: '“Greit. Men dette er ikke en forestilling.”', anchor: 'phone', evidence: [fact('framed_as_pointless', 'Framed task as pointless/unreasonable', true)] },
+        {
+          id: 'approach',
+          actor: 'Elling',
+          label: 'Approach',
+          text: 'Han går bort til telefonen med synlig motvilje.',
+          anchor: 'phone',
+          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+        },
+        {
+          id: 'annoyed_compliance',
+          actor: 'Elling',
+          label: 'Annoyed compliance',
+          text: '“Greit. Men dette er ikke en forestilling.”',
+          anchor: 'phone',
+          evidence: [fact('framed_as_pointless', 'Framed task as pointless/unreasonable', true)],
+        },
       ];
     case 'partial_practice':
       return [
         ...intro,
-        { id: 'approach', actor: 'Elling', label: 'Approach', text: approach === 'written_script' ? 'Han holder manusarket som om det er en kvittering han kan klage på.' : 'Han går bort og blir stående mens telefonen ringer.', anchor: 'phone', evidence: [fact('approached_phone', 'Approached phone', true), delay] },
-        { id: 'partial_practice', actor: 'Elling', label: 'Partial practice', text: '“Jeg kan stå her mens den ringer. Ikke mer.”', anchor: 'phone', evidence: [fact('partial_practice', 'Completed partial practice', true)] },
+        {
+          id: 'approach',
+          actor: 'Elling',
+          label: 'Approach',
+          text:
+            approach === 'written_script'
+              ? 'Han holder manusarket som om det er en kvittering han kan klage på.'
+              : 'Han går bort og blir stående mens telefonen ringer.',
+          anchor: 'phone',
+          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+        },
+        {
+          id: 'partial_practice',
+          actor: 'Elling',
+          label: 'Partial practice',
+          text: '“Jeg kan stå her mens den ringer. Ikke mer.”',
+          anchor: 'phone',
+          evidence: [fact('partial_practice', 'Completed partial practice', true)],
+        },
       ];
     case 'completed_practice':
       return [
         ...intro,
-        { id: 'approach', actor: 'Elling', label: 'Approach', text: 'Elling går helt bort til telefonen før han rekker å lage en ny regel.', anchor: 'phone', evidence: [fact('approached_phone', 'Approached phone', true), delay] },
-        { id: 'completed_window', actor: 'Elling', label: 'Completed window', text: '“Ja. Hei. Det er Elling. Nei, det passet faktisk nå.”', anchor: 'phone', evidence: [fact('completed_call_window', 'Completed call window', true)] },
+        {
+          id: 'approach',
+          actor: 'Elling',
+          label: 'Approach',
+          text: 'Elling går helt bort til telefonen før han rekker å lage en ny regel.',
+          anchor: 'phone',
+          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+        },
+        {
+          id: 'completed_window',
+          actor: 'Elling',
+          label: 'Completed window',
+          text: '“Ja. Hei. Det er Elling. Nei, det passet faktisk nå.”',
+          anchor: 'phone',
+          evidence: [fact('completed_call_window', 'Completed call window', true)],
+        },
       ];
   }
 }
 
-function collectEvidence(beats: VignetteBeat[], context: AttemptContext, outcome: OutcomeId): EvidenceFact[] {
+function collectEvidence(
+  beats: VignetteBeat[],
+  context: AttemptContext,
+  outcome: OutcomeId,
+): EvidenceFact[] {
   const evidence = beats.flatMap((beat) => beat.evidence ?? []);
   evidence.push(fact('approach', 'Approach used', context.approachId));
   evidence.push(fact('die_face', 'Die face assigned', context.dieFace));
@@ -158,14 +267,21 @@ function collectEvidence(beats: VignetteBeat[], context: AttemptContext, outcome
 function reportFor(outcome: OutcomeId, context: AttemptContext, evidence: EvidenceFact[]): string {
   const delayed = evidence.find((item) => item.id === 'delayed_seconds')?.value ?? 'unknown';
   const approach = getApproach(context.approachId).label.toLowerCase();
-  if (outcome === 'completed_practice') return `Frank: Telefonøving med ${approach} ga gjennomføring etter ${delayed} sekunders utsettelse. Arbeidshypotesen styrkes: dette handler om kontroll og overgang, ikke teknisk telefonbruk.`;
-  if (outcome === 'partial_practice') return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen lenge nok til at neste tiltak bør bygge på samme ramme, ikke øke presset.`;
-  if (outcome === 'anger_retreat') return `Frank: Forsøket ble Frank sitt prosjekt. Motstanden peker mot pressfølsomhet; neste forsøk bør redusere sosialt krav før ferdigheten testes.`;
-  if (outcome === 'retreat') return `Frank: Elling trakk seg til soverommet uten å starte. Telefonen opptrer som åpen sosial risiko. Neste forsøk bør krympe første steg.`;
+  if (outcome === 'completed_practice')
+    return `Frank: Telefonøving med ${approach} ga gjennomføring etter ${delayed} sekunders utsettelse. Arbeidshypotesen styrkes: dette handler om kontroll og overgang, ikke teknisk telefonbruk.`;
+  if (outcome === 'partial_practice')
+    return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen lenge nok til at neste tiltak bør bygge på samme ramme, ikke øke presset.`;
+  if (outcome === 'anger_retreat')
+    return `Frank: Forsøket ble Frank sitt prosjekt. Motstanden peker mot pressfølsomhet; neste forsøk bør redusere sosialt krav før ferdigheten testes.`;
+  if (outcome === 'retreat')
+    return `Frank: Elling trakk seg til soverommet uten å starte. Telefonen opptrer som åpen sosial risiko. Neste forsøk bør krympe første steg.`;
   return `Frank: Forsøket ga motstand uten full kollaps. Elling gjorde øvelsen til en diskusjon om rimelighet; neste steg bør gjøre formålet mer konkret.`;
 }
 
-function nextApproaches(outcome: OutcomeId, context: AttemptContext): AttemptResult['nextApproachIds'] {
+function nextApproaches(
+  outcome: OutcomeId,
+  context: AttemptContext,
+): AttemptResult['nextApproachIds'] {
   const suggestions: AttemptResult['nextApproachIds'] = [];
   if (outcome === 'retreat') suggestions.push('tolerate_ringtone', 'written_script');
   if (outcome === 'anger_retreat') suggestions.push('grete_primes_first', 'pre_agreed_window');
@@ -177,7 +293,9 @@ function nextApproaches(outcome: OutcomeId, context: AttemptContext): AttemptRes
 }
 
 export function resolvePhoneAttempt(context: AttemptContext): AttemptResult {
-  const seed = hashSeed(`${context.attemptIndex}|${context.approachId}|${context.dieFace}|${context.client.ellingState}|${context.client.overskudd}|${context.client.trust}|${context.client.phoneMastery}|${context.frankStance}`);
+  const seed = hashSeed(
+    `${context.attemptIndex}|${context.approachId}|${context.dieFace}|${context.client.ellingState}|${context.client.overskudd}|${context.client.trust}|${context.client.phoneMastery}|${context.frankStance}`,
+  );
   const random = seededRandom(seed);
   const readiness = computeReadiness(context);
   const outcome = weightedPick(weightsFor(readiness, context), random());

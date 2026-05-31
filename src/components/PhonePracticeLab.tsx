@@ -21,8 +21,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           <p className="eyebrow">Lifelines Design Lab / M1</p>
           <h1>Phone Practice Lab</h1>
           <p>
-            Test whether one phone tiltak attempt creates a better second decision. Cheap HTML first,
-            Godot later when the loop earns embodiment.
+            Test whether one phone tiltak attempt creates a better second decision. Cheap HTML
+            first, Godot later when the loop earns embodiment.
           </p>
         </div>
         <button onClick={() => store.reset()}>Reset</button>
@@ -47,7 +47,11 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           <h2>Apartment overlay</h2>
           <div className="apartment-map">
             <div className="room sofa">Sofa / Frank</div>
-            <div className="room phone active">Phone<br /><span>{telefonAversjon.label}</span></div>
+            <div className="room phone active">
+              Phone
+              <br />
+              <span>{telefonAversjon.label}</span>
+            </div>
             <div className="room bedroom">Bedroom retreat</div>
           </div>
         </section>
@@ -81,15 +85,26 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </button>
             ))}
           </div>
-          <select value={store.frankStance} onChange={(event) => store.setFrankStance(event.target.value as FrankStance)}>
-            {frankStances.map((stance) => <option key={stance} value={stance}>{stance.replaceAll('_', ' ')}</option>)}
+          <select
+            value={store.frankStance}
+            onChange={(event) => store.setFrankStance(event.target.value as FrankStance)}
+          >
+            {frankStances.map((stance) => (
+              <option key={stance} value={stance}>
+                {stance.replaceAll('_', ' ')}
+              </option>
+            ))}
           </select>
-          <button className="run" onClick={() => store.runAttempt()}>Run attempt {store.attempts.length + 1}</button>
+          <button className="run" onClick={() => store.runAttempt()}>
+            Run attempt {store.attempts.length + 1}
+          </button>
         </section>
 
         <section className="panel timeline-panel">
           <h2>Vignette timeline</h2>
-          {!latest ? <p className="empty">No attempt yet.</p> : (
+          {!latest ? (
+            <p className="empty">No attempt yet.</p>
+          ) : (
             <ol className="timeline">
               {latest.beats.map((beat) => (
                 <li key={beat.id} data-anchor={beat.anchor}>
@@ -104,18 +119,33 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
 
         <section className="panel report-panel">
           <h2>Evidence + Frank report</h2>
-          {!latest ? <p className="empty">Evidence appears after an attempt.</p> : (
+          {!latest ? (
+            <p className="empty">Evidence appears after an attempt.</p>
+          ) : (
             <>
-              <div className={`outcome ${latest.outcomeClass}`}>{latest.outcome.replaceAll('_', ' ')} / readiness {pct(latest.readiness)}</div>
+              <div className={`outcome ${latest.outcomeClass}`}>
+                {latest.outcome.replaceAll('_', ' ')} / readiness {pct(latest.readiness)}
+              </div>
               <ul className="evidence">
-                {latest.evidence.map((item) => <li key={`${item.id}-${item.value}`}>{item.label}: <b>{String(item.value)}</b></li>)}
+                {latest.evidence.map((item) => (
+                  <li key={`${item.id}-${item.value}`}>
+                    {item.label}: <b>{String(item.value)}</b>
+                  </li>
+                ))}
               </ul>
               <blockquote>{latest.frankReport}</blockquote>
               <h3>Next approach</h3>
               <div className="next-row">
                 {latest.nextApproachIds.map((id) => {
                   const approach = phoneApproaches.find((item) => item.id === id)!;
-                  return <button key={id} onClick={() => store.chooseNextApproach(id as PhoneApproachId)}>{approach.label}</button>;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => store.chooseNextApproach(id as PhoneApproachId)}
+                    >
+                      {approach.label}
+                    </button>
+                  );
                 })}
               </div>
             </>
@@ -129,7 +159,10 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
 function Meter({ label, value }: { label: string; value: number }) {
   return (
     <div className="meter">
-      <div><span>{label}</span><b>{pct(value)}</b></div>
+      <div>
+        <span>{label}</span>
+        <b>{pct(value)}</b>
+      </div>
       <progress value={value} max={1} />
     </div>
   );

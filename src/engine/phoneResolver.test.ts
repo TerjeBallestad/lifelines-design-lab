@@ -19,8 +19,19 @@ describe('resolvePhoneAttempt', () => {
   });
 
   it('keeps dice probabilistic but better context improves readiness', () => {
-    const weak = resolvePhoneAttempt({ ...base, dieFace: 1, approachId: 'frank_pushes', frankStance: 'pushy' });
-    const strong = resolvePhoneAttempt({ ...base, dieFace: 6, approachId: 'written_script', frankStance: 'soft', client: { overskudd: 0.8, trust: 0.7, phoneMastery: 0.4, ellingState: 'calm' } });
+    const weak = resolvePhoneAttempt({
+      ...base,
+      dieFace: 1,
+      approachId: 'frank_pushes',
+      frankStance: 'pushy',
+    });
+    const strong = resolvePhoneAttempt({
+      ...base,
+      dieFace: 6,
+      approachId: 'written_script',
+      frankStance: 'soft',
+      client: { overskudd: 0.8, trust: 0.7, phoneMastery: 0.4, ellingState: 'calm' },
+    });
     expect(strong.readiness).toBeGreaterThan(weak.readiness);
   });
 

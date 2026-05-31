@@ -1,6 +1,12 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
-import type { AttemptResult, ClientState, DieFace, FrankStance, PhoneApproachId } from '../domain/types';
+import type {
+  AttemptResult,
+  ClientState,
+  DieFace,
+  FrankStance,
+  PhoneApproachId,
+} from '../domain/types';
 import { resolvePhoneAttempt } from '../engine/phoneResolver';
 
 export class RootStore {
