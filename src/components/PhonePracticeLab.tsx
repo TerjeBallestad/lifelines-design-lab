@@ -16,7 +16,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
   const latest = store.latestAttempt;
 
   return (
-    <div data-theme="coffee" className="min-h-screen bg-base-300 text-base-content">
+    <div className="min-h-screen bg-base-300 text-base-content">
       <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
         <header className="card border border-base-content/10 bg-base-100 shadow-2xl">
           <div className="card-body gap-6 md:flex-row md:items-start md:justify-between">
