@@ -49,13 +49,13 @@ Each state object should have two layers:
 
 Examples:
 
-| Abstract pressure | Concrete object first | Functional read |
-| --- | --- | --- |
-| Shame | NAV envelope under the newspaper | Paperwork becomes public when Frank stands too close. |
-| Sleep debt | cold coffee cup / unmade bed / drawn curtains | The bad night is still in the room. |
-| Hope | Grete’s handwritten note beside the phone | Positive state is fragile if unsupported. |
-| Unpaid bill | brown envelope with deadline | Bureaucracy is concrete and timed. |
-| Phone fear | receiver position, script card, distance from chair | The phone is transition, improvisation, and audience. |
+| Abstract pressure | Concrete object first                               | Functional read                                       |
+| ----------------- | --------------------------------------------------- | ----------------------------------------------------- |
+| Shame             | NAV envelope under the newspaper                    | Paperwork becomes public when Frank stands too close. |
+| Sleep debt        | cold coffee cup / unmade bed / drawn curtains       | The bad night is still in the room.                   |
+| Hope              | Grete’s handwritten note beside the phone           | Positive state is fragile if unsupported.             |
+| Unpaid bill       | brown envelope with deadline                        | Bureaucracy is concrete and timed.                    |
+| Phone fear        | receiver position, script card, distance from chair | The phone is transition, improvisation, and audience. |
 
 ### Acceptance
 
@@ -71,17 +71,17 @@ The prototype still leaks systems language: `support topology`, `readiness`, `ou
 
 ### Replace toward
 
-| Current-ish | Better direction |
-| --- | --- |
-| Support topology | What Frank brings into the room |
-| Readiness | What the room allowed today |
-| Outcome | What happened |
-| Carried weakness | What the plan left exposed |
-| Run phone attempt | Try the phone practice |
-| State objects on the table | Things on the table |
-| Citizen clocks / phone activity | Practice paths |
-| Phone fear | the phone on the side table |
-| Sleep debt | the bad night still in the room |
+| Current-ish                     | Better direction                |
+| ------------------------------- | ------------------------------- |
+| Support topology                | What Frank brings into the room |
+| Readiness                       | What the room allowed today     |
+| Outcome                         | What happened                   |
+| Carried weakness                | What the plan left exposed      |
+| Run phone attempt               | Try the phone practice          |
+| State objects on the table      | Things on the table             |
+| Citizen clocks / phone activity | Practice paths                  |
+| Phone fear                      | the phone on the side table     |
+| Sleep debt                      | the bad night still in the room |
 
 ### Acceptance
 
@@ -156,14 +156,14 @@ Phone mastery should move because Elling visibly did something in the apartment:
 
 ### Evidence-to-clock sketch
 
-| Evidence | Clock effect |
-| --- | --- |
-| `looked_at_phone` | tiny progress on tolerate ringtone |
-| `approached_phone` | progress on active practice path |
-| `partial_practice` | meaningful progress |
-| `completed_call_window` | major progress |
-| `script_state: used` | progress on first sentence |
-| `retreated_to_bedroom` | no mastery tick; may advance pressure |
+| Evidence                | Clock effect                          |
+| ----------------------- | ------------------------------------- |
+| `looked_at_phone`       | tiny progress on tolerate ringtone    |
+| `approached_phone`      | progress on active practice path      |
+| `partial_practice`      | meaningful progress                   |
+| `completed_call_window` | major progress                        |
+| `script_state: used`    | progress on first sentence            |
+| `retreated_to_bedroom`  | no mastery tick; may advance pressure |
 
 ### Acceptance
 
@@ -215,15 +215,15 @@ If the bedroom door closes, shame/sleep debt should move. If the unopened bill s
 
 ### Evidence-to-pressure sketch
 
-| Evidence | Pressure movement |
-| --- | --- |
-| `retreated_to_bedroom` | advance shame / sleep debt / phone fear |
-| `anger_at_frank` | advance dignity exposure; reduce trust |
-| `framed_as_pointless` | advance phone fear or hope decay |
-| high `delayed_seconds` | advance restlessness |
-| carried unpaid bill + no practical help | advance unopened bill |
-| `completed_call_window` | soften phone fear / hope / unpaid bill |
-| `script_state: used` | soften phone fear / dignity exposure |
+| Evidence                                | Pressure movement                       |
+| --------------------------------------- | --------------------------------------- |
+| `retreated_to_bedroom`                  | advance shame / sleep debt / phone fear |
+| `anger_at_frank`                        | advance dignity exposure; reduce trust  |
+| `framed_as_pointless`                   | advance phone fear or hope decay        |
+| high `delayed_seconds`                  | advance restlessness                    |
+| carried unpaid bill + no practical help | advance unopened bill                   |
+| `completed_call_window`                 | soften phone fear / hope / unpaid bill  |
+| `script_state: used`                    | soften phone fear / dignity exposure    |
 
 ### Acceptance
 

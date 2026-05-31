@@ -21,10 +21,90 @@ import { useRootStore } from '../stores/RootStore';
 
 const frankStances: FrankStance[] = ['soft', 'matter_of_fact', 'pushy'];
 const frankPositions: Array<{ id: FrankPosition; label: string; note: string }> = [
-  { id: 'near_phone', label: 'Near phone', note: 'support becomes audience' },
-  { id: 'seated_away', label: 'Seated away', note: 'room stays less public' },
-  { id: 'absent_setup', label: 'Absent / setup only', note: 'Frank leaves the first step alone' },
+  {
+    id: 'near_phone',
+    label: 'Ved telefonen',
+    note: 'Frank kan hjelpe, men forsøket får publikum',
+  },
+  {
+    id: 'seated_away',
+    label: 'I stolen unna',
+    note: 'Frank er til stede uten å gjøre forsøk av det',
+  },
+  {
+    id: 'absent_setup',
+    label: 'Legger rommet klart',
+    note: 'Frank legger fram første steg og lar Elling prøve alene',
+  },
 ];
+
+const pressureCopy: Record<PressureId, string> = {
+  restlessness: 'stolen han ikke blir sittende i',
+  shame: 'manuset som ble lagt bort',
+  sleep_debt: 'den dårlige natten i rommet',
+  unpaid_bill: 'brevet under avisen',
+  hope: 'Gretes nummer ved telefonen',
+  phone_fear: 'telefonen på sidebordet',
+  dignity_exposure: 'Frank som publikum',
+};
+
+const outcomeCopy: Record<string, string> = {
+  retreat: 'soveromsdøren vant',
+  anger_retreat: 'sinne vendt mot Frank',
+  pomp_defense: 'prinsippsak i stuen',
+  annoyed_compliance: 'motvillig berøring',
+  partial_practice: 'ble ved telefonen',
+  completed_practice: 'én kort samtale',
+};
+
+const scriptCopy: Record<ScriptState, string> = {
+  missing: 'manuset mangler',
+  placed: 'manus ved telefonen',
+  used: 'manuset ble brukt',
+  ignored: 'manuset ble liggende',
+};
+
+const frankPositionCopy: Record<FrankPosition, string> = {
+  near_phone: 'Frank står ved telefonen',
+  seated_away: 'Frank sitter unna',
+  absent_setup: 'Frank har gått ut',
+};
+
+const frankStanceCopy: Record<FrankStance, string> = {
+  soft: 'rolig',
+  matter_of_fact: 'nøktern',
+  pushy: 'for tydelig',
+};
+
+const anchorCopy: Record<string, string> = {
+  phone: 'telefonbordet',
+  chair: 'lesestolen',
+  sofa: 'sofaen',
+  bedroom: 'soverommet',
+  desk: 'kjøkkenbordet',
+};
+
+const actorCopy: Record<string, string> = {
+  Frank: 'Frank',
+  Elling: 'Elling',
+  Phone: 'Telefonen',
+  Room: 'Stua',
+};
+
+const frictionCopy: Record<string, string> = {
+  'dignity preserved through ridicule': 'verdighet bevart gjennom latterliggjøring',
+  'first step possible, conversation still too large': 'første steg mulig, samtalen for stor',
+  'competence-test anger': 'det ble en prøve i å være flink',
+  'low overskudd / refusal spiral': 'lite overskudd, rask retrett',
+  'room withdrawal': 'rommet trakk seg sammen',
+  'Frank proximity turned practice into an exam': 'Frank sto for nært',
+  'pointlessness defense': 'oppgaven ble gjort meningsløs',
+  'script support visible': 'manuset ligger ved telefonen',
+  'setup changed': 'Frank endret rommet',
+  'Frank too close?': 'Frank står kanskje for nært',
+  'new day / fresh capacity': 'ny dag, litt nytt rom',
+  unknown: 'rommet venter',
+};
 
 function pct(value: number): string {
   return `${Math.round(value * 100)}%`;
@@ -45,20 +125,19 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Lifelines Design Lab / M2
               </p>
               <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-                Phone Resistance Room
+                Telefonøving i stua
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
-                Compose two supports, assign one daily die, then watch whether the room shows phone
-                fear, dignity defense, Frank pressure, low overskudd, or the weakness you
-                deliberately carried in.
+                Velg hvor Frank står, hva han tar med inn, og hva Elling skal prøve. Bruk dagens
+                oppmerksomhet og les hva rommet viste.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button className="btn btn-outline btn-accent" onClick={() => store.rollNewDay()}>
-                New dice day
+                Ny dag
               </button>
               <button className="btn btn-outline" onClick={() => store.reset()}>
-                Reset
+                Nullstill
               </button>
             </div>
           </div>
@@ -68,9 +147,9 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           <Panel className="min-h-[660px] self-start">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <SectionTitle>Apartment stage</SectionTitle>
+                <SectionTitle>Stua</SectionTitle>
                 <p className="text-sm text-base-content/60">
-                  The case desk should interpret this room, not replace it.
+                  Rommet viser først. Frank skriver etterpå.
                 </p>
               </div>
               <RoomPills room={activeRoom} />
@@ -88,7 +167,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
 
           <div className="grid content-start gap-4">
             <Panel>
-              <SectionTitle>1. Setup support</SectionTitle>
+              <SectionTitle>1. Hvor Frank står</SectionTitle>
               <div className="grid gap-2">
                 {frankPositions.map((position) => (
                   <button
@@ -121,10 +200,10 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <Panel>
-              <SectionTitle>2. Compose support topology</SectionTitle>
+              <SectionTitle>2. Hva Frank tar med inn</SectionTitle>
               <p className="mb-3 text-xs leading-relaxed text-base-content/60">
-                Pick two. The point is not full coverage; it is choosing which weakness Frank is
-                willing to carry today.
+                Velg to praktiske måter å hjelpe på. Valget sier også hva rommet fortsatt kan la
+                ligge åpent i dag.
               </p>
               <div className="grid gap-2">
                 {phoneSupportModes.map((support) => {
@@ -144,7 +223,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                           {support.good}
                         </span>
                         <span className="text-[0.68rem] font-normal uppercase tracking-wider opacity-60">
-                          risk: {support.risk}
+                          står åpent: {support.risk}
                         </span>
                       </span>
                     </button>
@@ -155,7 +234,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <Panel>
-              <SectionTitle>3. Pick activity framing</SectionTitle>
+              <SectionTitle>3. Hva Elling skal prøve</SectionTitle>
               <div className="grid gap-2">
                 {phoneApproaches.map((approach) => (
                   <button
@@ -180,7 +259,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <Panel>
-              <SectionTitle>4. Assign one daily die</SectionTitle>
+              <SectionTitle>4. Bruk dagens oppmerksomhet</SectionTitle>
               <div className="flex flex-wrap gap-2">
                 {store.dicePool.map((die) => (
                   <button
@@ -199,7 +278,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 ))}
               </div>
               <p className="mt-3 text-xs text-base-content/60">
-                Dice bias the odds. They do not pick a deterministic branch.
+                Terningen dytter forsøket. Den avgjør det ikke alene.
               </p>
               <select
                 className="select select-bordered mt-4 w-full"
@@ -208,7 +287,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               >
                 {frankStances.map((stance) => (
                   <option key={stance} value={stance}>
-                    Frank tone: {stance.replaceAll('_', ' ')}
+                    Frank: {frankStanceCopy[stance]}
                   </option>
                 ))}
               </select>
@@ -217,20 +296,20 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 onClick={() => store.runAttempt()}
                 disabled={!store.selectedDie}
               >
-                Run phone attempt {store.attempts.length + 1}
+                Prøv telefonen {store.attempts.length + 1}
               </button>
             </Panel>
 
             <Panel>
-              <SectionTitle>Activity / skill lens</SectionTitle>
+              <SectionTitle>Hva Elling kan øve på</SectionTitle>
               <div className="grid gap-4">
                 <Meter label="Overskudd" value={store.client.overskudd} />
-                <Meter label="Trust" value={store.client.trust} />
-                <Meter label="Phone mastery" value={store.client.phoneMastery} />
+                <Meter label="Tillit" value={store.client.trust} />
+                <Meter label="Telefonøving" value={store.client.phoneMastery} />
               </div>
               <div className="mt-5 rounded-box border border-secondary/30 border-l-4 bg-base-200 p-4 shadow-inner">
                 <span className="badge badge-secondary badge-sm font-bold uppercase tracking-wider">
-                  {telefonAversjon.anchor}
+                  {anchorCopy[telefonAversjon.anchor]}
                 </span>
                 <h3 className="mt-3 text-lg font-bold">{telefonAversjon.label}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
@@ -238,7 +317,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 </p>
               </div>
               <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
-                Citizen clocks / phone activity
+                Øvingsstier
               </h3>
               <div className="mt-3 grid gap-3">
                 {phoneActivityClocks.map((clock) => (
@@ -250,7 +329,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 ))}
               </div>
               <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
-                State objects on the table
+                Det Frank følger med på
               </h3>
               <div className="mt-3 grid gap-2">
                 {phonePressureObjects.map((pressure) => (
@@ -261,9 +340,12 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           </div>
 
           <Panel className="xl:col-span-2">
-            <SectionTitle>Scene evidence</SectionTitle>
+            <SectionTitle>Det som skjedde i rommet</SectionTitle>
             {!latest ? (
-              <EmptyState>No attempt yet. Set Frank, script, framing, and assign a die.</EmptyState>
+              <EmptyState>
+                Ingen forsøk ennå. Sett Frank, legg fram manuset, velg et lite forsøk og bruk en
+                terning.
+              </EmptyState>
             ) : (
               <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
                 <ol className="grid gap-3">
@@ -274,7 +356,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                       className="rounded-box border border-base-content/10 bg-base-200 p-4"
                     >
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="badge badge-accent badge-sm">{beat.actor}</span>
+                        <span className="badge badge-accent badge-sm">{actorCopy[beat.actor]}</span>
                         <strong>{beat.label}</strong>
                         <span className="badge badge-ghost badge-sm">{beat.friction}</span>
                       </div>
@@ -287,20 +369,23 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 </ol>
                 <div>
                   <div className={outcomeBadgeClass(latest.outcomeClass)}>
-                    {latest.outcome.replaceAll('_', ' ')} / readiness {pct(latest.readiness)}
+                    Det som skjedde: {outcomeCopy[latest.outcome]} / rommet holdt{' '}
+                    {pct(latest.readiness)}
                   </div>
                   <ul className="mt-4 grid gap-y-2 text-sm text-base-content/80">
                     {latest.evidence.map((item) => (
                       <li key={`${item.id}-${item.value}`} className="flex justify-between gap-4">
                         <span>{item.label}</span>
-                        <b className="text-right text-base-content">{String(item.value)}</b>
+                        <b className="text-right text-base-content">
+                          {evidenceValueCopy(item.value)}
+                        </b>
                       </li>
                     ))}
                   </ul>
                   <blockquote className="mt-5 rounded-box border-l-4 border-accent bg-base-200 p-4 text-base-content/80">
                     {latest.frankReport}
                   </blockquote>
-                  <h3 className="mt-5 text-lg font-bold">Next approach</h3>
+                  <h3 className="mt-5 text-lg font-bold">Neste forsøk</h3>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {latest.nextApproachIds.map((id) => {
                       const approach = phoneApproaches.find((item) => item.id === id)!;
@@ -353,17 +438,16 @@ function SupportTopology({ selectedIds }: { selectedIds: SupportModeId[] }) {
 
   return (
     <div className="mt-3 rounded-box border border-base-content/10 bg-base-200 p-3 text-xs leading-relaxed">
-      <div className="font-bold text-base-content/70">Carried weakness</div>
+      <div className="font-bold text-base-content/70">Det planen ikke dekker</div>
       <div className="mt-2 flex flex-wrap gap-1">
         {carried.slice(0, 5).map((pressure) => (
           <span key={pressure} className="badge badge-warning badge-sm capitalize">
-            {pressure.replaceAll('_', ' ')}
+            {pressureCopy[pressure]}
           </span>
         ))}
       </div>
       <p className="mt-2 text-base-content/55">
-        This is the vulnerability-topology graft: two supports improve the posture, but never make
-        the phone room safe from every pressure.
+        To typer hjelp kan roe rommet. Noe vanlig trøbbel blir likevel liggende.
       </p>
     </div>
   );
@@ -379,10 +463,10 @@ function ApartmentStage({
   return (
     <div className="relative mt-4 h-[540px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
-      <Zone className="left-8 top-10 h-40 w-56" label="phone zone" />
-      <Zone className="right-12 top-12 h-36 w-56" label="reading / refuge chair" />
-      <Zone className="bottom-12 right-16 h-36 w-52" label="bedroom retreat" />
-      <StageObject className="left-20 top-24">phone</StageObject>
+      <Zone className="left-8 top-10 h-40 w-56" label="telefonbordet" />
+      <Zone className="right-12 top-12 h-36 w-56" label="lesestolen" />
+      <Zone className="bottom-12 right-16 h-36 w-52" label="soveromsdøra" />
+      <StageObject className="left-20 top-24">telefon</StageObject>
       <StageObject
         className={clsx(
           'left-20 top-44 h-10 w-28',
@@ -393,32 +477,32 @@ function ApartmentStage({
       >
         {scriptObjectLabel(room.scriptState)}
       </StageObject>
-      <StageObject className="right-28 top-28">chair</StageObject>
+      <StageObject className="right-28 top-28">stol</StageObject>
       <StageObject
         className={clsx(
           'bottom-20 right-28 w-28',
           room.doorClosed && 'border-error bg-error/20 text-error',
         )}
       >
-        {room.doorClosed ? 'closed door' : 'bedroom door'}
+        {room.doorClosed ? 'lukket dør' : 'soveromsdør'}
       </StageObject>
       <PressureLabel className="left-48 top-10" active={carriedWeaknesses.includes('phone_fear')}>
-        phone fear
+        terskel
       </PressureLabel>
       <PressureLabel className="right-48 top-44" active={carriedWeaknesses.includes('shame')}>
-        shame / dignity
+        skam / verdighet
       </PressureLabel>
       <PressureLabel
         className="bottom-28 right-52"
         active={carriedWeaknesses.includes('sleep_debt')}
       >
-        sleep debt
+        dårlig natt
       </PressureLabel>
       <PressureLabel
         className="left-24 bottom-24"
         active={carriedWeaknesses.includes('unpaid_bill')}
       >
-        unopened bill
+        brevet
       </PressureLabel>
       <Person label="Elling" tone="client" position={ellingPosition(room.ellingPosition)} />
       <Person label="Frank" tone="frank" position={frankPosition(room.frankPosition)} />
@@ -502,11 +586,11 @@ function PressureObjectCard({ pressure }: { pressure: (typeof phonePressureObjec
     <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
       <div className="flex items-center justify-between gap-2">
         <strong>{pressure.label}</strong>
-        <span className="badge badge-outline badge-sm">{pressure.anchor}</span>
+        <span className="badge badge-outline badge-sm">{anchorCopy[pressure.anchor]}</span>
       </div>
       <progress className="progress progress-warning mt-2 w-full" value={pressure.clock} max={1} />
       <p className="mt-2 text-xs leading-relaxed text-base-content/60">
-        Escalates into {pressure.escalatesInto}. Softened by {pressure.softenedBy}.
+        Kan bli {pressure.escalatesInto}. Roer seg med {pressure.softenedBy}.
       </p>
     </div>
   );
@@ -583,19 +667,21 @@ function frankPosition(position: FrankPosition): string {
 function RoomPills({ room }: { room: RoomState }) {
   return (
     <div className="flex max-w-xl flex-wrap justify-end gap-2">
-      <span className="badge badge-outline">Frank: {room.frankPosition.replaceAll('_', ' ')}</span>
+      <span className="badge badge-outline">{frankPositionCopy[room.frankPosition]}</span>
       <span
         className={clsx(
           'badge',
           room.scriptState === 'missing' ? 'badge-error' : 'badge-secondary',
         )}
       >
-        script {room.scriptState}
+        {scriptCopy[room.scriptState]}
       </span>
       <span className={clsx('badge', room.doorClosed ? 'badge-error' : 'badge-success')}>
-        {room.doorClosed ? 'bedroom door closed' : 'room open'}
+        {room.doorClosed ? 'soveromsdøren er lukket' : 'stuen er åpen'}
       </span>
-      <span className="badge badge-accent">{room.lastFriction}</span>
+      <span className="badge badge-accent">
+        {frictionCopy[room.lastFriction] ?? room.lastFriction}
+      </span>
     </div>
   );
 }
@@ -616,18 +702,33 @@ function Meter({ label, value }: { label: string; value: number }) {
   );
 }
 
+function evidenceValueCopy(value: unknown): string {
+  if (typeof value === 'boolean') return value ? 'ja' : 'nei';
+  if (typeof value === 'number') return String(value);
+  if (typeof value !== 'string') return String(value);
+  const approach = phoneApproaches.find((item) => item.id === value);
+  return (
+    outcomeCopy[value] ??
+    scriptCopy[value as ScriptState] ??
+    frankPositionCopy[value as FrankPosition] ??
+    frictionCopy[value] ??
+    approach?.label ??
+    value
+  );
+}
+
 function scriptButtonLabel(scriptState: ScriptState): string {
-  if (scriptState === 'used') return 'Script used in last attempt';
-  if (scriptState === 'placed') return 'Script placed in room';
-  if (scriptState === 'ignored') return 'Place script again';
-  return 'Place phone script';
+  if (scriptState === 'used') return 'Manus brukt i forrige forsøk';
+  if (scriptState === 'placed') return 'Manus ligger ved telefonen';
+  if (scriptState === 'ignored') return 'Legg manuset fram igjen';
+  return 'Legg fram telefonmanus';
 }
 
 function scriptObjectLabel(scriptState: ScriptState): string {
-  if (scriptState === 'missing') return 'no script';
-  if (scriptState === 'used') return 'used script';
-  if (scriptState === 'ignored') return 'ignored script';
-  return 'phone script';
+  if (scriptState === 'missing') return 'uten manus';
+  if (scriptState === 'used') return 'brukt manus';
+  if (scriptState === 'ignored') return 'manuset ble liggende';
+  return 'telefonmanus';
 }
 
 function outcomeBadgeClass(outcomeClass: string): string {
