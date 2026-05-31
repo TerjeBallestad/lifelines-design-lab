@@ -20,6 +20,9 @@ current state → approach → die → vignette → evidence/report → next app
 - React
 - TypeScript
 - MobX
+- Tailwind CSS 4
+- daisyUI 5
+- Prettier
 - PM CLI for project management
 
 ## Commands
@@ -27,5 +30,11 @@ current state → approach → die → vignette → evidence/report → next app
 ```sh
 npm run dev
 npm run build
+npm run lint
+npm run format
 npm test
 ```
+
+## UI tooling
+
+See `docs/ui-tooling.md` for the daisyUI/Tailwind rules. Short version: Tailwind v4 + daisyUI 5, no `tailwind.config.js` by default, prefer daisyUI component classes and semantic colors, and only write custom CSS when the Lifelines-specific spatial language needs it.
