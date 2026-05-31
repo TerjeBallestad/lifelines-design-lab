@@ -51,16 +51,37 @@ export interface ClientState {
 
 export interface StateObject {
   id: string;
+  /** Non-clinical, player-facing condition name such as Shame or Restlessness. */
+  conditionLabel: string;
+  /** Concrete room/case-desk object or routine the condition clings to. */
+  objectLabel: string;
   label: string;
   anchor: 'phone' | 'sofa' | 'bedroom' | 'desk' | 'chair';
+  visibleSigns: string[];
+  consequences: PressureConsequence;
   description: string;
   pressure: number;
 }
 
+export interface PressureConsequence {
+  threatens: string;
+  worsens?: string;
+  attracts?: string;
+  softens?: string;
+  transformsInto?: string;
+}
+
 export interface PressureObject {
   id: PressureId;
-  label: string;
+  /** Non-clinical, player-facing condition name such as Shame or Restlessness. */
+  conditionLabel: string;
+  /** Concrete room/case-desk object or routine the condition clings to. */
+  objectLabel: string;
   anchor: StateObject['anchor'];
+  visibleSigns: string[];
+  consequences: PressureConsequence;
+  /** @deprecated Use conditionLabel. Kept as a compatibility alias for narrow generator pass. */
+  label: string;
   escalatesInto: string;
   softenedBy: string;
   designPurpose: string;

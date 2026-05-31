@@ -48,9 +48,9 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Phone Resistance Room
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
-                Compose two supports, assign one daily die, then watch whether the room shows phone
-                fear, dignity defense, Frank pressure, low overskudd, or the weakness you
-                deliberately carried in.
+                Compose two supports, assign one daily die, then watch whether the room shows a
+                threshold at the phone, dignity defense, Frank pressure, low overskudd, or the
+                weakness you deliberately carried in.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -230,11 +230,14 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </div>
               <div className="mt-5 rounded-box border border-secondary/30 border-l-4 bg-base-200 p-4 shadow-inner">
                 <span className="badge badge-secondary badge-sm font-bold uppercase tracking-wider">
-                  {telefonAversjon.anchor}
+                  {telefonAversjon.objectLabel}
                 </span>
-                <h3 className="mt-3 text-lg font-bold">{telefonAversjon.label}</h3>
+                <h3 className="mt-3 text-lg font-bold">↳ {telefonAversjon.conditionLabel}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
                   {telefonAversjon.description}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-base-content/60">
+                  Threatens: {telefonAversjon.consequences.threatens}
                 </p>
               </div>
               <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
@@ -355,11 +358,14 @@ function SupportTopology({ selectedIds }: { selectedIds: SupportModeId[] }) {
     <div className="mt-3 rounded-box border border-base-content/10 bg-base-200 p-3 text-xs leading-relaxed">
       <div className="font-bold text-base-content/70">Carried weakness</div>
       <div className="mt-2 flex flex-wrap gap-1">
-        {carried.slice(0, 5).map((pressure) => (
-          <span key={pressure} className="badge badge-warning badge-sm capitalize">
-            {pressure.replaceAll('_', ' ')}
-          </span>
-        ))}
+        {carried.slice(0, 5).map((pressure) => {
+          const object = pressureObjectFor(pressure);
+          return (
+            <span key={pressure} className="badge badge-warning badge-sm capitalize">
+              {object.objectLabel} — {object.conditionLabel}
+            </span>
+          );
+        })}
       </div>
       <p className="mt-2 text-base-content/55">
         This is the vulnerability-topology graft: two supports improve the posture, but never make
@@ -383,6 +389,7 @@ function ApartmentStage({
       <Zone className="right-12 top-12 h-36 w-56" label="reading / refuge chair" />
       <Zone className="bottom-12 right-16 h-36 w-52" label="bedroom retreat" />
       <StageObject className="left-20 top-24">phone</StageObject>
+      <StageObject className="left-36 top-24 w-28">visible receiver</StageObject>
       <StageObject
         className={clsx(
           'left-20 top-44 h-10 w-28',
@@ -393,7 +400,12 @@ function ApartmentStage({
       >
         {scriptObjectLabel(room.scriptState)}
       </StageObject>
-      <StageObject className="right-28 top-28">chair</StageObject>
+      <StageObject className="right-28 top-28">unused reading chair</StageObject>
+      <StageObject className="right-28 top-52 w-32">sofa cushion / manuscript</StageObject>
+      <StageObject className="left-20 bottom-20 w-32">case desk</StageObject>
+      <StageObject className="left-20 bottom-36 w-36">bill under newspaper</StageObject>
+      <StageObject className="left-48 top-4 w-32">Grete note</StageObject>
+      <StageObject className="left-1/2 top-72 w-32 -translate-x-1/2">Frank's chair</StageObject>
       <StageObject
         className={clsx(
           'bottom-20 right-28 w-28',
@@ -402,24 +414,18 @@ function ApartmentStage({
       >
         {room.doorClosed ? 'closed door' : 'bedroom door'}
       </StageObject>
-      <PressureLabel className="left-48 top-10" active={carriedWeaknesses.includes('phone_fear')}>
-        phone fear
-      </PressureLabel>
-      <PressureLabel className="right-48 top-44" active={carriedWeaknesses.includes('shame')}>
-        shame / dignity
-      </PressureLabel>
-      <PressureLabel
-        className="bottom-28 right-52"
-        active={carriedWeaknesses.includes('sleep_debt')}
-      >
-        sleep debt
-      </PressureLabel>
-      <PressureLabel
-        className="left-24 bottom-24"
-        active={carriedWeaknesses.includes('unpaid_bill')}
-      >
-        unopened bill
-      </PressureLabel>
+      {phonePressureObjects.map((pressure) => (
+        <PressureLabel
+          key={pressure.id}
+          className={pressureStagePosition(pressure.id)}
+          active={carriedWeaknesses.includes(pressure.id)}
+        >
+          <span className="block text-[0.58rem] font-semibold normal-case tracking-normal opacity-80">
+            {pressure.objectLabel}
+          </span>
+          <span className="block">↳ {pressure.conditionLabel}</span>
+        </PressureLabel>
+      ))}
       <Person label="Elling" tone="client" position={ellingPosition(room.ellingPosition)} />
       <Person label="Frank" tone="frank" position={frankPosition(room.frankPosition)} />
     </div>
@@ -438,10 +444,10 @@ function PressureLabel({
   return (
     <div
       className={clsx(
-        'absolute rounded border px-2 py-1 text-[0.66rem] font-black uppercase tracking-[0.16em] shadow-lg',
+        'absolute z-20 rounded border px-2 py-1 text-[0.66rem] font-black uppercase tracking-[0.16em] shadow-lg',
         active
-          ? 'border-warning bg-warning/25 text-warning-content'
-          : 'border-base-content/10 bg-base-100/60 text-base-content/35',
+          ? 'border-warning bg-warning/35 text-warning-content'
+          : 'border-base-content/20 bg-base-100/85 text-base-content/70',
         className,
       )}
     >
@@ -498,15 +504,33 @@ function ActivityClockCard({
 }
 
 function PressureObjectCard({ pressure }: { pressure: (typeof phonePressureObjects)[number] }) {
+  const consequenceList = [
+    ['Threatens', pressure.consequences.threatens],
+    ['Worsens', pressure.consequences.worsens],
+    ['Attracts', pressure.consequences.attracts],
+    ['Softens', pressure.consequences.softens],
+    ['Transforms', pressure.consequences.transformsInto],
+  ].filter((item): item is [string, string] => Boolean(item[1]));
+
   return (
     <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
-      <div className="flex items-center justify-between gap-2">
-        <strong>{pressure.label}</strong>
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-base-content/50">
+            {pressure.objectLabel}
+          </div>
+          <strong className="mt-1 block text-base">↳ {pressure.conditionLabel}</strong>
+        </div>
         <span className="badge badge-outline badge-sm">{pressure.anchor}</span>
       </div>
       <progress className="progress progress-warning mt-2 w-full" value={pressure.clock} max={1} />
-      <p className="mt-2 text-xs leading-relaxed text-base-content/60">
-        Escalates into {pressure.escalatesInto}. Softened by {pressure.softenedBy}.
+      <ul className="mt-2 grid gap-1 text-xs leading-relaxed text-base-content/60">
+        {pressure.visibleSigns.slice(0, 2).map((sign) => (
+          <li key={sign}>seen: {sign}</li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs leading-relaxed text-base-content/70">
+        {consequenceList.map(([label, value]) => `${label}: ${value}`).join(' · ')}
       </p>
     </div>
   );
@@ -614,6 +638,24 @@ function Meter({ label, value }: { label: string; value: number }) {
       <progress className="progress progress-accent w-full" value={value} max={1} />
     </div>
   );
+}
+
+function pressureObjectFor(id: PressureId): (typeof phonePressureObjects)[number] {
+  const pressure = phonePressureObjects.find((item) => item.id === id);
+  if (!pressure) throw new Error(`Unknown pressure object: ${id}`);
+  return pressure;
+}
+
+function pressureStagePosition(id: PressureId): string {
+  return {
+    restlessness: 'right-48 top-44 max-w-48',
+    shame: 'right-48 top-56 max-w-48',
+    sleep_debt: 'bottom-28 right-52 max-w-48',
+    unpaid_bill: 'left-20 bottom-36 max-w-52',
+    hope: 'left-48 top-4 max-w-48',
+    phone_fear: 'left-48 top-20 max-w-48',
+    dignity_exposure: 'left-1/2 top-80 max-w-48 -translate-x-1/2',
+  }[id];
 }
 
 function scriptButtonLabel(scriptState: ScriptState): string {

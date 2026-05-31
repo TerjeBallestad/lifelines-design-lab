@@ -1,9 +1,11 @@
 # SB-008 Tiny Adversarial Implementation Contract
 
 ## Goal
+
 Make pressure/state objects read as **physical evidence + non-clinical condition label + consequence**, not as diagnoses or free-floating abstractions. The player should see, for example, `Shame` clinging to unopened bills under a newspaper before any system interpretation appears.
 
 ## Touch surface
+
 - `src/domain/types.ts` — extend/rename pressure object shape so condition labels have concrete anchors, visible signs, and consequences.
 - `src/content/phonePractice.ts` — rewrite at least five `phonePressureObjects` into the paired pattern.
 - `src/components/PhonePracticeLab.tsx` — render the anchor-label relation visibly on room/stage/case-desk UI.
@@ -12,6 +14,7 @@ Make pressure/state objects read as **physical evidence + non-clinical condition
 - `src/engine/phoneResolver.test.ts` — lock the contract with tests.
 
 ## Non-goals
+
 - Do not add DSM/clinical labels (`Anxiety`, `Depression`, `ADHD`, `trauma response`, `executive dysfunction`, etc.).
 - Do not ban abstract/emotional labels; `Shame`, `Affliction`, `Restlessness`, `Silence`, `Relief`, and `Obligation` are allowed when anchored.
 - Do not make purely abstract floating mental-state tags.
@@ -19,9 +22,11 @@ Make pressure/state objects read as **physical evidence + non-clinical condition
 - Do not redesign phone-practice mechanics beyond preserving pressure IDs and consequences.
 
 ## Player decision under test
+
 Can the player choose support/approach by reading **what object the pressure clings to** and what it mechanically threatens, rather than by optimizing abstract clinical/system labels?
 
 ## Implementation requirements
+
 1. Each player-facing pressure object has:
    - `conditionLabel` or equivalent non-clinical label;
    - concrete `objectLabel`/`roomAnchor`/case-desk anchor;
@@ -33,6 +38,7 @@ Can the player choose support/approach by reading **what object the pressure cli
 5. Existing support coverage/resolver behavior may keep internal IDs, but player-facing copy must use the paired object-language.
 
 ## Verification gates
+
 - Unit tests assert at least five pressure objects include non-empty anchor/object, condition label, visible signs, and consequence fields.
 - Tests fail if player-facing pressure labels include banned clinical terms.
 - Rendering/test coverage verifies each abstract label displays beside or under its concrete anchor, not alone.
@@ -40,6 +46,7 @@ Can the player choose support/approach by reading **what object the pressure cli
 - Manual UI pass: no unanchored `Shame`/`Restlessness`/etc.; no DSM labels; Frank stays observational and cautious.
 
 ## Artifact paths
+
 - Contract: `docs/SB-008-adversarial-implementation-contract.md`
 - Issue source: `.pm/data/items/SB-008.md`
 - Likely implementation files: `src/domain/types.ts`, `src/content/phonePractice.ts`, `src/components/PhonePracticeLab.tsx`, `src/engine/phoneResolver.ts`, `src/stores/RootStore.tsx`

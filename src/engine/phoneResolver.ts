@@ -1,4 +1,4 @@
-import { getApproach, phoneSupportModes } from '../content/phonePractice';
+import { getApproach, phonePressureObjects, phoneSupportModes } from '../content/phonePractice';
 import type {
   AttemptContext,
   AttemptResult,
@@ -71,7 +71,16 @@ function supportReadinessDelta(analysis: SupportAnalysis): number {
 }
 
 function pressureLabel(id: PressureId): string {
-  return id.replaceAll('_', ' ');
+  return (
+    phonePressureObjects.find((pressure) => pressure.id === id)?.conditionLabel ??
+    id.replaceAll('_', ' ')
+  );
+}
+
+function pressureEvidence(id: PressureId): string {
+  const pressure = phonePressureObjects.find((item) => item.id === id);
+  if (!pressure) return id.replaceAll('_', ' ');
+  return `${pressure.objectLabel} — ${pressure.conditionLabel}`;
 }
 
 const premiseBarks = [
@@ -486,21 +495,25 @@ function reportFor(
   const delayed = evidence.find((item) => item.id === 'delayed_seconds')?.value ?? 'unknown';
   const approach = getApproach(context.approachId).label.toLowerCase();
   const position = context.frankPosition.replaceAll('_', ' ');
+  const finalFriction =
+    evidence.find((item) => item.id === 'last_friction')?.value ?? 'uklar friksjon';
   const carried =
-    supportAnalysis.carriedWeaknesses.slice(0, 2).map(pressureLabel).join(' / ') || 'none';
+    supportAnalysis.carriedWeaknesses.slice(0, 2).map(pressureEvidence).join(' / ') || 'ingen';
+  const observed = `Observert: ${delayed} sekunder før neste handling; Frank var ${position}; rommet viste ${finalFriction}.`;
+  const pressureRead = `Mulig press i rommet: ${carried}.`;
   if (outcome === 'completed_practice') {
-    return `Frank: Telefonøving med ${approach} landet fordi Elling kunne latterliggjøre øvelsen mens han gjorde første steg. Frank var ${position}; verdigheten holdt. Dagens plan bar fortsatt ${carried}.`;
+    return `Frank: ${observed} ${pressureRead} Telefonøving med ${approach} landet fordi Elling kunne latterliggjøre øvelsen mens han gjorde første steg; verdigheten holdt.`;
   }
   if (outcome === 'partial_practice') {
-    return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen etter ${delayed} sekunder. Neste forsøk bør bygge på samme ramme, ikke øke presset. Svakheten som ble med inn: ${carried}.`;
+    return `Frank: ${observed} ${pressureRead} Delvis øving er faktisk data. Neste forsøk bør bygge på samme ramme, ikke øke presset.`;
   }
   if (outcome === 'anger_retreat') {
-    return `Frank: Forsøket ble et kompetansevitne. Motstanden peker ikke bare mot telefonfrykt, men mot å bli observert mens han øver. Støtten dekket noe, men bar ${carried}.`;
+    return `Frank: ${observed} ${pressureRead} Forsøket kan ha blitt et kompetansevitne: motstanden peker mot telefonbordet og blikket på øvingen, ikke en konklusjon om Elling.`;
   }
   if (outcome === 'retreat') {
-    return `Frank: Rommet trakk seg sammen og soverommet vant. Neste forsøk bør endre avstand, script eller første steg før ferdigheten testes. Dagens komposisjon bar ${carried}.`;
+    return `Frank: ${observed} ${pressureRead} Soverommet vant denne gangen. Neste forsøk bør endre avstand, manus eller første steg før ferdigheten testes.`;
   }
-  return `Frank: Forsøket ga motstand uten full kollaps. Elling gjorde øvelsen til en diskusjon om rimelighet; leiligheten viste friksjonen før rapporten måtte forklare den. Blindsonen i planen: ${carried}.`;
+  return `Frank: ${observed} ${pressureRead} Forsøket ga motstand uten full kollaps; leiligheten viste friksjonen før rapporten måtte forklare den.`;
 }
 
 function nextApproaches(
