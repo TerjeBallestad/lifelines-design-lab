@@ -1,4 +1,4 @@
-import { getApproach } from '../content/phonePractice';
+import { getApproach, phoneSupportModes } from '../content/phonePractice';
 import type {
   AttemptContext,
   AttemptResult,
@@ -7,8 +7,10 @@ import type {
   FrankPosition,
   OutcomeClass,
   OutcomeId,
+  PressureId,
   RoomState,
   ScriptState,
+  SupportAnalysis,
   VignetteBeat,
 } from '../domain/types';
 import { hashSeed, seededRandom } from './random';
@@ -21,6 +23,56 @@ const outcomes: OutcomeId[] = [
   'partial_practice',
   'completed_practice',
 ];
+
+const allPhonePressures: PressureId[] = [
+  'restlessness',
+  'shame',
+  'sleep_debt',
+  'unpaid_bill',
+  'hope',
+  'phone_fear',
+  'dignity_exposure',
+];
+
+function analyzeSupports(context: AttemptContext): SupportAnalysis {
+  const selected = context.supportIds
+    .map((id) => phoneSupportModes.find((support) => support.id === id))
+    .filter((support): support is NonNullable<typeof support> => Boolean(support));
+  const covered = new Set<PressureId>();
+  const weak = new Set<PressureId>();
+  const reasons: string[] = [];
+
+  for (const support of selected) {
+    support.covers.forEach((pressure) => covered.add(pressure));
+    support.weak.forEach((pressure) => weak.add(pressure));
+    reasons.push(`${support.label}: ${support.good}`);
+  }
+
+  const carriedWeaknesses = allPhonePressures.filter(
+    (pressure) => !covered.has(pressure) || weak.has(pressure),
+  );
+  const coverageScore = selected.length === 0 ? -2 : covered.size - carriedWeaknesses.length * 0.35;
+
+  return {
+    coveredPressures: Array.from(covered),
+    carriedWeaknesses,
+    coverageScore,
+    reasons,
+  };
+}
+
+function supportReadinessDelta(analysis: SupportAnalysis): number {
+  let delta = Math.max(-0.08, Math.min(0.12, analysis.coverageScore * 0.018));
+  if (analysis.coveredPressures.includes('phone_fear')) delta += 0.06;
+  if (analysis.coveredPressures.includes('dignity_exposure')) delta += 0.04;
+  if (analysis.carriedWeaknesses.includes('shame')) delta -= 0.04;
+  if (analysis.carriedWeaknesses.includes('sleep_debt')) delta -= 0.02;
+  return delta;
+}
+
+function pressureLabel(id: PressureId): string {
+  return id.replaceAll('_', ' ');
+}
 
 const premiseBarks = [
   '“Jeg har aldri forstått denne nasjonale trangen til å ringe folk.”',
@@ -62,6 +114,7 @@ function pick<T>(items: T[], roll: number): T {
 
 export function computeReadiness(context: AttemptContext): number {
   const approach = getApproach(context.approachId);
+  const supportAnalysis = analyzeSupports(context);
   const dieBias = (context.dieFace - 1) / 5;
   let readiness = 0.12 + dieBias * 0.34;
   readiness += context.client.overskudd * 0.22;
@@ -69,6 +122,7 @@ export function computeReadiness(context: AttemptContext): number {
   readiness += context.client.phoneMastery * 0.18;
   readiness += approach.controlDelta;
   readiness -= approach.pressureDelta * 0.45;
+  readiness += supportReadinessDelta(supportAnalysis);
 
   if (context.client.ellingState === 'calm') readiness += 0.08;
   if (context.client.ellingState === 'tired') readiness -= 0.07;
@@ -96,6 +150,19 @@ function weightsFor(readiness: number, context: AttemptContext): Record<OutcomeI
     partial_practice: 0.08 + readiness * 0.45,
     completed_practice: 0.02 + readiness * readiness * 0.58,
   };
+
+  const supportAnalysis = analyzeSupports(context);
+  if (supportAnalysis.coveredPressures.includes('phone_fear')) {
+    weights.retreat *= 0.84;
+    weights.partial_practice += 0.08;
+  }
+  if (supportAnalysis.coveredPressures.includes('dignity_exposure')) {
+    weights.anger_retreat *= 0.78;
+    weights.pomp_defense += 0.04;
+  }
+  if (supportAnalysis.carriedWeaknesses.includes('shame')) {
+    weights.anger_retreat += 0.08;
+  }
 
   if (context.scriptState === 'placed' || context.approachId === 'written_script') {
     weights.partial_practice += 0.16;
@@ -384,6 +451,7 @@ function collectEvidence(
   beats: VignetteBeat[],
   context: AttemptContext,
   outcome: OutcomeId,
+  supportAnalysis: SupportAnalysis,
 ): EvidenceFact[] {
   const evidence = beats.flatMap((beatItem) => beatItem.evidence ?? []);
   const finalBeat = beats.at(-1)!;
@@ -392,26 +460,47 @@ function collectEvidence(
   evidence.push(fact('script_state', 'Script state', finalBeat.scriptState));
   evidence.push(fact('last_friction', 'Last friction', finalBeat.friction));
   evidence.push(fact('outcome', 'Outcome', outcome));
+  evidence.push(
+    fact(
+      'support_coverage',
+      'Support coverage',
+      supportAnalysis.coveredPressures.map(pressureLabel).join(', '),
+    ),
+  );
+  evidence.push(
+    fact(
+      'carried_weakness',
+      'Carried weakness',
+      supportAnalysis.carriedWeaknesses.slice(0, 3).map(pressureLabel).join(', '),
+    ),
+  );
   return evidence;
 }
 
-function reportFor(outcome: OutcomeId, context: AttemptContext, evidence: EvidenceFact[]): string {
+function reportFor(
+  outcome: OutcomeId,
+  context: AttemptContext,
+  evidence: EvidenceFact[],
+  supportAnalysis: SupportAnalysis,
+): string {
   const delayed = evidence.find((item) => item.id === 'delayed_seconds')?.value ?? 'unknown';
   const approach = getApproach(context.approachId).label.toLowerCase();
   const position = context.frankPosition.replaceAll('_', ' ');
+  const carried =
+    supportAnalysis.carriedWeaknesses.slice(0, 2).map(pressureLabel).join(' / ') || 'none';
   if (outcome === 'completed_practice') {
-    return `Frank: Telefonøving med ${approach} landet fordi Elling kunne latterliggjøre øvelsen mens han gjorde første steg. Frank var ${position}; verdigheten holdt.`;
+    return `Frank: Telefonøving med ${approach} landet fordi Elling kunne latterliggjøre øvelsen mens han gjorde første steg. Frank var ${position}; verdigheten holdt. Dagens plan bar fortsatt ${carried}.`;
   }
   if (outcome === 'partial_practice') {
-    return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen etter ${delayed} sekunder. Neste forsøk bør bygge på samme ramme, ikke øke presset.`;
+    return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen etter ${delayed} sekunder. Neste forsøk bør bygge på samme ramme, ikke øke presset. Svakheten som ble med inn: ${carried}.`;
   }
   if (outcome === 'anger_retreat') {
-    return `Frank: Forsøket ble et kompetansevitne. Motstanden peker ikke bare mot telefonfrykt, men mot å bli observert mens han øver.`;
+    return `Frank: Forsøket ble et kompetansevitne. Motstanden peker ikke bare mot telefonfrykt, men mot å bli observert mens han øver. Støtten dekket noe, men bar ${carried}.`;
   }
   if (outcome === 'retreat') {
-    return `Frank: Rommet trakk seg sammen og soverommet vant. Neste forsøk bør endre avstand, script eller første steg før ferdigheten testes.`;
+    return `Frank: Rommet trakk seg sammen og soverommet vant. Neste forsøk bør endre avstand, script eller første steg før ferdigheten testes. Dagens komposisjon bar ${carried}.`;
   }
-  return `Frank: Forsøket ga motstand uten full kollaps. Elling gjorde øvelsen til en diskusjon om rimelighet; leiligheten viste friksjonen før rapporten måtte forklare den.`;
+  return `Frank: Forsøket ga motstand uten full kollaps. Elling gjorde øvelsen til en diskusjon om rimelighet; leiligheten viste friksjonen før rapporten måtte forklare den. Blindsonen i planen: ${carried}.`;
 }
 
 function nextApproaches(
@@ -442,14 +531,15 @@ function finalRoomFrom(beats: VignetteBeat[]): RoomState {
 
 export function resolvePhoneAttempt(context: AttemptContext): AttemptResult {
   const seed = hashSeed(
-    `${context.attemptIndex}|${context.approachId}|${context.dieFace}|${context.client.ellingState}|${context.client.overskudd}|${context.client.trust}|${context.client.phoneMastery}|${context.frankStance}|${context.frankPosition}|${context.scriptState}`,
+    `${context.attemptIndex}|${context.approachId}|${context.dieFace}|${context.supportIds.join(',')}|${context.client.ellingState}|${context.client.overskudd}|${context.client.trust}|${context.client.phoneMastery}|${context.frankStance}|${context.frankPosition}|${context.scriptState}`,
   );
   const random = seededRandom(seed);
+  const supportAnalysis = analyzeSupports(context);
   const readiness = computeReadiness(context);
   const outcome = weightedPick(weightsFor(readiness, context), random());
   const delayedSeconds = Math.round(120 - readiness * 80 + random() * 22);
   const beats = beatsFor(outcome, context, delayedSeconds, random);
-  const evidence = collectEvidence(beats, context, outcome);
+  const evidence = collectEvidence(beats, context, outcome, supportAnalysis);
   return {
     seed,
     context,
@@ -458,7 +548,8 @@ export function resolvePhoneAttempt(context: AttemptContext): AttemptResult {
     outcomeClass: outcomeClass(outcome),
     beats,
     evidence,
-    frankReport: reportFor(outcome, context, evidence),
+    frankReport: reportFor(outcome, context, evidence, supportAnalysis),
+    supportAnalysis,
     nextApproachIds: nextApproaches(outcome, context),
     finalRoom: finalRoomFrom(beats),
   };

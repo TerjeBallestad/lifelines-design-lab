@@ -1,13 +1,21 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { phoneApproaches, telefonAversjon } from '../content/phonePractice';
+import {
+  phoneActivityClocks,
+  phoneApproaches,
+  phonePressureObjects,
+  phoneSupportModes,
+  telefonAversjon,
+} from '../content/phonePractice';
 import type {
   EllingPosition,
   FrankPosition,
   FrankStance,
   PhoneApproachId,
+  PressureId,
   RoomState,
   ScriptState,
+  SupportModeId,
 } from '../domain/types';
 import { useRootStore } from '../stores/RootStore';
 
@@ -40,9 +48,9 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Phone Resistance Room
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
-                Put support into the apartment first. Then assign one daily die and watch whether
-                the room shows phone fear, dignity defense, Frank pressure, low overskudd, or a
-                usable first step.
+                Compose two supports, assign one daily die, then watch whether the room shows phone
+                fear, dignity defense, Frank pressure, low overskudd, or the weakness you
+                deliberately carried in.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -57,7 +65,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
         </header>
 
         <main className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.9fr]">
-          <Panel className="min-h-[720px]">
+          <Panel className="min-h-[660px] self-start">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <SectionTitle>Apartment stage</SectionTitle>
@@ -67,7 +75,10 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </div>
               <RoomPills room={activeRoom} />
             </div>
-            <ApartmentStage room={activeRoom} />
+            <ApartmentStage
+              room={activeRoom}
+              carriedWeaknesses={latest?.supportAnalysis.carriedWeaknesses ?? []}
+            />
             {activeRoom.bark ? (
               <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-info-content">
                 <span>{activeRoom.bark}</span>
@@ -110,7 +121,41 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <Panel>
-              <SectionTitle>2. Pick support framing</SectionTitle>
+              <SectionTitle>2. Compose support topology</SectionTitle>
+              <p className="mb-3 text-xs leading-relaxed text-base-content/60">
+                Pick two. The point is not full coverage; it is choosing which weakness Frank is
+                willing to carry today.
+              </p>
+              <div className="grid gap-2">
+                {phoneSupportModes.map((support) => {
+                  const selected = store.selectedSupportIds.includes(support.id);
+                  return (
+                    <button
+                      key={support.id}
+                      className={clsx(
+                        'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
+                        selected ? 'btn-accent text-accent-content' : 'btn-ghost bg-base-200',
+                      )}
+                      onClick={() => store.toggleSupport(support.id)}
+                    >
+                      <span className="grid gap-1">
+                        <strong>{support.label}</strong>
+                        <span className="text-xs font-normal leading-relaxed opacity-75">
+                          {support.good}
+                        </span>
+                        <span className="text-[0.68rem] font-normal uppercase tracking-wider opacity-60">
+                          risk: {support.risk}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <SupportTopology selectedIds={store.selectedSupportIds} />
+            </Panel>
+
+            <Panel>
+              <SectionTitle>3. Pick activity framing</SectionTitle>
               <div className="grid gap-2">
                 {phoneApproaches.map((approach) => (
                   <button
@@ -135,7 +180,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <Panel>
-              <SectionTitle>3. Assign one daily die</SectionTitle>
+              <SectionTitle>4. Assign one daily die</SectionTitle>
               <div className="flex flex-wrap gap-2">
                 {store.dicePool.map((die) => (
                   <button
@@ -191,6 +236,26 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
                   {telefonAversjon.description}
                 </p>
+              </div>
+              <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
+                Citizen clocks / phone activity
+              </h3>
+              <div className="mt-3 grid gap-3">
+                {phoneActivityClocks.map((clock) => (
+                  <ActivityClockCard
+                    key={clock.id}
+                    clock={clock}
+                    mastery={store.client.phoneMastery}
+                  />
+                ))}
+              </div>
+              <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
+                State objects on the table
+              </h3>
+              <div className="mt-3 grid gap-2">
+                {phonePressureObjects.map((pressure) => (
+                  <PressureObjectCard key={pressure.id} pressure={pressure} />
+                ))}
               </div>
             </Panel>
           </div>
@@ -277,7 +342,40 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="card-title mb-2 text-lg">{children}</h2>;
 }
 
-function ApartmentStage({ room }: { room: RoomState }) {
+function SupportTopology({ selectedIds }: { selectedIds: SupportModeId[] }) {
+  const selected = phoneSupportModes.filter((support) => selectedIds.includes(support.id));
+  const covered = new Set(selected.flatMap((support) => support.covers));
+  const weak = new Set(selected.flatMap((support) => support.weak));
+  const all = new Set<PressureId>(
+    phoneSupportModes.flatMap((support) => [...support.covers, ...support.weak]),
+  );
+  const carried = [...all].filter((pressure) => !covered.has(pressure) || weak.has(pressure));
+
+  return (
+    <div className="mt-3 rounded-box border border-base-content/10 bg-base-200 p-3 text-xs leading-relaxed">
+      <div className="font-bold text-base-content/70">Carried weakness</div>
+      <div className="mt-2 flex flex-wrap gap-1">
+        {carried.slice(0, 5).map((pressure) => (
+          <span key={pressure} className="badge badge-warning badge-sm capitalize">
+            {pressure.replaceAll('_', ' ')}
+          </span>
+        ))}
+      </div>
+      <p className="mt-2 text-base-content/55">
+        This is the vulnerability-topology graft: two supports improve the posture, but never make
+        the phone room safe from every pressure.
+      </p>
+    </div>
+  );
+}
+
+function ApartmentStage({
+  room,
+  carriedWeaknesses,
+}: {
+  room: RoomState;
+  carriedWeaknesses: PressureId[];
+}) {
   return (
     <div className="relative mt-4 h-[540px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
@@ -304,8 +402,112 @@ function ApartmentStage({ room }: { room: RoomState }) {
       >
         {room.doorClosed ? 'closed door' : 'bedroom door'}
       </StageObject>
+      <PressureLabel className="left-48 top-10" active={carriedWeaknesses.includes('phone_fear')}>
+        phone fear
+      </PressureLabel>
+      <PressureLabel className="right-48 top-44" active={carriedWeaknesses.includes('shame')}>
+        shame / dignity
+      </PressureLabel>
+      <PressureLabel
+        className="bottom-28 right-52"
+        active={carriedWeaknesses.includes('sleep_debt')}
+      >
+        sleep debt
+      </PressureLabel>
+      <PressureLabel
+        className="left-24 bottom-24"
+        active={carriedWeaknesses.includes('unpaid_bill')}
+      >
+        unopened bill
+      </PressureLabel>
       <Person label="Elling" tone="client" position={ellingPosition(room.ellingPosition)} />
       <Person label="Frank" tone="frank" position={frankPosition(room.frankPosition)} />
+    </div>
+  );
+}
+
+function PressureLabel({
+  children,
+  className,
+  active,
+}: {
+  children: React.ReactNode;
+  className: string;
+  active: boolean;
+}) {
+  return (
+    <div
+      className={clsx(
+        'absolute rounded border px-2 py-1 text-[0.66rem] font-black uppercase tracking-[0.16em] shadow-lg',
+        active
+          ? 'border-warning bg-warning/25 text-warning-content'
+          : 'border-base-content/10 bg-base-100/60 text-base-content/35',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ActivityClockCard({
+  clock,
+  mastery,
+}: {
+  clock: (typeof phoneActivityClocks)[number];
+  mastery: number;
+}) {
+  const filled = Math.min(clock.segments, clock.filled + Math.round(mastery * 2));
+  return (
+    <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h4 className="font-bold">{clock.label}</h4>
+          <p className="mt-1 text-xs leading-relaxed text-base-content/60">{clock.description}</p>
+        </div>
+        <div className="flex gap-1">
+          {clock.diceSlots.map((slot, index) => (
+            <span
+              key={`${clock.id}-${slot}-${index}`}
+              className={clsx(
+                'grid h-7 w-7 place-items-center border text-[0.6rem] font-black uppercase',
+                slot === 'safe' && 'border-success bg-success/20 text-success',
+                slot === 'risky' && 'border-warning bg-warning/20 text-warning',
+                slot === 'empty' && 'border-base-content/30 text-base-content/50',
+                slot === 'locked' && 'border-base-content/10 bg-base-300 text-base-content/25',
+              )}
+            >
+              {slot === 'locked' ? '×' : '□'}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-8 gap-1">
+        {Array.from({ length: clock.segments }).map((_, index) => (
+          <span
+            key={index}
+            className={clsx(
+              'h-2 rounded-full',
+              index < filled ? 'bg-accent' : 'bg-base-content/15',
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PressureObjectCard({ pressure }: { pressure: (typeof phonePressureObjects)[number] }) {
+  return (
+    <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <strong>{pressure.label}</strong>
+        <span className="badge badge-outline badge-sm">{pressure.anchor}</span>
+      </div>
+      <progress className="progress progress-warning mt-2 w-full" value={pressure.clock} max={1} />
+      <p className="mt-2 text-xs leading-relaxed text-base-content/60">
+        Escalates into {pressure.escalatesInto}. Softened by {pressure.softenedBy}.
+      </p>
     </div>
   );
 }

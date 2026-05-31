@@ -6,6 +6,24 @@ export type FrankPosition = 'near_phone' | 'seated_away' | 'absent_setup';
 export type ScriptState = 'missing' | 'placed' | 'used' | 'ignored';
 export type EllingPosition = 'chair' | 'phone' | 'pace' | 'bedroom_door' | 'bedroom';
 
+export type PressureId =
+  | 'restlessness'
+  | 'shame'
+  | 'sleep_debt'
+  | 'unpaid_bill'
+  | 'hope'
+  | 'phone_fear'
+  | 'dignity_exposure';
+
+export type SupportModeId =
+  | 'routine'
+  | 'gentle_contact'
+  | 'practical_help'
+  | 'challenge'
+  | 'boundary'
+  | 'disclosure'
+  | 'humor_play';
+
 export type PhoneApproachId =
   | 'none'
   | 'written_script'
@@ -39,6 +57,41 @@ export interface StateObject {
   pressure: number;
 }
 
+export interface PressureObject {
+  id: PressureId;
+  label: string;
+  anchor: StateObject['anchor'];
+  escalatesInto: string;
+  softenedBy: string;
+  designPurpose: string;
+  clock: number;
+}
+
+export interface ActivityClock {
+  id: string;
+  label: string;
+  description: string;
+  segments: number;
+  filled: number;
+  diceSlots: Array<'empty' | 'safe' | 'risky' | 'locked'>;
+}
+
+export interface SupportMode {
+  id: SupportModeId;
+  label: string;
+  good: string;
+  risk: string;
+  covers: PressureId[];
+  weak: PressureId[];
+}
+
+export interface SupportAnalysis {
+  coveredPressures: PressureId[];
+  carriedWeaknesses: PressureId[];
+  coverageScore: number;
+  reasons: string[];
+}
+
 export interface Approach {
   id: PhoneApproachId;
   label: string;
@@ -70,6 +123,7 @@ export interface AttemptContext {
   frankPosition: FrankPosition;
   scriptState: ScriptState;
   dieFace: DieFace;
+  supportIds: SupportModeId[];
   attemptIndex: number;
 }
 
@@ -103,6 +157,7 @@ export interface AttemptResult {
   beats: VignetteBeat[];
   evidence: EvidenceFact[];
   frankReport: string;
+  supportAnalysis: SupportAnalysis;
   nextApproachIds: PhoneApproachId[];
   finalRoom: RoomState;
 }

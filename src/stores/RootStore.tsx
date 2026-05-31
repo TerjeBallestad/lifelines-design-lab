@@ -10,6 +10,7 @@ import type {
   PhoneApproachId,
   RoomState,
   ScriptState,
+  SupportModeId,
 } from '../domain/types';
 import { resolvePhoneAttempt } from '../engine/phoneResolver';
 
@@ -36,6 +37,7 @@ export class RootStore {
   };
 
   selectedApproachId: PhoneApproachId = 'none';
+  selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
   frankStance: FrankStance = 'matter_of_fact';
   frankPosition: FrankPosition = 'seated_away';
   scriptState: ScriptState = 'missing';
@@ -46,6 +48,16 @@ export class RootStore {
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  toggleSupport(id: SupportModeId): void {
+    if (this.selectedSupportIds.includes(id)) {
+      if (this.selectedSupportIds.length > 1) {
+        this.selectedSupportIds = this.selectedSupportIds.filter((item) => item !== id);
+      }
+      return;
+    }
+    this.selectedSupportIds = [...this.selectedSupportIds.slice(-1), id];
   }
 
   setApproach(id: PhoneApproachId): void {
@@ -99,6 +111,7 @@ export class RootStore {
       frankStance: this.frankStance,
       frankPosition: this.frankPosition,
       scriptState: this.scriptState,
+      supportIds: [...this.selectedSupportIds],
       attemptIndex: this.attempts.length + 1,
     });
 
@@ -118,6 +131,7 @@ export class RootStore {
   reset(): void {
     this.client = { overskudd: 0.54, trust: 0.42, phoneMastery: 0.18, ellingState: 'prickly' };
     this.selectedApproachId = 'none';
+    this.selectedSupportIds = ['practical_help', 'humor_play'];
     this.frankStance = 'matter_of_fact';
     this.frankPosition = 'seated_away';
     this.scriptState = 'missing';

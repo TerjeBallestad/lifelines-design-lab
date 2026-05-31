@@ -9,6 +9,7 @@ const base: AttemptContext = {
   frankPosition: 'seated_away',
   scriptState: 'missing',
   dieFace: 4,
+  supportIds: ['practical_help', 'humor_play'],
   attemptIndex: 1,
 };
 
@@ -46,6 +47,13 @@ describe('resolvePhoneAttempt', () => {
     expect(result.beats.length).toBeGreaterThan(1);
     expect(result.beats.every((beat) => beat.ellingPosition && beat.frankPosition)).toBe(true);
     expect(result.finalRoom.lastFriction).not.toBe('unknown');
+  });
+
+  it('keeps support pairs partially vulnerable', () => {
+    const result = resolvePhoneAttempt(base);
+    expect(result.supportAnalysis.coveredPressures.length).toBeGreaterThan(0);
+    expect(result.supportAnalysis.carriedWeaknesses.length).toBeGreaterThan(0);
+    expect(result.evidence.some((item) => item.id === 'carried_weakness')).toBe(true);
   });
 
   it('produces next approaches after an attempt', () => {
