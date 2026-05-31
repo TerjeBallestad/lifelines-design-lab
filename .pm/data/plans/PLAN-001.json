@@ -1,0 +1,113 @@
+{
+  "id": "PLAN-001",
+  "title": "Phone Practice Lab M1",
+  "sddId": "SDD-001",
+  "stage": "planned",
+  "sprintId": null,
+  "context": {
+    "setupNotes": "Build the first Lifelines HTML Design Lab slice. Keep scope narrow: phone practice two-attempt loop. Preserve seams between content, resolver, store, and UI. PM is the project backbone; Tycoon harness is not ported yet.",
+    "relevantFiles": [
+      "src/content/phonePractice.ts",
+      "src/domain/types.ts",
+      "src/engine/phoneResolver.ts",
+      "src/stores/RootStore.tsx",
+      "src/components/PhonePracticeLab.tsx",
+      "docs/architecture.md",
+      "docs/runs/README.md"
+    ],
+    "designDecisions": [
+      "HTML asks whether the game loop is interesting; Godot later asks whether the existing sim can perform it.",
+      "Dice bias probability and readiness; they do not select deterministic authored branches.",
+      "Vignette beats are cheap stand-ins for scene behavior; Frank report interprets evidence but should not carry the primary payoff."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Scaffold React/Vite/MobX design lab",
+      "description": "Create the new lab folder with PM config, package scripts, TypeScript/Vite setup, README, docs, and a clear architecture rule.",
+      "steps": [
+        "Initialize git and PM",
+        "Install React/Vite/TypeScript/MobX tooling",
+        "Create README and docs/runs convention",
+        "Add architecture sketch"
+      ],
+      "verification": "npm run build and npm test can run from a clean checkout after npm install.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Scaffolded git repo, PM config, React/Vite/TypeScript/MobX package, README, docs/runs convention, and architecture sketch. npm test and npm run build pass.",
+          "timestamp": "2026-05-31T13:40:04.578Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement Phone Practice domain/content/resolver seam",
+      "description": "Add typed domain concepts, authored phone-practice content, and a pure resolver for dice-biased outcomes, vignette beats, evidence, reports, and next approaches.",
+      "steps": [
+        "Define domain types",
+        "Author Elling phone state object and approaches",
+        "Implement deterministic resolver",
+        "Add Vitest coverage"
+      ],
+      "verification": "Resolver test proves same context repeats, better support improves readiness, and next approaches exist.",
+      "blockedBy": [
+        "TASK-001"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Added typed domain/content/resolver seam for phone practice: state object, approaches, dice-biased readiness/outcomes, vignette beats, evidence, Frank report, next approaches, and Vitest coverage. npm test passes.",
+          "timestamp": "2026-05-31T13:40:04.628Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "title": "Implement first playable Phone Practice Lab UI",
+      "description": "Expose current state, apartment overlay, approach selection, die selection, vignette timeline, evidence, Frank report, and next-approach buttons.",
+      "steps": [
+        "Create MobX root store",
+        "Create PhonePracticeLab component",
+        "Style the lab for readable browser testing",
+        "Wire second-attempt selection"
+      ],
+      "verification": "Manual browser run can execute at least two attempts with changed approach and visible result differences.",
+      "blockedBy": [
+        "TASK-002"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Implemented playable first UI: current state, apartment overlay, approach selector, die/Frank stance controls, vignette timeline, evidence/report, and next-approach buttons. Browser smoke on localhost:8791 produced attempt results with no console errors.",
+          "timestamp": "2026-05-31T13:40:04.678Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "title": "Run harness-lite adversarial review",
+      "description": "Create a docs/runs trace for the first slice and review whether the two-attempt loop produces a better next decision.",
+      "steps": [
+        "Record 3-5 playtest traces",
+        "Write evaluator critique",
+        "Write PASS/PIVOT/REJECT verdict"
+      ],
+      "verification": "docs/runs contains goal, contract, trace, evaluator, and verdict for the first design run.",
+      "blockedBy": [
+        "TASK-003"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-05-31T13:37:05.201Z",
+  "updatedAt": "2026-05-31T13:40:04.678Z"
+}
