@@ -8,6 +8,7 @@ import {
   telefonAversjon,
 } from '../content/phonePractice';
 import type {
+  AttemptResult,
   EllingPosition,
   FrankPosition,
   FrankStance,
@@ -143,272 +144,464 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           </div>
         </header>
 
-        <main className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.9fr]">
-          <Panel className="min-h-[660px] self-start">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <SectionTitle>Stua</SectionTitle>
-                <p className="text-sm text-base-content/60">
-                  Rommet viser først. Frank skriver etterpå.
-                </p>
-              </div>
-              <RoomPills room={activeRoom} />
-            </div>
-            <ApartmentStage
-              room={activeRoom}
-              carriedWeaknesses={latest?.supportAnalysis.carriedWeaknesses ?? []}
-            />
-            {activeRoom.bark ? (
-              <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-info-content">
-                <span>{activeRoom.bark}</span>
-              </div>
-            ) : null}
-          </Panel>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            className={clsx('btn', store.labMode === 'apartment' ? 'btn-primary' : 'btn-outline')}
+            onClick={() => store.setLabMode('apartment')}
+          >
+            Apartment clocks
+          </button>
+          <button
+            className={clsx('btn', store.labMode === 'desk' ? 'btn-primary' : 'btn-outline')}
+            onClick={() => store.setLabMode('desk')}
+          >
+            Case Desk
+          </button>
+        </div>
 
-          <div className="grid content-start gap-4">
-            <Panel>
-              <SectionTitle>1. Hvor Frank står</SectionTitle>
-              <div className="grid gap-2">
-                {frankPositions.map((position) => (
-                  <button
-                    key={position.id}
-                    className={clsx(
-                      'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
-                      store.frankPosition === position.id ? 'btn-primary' : 'btn-ghost bg-base-200',
-                    )}
-                    onClick={() => store.setFrankPosition(position.id)}
-                  >
-                    <span className="grid gap-1">
-                      <strong>{position.label}</strong>
-                      <span className="text-xs font-normal opacity-70">{position.note}</span>
-                    </span>
-                  </button>
-                ))}
-                <button
-                  className={clsx(
-                    'btn mt-1',
-                    store.scriptState === 'placed' || store.scriptState === 'used'
-                      ? 'btn-secondary'
-                      : 'btn-outline btn-secondary',
-                  )}
-                  onClick={() => store.placeScript()}
-                  disabled={store.scriptState === 'used'}
-                >
-                  {scriptButtonLabel(store.scriptState)}
-                </button>
+        {store.labMode === 'apartment' ? (
+          <main className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.9fr]">
+            <Panel className="min-h-[660px] self-start">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <SectionTitle>Stua</SectionTitle>
+                  <p className="text-sm text-base-content/60">
+                    Rommet viser først. Frank skriver etterpå.
+                  </p>
+                </div>
+                <RoomPills room={activeRoom} />
               </div>
+              <ApartmentStage
+                room={activeRoom}
+                carriedWeaknesses={latest?.supportAnalysis.carriedWeaknesses ?? []}
+              />
+              {activeRoom.bark ? (
+                <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-info-content">
+                  <span>{activeRoom.bark}</span>
+                </div>
+              ) : null}
             </Panel>
 
-            <Panel>
-              <SectionTitle>2. Hva Frank tar med inn</SectionTitle>
-              <p className="mb-3 text-xs leading-relaxed text-base-content/60">
-                Velg to praktiske måter å hjelpe på. Valget sier også hva rommet fortsatt kan la
-                ligge åpent i dag.
-              </p>
-              <div className="grid gap-2">
-                {phoneSupportModes.map((support) => {
-                  const selected = store.selectedSupportIds.includes(support.id);
-                  return (
+            <div className="grid content-start gap-4">
+              <Panel>
+                <SectionTitle>1. Hvor Frank står</SectionTitle>
+                <div className="grid gap-2">
+                  {frankPositions.map((position) => (
                     <button
-                      key={support.id}
+                      key={position.id}
                       className={clsx(
                         'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
-                        selected ? 'btn-accent text-accent-content' : 'btn-ghost bg-base-200',
+                        store.frankPosition === position.id
+                          ? 'btn-primary'
+                          : 'btn-ghost bg-base-200',
                       )}
-                      onClick={() => store.toggleSupport(support.id)}
+                      onClick={() => store.setFrankPosition(position.id)}
                     >
                       <span className="grid gap-1">
-                        <strong>{support.label}</strong>
-                        <span className="text-xs font-normal leading-relaxed opacity-75">
-                          {support.good}
+                        <strong>{position.label}</strong>
+                        <span className="text-xs font-normal opacity-70">{position.note}</span>
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    className={clsx(
+                      'btn mt-1',
+                      store.scriptState === 'placed' || store.scriptState === 'used'
+                        ? 'btn-secondary'
+                        : 'btn-outline btn-secondary',
+                    )}
+                    onClick={() => store.placeScript()}
+                    disabled={store.scriptState === 'used'}
+                  >
+                    {scriptButtonLabel(store.scriptState)}
+                  </button>
+                </div>
+              </Panel>
+
+              <Panel>
+                <SectionTitle>2. Hva Frank tar med inn</SectionTitle>
+                <p className="mb-3 text-xs leading-relaxed text-base-content/60">
+                  Velg to praktiske måter å hjelpe på. Valget sier også hva rommet fortsatt kan la
+                  ligge åpent i dag.
+                </p>
+                <div className="grid gap-2">
+                  {phoneSupportModes.map((support) => {
+                    const selected = store.selectedSupportIds.includes(support.id);
+                    return (
+                      <button
+                        key={support.id}
+                        className={clsx(
+                          'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
+                          selected ? 'btn-accent text-accent-content' : 'btn-ghost bg-base-200',
+                        )}
+                        onClick={() => store.toggleSupport(support.id)}
+                      >
+                        <span className="grid gap-1">
+                          <strong>{support.label}</strong>
+                          <span className="text-xs font-normal leading-relaxed opacity-75">
+                            {support.good}
+                          </span>
+                          <span className="text-[0.68rem] font-normal uppercase tracking-wider opacity-60">
+                            står åpent: {support.risk}
+                          </span>
                         </span>
-                        <span className="text-[0.68rem] font-normal uppercase tracking-wider opacity-60">
-                          står åpent: {support.risk}
+                      </button>
+                    );
+                  })}
+                </div>
+                <SupportTopology selectedIds={store.selectedSupportIds} />
+              </Panel>
+
+              <Panel>
+                <SectionTitle>3. Hva Elling skal prøve</SectionTitle>
+                <div className="grid gap-2">
+                  {phoneApproaches.map((approach) => (
+                    <button
+                      key={approach.id}
+                      className={clsx(
+                        'btn h-auto justify-start rounded-box border-base-content/10 px-4 py-3 text-left normal-case',
+                        approach.id === store.selectedApproachId
+                          ? 'btn-accent text-accent-content'
+                          : 'btn-ghost bg-base-200 hover:bg-base-100',
+                      )}
+                      onClick={() => store.setApproach(approach.id)}
+                    >
+                      <span className="grid gap-1">
+                        <strong>{approach.label}</strong>
+                        <span className="text-xs font-normal leading-relaxed opacity-70">
+                          {approach.description}
                         </span>
                       </span>
                     </button>
-                  );
-                })}
-              </div>
-              <SupportTopology selectedIds={store.selectedSupportIds} />
-            </Panel>
-
-            <Panel>
-              <SectionTitle>3. Hva Elling skal prøve</SectionTitle>
-              <div className="grid gap-2">
-                {phoneApproaches.map((approach) => (
-                  <button
-                    key={approach.id}
-                    className={clsx(
-                      'btn h-auto justify-start rounded-box border-base-content/10 px-4 py-3 text-left normal-case',
-                      approach.id === store.selectedApproachId
-                        ? 'btn-accent text-accent-content'
-                        : 'btn-ghost bg-base-200 hover:bg-base-100',
-                    )}
-                    onClick={() => store.setApproach(approach.id)}
-                  >
-                    <span className="grid gap-1">
-                      <strong>{approach.label}</strong>
-                      <span className="text-xs font-normal leading-relaxed opacity-70">
-                        {approach.description}
-                      </span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </Panel>
-
-            <Panel>
-              <SectionTitle>4. Bruk dagens oppmerksomhet</SectionTitle>
-              <div className="flex flex-wrap gap-2">
-                {store.dicePool.map((die) => (
-                  <button
-                    key={die.id}
-                    className={clsx(
-                      'btn btn-square text-xl font-black',
-                      die.used && 'btn-disabled opacity-35',
-                      !die.used && store.selectedDieId === die.id && 'btn-primary',
-                      !die.used && store.selectedDieId !== die.id && 'btn-outline',
-                    )}
-                    onClick={() => store.selectDie(die.id)}
-                    disabled={die.used}
-                  >
-                    {die.face}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-3 text-xs text-base-content/60">
-                Terningen dytter forsøket. Den avgjør det ikke alene.
-              </p>
-              <select
-                className="select select-bordered mt-4 w-full"
-                value={store.frankStance}
-                onChange={(event) => store.setFrankStance(event.target.value as FrankStance)}
-              >
-                {frankStances.map((stance) => (
-                  <option key={stance} value={stance}>
-                    Frank: {frankStanceCopy[stance]}
-                  </option>
-                ))}
-              </select>
-              <button
-                className="btn btn-success mt-4 w-full"
-                onClick={() => store.runAttempt()}
-                disabled={!store.selectedDie}
-              >
-                Prøv telefonen {store.attempts.length + 1}
-              </button>
-            </Panel>
-
-            <Panel>
-              <SectionTitle>Hva Elling kan øve på</SectionTitle>
-              <div className="grid gap-4">
-                <Meter label="Overskudd" value={store.client.overskudd} />
-                <Meter label="Tillit" value={store.client.trust} />
-                <Meter label="Telefonøving" value={store.client.phoneMastery} />
-              </div>
-              <div className="mt-5 rounded-box border border-secondary/30 border-l-4 bg-base-200 p-4 shadow-inner">
-                <span className="badge badge-secondary badge-sm font-bold uppercase tracking-wider">
-                  {anchorCopy[telefonAversjon.anchor]}
-                </span>
-                <h3 className="mt-3 text-lg font-bold">{telefonAversjon.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                  {telefonAversjon.description}
-                </p>
-              </div>
-              <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
-                Øvingsstier
-              </h3>
-              <div className="mt-3 grid gap-3">
-                {phoneActivityClocks.map((clock) => (
-                  <ActivityClockCard
-                    key={clock.id}
-                    clock={clock}
-                    mastery={store.client.phoneMastery}
-                  />
-                ))}
-              </div>
-              <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
-                Det Frank følger med på
-              </h3>
-              <div className="mt-3 grid gap-2">
-                {phonePressureObjects.map((pressure) => (
-                  <PressureObjectCard key={pressure.id} pressure={pressure} />
-                ))}
-              </div>
-            </Panel>
-          </div>
-
-          <Panel className="xl:col-span-2">
-            <SectionTitle>Det som skjedde i rommet</SectionTitle>
-            {!latest ? (
-              <EmptyState>
-                Ingen forsøk ennå. Sett Frank, legg fram manuset, velg et lite forsøk og bruk en
-                terning.
-              </EmptyState>
-            ) : (
-              <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-                <ol className="grid gap-3">
-                  {latest.beats.map((beat) => (
-                    <li
-                      key={beat.id}
-                      data-anchor={beat.anchor}
-                      className="rounded-box border border-base-content/10 bg-base-200 p-4"
-                    >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="badge badge-accent badge-sm">{actorCopy[beat.actor]}</span>
-                        <strong>{beat.label}</strong>
-                        <span className="badge badge-ghost badge-sm">{beat.friction}</span>
-                      </div>
-                      <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                        {beat.text}
-                      </p>
-                      {beat.bark ? <p className="mt-2 italic text-accent">{beat.bark}</p> : null}
-                    </li>
                   ))}
-                </ol>
-                <div>
-                  <div className={outcomeBadgeClass(latest.outcomeClass)}>
-                    Det som skjedde: {outcomeCopy[latest.outcome]} / rommet holdt{' '}
-                    {pct(latest.readiness)}
-                  </div>
-                  <ul className="mt-4 grid gap-y-2 text-sm text-base-content/80">
-                    {latest.evidence.map((item) => (
-                      <li key={`${item.id}-${item.value}`} className="flex justify-between gap-4">
-                        <span>{item.label}</span>
-                        <b className="text-right text-base-content">
-                          {evidenceValueCopy(item.value)}
-                        </b>
+                </div>
+              </Panel>
+
+              <Panel>
+                <SectionTitle>4. Bruk dagens oppmerksomhet</SectionTitle>
+                <div className="flex flex-wrap gap-2">
+                  {store.dicePool.map((die) => (
+                    <button
+                      key={die.id}
+                      className={clsx(
+                        'btn btn-square text-xl font-black',
+                        die.used && 'btn-disabled opacity-35',
+                        !die.used && store.selectedDieId === die.id && 'btn-primary',
+                        !die.used && store.selectedDieId !== die.id && 'btn-outline',
+                      )}
+                      onClick={() => store.selectDie(die.id)}
+                      disabled={die.used}
+                    >
+                      {die.face}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-base-content/60">
+                  Terningen dytter forsøket. Den avgjør det ikke alene.
+                </p>
+                <select
+                  className="select select-bordered mt-4 w-full"
+                  value={store.frankStance}
+                  onChange={(event) => store.setFrankStance(event.target.value as FrankStance)}
+                >
+                  {frankStances.map((stance) => (
+                    <option key={stance} value={stance}>
+                      Frank: {frankStanceCopy[stance]}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="btn btn-success mt-4 w-full"
+                  onClick={() => store.runAttempt()}
+                  disabled={!store.selectedDie}
+                >
+                  Prøv telefonen {store.attempts.length + 1}
+                </button>
+              </Panel>
+
+              <Panel>
+                <SectionTitle>Hva Elling kan øve på</SectionTitle>
+                <div className="grid gap-4">
+                  <Meter label="Overskudd" value={store.client.overskudd} />
+                  <Meter label="Tillit" value={store.client.trust} />
+                  <Meter label="Telefonøving" value={store.client.phoneMastery} />
+                </div>
+                <div className="mt-5 rounded-box border border-secondary/30 border-l-4 bg-base-200 p-4 shadow-inner">
+                  <span className="badge badge-secondary badge-sm font-bold uppercase tracking-wider">
+                    {anchorCopy[telefonAversjon.anchor]}
+                  </span>
+                  <h3 className="mt-3 text-lg font-bold">{telefonAversjon.label}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                    {telefonAversjon.description}
+                  </p>
+                </div>
+                <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
+                  Øvingsstier
+                </h3>
+                <div className="mt-3 grid gap-3">
+                  {phoneActivityClocks.map((clock) => (
+                    <ActivityClockCard
+                      key={clock.id}
+                      clock={clock}
+                      mastery={store.client.phoneMastery}
+                    />
+                  ))}
+                </div>
+                <h3 className="mt-5 text-sm font-black uppercase tracking-[0.18em] text-base-content/50">
+                  Det Frank følger med på
+                </h3>
+                <div className="mt-3 grid gap-2">
+                  {phonePressureObjects.map((pressure) => (
+                    <PressureObjectCard key={pressure.id} pressure={pressure} />
+                  ))}
+                </div>
+              </Panel>
+            </div>
+
+            <Panel className="xl:col-span-2">
+              <SectionTitle>Det som skjedde i rommet</SectionTitle>
+              {!latest ? (
+                <EmptyState>
+                  Ingen forsøk ennå. Sett Frank, legg fram manuset, velg et lite forsøk og bruk en
+                  terning.
+                </EmptyState>
+              ) : (
+                <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+                  <ol className="grid gap-3">
+                    {latest.beats.map((beat) => (
+                      <li
+                        key={beat.id}
+                        data-anchor={beat.anchor}
+                        className="rounded-box border border-base-content/10 bg-base-200 p-4"
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="badge badge-accent badge-sm">
+                            {actorCopy[beat.actor]}
+                          </span>
+                          <strong>{beat.label}</strong>
+                          <span className="badge badge-ghost badge-sm">{beat.friction}</span>
+                        </div>
+                        <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                          {beat.text}
+                        </p>
+                        {beat.bark ? <p className="mt-2 italic text-accent">{beat.bark}</p> : null}
                       </li>
                     ))}
-                  </ul>
-                  <blockquote className="mt-5 rounded-box border-l-4 border-accent bg-base-200 p-4 text-base-content/80">
-                    {latest.frankReport}
-                  </blockquote>
-                  <h3 className="mt-5 text-lg font-bold">Neste forsøk</h3>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {latest.nextApproachIds.map((id) => {
-                      const approach = phoneApproaches.find((item) => item.id === id)!;
-                      return (
-                        <button
-                          key={id}
-                          className="btn btn-outline btn-accent"
-                          onClick={() => store.chooseNextApproach(id as PhoneApproachId)}
-                        >
-                          {approach.label}
-                        </button>
-                      );
-                    })}
+                  </ol>
+                  <div>
+                    <div className={outcomeBadgeClass(latest.outcomeClass)}>
+                      Det som skjedde: {outcomeCopy[latest.outcome]} / rommet holdt{' '}
+                      {pct(latest.readiness)}
+                    </div>
+                    <ul className="mt-4 grid gap-y-2 text-sm text-base-content/80">
+                      {latest.evidence.map((item) => (
+                        <li key={`${item.id}-${item.value}`} className="flex justify-between gap-4">
+                          <span>{item.label}</span>
+                          <b className="text-right text-base-content">
+                            {evidenceValueCopy(item.value)}
+                          </b>
+                        </li>
+                      ))}
+                    </ul>
+                    <blockquote className="mt-5 rounded-box border-l-4 border-accent bg-base-200 p-4 text-base-content/80">
+                      {latest.frankReport}
+                    </blockquote>
+                    <h3 className="mt-5 text-lg font-bold">Neste forsøk</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {latest.nextApproachIds.map((id) => {
+                        const approach = phoneApproaches.find((item) => item.id === id)!;
+                        return (
+                          <button
+                            key={id}
+                            className="btn btn-outline btn-accent"
+                            onClick={() => store.chooseNextApproach(id as PhoneApproachId)}
+                          >
+                            {approach.label}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </Panel>
-        </main>
+              )}
+            </Panel>
+          </main>
+        ) : (
+          <CaseDeskSurface />
+        )}
       </div>
     </div>
   );
 });
+
+const CaseDeskSurface = observer(function CaseDeskSurface() {
+  const store = useRootStore();
+  const latest = store.latestAttempt;
+  const selected = new Set(store.selectedDeskEvidenceIds);
+  const evidence = latest ? deskEvidenceFromAttempt(latest) : [];
+  const hasPracticeSignal = evidence.some(
+    (item) => item.id === 'practice_signal' && selected.has(item.id),
+  );
+  const hasBoundarySignal = evidence.some(
+    (item) => item.id === 'boundary_risk' && selected.has(item.id),
+  );
+  const hasAnyEvidence = selected.size > 0;
+  const nextApproach = latest?.nextApproachIds[0] ?? 'tolerate_ringtone';
+
+  return (
+    <main className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+      <Panel>
+        <SectionTitle>Case Desk</SectionTitle>
+        <p className="text-sm leading-relaxed text-base-content/65">
+          Les det rommet ga fra seg. Løft bare det Frank faktisk kan stå inne for, og bruk det til å
+          gjøre neste vedtak smalere.
+        </p>
+        {!latest ? (
+          <EmptyState>
+            Ingen dokumenter ennå. Kjør ett telefonforsøk i Apartment først, så får pulten noe å
+            arbeide med.
+          </EmptyState>
+        ) : (
+          <div className="mt-4 grid gap-4">
+            <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
+              <div className="badge badge-outline mb-3">Frank-rapport</div>
+              <p className="leading-relaxed text-base-content/80">{latest.frankReport}</p>
+            </article>
+            <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
+              <div className="badge badge-outline mb-3">Dokument: telefonnotat</div>
+              <p className="leading-relaxed text-base-content/75">
+                Frank fikk se {outcomeCopy[latest.outcome]}. Rommet pekte særlig på{' '}
+                {frictionCopy[latest.finalRoom.lastFriction] ?? latest.finalRoom.lastFriction}.
+              </p>
+            </article>
+          </div>
+        )}
+      </Panel>
+
+      <Panel>
+        <SectionTitle>Løft bevis til saken</SectionTitle>
+        {!latest ? (
+          <EmptyState>Casework-delen låser seg ikke opp før rommet har svart.</EmptyState>
+        ) : (
+          <>
+            <div className="grid gap-2">
+              {evidence.map((item) => (
+                <button
+                  key={item.id}
+                  className={clsx(
+                    'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
+                    selected.has(item.id)
+                      ? 'btn-accent text-accent-content'
+                      : 'btn-ghost bg-base-200',
+                  )}
+                  onClick={() => store.toggleDeskEvidence(item.id)}
+                >
+                  <span className="grid gap-1">
+                    <strong>{item.label}</strong>
+                    <span className="text-xs font-normal leading-relaxed opacity-75">
+                      {item.text}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 grid gap-3 lg:grid-cols-2">
+              <ClaimBucket
+                title="Bekreftet"
+                active={hasPracticeSignal}
+                text="Telefonøving kan gi en liten faktisk handling, selv når forsøket ser stygt ut."
+              />
+              <ClaimBucket
+                title="Hypotese"
+                active={hasBoundarySignal}
+                text="Ny kontaktmulighet trenger en grense, ellers blir telefonen neste problem."
+              />
+              <ClaimBucket
+                title="Åpent spørsmål"
+                active={hasAnyEvidence && !hasBoundarySignal}
+                text="Er dette øving som utvider livet, eller bare en tryggere måte å bli værende inne?"
+              />
+              <ClaimBucket
+                title="Motstrid"
+                active={hasPracticeSignal && hasBoundarySignal}
+                text="Samme framgang gjør saken vanskeligere: han kan mer, og kan rote seg inn i mer."
+              />
+            </div>
+
+            <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-4">
+              <div className="font-black uppercase tracking-[0.18em] text-success">
+                Mulig vedtak
+              </div>
+              {hasPracticeSignal ? (
+                <>
+                  <p className="mt-2 text-sm leading-relaxed">
+                    Saken tåler et smalere neste steg. Ikke “telefonen er løst” — bare at neste
+                    forsøk kan begrunnes med det Frank faktisk så.
+                  </p>
+                  <button
+                    className="btn btn-success mt-4"
+                    onClick={() => store.applyDeskVedtak(nextApproach as PhoneApproachId)}
+                  >
+                    Ta neste tiltak tilbake til Apartment
+                  </button>
+                </>
+              ) : (
+                <p className="mt-2 text-sm leading-relaxed text-base-content/65">
+                  Løft minst ett konkret bevis før pulten kan anbefale neste tiltak.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </Panel>
+    </main>
+  );
+});
+
+function deskEvidenceFromAttempt(latest: AttemptResult): Array<{
+  id: string;
+  label: string;
+  text: string;
+}> {
+  const happened = outcomeCopy[latest.outcome];
+  const items = [
+    {
+      id: 'practice_signal',
+      label: 'Øvingen ga en faktisk handling',
+      text: `Frank så ${happened}, ikke bare en mening om telefonen.`,
+    },
+    {
+      id: 'room_friction',
+      label: 'Rommet viste hvor det skar seg',
+      text: frictionCopy[latest.finalRoom.lastFriction] ?? latest.finalRoom.lastFriction,
+    },
+  ];
+  if (latest.outcomeClass !== 'negative') {
+    items.push({
+      id: 'boundary_risk',
+      label: 'Ny evne trenger ny grense',
+      text: 'Når telefonen virker litt, kan den også åpne regning, sexlinje og privat rot.',
+    });
+  }
+  return items;
+}
+
+function ClaimBucket({ title, text, active }: { title: string; text: string; active: boolean }) {
+  return (
+    <div
+      className={clsx(
+        'rounded-box border p-3 text-sm',
+        active
+          ? 'border-accent bg-accent/15 text-base-content'
+          : 'border-base-content/10 bg-base-200 text-base-content/45',
+      )}
+    >
+      <div className="font-bold">{title}</div>
+      <p className="mt-1 leading-relaxed">{text}</p>
+    </div>
+  );
+}
 
 function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
