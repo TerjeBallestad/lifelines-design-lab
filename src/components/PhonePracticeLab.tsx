@@ -343,7 +343,11 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                     <ActivityClockCard
                       key={clock.id}
                       clock={clock}
-                      mastery={store.client.phoneMastery}
+                      filledOverride={
+                        clock.tone === 'complication'
+                          ? store.phoneComplicationClockProgress
+                          : store.phonePracticeClockProgress
+                      }
                     />
                   ))}
                 </div>
@@ -729,17 +733,29 @@ function PressureLabel({
 
 function ActivityClockCard({
   clock,
-  mastery,
+  filledOverride,
 }: {
   clock: (typeof phoneActivityClocks)[number];
-  mastery: number;
+  filledOverride: number;
 }) {
-  const filled = Math.min(clock.segments, clock.filled + Math.round(mastery * 2));
+  const filled = Math.min(clock.segments, Math.max(clock.filled, filledOverride));
   return (
-    <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
+    <div
+      className={clsx(
+        'rounded-box border bg-base-200 p-3',
+        clock.tone === 'complication' ? 'border-warning/40' : 'border-base-content/10',
+      )}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h4 className="font-bold">{clock.label}</h4>
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="font-bold">{clock.label}</h4>
+            {clock.tone === 'complication' ? (
+              <span className="badge badge-warning badge-sm">nytt problem</span>
+            ) : (
+              <span className="badge badge-success badge-sm">øving</span>
+            )}
+          </div>
           <p className="mt-1 text-xs leading-relaxed text-base-content/60">{clock.description}</p>
         </div>
         <div className="flex gap-1">
@@ -759,13 +775,35 @@ function ActivityClockCard({
           ))}
         </div>
       </div>
+      <div className="mt-3 grid gap-2">
+        {(clock.stages ?? []).map((stage, index) => (
+          <div
+            key={stage}
+            className={clsx(
+              'rounded border px-3 py-2 text-xs leading-relaxed',
+              index < filled
+                ? clock.tone === 'complication'
+                  ? 'border-warning/40 bg-warning/15'
+                  : 'border-success/40 bg-success/15'
+                : 'border-base-content/10 bg-base-100/50 text-base-content/55',
+            )}
+          >
+            <span className="mr-2 font-black">{index < filled ? '●' : '○'}</span>
+            {stage}
+          </div>
+        ))}
+      </div>
       <div className="mt-3 grid grid-cols-8 gap-1">
         {Array.from({ length: clock.segments }).map((_, index) => (
           <span
             key={index}
             className={clsx(
               'h-2 rounded-full',
-              index < filled ? 'bg-accent' : 'bg-base-content/15',
+              index < filled
+                ? clock.tone === 'complication'
+                  ? 'bg-warning'
+                  : 'bg-accent'
+                : 'bg-base-content/15',
             )}
           />
         ))}

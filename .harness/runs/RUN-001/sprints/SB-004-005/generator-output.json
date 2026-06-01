@@ -1,0 +1,14 @@
+{
+  "status": "done",
+  "summary": "Produced SB-004/SB-005 implementation brief for the phone clock spike.",
+  "changedFiles": [],
+  "artifacts": [
+    {
+      "kind": "brief",
+      "path": "artifacts/SB-004-005-generator-brief.md"
+    }
+  ],
+  "notes": [
+    "Generator is intentionally advisory in this first agent-harness integration run; source edits are applied by Rook after the protocol run."
+  ]
+}

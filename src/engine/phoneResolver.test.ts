@@ -156,4 +156,23 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('ny evne trenger ny grense');
     expect(visibleText).toContain('apartment');
   });
+
+  it('protects the ring-ring phone ladder and complication clock', () => {
+    const visibleText = visibleSourceText();
+    expect(visibleText).toContain('ring ring');
+    expect(visibleText).toContain('buser noe ut og legger på');
+    expect(visibleText).toContain('frank ringer fra mobilen');
+    expect(visibleText).toContain('kjøkkenet og ringer hustelefonen');
+    expect(visibleText).toContain('elling svarer uten at frank står ved siden av');
+    expect(visibleText).toContain('sexlinjen');
+    expect(visibleText).toContain('telefonregningen lander');
+  });
+
+  it('lets phone progress advance a complication clock instead of being a pure buff', () => {
+    const store = new RootStore();
+    expect(store.phoneComplicationClockProgress).toBe(0);
+    store.runAttempt();
+    expect(store.phonePracticeClockProgress).toBeGreaterThan(0);
+    expect(store.phoneComplicationClockProgress).toBeGreaterThanOrEqual(0);
+  });
 });

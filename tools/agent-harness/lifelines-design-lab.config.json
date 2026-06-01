@@ -1,0 +1,9 @@
+{
+  "name": "Lifelines Design Lab Agent Harness",
+  "verdicts": ["PASS", "PIVOT", "REJECT", "FORCE_PIVOT", "INFRA_FAIL"],
+  "roles": {
+    "planner": "tools/agent-harness/planner.mjs",
+    "generator": "tools/agent-harness/generator.mjs",
+    "evaluator": "tools/agent-harness/evaluator.mjs"
+  }
+}

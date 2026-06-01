@@ -180,27 +180,36 @@ export const phoneSupportModes: SupportMode[] = [
 
 export const phoneActivityClocks: ActivityClock[] = [
   {
-    id: 'ringtone',
-    label: 'Tåle ringelyden',
-    description: 'Bli i stuen mens telefonen får lov til å være telefon.',
-    segments: 6,
-    filled: 2,
-    diceSlots: ['safe', 'risky', 'empty'],
+    id: 'ring_ring_ladder',
+    label: 'Telefontrening: ring ring',
+    description:
+      'Frank gjør telefonen pinlig konkret før den får bli en ekte samtale. Øvingen er scenen, ikke en abstrakt bonus.',
+    segments: 5,
+    filled: 0,
+    diceSlots: ['safe', 'safe', 'risky', 'risky', 'locked'],
+    tone: 'practice',
+    stages: [
+      'Frank står med mobilen til øret og sier «ring ring».',
+      'Elling plukker opp, buser noe ut og legger på.',
+      'Frank ringer fra mobilen mens han fortsatt er i rommet.',
+      'Frank går på kjøkkenet og ringer hustelefonen.',
+      'Elling svarer uten at Frank står ved siden av.',
+    ],
   },
   {
-    id: 'scripted_sentence',
-    label: 'Første setning',
-    description: 'Si én innøvd åpning før samtalen mister kantene.',
-    segments: 8,
-    filled: 2,
-    diceSlots: ['safe', 'empty', 'locked'],
-  },
-  {
-    id: 'grete_call',
-    label: 'Ringe Grete',
-    description: 'En kjent stemme, men ikke nødvendigvis en liten stemme.',
-    segments: 8,
-    filled: 1,
-    diceSlots: ['risky', 'empty', 'locked'],
+    id: 'open_line_risk',
+    label: 'Åpen linje: ny regning',
+    description:
+      'Når telefonen virker, virker den også for alt annet. Framgang åpner verden — og en dyrere form for ensomhet.',
+    segments: 4,
+    filled: 0,
+    diceSlots: ['empty', 'risky', 'risky', 'locked'],
+    tone: 'complication',
+    stages: [
+      'Telefonen blir interessant når Frank ikke er der.',
+      'Privat ringevindu dukker opp på ettermiddagen.',
+      'Sexlinjen blir en løsning på et behov uten å gå ut.',
+      'Telefonregningen lander på bordet ved månedsslutt.',
+    ],
   },
 ];
