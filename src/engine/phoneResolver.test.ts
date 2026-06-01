@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import componentSource from '../components/PhonePracticeLab.tsx?raw';
+import contentSource from '../content/phonePractice.ts?raw';
 import type { AttemptContext } from '../domain/types';
-import { resolvePhoneAttempt } from './phoneResolver';
+import resolverSource from './phoneResolver.ts?raw';
+import { phoneBarkLines, resolvePhoneAttempt } from './phoneResolver';
 
 const base: AttemptContext = {
   client: { overskudd: 0.5, trust: 0.4, phoneMastery: 0.15, ellingState: 'prickly' },
@@ -12,6 +15,47 @@ const base: AttemptContext = {
   supportIds: ['practical_help', 'humor_play'],
   attemptIndex: 1,
 };
+
+const bannedSystemTerms = [
+  'support topology',
+  'readiness',
+  'outcome',
+  'coverage',
+  'vulnerability topology',
+  'state objects',
+  'pressure object',
+  'carried weakness',
+  'phone resistance room',
+  'run phone attempt',
+];
+
+function stripInternalCode(source: string): string {
+  const visibleLines = source
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('import '))
+    .filter((line) => !line.includes('className='))
+    .filter((line) => !line.includes('const outcomes'))
+    .filter((line) => !line.includes('support_coverage'))
+    .filter((line) => !line.includes('carried_weakness'))
+    .filter((line) => !line.includes("fact('outcome'"));
+
+  return visibleLines
+    .flatMap((line) => {
+      const quoted = Array.from(line.matchAll(/['`"]([^'`"]{3,})['`"]/g)).map((match) => match[1]);
+      const jsxText = Array.from(line.matchAll(/>([^<>{}][^<>{}]{2,})</g)).map((match) =>
+        match[1].trim(),
+      );
+      return [...quoted, ...jsxText];
+    })
+    .join('\n');
+}
+
+function visibleSourceText(): string {
+  return [componentSource, contentSource, resolverSource]
+    .map((source) => stripInternalCode(source))
+    .join('\n')
+    .toLowerCase();
+}
 
 describe('resolvePhoneAttempt', () => {
   it('is deterministic for the same context', () => {
@@ -59,5 +103,32 @@ describe('resolvePhoneAttempt', () => {
   it('produces next approaches after an attempt', () => {
     const result = resolvePhoneAttempt(base);
     expect(result.nextApproachIds.length).toBeGreaterThan(0);
+  });
+
+  it('keeps player-facing source copy free of dashboard terms', () => {
+    const visibleText = visibleSourceText();
+    for (const term of bannedSystemTerms) {
+      expect(visibleText).not.toContain(term);
+    }
+  });
+
+  it('does not render raw internal anchors or actor ids into the UI', () => {
+    expect(componentSource).not.toContain('{telefonAversjon.anchor}');
+    expect(componentSource).not.toContain('{pressure.anchor}');
+    expect(componentSource).not.toContain('{beat.actor}');
+    expect(componentSource).not.toContain('Can become');
+    expect(componentSource).not.toContain('Eased by');
+  });
+
+  it('keeps Elling barks concrete and phone/apartment anchored', () => {
+    const anchored =
+      /(telefon|apparat|stue|gang|soverom|dør|kaffekopp|grete|ringer|ringe|bor|arkivskap|ettermiddag)/i;
+    const clinicalOrSystemic = /(klinisk|diagnose|traume|systemisk|departement|statistikk|komite)/i;
+
+    expect(phoneBarkLines.length).toBeGreaterThan(6);
+    for (const bark of phoneBarkLines) {
+      expect(bark).toMatch(anchored);
+      expect(bark).not.toMatch(clinicalOrSystemic);
+    }
   });
 });

@@ -71,37 +71,55 @@ function supportReadinessDelta(analysis: SupportAnalysis): number {
 }
 
 function pressureLabel(id: PressureId): string {
-  return id.replaceAll('_', ' ');
+  return {
+    restlessness: 'stolen han ikke blir sittende i',
+    shame: 'manuset som ble lagt bort',
+    sleep_debt: 'den dårlige natten',
+    unpaid_bill: 'brevet under avisen',
+    hope: 'Gretes nummer ved telefonen',
+    phone_fear: 'telefonen på sidebordet',
+    dignity_exposure: 'Frank som publikum',
+  }[id];
 }
 
-const premiseBarks = [
-  '“Jeg har aldri forstått denne nasjonale trangen til å ringe folk.”',
+export const premiseBarks = [
+  '“Jeg har aldri forstått denne nasjonale trangen til å ringe fra stuen.”',
   '“Hvis Grete trenger meg, vet hun hvor jeg bor.”',
   '“Telefonen er historisk sett et avbruddsapparat.”',
 ];
 
-const complianceBarks = [
+export const complianceBarks = [
   '“Ja vel. Jeg berører apparatet. Sivilisasjonen går framover.”',
   '“Er dette for min skyld, eller for arkivskapet?”',
   '“Der. Telefonen og jeg har anerkjent hverandre.”',
 ];
 
-const pompBarks = [
+export const pompBarks = [
   '“Et menneske er ikke forpliktet til å invitere stemmer inn i stuen.”',
-  '“Man må være forsiktig. Først telefonen, så komiteer.”',
+  '“Man må være forsiktig. Først telefonen, så står hele ettermiddagen i gangen.”',
   '“Jeg kan utmerket godt ringe. Jeg velger bare å ikke forurense ettermiddagen.”',
 ];
 
-const angerBarks = [
-  '“Dere kommer alltid med en liten oppgave og en stor konklusjon.”',
+export const angerBarks = [
+  '“Dere kommer alltid inn i stuen med en liten oppgave og en stor konklusjon.”',
   '“Jeg trenger ikke undervisning i telefoni.”',
-  '“Du har forvekslet stillhet med inkompetanse.”',
+  '“Du har forvekslet stillhet ved telefonbordet med inkompetanse.”',
 ];
 
-const successBarks = [
-  '“Dette er teater. Vi framfører kompetanse for et usynlig departement.”',
-  '“Greit. Jeg ringer én gang, for statistikkens skyld.”',
-  '“Det usynlige departementet kan applaudere stille.”',
+export const successBarks = [
+  '“Dette er teater. Vi framfører ro for en svart telefon på bordet.”',
+  '“Greit. Jeg ringer én gang, for kaffekoppens skyld.”',
+  '“Stuen kan applaudere stille. Ikke Frank.”',
+];
+
+export const phoneBarkLines = [
+  ...premiseBarks,
+  ...complianceBarks,
+  ...pompBarks,
+  ...angerBarks,
+  ...successBarks,
+  '“Jeg fortsetter dette bak soveromsdøren. Der har telefonen mindre myndighet.”',
+  '“Jeg kan stå her mens den ringer. Ikke mer.”',
 ];
 
 function clamp(value: number, min = 0, max = 1): number {
@@ -220,14 +238,16 @@ function scriptAfter(outcome: OutcomeId, context: AttemptContext): ScriptState {
 }
 
 function frictionFor(outcome: OutcomeId, context: AttemptContext): string {
-  if (outcome === 'completed_practice') return 'dignity preserved through ridicule';
-  if (outcome === 'partial_practice') return 'first step possible, conversation still too large';
-  if (outcome === 'anger_retreat') return 'competence-test anger';
+  if (outcome === 'completed_practice') return 'verdighet bevart gjennom latterliggjøring';
+  if (outcome === 'partial_practice') return 'første steg mulig, samtalen fortsatt for stor';
+  if (outcome === 'anger_retreat') return 'det ble en prøve i å være flink';
   if (outcome === 'retreat') {
-    return context.client.overskudd < 0.35 ? 'low overskudd / refusal spiral' : 'room withdrawal';
+    return context.client.overskudd < 0.35
+      ? 'lite overskudd, rask retrett'
+      : 'rommet trakk seg sammen';
   }
-  if (context.frankPosition === 'near_phone') return 'Frank proximity turned practice into an exam';
-  return 'pointlessness defense';
+  if (context.frankPosition === 'near_phone') return 'Frank sto for nært';
+  return 'oppgaven ble gjort meningsløs';
 }
 
 function beat(input: {
@@ -256,14 +276,14 @@ function beatsFor(
   delayedSeconds: number,
   random: () => number,
 ): VignetteBeat[] {
-  const delay = fact('delayed_seconds', 'Delayed before action', delayedSeconds);
+  const delay = fact('delayed_seconds', 'Sekunder før han flyttet seg', delayedSeconds);
   const friction = frictionFor(outcome, context);
   const hasScript = context.scriptState === 'placed' || context.approachId === 'written_script';
   const intro: VignetteBeat[] = [
     beat({
       id: 'frank_setup',
       actor: 'Frank',
-      label: 'Frank sets the room',
+      label: 'Frank legger rammen',
       text:
         context.frankPosition === 'absent_setup'
           ? 'Frank legger rammen og lar rommet være Elling sitt.'
@@ -275,12 +295,12 @@ function beatsFor(
       frankPosition: context.frankPosition,
       scriptState: hasScript ? 'placed' : 'missing',
       friction,
-      evidence: [fact('frank_position', 'Frank position', context.frankPosition)],
+      evidence: [fact('frank_position', 'Hvor Frank sto', context.frankPosition)],
     }),
     beat({
       id: 'premise_defense',
       actor: 'Elling',
-      label: 'Premise defense',
+      label: 'Oppgaven angripes først',
       text: 'Elling angriper oppgaven før han angriper telefonen.',
       anchor: 'chair',
       ellingPosition: 'chair',
@@ -288,7 +308,7 @@ function beatsFor(
       scriptState: hasScript ? 'placed' : 'missing',
       friction,
       bark: pick(premiseBarks, random()),
-      evidence: [fact('looked_at_phone', 'Looked at phone', true)],
+      evidence: [fact('looked_at_phone', 'Så på telefonen', true)],
     }),
   ];
 
@@ -301,8 +321,8 @@ function beatsFor(
         beat({
           id: 'delay',
           actor: 'Room',
-          label: 'Delay',
-          text: `${delayedSeconds} seconds pass. The room gets very practical.`,
+          label: 'Ventetid',
+          text: `${delayedSeconds} sekunder går. Stuen blir svært praktisk.`,
           anchor: 'phone',
           ellingPosition: 'pace',
           frankPosition: context.frankPosition,
@@ -313,7 +333,7 @@ function beatsFor(
         beat({
           id: 'bedroom_retreat',
           actor: 'Elling',
-          label: 'Bedroom retreat',
+          label: 'Til soverommet',
           text: 'Han forlater forsøket før telefonen blir rørt. Soveromsdøren blir plutselig et argument.',
           anchor: 'bedroom',
           ellingPosition: 'bedroom',
@@ -321,8 +341,8 @@ function beatsFor(
           scriptState: finalScript,
           doorClosed: true,
           friction,
-          bark: '“Jeg fortsetter denne teknologiske renessansen privat.”',
-          evidence: [fact('retreated_to_bedroom', 'Retreated to bedroom', true)],
+          bark: '“Jeg fortsetter dette bak soveromsdøren. Der har telefonen mindre myndighet.”',
+          evidence: [fact('retreated_to_bedroom', 'Gikk til soverommet', true)],
         }),
       ];
     case 'anger_retreat':
@@ -331,19 +351,19 @@ function beatsFor(
         beat({
           id: 'half_approach',
           actor: 'Elling',
-          label: 'Half approach',
+          label: 'Halvveis bort',
           text: 'Han går halvveis mot telefonen, men kroppen peker allerede vekk.',
           anchor: 'phone',
           ellingPosition: 'phone',
           frankPosition: context.frankPosition,
           scriptState: hasScript ? 'placed' : 'missing',
           friction,
-          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+          evidence: [fact('approached_phone', 'Gikk bort til telefonen', true), delay],
         }),
         beat({
           id: 'anger_at_frank',
           actor: 'Elling',
-          label: 'Anger at Frank',
+          label: 'Sinne mot Frank',
           text: 'Motstanden flytter seg fra apparatet til mannen som ser på.',
           anchor: 'sofa',
           ellingPosition: 'pace',
@@ -351,7 +371,7 @@ function beatsFor(
           scriptState: finalScript,
           friction,
           bark: pick(angerBarks, random()),
-          evidence: [fact('anger_at_frank', 'Anger directed at Frank', true)],
+          evidence: [fact('anger_at_frank', 'Sinne rettet mot Frank', true)],
         }),
       ];
     case 'pomp_defense':
@@ -360,19 +380,19 @@ function beatsFor(
         beat({
           id: 'approach',
           actor: 'Elling',
-          label: 'Approach',
+          label: 'Bort til telefonen',
           text: 'Elling stiller seg nær telefonen, men gjør hendene opptatt med ingenting.',
           anchor: 'phone',
           ellingPosition: 'phone',
           frankPosition: context.frankPosition,
           scriptState: hasScript ? 'placed' : 'missing',
           friction,
-          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+          evidence: [fact('approached_phone', 'Gikk bort til telefonen', true), delay],
         }),
         beat({
           id: 'pomp_defense',
           actor: 'Elling',
-          label: 'Pomp defense',
+          label: 'Prinsippsak',
           text: 'Telefonøving blir et prinsipielt innlegg i stuen.',
           anchor: 'phone',
           ellingPosition: 'pace',
@@ -380,7 +400,7 @@ function beatsFor(
           scriptState: finalScript,
           friction,
           bark: pick(pompBarks, random()),
-          evidence: [fact('framed_as_pointless', 'Framed task as pointless/unreasonable', true)],
+          evidence: [fact('framed_as_pointless', 'Gjorde oppgaven meningsløs', true)],
         }),
       ];
     case 'annoyed_compliance':
@@ -389,7 +409,7 @@ function beatsFor(
         beat({
           id: 'annoyed_touch',
           actor: 'Elling',
-          label: 'Annoyed compliance',
+          label: 'Motvillig med',
           text: 'Han berører telefonen og sørger for at handlingen ikke kan forveksles med entusiasme.',
           anchor: 'phone',
           ellingPosition: 'phone',
@@ -397,7 +417,7 @@ function beatsFor(
           scriptState: finalScript,
           friction,
           bark: pick(complianceBarks, random()),
-          evidence: [fact('approached_phone', 'Approached phone', true), delay],
+          evidence: [fact('approached_phone', 'Gikk bort til telefonen', true), delay],
         }),
       ];
     case 'partial_practice':
@@ -406,7 +426,7 @@ function beatsFor(
         beat({
           id: 'partial_practice',
           actor: 'Elling',
-          label: 'Partial practice',
+          label: 'Ble ved telefonen',
           text: hasScript
             ? 'Han holder manusarket som om det er en kvittering han kan klage på, men blir ved telefonen.'
             : 'Han går bort og blir stående mens telefonen ringer.',
@@ -417,9 +437,9 @@ function beatsFor(
           friction,
           bark: '“Jeg kan stå her mens den ringer. Ikke mer.”',
           evidence: [
-            fact('approached_phone', 'Approached phone', true),
+            fact('approached_phone', 'Gikk bort til telefonen', true),
             delay,
-            fact('partial_practice', 'Completed partial practice', true),
+            fact('partial_practice', 'Ble stående ved telefonen', true),
           ],
         }),
       ];
@@ -429,7 +449,7 @@ function beatsFor(
         beat({
           id: 'completed_window',
           actor: 'Elling',
-          label: 'Completed window',
+          label: 'Én kort samtale',
           text: 'Elling ringer én gang, nesten ved et uhell, og legger på før samtalen blir en samtale.',
           anchor: 'phone',
           ellingPosition: 'phone',
@@ -438,9 +458,9 @@ function beatsFor(
           friction,
           bark: pick(successBarks, random()),
           evidence: [
-            fact('approached_phone', 'Approached phone', true),
+            fact('approached_phone', 'Gikk bort til telefonen', true),
             delay,
-            fact('completed_call_window', 'Completed call window', true),
+            fact('completed_call_window', 'Gjennomførte ett kort ringevindu', true),
           ],
         }),
       ];
@@ -455,22 +475,22 @@ function collectEvidence(
 ): EvidenceFact[] {
   const evidence = beats.flatMap((beatItem) => beatItem.evidence ?? []);
   const finalBeat = beats.at(-1)!;
-  evidence.push(fact('approach', 'Approach used', context.approachId));
-  evidence.push(fact('die_face', 'Die face assigned', context.dieFace));
-  evidence.push(fact('script_state', 'Script state', finalBeat.scriptState));
-  evidence.push(fact('last_friction', 'Last friction', finalBeat.friction));
-  evidence.push(fact('outcome', 'Outcome', outcome));
+  evidence.push(fact('approach', 'Valgt forsøk', context.approachId));
+  evidence.push(fact('die_face', 'Terning brukt', context.dieFace));
+  evidence.push(fact('script_state', 'Manus på bordet', finalBeat.scriptState));
+  evidence.push(fact('last_friction', 'Det som sto i veien', finalBeat.friction));
+  evidence.push(fact('outcome', 'Det som skjedde', outcome));
   evidence.push(
     fact(
       'support_coverage',
-      'Support coverage',
+      'Det hjelpen støttet',
       supportAnalysis.coveredPressures.map(pressureLabel).join(', '),
     ),
   );
   evidence.push(
     fact(
       'carried_weakness',
-      'Carried weakness',
+      'Fortsatt åpent',
       supportAnalysis.carriedWeaknesses.slice(0, 3).map(pressureLabel).join(', '),
     ),
   );
@@ -485,22 +505,26 @@ function reportFor(
 ): string {
   const delayed = evidence.find((item) => item.id === 'delayed_seconds')?.value ?? 'unknown';
   const approach = getApproach(context.approachId).label.toLowerCase();
-  const position = context.frankPosition.replaceAll('_', ' ');
+  const position = {
+    near_phone: 'ved telefonen',
+    seated_away: 'i stolen unna telefonbordet',
+    absent_setup: 'ute av stuen etter å ha lagt rammen',
+  }[context.frankPosition];
   const carried =
     supportAnalysis.carriedWeaknesses.slice(0, 2).map(pressureLabel).join(' / ') || 'none';
   if (outcome === 'completed_practice') {
-    return `Frank: Telefonøving med ${approach} landet fordi Elling kunne latterliggjøre øvelsen mens han gjorde første steg. Frank var ${position}; verdigheten holdt. Dagens plan bar fortsatt ${carried}.`;
+    return `Frank: Elling sto ved telefonen, ringte én gang og la på før samtalen tok over. Med ${approach} kunne han latterliggjøre øvelsen mens han gjorde første steg. Frank var ${position}; dagens plan lot fortsatt ${carried} ligge åpent.`;
   }
   if (outcome === 'partial_practice') {
-    return `Frank: Delvis øving er faktisk data. Elling ble ved telefonen etter ${delayed} sekunder. Neste forsøk bør bygge på samme ramme, ikke øke presset. Svakheten som ble med inn: ${carried}.`;
+    return `Frank: Elling ble ved telefonen etter ${delayed} sekunder, men stoppet før samtalen begynte. Det er nok til å bygge på samme ramme neste gang, ikke øke presset. Planen lot fortsatt ${carried} ligge åpent.`;
   }
   if (outcome === 'anger_retreat') {
-    return `Frank: Forsøket ble et kompetansevitne. Motstanden peker ikke bare mot telefonfrykt, men mot å bli observert mens han øver. Støtten dekket noe, men bar ${carried}.`;
+    return `Frank: Elling gikk halvveis mot telefonen og vendte sinnet mot meg før han rørte den. Det peker ikke bare mot telefonfrykt, men mot å bli observert mens han øver. Hjelpen dekket noe, men lot ${carried} stå igjen.`;
   }
   if (outcome === 'retreat') {
-    return `Frank: Rommet trakk seg sammen og soverommet vant. Neste forsøk bør endre avstand, script eller første steg før ferdigheten testes. Dagens komposisjon bar ${carried}.`;
+    return `Frank: Elling forlot forsøket, og soveromsdøren ble lukket før telefonen ble rørt. Neste gang bør jeg endre avstand, manus eller første steg før ferdigheten prøves. Planen lot ${carried} stå igjen.`;
   }
-  return `Frank: Forsøket ga motstand uten full kollaps. Elling gjorde øvelsen til en diskusjon om rimelighet; leiligheten viste friksjonen før rapporten måtte forklare den. Blindsonen i planen: ${carried}.`;
+  return `Frank: Elling sto nær telefonen, men brukte ordene til å holde forsøket på avstand. Leiligheten viste motstand uten full kollaps; neste ramme bør ta hensyn til ${carried}.`;
 }
 
 function nextApproaches(

@@ -1,6 +1,7 @@
 # SB-008 Evaluator Attack
 
 ## Verdict before implementation
+
 The contract is directionally right, but it must not allow a cosmetic rename pass. This slice only matters if the anchor-label pairing changes what the player can read and what the system can do.
 
 ## Failure modes to reject
