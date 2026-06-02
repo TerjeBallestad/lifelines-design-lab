@@ -74,6 +74,8 @@ export interface ActivityClock {
   segments: number;
   filled: number;
   diceSlots: Array<'empty' | 'safe' | 'risky' | 'locked'>;
+  tone?: 'practice' | 'complication';
+  stages?: string[];
 }
 
 export interface SupportMode {

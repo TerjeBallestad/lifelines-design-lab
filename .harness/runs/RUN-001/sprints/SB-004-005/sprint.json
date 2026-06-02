@@ -1,0 +1,70 @@
+{
+  "id": "SB-004-005",
+  "title": "Phone training as staged Citizen Sleeper clock with complication clock",
+  "goal": "Turn the phone practice side of the lab into the actual Elling/Frank ring-ring arc for: SB-004/SB-005: phone training as ring-ring clock with phone bill complication",
+  "touchSurface": [
+    "src/content/phonePractice.ts",
+    "src/components/PhonePracticeLab.tsx",
+    "src/stores/RootStore.tsx",
+    "src/engine/phoneResolver.test.ts"
+  ],
+  "nonGoals": [
+    "No full Roottrees desk rewrite",
+    "No graph editor",
+    "No generic RPG skill tree",
+    "No final production art direction"
+  ],
+  "acceptanceContract": [
+    {
+      "kind": "test",
+      "claim": "The visible source names the ring-ring ladder: dummy practice, pickup/blurt/hangup, real call while Frank is present, next-room call, independent answer."
+    },
+    {
+      "kind": "test",
+      "claim": "The visible source names a complication clock for phone bill / sex-line risk."
+    },
+    {
+      "kind": "judge",
+      "claim": "Reject generic phone progress bars that do not encode the film arc."
+    },
+    {
+      "kind": "judge",
+      "claim": "Reject any implementation where progress is pure buff without new risk."
+    }
+  ],
+  "optional": false,
+  "number": 1,
+  "status": "PASS",
+  "attempt": 1,
+  "verdict": "PASS",
+  "summary": "Protocol run passes: planner/generator/evaluator artifacts were produced. Evaluator attack is ready to govern source implementation.",
+  "artifacts": [
+    {
+      "kind": "brief",
+      "path": "artifacts/SB-004-005-generator-brief.md"
+    },
+    {
+      "kind": "critique",
+      "path": "artifacts/SB-004-005-evaluator-attack.md"
+    }
+  ],
+  "issues": [],
+  "notes": [
+    "Generator is intentionally advisory in this first agent-harness integration run; source edits are applied by Rook after the protocol run.",
+    "This PASS is for harness protocol readiness, not for the eventual source implementation."
+  ],
+  "generator": {
+    "status": "done",
+    "summary": "Produced SB-004/SB-005 implementation brief for the phone clock spike.",
+    "changedFiles": [],
+    "artifacts": [
+      {
+        "kind": "brief",
+        "path": "artifacts/SB-004-005-generator-brief.md"
+      }
+    ],
+    "notes": [
+      "Generator is intentionally advisory in this first agent-harness integration run; source edits are applied by Rook after the protocol run."
+    ]
+  }
+}

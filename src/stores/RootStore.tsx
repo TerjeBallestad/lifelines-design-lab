@@ -175,6 +175,25 @@ export class RootStore {
     return this.latestAttempt?.finalRoom ?? this.room;
   }
 
+  get phonePracticeClockProgress(): number {
+    const attemptProgress = this.attempts.filter(
+      (attempt) => attempt.outcomeClass !== 'negative',
+    ).length;
+    const masteryProgress = Math.floor(this.client.phoneMastery * 3);
+    return Math.min(5, attemptProgress + masteryProgress);
+  }
+
+  get phoneComplicationClockProgress(): number {
+    const completedAttempts = this.attempts.filter(
+      (attempt) => attempt.outcome === 'completed_practice',
+    ).length;
+    const partialAttempts = this.attempts.filter(
+      (attempt) => attempt.outcome === 'partial_practice',
+    ).length;
+    const openLineProgress = completedAttempts * 2 + partialAttempts;
+    return Math.min(4, openLineProgress);
+  }
+
   private applyResultPressure(result: AttemptResult): void {
     if (result.outcomeClass === 'positive') {
       this.client.phoneMastery = Math.min(1, this.client.phoneMastery + 0.08);
