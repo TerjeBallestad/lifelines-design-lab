@@ -114,6 +114,9 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).not.toContain('navngi det');
     expect(visibleText).not.toContain('sideveis humor');
     expect(visibleText).not.toContain('bruk dagens oppmerksomhet');
+    expect(visibleText).not.toContain('saksvedlegg');
+    expect(visibleText).not.toContain('uanstendige tilgjengelighet');
+    expect(visibleText).not.toContain('vitnebenk');
   });
 
   it('does not render raw internal anchors or actor ids into the UI', () => {

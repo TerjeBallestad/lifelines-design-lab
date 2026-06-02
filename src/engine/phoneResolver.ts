@@ -283,13 +283,13 @@ function beatsFor(
     beat({
       id: 'frank_setup',
       actor: 'Frank',
-      label: 'Frank ordner seg i rommet',
+      label: 'Frank legger opp forsøket',
       text:
         context.frankPosition === 'absent_setup'
-          ? 'Frank legger arket klart og lar stua få være Ellings egen igjen.'
+          ? 'Frank legger arket klart og går ut av stua.'
           : context.frankPosition === 'near_phone'
-            ? 'Frank blir stående ved apparatet. Det lille forsøket får vitnebenk.'
-            : 'Frank setter seg bort fra telefonbordet, som om dette ikke er en eksamen.',
+            ? 'Frank blir stående ved telefonen. Det gjør forsøket mer synlig enn hjelpsomt.'
+            : 'Frank setter seg bort fra telefonbordet og lar Elling få litt rom.',
       anchor: 'sofa',
       ellingPosition: 'chair',
       frankPosition: context.frankPosition,
@@ -300,8 +300,8 @@ function beatsFor(
     beat({
       id: 'premise_defense',
       actor: 'Elling',
-      label: 'Selve forslaget får gjennomgå',
-      text: 'Elling starter med forslaget, ikke telefonen. Det er tross alt forslaget som har kommet inn uten å banke på.',
+      label: 'Forslaget møter motstand',
+      text: 'Elling svarer først på selve forslaget. Telefonen kan vente litt til.',
       anchor: 'chair',
       ellingPosition: 'chair',
       frankPosition: context.frankPosition,
@@ -321,8 +321,8 @@ function beatsFor(
         beat({
           id: 'delay',
           actor: 'Room',
-          label: 'Stua holder pusten',
-          text: `${delayedSeconds} sekunder går. Telefonen står der med sin uanstendige tilgjengelighet.`,
+          label: 'Ventetid',
+          text: `${delayedSeconds} sekunder går. Telefonen står på bordet og gjør ingenting lettere.`,
           anchor: 'phone',
           ellingPosition: 'pace',
           frankPosition: context.frankPosition,
@@ -513,18 +513,18 @@ function reportFor(
   const carried =
     supportAnalysis.carriedWeaknesses.slice(0, 2).map(pressureLabel).join(' / ') || 'none';
   if (outcome === 'completed_practice') {
-    return `Frank: Elling sto ved telefonen, ringte én gang og la på før samtalen fikk bli en samtale. Med ${approach} kunne han gjøre narr av hele opplegget og likevel ta første steg. Jeg var ${position}. Det som fortsatt lå igjen i rommet: ${carried}.`;
+    return `Frank: Elling sto ved telefonen, ringte én gang og la på før samtalen kom i gang. Med ${approach} ble første steg mulig uten at øvingen tok over rommet. Jeg var ${position}. Det som fortsatt lå igjen: ${carried}.`;
   }
   if (outcome === 'partial_practice') {
-    return `Frank: Elling ble stående ved telefonen etter ${delayed} sekunder, men stoppet før noen stemme kom inn i stua. Det holder til å gjenta rammen. Det holder ikke til å skru opp kravet. Igjen i rommet: ${carried}.`;
+    return `Frank: Elling ble stående ved telefonen etter ${delayed} sekunder, men stoppet før samtalen begynte. Det er nok til å prøve samme ramme igjen, ikke nok til å øke kravet. Fortsatt åpent: ${carried}.`;
   }
   if (outcome === 'anger_retreat') {
-    return `Frank: Elling kom halvveis mot telefonen før sinnet fant meg i stedet for apparatet. Det handler ikke bare om telefonen. Det handler om å bli sett mens man øver på noe man helst skulle vært ferdig med. Hjelpen traff litt, men lot ${carried} stå igjen.`;
+    return `Frank: Elling kom halvveis mot telefonen før sinnet ble rettet mot meg. Det peker ikke bare mot telefonfrykt, men mot å bli sett mens han øver. Hjelpen dekket noe, men lot ${carried} stå igjen.`;
   }
   if (outcome === 'retreat') {
-    return `Frank: Elling forlot forsøket, og soveromsdøra fikk siste ord før telefonen ble rørt. Neste gang må jeg endre avstand, ark eller første steg før vi kaller dette ferdighetstrening. Planen lot ${carried} stå igjen.`;
+    return `Frank: Elling forlot forsøket, og soveromsdøren ble lukket før telefonen ble rørt. Neste gang bør jeg endre avstand, manus eller første steg før ferdigheten prøves. Planen lot ${carried} stå igjen.`;
   }
-  return `Frank: Elling sto nær telefonen, men brukte ordene til å holde apparatet på trygg avstand. Leiligheten viste motstand uten full kollaps. Neste ramme må ta hensyn til ${carried}.`;
+  return `Frank: Elling sto nær telefonen, men brukte ordene til å holde forsøket på avstand. Leiligheten viste motstand uten full kollaps; neste ramme bør ta hensyn til ${carried}.`;
 }
 
 function nextApproaches(
