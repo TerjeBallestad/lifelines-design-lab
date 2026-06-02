@@ -3,6 +3,7 @@ import componentSource from '../components/PhonePracticeLab.tsx?raw';
 import contentSource from '../content/phonePractice.ts?raw';
 import type { AttemptContext } from '../domain/types';
 import resolverSource from './phoneResolver.ts?raw';
+import { RootStore } from '../stores/RootStore';
 import { phoneBarkLines, resolvePhoneAttempt } from './phoneResolver';
 
 const base: AttemptContext = {
@@ -130,5 +131,29 @@ describe('resolvePhoneAttempt', () => {
       expect(bark).toMatch(anchored);
       expect(bark).not.toMatch(clinicalOrSystemic);
     }
+  });
+
+  it('keeps Apartment and Case Desk as two linked lab surfaces', () => {
+    const store = new RootStore();
+    expect(store.labMode).toBe('apartment');
+    store.setLabMode('desk');
+    expect(store.labMode).toBe('desk');
+    store.setLabMode('apartment');
+    store.runAttempt();
+    expect(store.latestAttempt).toBeDefined();
+    store.setLabMode('desk');
+    store.toggleDeskEvidence('practice_signal');
+    expect(store.selectedDeskEvidenceIds).toContain('practice_signal');
+    store.applyDeskVedtak('tolerate_ringtone');
+    expect(store.labMode).toBe('apartment');
+    expect(store.selectedApproachId).toBe('tolerate_ringtone');
+  });
+
+  it('names the Roottrees-inspired desk and evidence-to-vedtak loop in visible source', () => {
+    const visibleText = visibleSourceText();
+    expect(visibleText).toContain('case desk');
+    expect(visibleText).toContain('løft bevis');
+    expect(visibleText).toContain('ny evne trenger ny grense');
+    expect(visibleText).toContain('apartment');
   });
 });

@@ -36,6 +36,7 @@ export class RootStore {
     ellingState: 'prickly',
   };
 
+  labMode: 'apartment' | 'desk' = 'apartment';
   selectedApproachId: PhoneApproachId = 'none';
   selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
   frankStance: FrankStance = 'matter_of_fact';
@@ -45,6 +46,7 @@ export class RootStore {
   selectedDieId = this.dicePool[2]?.id ?? this.dicePool[0].id;
   room: RoomState = { ...startingRoom };
   attempts: AttemptResult[] = [];
+  selectedDeskEvidenceIds: string[] = [];
 
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
@@ -58,6 +60,23 @@ export class RootStore {
       return;
     }
     this.selectedSupportIds = [...this.selectedSupportIds.slice(-1), id];
+  }
+
+  setLabMode(mode: 'apartment' | 'desk'): void {
+    this.labMode = mode;
+  }
+
+  toggleDeskEvidence(id: string): void {
+    if (this.selectedDeskEvidenceIds.includes(id)) {
+      this.selectedDeskEvidenceIds = this.selectedDeskEvidenceIds.filter((item) => item !== id);
+      return;
+    }
+    this.selectedDeskEvidenceIds = [...this.selectedDeskEvidenceIds, id];
+  }
+
+  applyDeskVedtak(id: PhoneApproachId): void {
+    this.setApproach(id);
+    this.labMode = 'apartment';
   }
 
   setApproach(id: PhoneApproachId): void {
@@ -117,6 +136,7 @@ export class RootStore {
 
     die.used = true;
     this.attempts.push(result);
+    this.selectedDeskEvidenceIds = [];
     this.room = { ...result.finalRoom };
     this.frankPosition = result.finalRoom.frankPosition;
     this.scriptState = result.finalRoom.scriptState;
@@ -139,6 +159,8 @@ export class RootStore {
     this.selectedDieId = this.dicePool[2]?.id ?? this.dicePool[0].id;
     this.room = { ...startingRoom };
     this.attempts = [];
+    this.selectedDeskEvidenceIds = [];
+    this.labMode = 'apartment';
   }
 
   get selectedDie(): DiePoolItem | undefined {
