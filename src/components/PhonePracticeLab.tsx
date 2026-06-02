@@ -129,8 +129,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Telefonøving i stua
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
-                Velg hvor Frank står, hva han tar med inn, og hva Elling skal prøve. Bruk dagens
-                oppmerksomhet og les hva rommet viste.
+                Sett Frank i rommet, legg fram akkurat nok hjelp, og se om Elling nærmer seg
+                telefonen uten å måtte gjøre hele mannen til et saksvedlegg.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -184,7 +184,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
 
             <div className="grid content-start gap-4">
               <Panel>
-                <SectionTitle>1. Hvor Frank står</SectionTitle>
+                <SectionTitle>1. Hvor Frank blir stående</SectionTitle>
                 <div className="grid gap-2">
                   {frankPositions.map((position) => (
                     <button
@@ -219,10 +219,10 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </Panel>
 
               <Panel>
-                <SectionTitle>2. Hva Frank tar med inn</SectionTitle>
+                <SectionTitle>2. Hva Frank legger på bordet</SectionTitle>
                 <p className="mb-3 text-xs leading-relaxed text-base-content/60">
-                  Velg to praktiske måter å hjelpe på. Valget sier også hva rommet fortsatt kan la
-                  ligge åpent i dag.
+                  Velg to former for hjelp. De roer noe, men de avslører også hva Frank ikke får
+                  ryddet bort med et pent forslag.
                 </p>
                 <div className="grid gap-2">
                   {phoneSupportModes.map((support) => {
@@ -253,7 +253,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </Panel>
 
               <Panel>
-                <SectionTitle>3. Hva Elling skal prøve</SectionTitle>
+                <SectionTitle>3. Hva telefonen får kreve</SectionTitle>
                 <div className="grid gap-2">
                   {phoneApproaches.map((approach) => (
                     <button
@@ -278,7 +278,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </Panel>
 
               <Panel>
-                <SectionTitle>4. Bruk dagens oppmerksomhet</SectionTitle>
+                <SectionTitle>4. Bruk dagens ene gode sjanse</SectionTitle>
                 <div className="flex flex-wrap gap-2">
                   {store.dicePool.map((die) => (
                     <button
@@ -297,7 +297,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                   ))}
                 </div>
                 <p className="mt-3 text-xs text-base-content/60">
-                  Terningen dytter forsøket. Den avgjør det ikke alene.
+                  Terningen gir forsøket vind i ryggen. Rommet kan fortsatt sette seg på bakbeina.
                 </p>
                 <select
                   className="select select-bordered mt-4 w-full"
@@ -366,8 +366,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               <SectionTitle>Det som skjedde i rommet</SectionTitle>
               {!latest ? (
                 <EmptyState>
-                  Ingen forsøk ennå. Sett Frank, legg fram manuset, velg et lite forsøk og bruk en
-                  terning.
+                  Ingen forsøk ennå. Plasser Frank, legg fram litt hjelp, velg et beskjedent krav og
+                  bruk en terning.
                 </EmptyState>
               ) : (
                 <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">

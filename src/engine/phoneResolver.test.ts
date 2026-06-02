@@ -106,11 +106,14 @@ describe('resolvePhoneAttempt', () => {
     expect(result.nextApproachIds.length).toBeGreaterThan(0);
   });
 
-  it('keeps player-facing source copy free of dashboard terms', () => {
+  it('keeps player-facing source copy free of dashboard terms and direct translation cruft', () => {
     const visibleText = visibleSourceText();
     for (const term of bannedSystemTerms) {
       expect(visibleText).not.toContain(term);
     }
+    expect(visibleText).not.toContain('navngi det');
+    expect(visibleText).not.toContain('sideveis humor');
+    expect(visibleText).not.toContain('bruk dagens oppmerksomhet');
   });
 
   it('does not render raw internal anchors or actor ids into the UI', () => {
