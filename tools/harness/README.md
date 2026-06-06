@@ -28,11 +28,21 @@ The generator never emits the verdict.
 
 - `npm test`
 - `npm run build`
-- local Vite serving smoke
+- local Vite serving
+- Playwright Chromium clickthrough:
+  - `Case Desk`
+  - `Ring Grete`
+  - `Frank på telefon`
+  - `Legg rapporten på pulten`
+  - `Frankrapport · Første kontakt`
+  - `Be om kontoutskrift`
+  - `Avtal sosialt besøk`
+- screenshot capture for the start/call/report states
+- browser console error checks
 - Slice A visible/source checks for required terms and banned meta-copy
 
 It emits artifacts under `.harness/runs/RUN-*/artifacts/` for the evaluator and report.
 
 ## Current limitation
 
-The web verifier proves local serving and source/visible-term constraints, but it is not yet a real browser clickthrough. The next upgrade should swap this verifier for Playwright or another browser driver that clicks `Ring Grete`, completes the Frank call, and captures screenshots.
+This is now a real browser clickthrough, but still a narrow Slice A verifier. Slice B should extend the same verifier style instead of broadening the generic harness package: click the new casework action, capture the resulting desk/apartment evidence, and emit claim/evidence pairs for the evaluator.

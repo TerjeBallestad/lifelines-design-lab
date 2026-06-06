@@ -32,6 +32,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "daisyui": "^5.5.20",
     "jsdom": "^29.1.1",
+    "playwright": "^1.60.0",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",

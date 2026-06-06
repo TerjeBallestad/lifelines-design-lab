@@ -1,0 +1,1049 @@
+{
+  "id": "RUN-006",
+  "goal": "Verify current Slice A with Playwright clickthrough",
+  "mode": "standard",
+  "config": "Lifelines Design Lab Harness",
+  "status": "COMPLETE",
+  "verdict": "PASS",
+  "createdAt": "2026-06-06T19:29:19.453Z",
+  "updatedAt": "2026-06-06T19:29:24.707Z",
+  "sprints": [
+    {
+      "id": "slice-a-generic-harness-smoke",
+      "title": "Verify current Slice A through generic agent-harness",
+      "goal": "Verify current Slice A with Playwright clickthrough\n\nUse this as an adapter smoke: prove the generic harness can negotiate a definition of done, run project verifiers, and expose the evidence without changing gameplay code.",
+      "playerDecisionUnderTest": "Can the player move from bekymringsmelding to Ring Grete, witness Frank contact, receive Frankrapport · Første kontakt, and see the next casework actions?",
+      "touchSurface": [
+        "harness.config.json",
+        "tools/harness/**",
+        "src/components/PhonePracticeLab.tsx",
+        "src/stores/RootStore.tsx",
+        "src/engine/phoneResolver.test.ts"
+      ],
+      "nonGoals": [
+        "Do not implement Slice B gameplay in the adapter smoke",
+        "Do not introduce a fourth implementor role",
+        "Do not let generator emit final verdicts",
+        "Do not use project-specific logic inside the generic agent-harness package"
+      ],
+      "acceptanceContract": [
+        {
+          "kind": "contract",
+          "mode": "qualitative",
+          "claim": "Generator and evaluator agree on a concrete definition of done before implementation/review."
+        },
+        {
+          "kind": "test",
+          "mode": "deterministic",
+          "claim": "Project tests and build pass as verifier evidence."
+        },
+        {
+          "kind": "trace",
+          "mode": "deterministic",
+          "claim": "Web UI smoke evidence confirms Slice A visible flow terms are present and the app serves locally."
+        },
+        {
+          "kind": "judge",
+          "mode": "qualitative",
+          "claim": "Evaluator judges the artifact from player-facing Slice A readability, not code style."
+        }
+      ],
+      "optional": false,
+      "number": 1,
+      "status": "PASS",
+      "attempt": 1,
+      "verdict": "PASS",
+      "summary": "Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.",
+      "artifacts": [
+        {
+          "kind": "brief",
+          "path": "artifacts/generator-implementation.md",
+          "title": "Generator implementation note",
+          "role": "generator"
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-test.txt",
+          "title": "npm test output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-build.txt",
+          "title": "npm run build output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/browser-flow.json",
+          "title": "Playwright browser clickthrough trace",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "interactive-ui"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/01-case-desk-start.png",
+          "title": "Case Desk start",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/02-frank-call.png",
+          "title": "Frank call scene",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/03-report-next-actions.png",
+          "title": "Report and next actions",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/slice-a-visible-source-check.json",
+          "title": "Slice A visible source check",
+          "role": "evaluator",
+          "tags": [
+            "source",
+            "player-facing"
+          ]
+        },
+        {
+          "kind": "review",
+          "path": "artifacts/evaluator-review.md",
+          "title": "Evaluator user-perspective review",
+          "role": "evaluator"
+        }
+      ],
+      "issues": [],
+      "notes": [
+        "No source edits were needed for this smoke run.",
+        "Evaluator judged verifier evidence from player-facing Slice A readability, not implementation style."
+      ],
+      "contract": {
+        "status": "AGREED",
+        "verdict": "PASS",
+        "summary": "Evaluator agrees the contract is narrow, verifiable, and player-facing.",
+        "agreedContract": {
+          "title": "Slice A generic harness adapter definition of done",
+          "summary": "The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.",
+          "deterministicChecks": [
+            "npm test passes",
+            "npm run build passes",
+            "Local Vite web UI serves index.html",
+            "Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy"
+          ],
+          "qualitativeChecks": [
+            "Slice A remains narrow: desk → Grete call → Frank report → next actions",
+            "The report and next actions are game-world surfaces, not design explanation",
+            "The harness report exposes what planner/generator/evaluator/verifier did"
+          ],
+          "evidence": [
+            "web-ui-smoke verifier",
+            "report.html raw IO drilldown",
+            "report.json normalized summary"
+          ],
+          "nonGoalsAccepted": [
+            "Do not implement Slice B gameplay in the adapter smoke",
+            "Do not introduce a fourth implementor role",
+            "Do not let generator emit final verdicts",
+            "Do not use project-specific logic inside the generic agent-harness package"
+          ]
+        },
+        "turns": [
+          {
+            "round": 1,
+            "generator": {
+              "status": "done",
+              "summary": "Generator proposed a concrete Slice A harness-smoke definition of done.",
+              "changedFiles": [],
+              "artifacts": [],
+              "notes": [
+                "Generator proposes the contract and later implements/checks against the agreed version, but does not emit verdicts."
+              ],
+              "contract": {
+                "title": "Slice A generic harness adapter definition of done",
+                "summary": "The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.",
+                "deterministicChecks": [
+                  "npm test passes",
+                  "npm run build passes",
+                  "Local Vite web UI serves index.html",
+                  "Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy"
+                ],
+                "qualitativeChecks": [
+                  "Slice A remains narrow: desk → Grete call → Frank report → next actions",
+                  "The report and next actions are game-world surfaces, not design explanation",
+                  "The harness report exposes what planner/generator/evaluator/verifier did"
+                ],
+                "evidence": [
+                  "web-ui-smoke verifier",
+                  "report.html raw IO drilldown",
+                  "report.json normalized summary"
+                ],
+                "nonGoalsAccepted": [
+                  "Do not implement Slice B gameplay in the adapter smoke",
+                  "Do not introduce a fourth implementor role",
+                  "Do not let generator emit final verdicts",
+                  "Do not use project-specific logic inside the generic agent-harness package"
+                ]
+              }
+            },
+            "evaluator": {
+              "status": "done",
+              "verdict": "PASS",
+              "summary": "Evaluator agrees the contract is narrow, verifiable, and player-facing.",
+              "agreedContract": {
+                "title": "Slice A generic harness adapter definition of done",
+                "summary": "The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.",
+                "deterministicChecks": [
+                  "npm test passes",
+                  "npm run build passes",
+                  "Local Vite web UI serves index.html",
+                  "Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy"
+                ],
+                "qualitativeChecks": [
+                  "Slice A remains narrow: desk → Grete call → Frank report → next actions",
+                  "The report and next actions are game-world surfaces, not design explanation",
+                  "The harness report exposes what planner/generator/evaluator/verifier did"
+                ],
+                "evidence": [
+                  "web-ui-smoke verifier",
+                  "report.html raw IO drilldown",
+                  "report.json normalized summary"
+                ],
+                "nonGoalsAccepted": [
+                  "Do not implement Slice B gameplay in the adapter smoke",
+                  "Do not introduce a fourth implementor role",
+                  "Do not let generator emit final verdicts",
+                  "Do not use project-specific logic inside the generic agent-harness package"
+                ]
+              },
+              "issues": [],
+              "artifacts": [],
+              "notes": [
+                "Contract accepted before implementation."
+              ],
+              "judgments": []
+            },
+            "proposedContract": {
+              "title": "Slice A generic harness adapter definition of done",
+              "summary": "The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.",
+              "deterministicChecks": [
+                "npm test passes",
+                "npm run build passes",
+                "Local Vite web UI serves index.html",
+                "Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy"
+              ],
+              "qualitativeChecks": [
+                "Slice A remains narrow: desk → Grete call → Frank report → next actions",
+                "The report and next actions are game-world surfaces, not design explanation",
+                "The harness report exposes what planner/generator/evaluator/verifier did"
+              ],
+              "evidence": [
+                "web-ui-smoke verifier",
+                "report.html raw IO drilldown",
+                "report.json normalized summary"
+              ],
+              "nonGoalsAccepted": [
+                "Do not implement Slice B gameplay in the adapter smoke",
+                "Do not introduce a fourth implementor role",
+                "Do not let generator emit final verdicts",
+                "Do not use project-specific logic inside the generic agent-harness package"
+              ]
+            }
+          }
+        ],
+        "artifacts": [],
+        "issues": [],
+        "notes": [
+          "Generator proposes the contract and later implements/checks against the agreed version, but does not emit verdicts.",
+          "Contract accepted before implementation."
+        ]
+      },
+      "agreedContract": {
+        "title": "Slice A generic harness adapter definition of done",
+        "summary": "The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.",
+        "deterministicChecks": [
+          "npm test passes",
+          "npm run build passes",
+          "Local Vite web UI serves index.html",
+          "Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy"
+        ],
+        "qualitativeChecks": [
+          "Slice A remains narrow: desk → Grete call → Frank report → next actions",
+          "The report and next actions are game-world surfaces, not design explanation",
+          "The harness report exposes what planner/generator/evaluator/verifier did"
+        ],
+        "evidence": [
+          "web-ui-smoke verifier",
+          "report.html raw IO drilldown",
+          "report.json normalized summary"
+        ],
+        "nonGoalsAccepted": [
+          "Do not implement Slice B gameplay in the adapter smoke",
+          "Do not introduce a fourth implementor role",
+          "Do not let generator emit final verdicts",
+          "Do not use project-specific logic inside the generic agent-harness package"
+        ]
+      },
+      "generator": {
+        "status": "done",
+        "summary": "Implementation phase completed as an adapter smoke; verifier evidence will determine the result.",
+        "changedFiles": [],
+        "artifacts": [
+          {
+            "kind": "brief",
+            "path": "artifacts/generator-implementation.md",
+            "title": "Generator implementation note",
+            "role": "generator"
+          }
+        ],
+        "notes": [
+          "No source edits were needed for this smoke run."
+        ]
+      },
+      "verifiers": [
+        {
+          "id": "web-ui-smoke",
+          "status": "done",
+          "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+          "artifacts": [
+            {
+              "kind": "log",
+              "path": "artifacts/npm-test.txt",
+              "title": "npm test output",
+              "role": "system",
+              "tags": [
+                "deterministic"
+              ]
+            },
+            {
+              "kind": "log",
+              "path": "artifacts/npm-build.txt",
+              "title": "npm run build output",
+              "role": "system",
+              "tags": [
+                "deterministic"
+              ]
+            },
+            {
+              "kind": "trace",
+              "path": "artifacts/browser-flow.json",
+              "title": "Playwright browser clickthrough trace",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "interactive-ui"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/01-case-desk-start.png",
+              "title": "Case Desk start",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/02-frank-call.png",
+              "title": "Frank call scene",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/03-report-next-actions.png",
+              "title": "Report and next actions",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "trace",
+              "path": "artifacts/slice-a-visible-source-check.json",
+              "title": "Slice A visible source check",
+              "role": "evaluator",
+              "tags": [
+                "source",
+                "player-facing"
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "claim": "npm test passes",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/npm-test.txt"
+              ]
+            },
+            {
+              "claim": "npm run build passes",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/npm-build.txt"
+              ]
+            },
+            {
+              "claim": "Initial Case Desk is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Initial concern document is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Ring Grete action is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Ring Grete opens Frank phone scene",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Phone scene includes phone note",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Phone scene exposes report action",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Report appears on desk after call",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial statement action appears",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit action appears",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Playwright clickthrough has no browser console errors",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains bekymringsmelding",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains etabler kontakt med grete",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains ring grete",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains frank_call",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains frankrapport",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains første kontakt",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains kontoutskrift",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains sosialt besøk",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids rapporten gir ikke svar",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids ikke løs elling",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids hva spilleren lærer",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids infrastrukturen",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            }
+          ],
+          "notes": [],
+          "raw": {
+            "status": "done",
+            "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+            "checks": [
+              {
+                "claim": "npm test passes",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/npm-test.txt"
+                ]
+              },
+              {
+                "claim": "npm run build passes",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/npm-build.txt"
+                ]
+              },
+              {
+                "claim": "Initial Case Desk is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Initial concern document is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Ring Grete action is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Ring Grete opens Frank phone scene",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Phone scene includes phone note",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Phone scene exposes report action",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Report appears on desk after call",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial statement action appears",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit action appears",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Playwright clickthrough has no browser console errors",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains bekymringsmelding",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains etabler kontakt med grete",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains ring grete",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains frank_call",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains frankrapport",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains første kontakt",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains kontoutskrift",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains sosialt besøk",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids rapporten gir ikke svar",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids ikke løs elling",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids hva spilleren lærer",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids infrastrukturen",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              }
+            ],
+            "artifacts": [
+              {
+                "kind": "log",
+                "path": "artifacts/npm-test.txt",
+                "title": "npm test output",
+                "role": "system",
+                "tags": [
+                  "deterministic"
+                ]
+              },
+              {
+                "kind": "log",
+                "path": "artifacts/npm-build.txt",
+                "title": "npm run build output",
+                "role": "system",
+                "tags": [
+                  "deterministic"
+                ]
+              },
+              {
+                "kind": "trace",
+                "path": "artifacts/browser-flow.json",
+                "title": "Playwright browser clickthrough trace",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "interactive-ui"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/01-case-desk-start.png",
+                "title": "Case Desk start",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/02-frank-call.png",
+                "title": "Frank call scene",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/03-report-next-actions.png",
+                "title": "Report and next actions",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "trace",
+                "path": "artifacts/slice-a-visible-source-check.json",
+                "title": "Slice A visible source check",
+                "role": "evaluator",
+                "tags": [
+                  "source",
+                  "player-facing"
+                ]
+              }
+            ],
+            "notes": []
+          },
+          "code": 0,
+          "completedAt": "2026-06-06T19:29:24.665Z"
+        }
+      ],
+      "judgments": [
+        {
+          "claim": "The generic harness run is inspectable enough to see contract, verifier evidence, and final judgment.",
+          "result": "PASS",
+          "confidence": "high",
+          "reasoning": "report.html/report.json and raw role IO are produced by the generic harness.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Current Slice A remains a player-facing casework loop rather than meta explanation.",
+          "result": "PASS",
+          "confidence": "medium",
+          "reasoning": "Verifier checks passed for required terms and banned meta phrases.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "slice-a-generic-harness-smoke",
+      "title": "Verify current Slice A through generic agent-harness",
+      "status": "DONE",
+      "attempt": 1,
+      "verdict": "PASS",
+      "summary": "Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.",
+      "artifacts": [
+        {
+          "kind": "brief",
+          "path": "artifacts/generator-implementation.md",
+          "title": "Generator implementation note",
+          "role": "generator"
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-test.txt",
+          "title": "npm test output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-build.txt",
+          "title": "npm run build output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/browser-flow.json",
+          "title": "Playwright browser clickthrough trace",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "interactive-ui"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/01-case-desk-start.png",
+          "title": "Case Desk start",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/02-frank-call.png",
+          "title": "Frank call scene",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/03-report-next-actions.png",
+          "title": "Report and next actions",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/slice-a-visible-source-check.json",
+          "title": "Slice A visible source check",
+          "role": "evaluator",
+          "tags": [
+            "source",
+            "player-facing"
+          ]
+        },
+        {
+          "kind": "review",
+          "path": "artifacts/evaluator-review.md",
+          "title": "Evaluator user-perspective review",
+          "role": "evaluator"
+        }
+      ],
+      "notes": [
+        "No source edits were needed for this smoke run.",
+        "Evaluator judged verifier evidence from player-facing Slice A readability, not implementation style."
+      ],
+      "judgments": [
+        {
+          "claim": "The generic harness run is inspectable enough to see contract, verifier evidence, and final judgment.",
+          "result": "PASS",
+          "confidence": "high",
+          "reasoning": "report.html/report.json and raw role IO are produced by the generic harness.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Current Slice A remains a player-facing casework loop rather than meta explanation.",
+          "result": "PASS",
+          "confidence": "medium",
+          "reasoning": "Verifier checks passed for required terms and banned meta phrases.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "event": "run_created",
+      "ts": "2026-06-06T19:29:19.454Z"
+    },
+    {
+      "event": "planner_completed",
+      "ts": "2026-06-06T19:29:19.493Z"
+    },
+    {
+      "event": "sprint_started",
+      "sprint": "slice-a-generic-harness-smoke",
+      "attempt": 1,
+      "ts": "2026-06-06T19:29:19.493Z"
+    },
+    {
+      "event": "generator_completed",
+      "ts": "2026-06-06T19:29:19.530Z"
+    },
+    {
+      "event": "evaluator_completed",
+      "ts": "2026-06-06T19:29:19.566Z"
+    },
+    {
+      "event": "contract_round_reviewed",
+      "sprint": "slice-a-generic-harness-smoke",
+      "round": 1,
+      "verdict": "PASS",
+      "ts": "2026-06-06T19:29:19.567Z"
+    },
+    {
+      "event": "generator_completed",
+      "ts": "2026-06-06T19:29:19.602Z"
+    },
+    {
+      "event": "evaluator_completed",
+      "ts": "2026-06-06T19:29:24.707Z"
+    },
+    {
+      "event": "sprint_evaluated",
+      "sprint": "slice-a-generic-harness-smoke",
+      "verdict": "PASS",
+      "ts": "2026-06-06T19:29:24.707Z"
+    },
+    {
+      "event": "run_completed",
+      "verdict": "PASS",
+      "ts": "2026-06-06T19:29:24.707Z"
+    }
+  ]
+}

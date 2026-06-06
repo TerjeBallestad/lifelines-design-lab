@@ -1,0 +1,4 @@
+{
+  "runId": "RUN-006",
+  "goal": "Verify current Slice A with Playwright clickthrough"
+}

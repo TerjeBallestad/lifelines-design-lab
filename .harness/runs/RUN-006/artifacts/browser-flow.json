@@ -1,0 +1,123 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:5199/",
+  "serverOutput": "\n> lifelines-design-lab@1.0.0 dev\n> vite --host 127.0.0.1 --port 5199 --strictPort\n\n9:29:22 PM [vite] (client) Re-optimizing dependencies because lockfile has changed\n\n  VITE v8.0.14  ready in 139 ms\n\n  ➜  Local:   http://127.0.0.1:5199/\n/*! 🌼 daisyUI 5.5.20 */\n",
+  "flow": [
+    {
+      "id": "01-case-desk-start",
+      "title": "Case Desk start",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Dokument: Bekymringsmelding Pasient: Grete Halvorsen Gjelder: Elling Halvorsen (35 år) Grete oppgir at Elling bor hjemme, hun har 100% omsorg. Hun beskriver ham som “en smart gutt” og ønsker ikke videre tiltak nå. Lege vurderer at familien kan ha behov for oppfølging dersom Gretes helsetilstand forverres. Etablere kontakt med Grete Kartlegge Ellings hverdag og nettverk Vurdere støtte ved endret omsorgssituasjon Dr. Haug Handlinger FØRSTE MÅL Etabler kontakt med Grete. Ring Grete"
+    },
+    {
+      "id": "02-frank-call",
+      "title": "Frank call scene",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Ny dag Nullstill Apartment clocks Case Desk Frank på telefon Frank ringer fra kontoret. Grete tar telefonen. F Frank ringer Grete TELEFONSAMTALE · OBSKURERT Frank Hei, dette er Frank Åsli. Jeg ringer fra sosialkontoret. Grete ☕ … … “smart gutt” … døråpning … Frank Vi trenger bare å forstå hverdagen litt bedre. Ikke mer enn det. Grete … passer på … ikke så lett … blir her … Telefonnotat Grete svarte selv. Samtalen ble ført med henne. Elling kom ikke til telefonen. Ny rapport Frankrapport · Første kontakt Legg rapporten på pulten"
+    },
+    {
+      "id": "03-report-next-actions",
+      "title": "Report and next actions",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Handlinger NYE HANDLINGER Be om kontoutskrift Avtal sosialt besøk"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "artifacts/01-case-desk-start.png",
+      "title": "Case Desk start"
+    },
+    {
+      "path": "artifacts/02-frank-call.png",
+      "title": "Frank call scene"
+    },
+    {
+      "path": "artifacts/03-report-next-actions.png",
+      "title": "Report and next actions"
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    }
+  ],
+  "jsErrors": [],
+  "checks": [
+    {
+      "claim": "Initial Case Desk is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Initial concern document is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Ring Grete action is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Ring Grete opens Frank phone scene",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Phone scene includes phone note",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Phone scene exposes report action",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Report appears on desk after call",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial statement action appears",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit action appears",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Playwright clickthrough has no browser console errors",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    }
+  ]
+}

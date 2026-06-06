@@ -2,6 +2,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { spawnSync, spawn } from 'node:child_process';
+import { chromium } from 'playwright';
 
 const runDir = valueAfter('--run-dir') || '.harness/runs/UNKNOWN';
 const artifactsDir = join(runDir, 'artifacts');
@@ -42,24 +43,29 @@ try {
     evidence: ['artifacts/npm-build.txt'],
   });
 
-  const served = await smokeServe();
+  const browserFlow = await smokeBrowserFlow();
   writeFileSync(
-    join(artifactsDir, 'web-ui-smoke.json'),
-    JSON.stringify(served, null, 2) + '\n',
+    join(artifactsDir, 'browser-flow.json'),
+    JSON.stringify(browserFlow, null, 2) + '\n',
     'utf8',
   );
   artifacts.push({
     kind: 'trace',
-    path: 'artifacts/web-ui-smoke.json',
-    title: 'Web UI smoke trace',
+    path: 'artifacts/browser-flow.json',
+    title: 'Playwright browser clickthrough trace',
     role: 'evaluator',
-    tags: ['web', 'interactive-ui'],
+    tags: ['web', 'playwright', 'interactive-ui'],
   });
-  checks.push({
-    claim: 'Vite web UI serves index.html locally',
-    result: served.ok ? 'PASS' : 'FAIL',
-    evidence: ['artifacts/web-ui-smoke.json'],
-  });
+  for (const screenshot of browserFlow.screenshots) {
+    artifacts.push({
+      kind: 'screenshot',
+      path: screenshot.path,
+      title: screenshot.title,
+      role: 'evaluator',
+      tags: ['web', 'playwright', 'visual'],
+    });
+  }
+  checks.push(...browserFlow.checks);
 
   const sourceCheck = checkVisibleSource();
   writeFileSync(
@@ -81,8 +87,8 @@ try {
     JSON.stringify({
       status: failed.length ? 'failed' : 'done',
       summary: failed.length
-        ? `${failed.length} web UI smoke check(s) failed.`
-        : 'Tests, build, local web serving, and Slice A visible-source checks passed.',
+        ? `${failed.length} Playwright verifier check(s) failed.`
+        : 'Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.',
       checks,
       artifacts,
       notes,
@@ -111,30 +117,108 @@ function run(command, args) {
   };
 }
 
-async function smokeServe() {
+async function smokeBrowserFlow() {
   const port = 5199;
+  const url = `http://127.0.0.1:${port}/`;
   const server = spawn('npm', ['run', 'dev', '--', '--port', String(port), '--strictPort'], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, BROWSER: 'none' },
   });
-  let output = '';
+  let serverOutput = '';
   server.stdout.on('data', (chunk) => {
-    output += chunk;
+    serverOutput += chunk;
   });
   server.stderr.on('data', (chunk) => {
-    output += chunk;
+    serverOutput += chunk;
   });
+
+  const consoleMessages = [];
+  const jsErrors = [];
+  const screenshots = [];
+  const flow = [];
+  const checks = [];
+  let browser;
+
   try {
-    const response = await waitForHttp(`http://127.0.0.1:${port}/`, 15000);
+    await waitForHttp(url, 15000);
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    page.on('console', (message) => {
+      consoleMessages.push({ type: message.type(), text: message.text() });
+    });
+    page.on('pageerror', (error) => {
+      jsErrors.push(error.message);
+    });
+
+    await page.goto(url, { waitUntil: 'networkidle' });
+    await expectVisible(page, 'Case Desk', checks, 'Initial Case Desk is visible');
+    await expectVisible(page, 'Bekymringsmelding', checks, 'Initial concern document is visible');
+    await expectVisible(page, 'Ring Grete', checks, 'Ring Grete action is visible');
+    await capture(page, screenshots, flow, '01-case-desk-start', 'Case Desk start');
+
+    await page.getByRole('button', { name: 'Ring Grete' }).click();
+    await expectVisible(page, 'Frank på telefon', checks, 'Ring Grete opens Frank phone scene');
+    await expectVisible(page, 'Telefonnotat', checks, 'Phone scene includes phone note');
+    await expectVisible(
+      page,
+      'Legg rapporten på pulten',
+      checks,
+      'Phone scene exposes report action',
+    );
+    await capture(page, screenshots, flow, '02-frank-call', 'Frank call scene');
+
+    await page.getByRole('button', { name: 'Legg rapporten på pulten' }).click();
+    await expectVisible(
+      page,
+      'Frankrapport · Første kontakt',
+      checks,
+      'Report appears on desk after call',
+    );
+    await expectVisible(page, 'Be om kontoutskrift', checks, 'Financial statement action appears');
+    await expectVisible(page, 'Avtal sosialt besøk', checks, 'Social visit action appears');
+    await capture(page, screenshots, flow, '03-report-next-actions', 'Report and next actions');
+
+    checks.push({
+      claim: 'Playwright clickthrough has no browser console errors',
+      result:
+        consoleMessages.some((message) => message.type === 'error') || jsErrors.length
+          ? 'FAIL'
+          : 'PASS',
+      evidence: ['artifacts/browser-flow.json'],
+    });
+
     return {
-      ok: response.ok && response.text.includes('<div id="root"></div>'),
-      status: response.status,
-      hasRoot: response.text.includes('<div id="root"></div>'),
-      serverOutput: output,
+      ok: checks.every((check) => check.result === 'PASS'),
+      url,
+      serverOutput,
+      flow,
+      screenshots,
+      consoleMessages,
+      jsErrors,
+      checks,
     };
   } finally {
+    if (browser) await browser.close();
     server.kill('SIGTERM');
   }
+}
+
+async function capture(page, screenshots, flow, id, title) {
+  const path = `artifacts/${id}.png`;
+  await page.screenshot({ path: join(artifactsDir, `${id}.png`), fullPage: true });
+  const visibleText = normalizeWhitespace(await page.locator('body').innerText());
+  screenshots.push({ path, title });
+  flow.push({ id, title, visibleText });
+}
+
+async function expectVisible(page, text, checks, claim) {
+  const locator = page.getByText(text, { exact: false }).first();
+  const visible = await locator.isVisible().catch(() => false);
+  checks.push({
+    claim,
+    result: visible ? 'PASS' : 'FAIL',
+    evidence: ['artifacts/browser-flow.json'],
+  });
 }
 
 async function waitForHttp(url, timeoutMs) {
@@ -144,7 +228,7 @@ async function waitForHttp(url, timeoutMs) {
     try {
       const response = await fetch(url);
       const text = await response.text();
-      return { ok: response.ok, status: response.status, text };
+      if (response.ok && text.includes('<div id="root"></div>')) return;
     } catch (error) {
       lastError = error;
       await new Promise((resolve) => setTimeout(resolve, 250));
@@ -187,6 +271,10 @@ function checkVisibleSource() {
     })),
   ];
   return { required, bannedVisible, checks };
+}
+
+function normalizeWhitespace(text) {
+  return text.replace(/\s+/g, ' ').trim();
 }
 
 function valueAfter(flag) {
