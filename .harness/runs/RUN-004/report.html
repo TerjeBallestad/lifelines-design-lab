@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>RUN-004 — Agent Harness Report</title>
+    <style>
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        margin: 2rem;
+        max-width: 960px;
+        line-height: 1.5;
+      }
+      code {
+        background: #f2f2f2;
+        padding: 0.1rem 0.25rem;
+        border-radius: 4px;
+      }
+      .status {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        background: #111;
+        color: white;
+      }
+      .step {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>RUN-004</h1>
+    <p><span class="status">COMPLETE</span> Verdict: <strong>PASS</strong></p>
+    <h2>Goal</h2>
+    <p>SDD-002 Slice A copy correction: verify meta text removed</p>
+    <h2>Sprints</h2>
+    <section class="step">
+      <h3>SDD-002-slice-a — Desk start and Grete call</h3>
+      <p>Status: <strong>PASS</strong> · Verdict: <strong>PASS</strong> · Attempt: 1</p>
+      <p>
+        SDD-002 Slice A copy correction: verify meta text removed SDD-002 defines Slice A as Desk
+        start and Grete call: Desk renders bekymringsmelding and Frank; clicking Frank shows Ring
+        Grete; phone scene plays with obscured bubbles/symbols; first Frank report appears. Thin
+        plan: prove the opening casework seam before building resources/day advance.
+      </p>
+      <p>
+        User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.
+      </p>
+      <h4>Acceptance contract</h4>
+      <ul>
+        <li>
+          <code>player-flow</code> The app starts at Case Desk with Bekymringsmelding and one
+          obvious first objective: Etabler kontakt med Grete.
+        </li>
+        <li>
+          <code>player-flow</code> Clicking Ring Grete enters a distinct Frank phone scene instead
+          of jumping straight to Apartment.
+        </li>
+        <li>
+          <code>taste</code> The phone scene obscures the exact conversation through
+          bubbles/symbols/fragments; it does not become exposition transcript.
+        </li>
+        <li>
+          <code>player-flow</code> Completing the phone scene returns to Desk and creates
+          Frankrapport · Første kontakt.
+        </li>
+        <li>
+          <code>player-decision</code> The report unlocks at least Be om kontoutskrift and Avtal
+          sosialt besøk as next actions, even if Slice B implements their consequences later.
+        </li>
+        <li>
+          <code>taste</code> The call/report uses in-world facts about Grete answering and Elling
+          not coming to the phone; visible copy does not explain Grete as a design role.
+        </li>
+        <li>
+          <code>taste</code> Visible copy avoids meta-description such as telling the player what to
+          learn, what the report means, or what conclusion to draw.
+        </li>
+        <li>
+          <code>test</code> Tests/build verify the staged flow and visible source terms:
+          bekymringsmelding, ring grete, frankrapport, kontoutskrift, sosialt besøk.
+        </li>
+      </ul>
+      <h4>Artifacts</h4>
+      <ul>
+        <li><code>requirements</code> artifacts/SDD-002-slice-a-generator-requirements.md</li>
+        <li>
+          <code>user-perspective-review</code> artifacts/SDD-002-slice-a-user-perspective-review.md
+        </li>
+      </ul>
+    </section>
+    <h2>Steps</h2>
+    <section class="step">
+      <h3>SDD-002-slice-a — Desk start and Grete call</h3>
+      <p>Status: <strong>DONE</strong> · Verdict: <strong>PASS</strong> · Attempt: 1</p>
+      <p>
+        User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.
+      </p>
+      <h4>Artifacts</h4>
+      <ul>
+        <li><code>requirements</code> artifacts/SDD-002-slice-a-generator-requirements.md</li>
+        <li>
+          <code>user-perspective-review</code> artifacts/SDD-002-slice-a-user-perspective-review.md
+        </li>
+      </ul>
+      <h4>Notes</h4>
+      <ul>
+        <li>
+          This role now converts the SDD slice into player-facing goals and verifiable requirements.
+        </li>
+        <li>
+          It still does not run an autonomous coding agent; source edits are applied outside the
+          role until the harness supports agent executors.
+        </li>
+        <li>Evaluator emphasizes player comprehension/feeling over code structure.</li>
+        <li>A PASS here is source-contract PASS, not a substitute for seeing the UI in browser.</li>
+      </ul>
+    </section>
+    <h2>History</h2>
+    <ul>
+      <li><code>2026-06-06T18:25:11.185Z</code> run_created</li>
+      <li><code>2026-06-06T18:25:11.214Z</code> planner_completed</li>
+      <li><code>2026-06-06T18:25:11.214Z</code> sprint_started</li>
+      <li><code>2026-06-06T18:25:11.241Z</code> generator_completed</li>
+      <li><code>2026-06-06T18:25:11.551Z</code> evaluator_completed</li>
+      <li><code>2026-06-06T18:25:11.551Z</code> sprint_evaluated</li>
+      <li><code>2026-06-06T18:25:11.552Z</code> run_completed</li>
+    </ul>
+  </body>
+</html>

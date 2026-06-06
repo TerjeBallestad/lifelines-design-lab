@@ -18,6 +18,7 @@ const tests = existsSync('src/engine/phoneResolver.test.ts')
   ? readFileSync('src/engine/phoneResolver.test.ts', 'utf8')
   : '';
 const all = `${component}\n${store}\n${tests}`.toLowerCase();
+const visibleComponent = component.toLowerCase();
 
 const checks = [
   {
@@ -64,14 +65,26 @@ const checks = [
       'The player needs at least two visible next actions after the report: financial request and social visit.',
   },
   {
-    id: 'taste_grete_load_bearing',
-    question: 'Does Grete feel like hidden infrastructure rather than a quest-giver?',
+    id: 'grete_contact_content',
+    question:
+      'Does the call/report show concrete contact facts instead of explaining Grete as a design role?',
     pass:
-      all.includes('infrastrukturen') ||
-      all.includes('bærer fortsatt døråpningen') ||
-      all.includes('grete førte samtalen'),
+      (all.includes('grete svarte') || all.includes('grete tar telefonen')) &&
+      all.includes('elling kom ikke til telefonen'),
     revise:
-      'Grete must feel like the bridge holding the apartment together. Do not reduce her to a tutorial NPC.',
+      'Use in-world facts: Grete answered, Grete led the call, Elling did not come to the phone. Do not explain the design role to the player.',
+  },
+  {
+    id: 'no_meta_player_explanation',
+    question: 'Does visible copy avoid telling the player what to conclude or feel?',
+    pass:
+      !visibleComponent.includes('hva spilleren lærer') &&
+      !visibleComponent.includes('rapporten gir ikke svar') &&
+      !visibleComponent.includes('ikke løs elling') &&
+      !visibleComponent.includes('finn inngangen') &&
+      !visibleComponent.includes('infrastrukturen'),
+    revise:
+      'Visible copy should only lay out game-world content: documents, actions, reports, objects, people, costs, dates. Remove meta lines that describe the intended experience.',
   },
   {
     id: 'tests_guard_flow',

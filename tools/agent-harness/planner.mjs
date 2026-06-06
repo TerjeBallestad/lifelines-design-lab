@@ -62,7 +62,12 @@ console.log(
           {
             kind: 'taste',
             claim:
-              'Grete feels like load-bearing infrastructure, not background exposition or a generic quest NPC.',
+              'The call/report uses in-world facts about Grete answering and Elling not coming to the phone; visible copy does not explain Grete as a design role.',
+          },
+          {
+            kind: 'taste',
+            claim:
+              'Visible copy avoids meta-description such as telling the player what to learn, what the report means, or what conclusion to draw.',
           },
           {
             kind: 'test',

@@ -137,8 +137,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Telefonøving i stua
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
-                Plasser Frank, velg støtten han gir, og la Elling prøve ett lite telefonsteg.
-                Etterpå leser Frank rommet: hva ble brukt, hva ble unngått, og hva bør vente.
+                Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -173,9 +172,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <SectionTitle>Stua</SectionTitle>
-                  <p className="text-sm text-base-content/60">
-                    Rommet viser først. Frank skriver etterpå.
-                  </p>
+                  <p className="text-sm text-base-content/60">Stue, telefonbord og soveromsdør.</p>
                 </div>
                 <RoomPills room={activeRoom} />
               </div>
@@ -456,8 +453,7 @@ const GreteCallSurface = observer(function GreteCallSurface() {
       <Panel>
         <SectionTitle>Frank på telefon</SectionTitle>
         <p className="text-sm leading-relaxed text-base-content/65">
-          Spilleren får se at kontakt blir opprettet, men ikke eie hele samtalen. Grete er inngangen
-          til saken; Elling er fortsatt uklar.
+          Frank ringer fra kontoret. Grete tar telefonen.
         </p>
         <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-5">
           <div className="flex items-center gap-3">
@@ -491,18 +487,11 @@ const GreteCallSurface = observer(function GreteCallSurface() {
       </Panel>
 
       <Panel>
-        <SectionTitle>Hva spilleren lærer</SectionTitle>
+        <SectionTitle>Telefonnotat</SectionTitle>
         <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
-          <p>
-            Grete svarer. Hun fører samtalen. Elling blir fortsatt ikke direkte tilgjengelig for
-            systemet.
-          </p>
-          <p>
-            Dette er ikke en løsning. Det er en inngang. Frank kan nå skrive en første rapport og
-            anbefale neste smale casework-steg.
-          </p>
+          <p>Grete svarte selv. Samtalen ble ført med henne. Elling kom ikke til telefonen.</p>
           <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
-            <div className="font-bold">Rapport som opprettes</div>
+            <div className="font-bold">Ny rapport</div>
             <p className="mt-1">{firstContactReportTitle}</p>
           </div>
         </div>
@@ -551,8 +540,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
       <Panel>
         <SectionTitle>Case Desk</SectionTitle>
         <p className="text-sm leading-relaxed text-base-content/65">
-          Les det rommet ga fra seg. Løft bare det Frank faktisk kan stå inne for, og bruk det til å
-          gjøre neste vedtak smalere.
+          Dokumenter, rapporter og notater i saken.
         </p>
         {!latest && !showFirstContactReport ? (
           <div className="mt-4 grid gap-4">
@@ -623,12 +611,12 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
       </Panel>
 
       <Panel>
-        <SectionTitle>Løft bevis til saken</SectionTitle>
+        <SectionTitle>Handlinger</SectionTitle>
         {!latest && !showFirstContactReport ? (
           <div className="rounded-box border border-success/30 bg-success/10 p-4">
             <div className="font-black uppercase tracking-[0.18em] text-success">Første mål</div>
             <p className="mt-2 text-sm leading-relaxed text-base-content/75">
-              {initialConcernObjective}. Ikke løs Elling ennå — finn inngangen saken faktisk har.
+              {initialConcernObjective}.
             </p>
             <button
               className="btn btn-success mt-4"
@@ -636,10 +624,6 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             >
               {initialConcernAction}
             </button>
-            <p className="mt-3 text-xs leading-relaxed text-base-content/55">
-              Grete svarer. Hun er ikke bakgrunn; hun er infrastrukturen som gjør første kontakt
-              mulig.
-            </p>
           </div>
         ) : showFirstContactReport ? (
           <div className="grid gap-3">
@@ -647,9 +631,6 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
               <div className="font-black uppercase tracking-[0.18em] text-success">
                 Nye handlinger
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                Rapporten gir ikke svar. Den gir neste smale steg.
-              </p>
               <div className="mt-4 grid gap-2">
                 <button className="btn btn-outline btn-success justify-start" type="button">
                   {requestFinancialStatementAction}
@@ -658,10 +639,6 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   {scheduleSocialVisitAction}
                 </button>
               </div>
-              <p className="mt-3 text-xs leading-relaxed text-base-content/55">
-                Konsekvensene av disse bygges i Slice B. Her er poenget at første rapport åpner
-                casework-valg, ikke en konklusjon.
-              </p>
             </div>
           </div>
         ) : (

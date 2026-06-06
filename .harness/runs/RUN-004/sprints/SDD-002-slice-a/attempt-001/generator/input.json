@@ -1,0 +1,64 @@
+{
+  "runId": "RUN-004",
+  "sprint": {
+    "id": "SDD-002-slice-a",
+    "title": "Desk start and Grete call",
+    "goal": "SDD-002 Slice A copy correction: verify meta text removed\n\nSDD-002 defines Slice A as Desk start and Grete call: Desk renders bekymringsmelding and Frank; clicking Frank shows Ring Grete; phone scene plays with obscured bubbles/symbols; first Frank report appears.\n\nThin plan: prove the opening casework seam before building resources/day advance.",
+    "playerDecisionUnderTest": "Does the player understand that the bekymringsmelding creates one concrete first action, Ring Grete, and that Frank contact produces a report which unlocks the next casework options?",
+    "touchSurface": [
+      "src/stores/RootStore.tsx",
+      "src/components/PhonePracticeLab.tsx",
+      "src/engine/phoneResolver.test.ts"
+    ],
+    "nonGoals": [
+      "No full resources/day-advance system yet",
+      "No financial-request resolution yet",
+      "No social visit/apartment reveal yet",
+      "No LLM Frank chat",
+      "No generic Roottrees board/editor"
+    ],
+    "acceptanceContract": [
+      {
+        "kind": "player-flow",
+        "claim": "The app starts at Case Desk with Bekymringsmelding and one obvious first objective: Etabler kontakt med Grete."
+      },
+      {
+        "kind": "player-flow",
+        "claim": "Clicking Ring Grete enters a distinct Frank phone scene instead of jumping straight to Apartment."
+      },
+      {
+        "kind": "taste",
+        "claim": "The phone scene obscures the exact conversation through bubbles/symbols/fragments; it does not become exposition transcript."
+      },
+      {
+        "kind": "player-flow",
+        "claim": "Completing the phone scene returns to Desk and creates Frankrapport · Første kontakt."
+      },
+      {
+        "kind": "player-decision",
+        "claim": "The report unlocks at least Be om kontoutskrift and Avtal sosialt besøk as next actions, even if Slice B implements their consequences later."
+      },
+      {
+        "kind": "taste",
+        "claim": "The call/report uses in-world facts about Grete answering and Elling not coming to the phone; visible copy does not explain Grete as a design role."
+      },
+      {
+        "kind": "taste",
+        "claim": "Visible copy avoids meta-description such as telling the player what to learn, what the report means, or what conclusion to draw."
+      },
+      {
+        "kind": "test",
+        "claim": "Tests/build verify the staged flow and visible source terms: bekymringsmelding, ring grete, frankrapport, kontoutskrift, sosialt besøk."
+      }
+    ],
+    "optional": false,
+    "number": 1,
+    "status": "RUNNING",
+    "attempt": 1,
+    "verdict": null,
+    "summary": "",
+    "artifacts": [],
+    "issues": [],
+    "notes": []
+  }
+}

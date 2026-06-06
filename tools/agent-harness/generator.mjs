@@ -47,9 +47,19 @@ const requirements = [
     source.includes('kontoutskrift') && source.includes('sosialt besøk'),
   ],
   [
-    'grete_infrastructure',
-    'Grete is framed as infrastructure/load-bearing mediation.',
-    source.includes('infrastrukturen') || source.includes('bærer fortsatt'),
+    'grete_contact_content',
+    'The call/report shows concrete contact facts: Grete answers or leads the conversation, and Elling does not come to the phone.',
+    (source.includes('grete svarte') || source.includes('grete tar telefonen')) &&
+      source.includes('elling kom ikke til telefonen'),
+  ],
+  [
+    'no_meta_player_explanation',
+    'Visible copy avoids meta-describing the intended player conclusion or experience.',
+    !source.includes('hva spilleren lærer') &&
+      !source.includes('rapporten gir ikke svar') &&
+      !source.includes('ikke løs elling') &&
+      !source.includes('finn inngangen') &&
+      !source.includes('infrastrukturen'),
   ],
 ];
 

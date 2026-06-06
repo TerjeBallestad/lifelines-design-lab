@@ -1,0 +1,15 @@
+{
+  "status": "ready_for_evaluator",
+  "summary": "Generator requirements are satisfied by current source scan; evaluator should judge user-facing quality.",
+  "changedFiles": [],
+  "artifacts": [
+    {
+      "kind": "requirements",
+      "path": "artifacts/SDD-002-slice-a-generator-requirements.md"
+    }
+  ],
+  "notes": [
+    "This role now converts the SDD slice into player-facing goals and verifiable requirements.",
+    "It still does not run an autonomous coding agent; source edits are applied outside the role until the harness supports agent executors."
+  ]
+}
