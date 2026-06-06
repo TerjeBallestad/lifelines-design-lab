@@ -92,6 +92,10 @@ const actorCopy: Record<string, string> = {
   Room: 'Stua',
 };
 
+const initialConcernDocumentLabel = 'Bekymringsmelding';
+const initialConcernObjective = 'Etabler kontakt med Grete';
+const initialConcernAction = 'Ring Grete';
+
 const frictionCopy: Record<string, string> = {
   'dignity preserved through ridicule': 'verdighet bevart gjennom latterliggjøring',
   'first step possible, conversation still too large': 'første steg mulig, samtalen for stor',
@@ -104,6 +108,7 @@ const frictionCopy: Record<string, string> = {
   'setup changed': 'Frank endret rommet',
   'Frank too close?': 'Frank står kanskje for nært',
   'new day / fresh capacity': 'ny dag, litt nytt rom',
+  'Grete still carries the doorway': 'Grete bærer fortsatt døråpningen',
   unknown: 'rommet venter',
 };
 
@@ -461,10 +466,36 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           gjøre neste vedtak smalere.
         </p>
         {!latest ? (
-          <EmptyState>
-            Ingen dokumenter ennå. Kjør ett telefonforsøk i Apartment først, så får pulten noe å
-            arbeide med.
-          </EmptyState>
+          <div className="mt-4 grid gap-4">
+            <article className="rounded-box border border-warning/30 bg-warning/10 p-4">
+              <div className="badge badge-warning mb-3">
+                Dokument: {initialConcernDocumentLabel}
+              </div>
+              <div className="space-y-3 text-sm leading-relaxed text-base-content/80">
+                <p>
+                  <strong>Pasient:</strong> Grete Halvorsen
+                  <br />
+                  <strong>Gjelder:</strong> Elling Halvorsen (35 år)
+                </p>
+                <p>
+                  Grete oppgir at Elling bor hjemme, hun har 100% omsorg. Hun beskriver ham som “en
+                  smart gutt” og ønsker ikke videre tiltak nå.
+                </p>
+                <p>
+                  Lege vurderer at familien kan ha behov for oppfølging dersom Gretes helsetilstand
+                  forverres.
+                </p>
+                <ul className="ml-4 list-disc space-y-1">
+                  <li>Etablere kontakt med Grete</li>
+                  <li>Kartlegge Ellings hverdag og nettverk</li>
+                  <li>Vurdere støtte ved endret omsorgssituasjon</li>
+                </ul>
+                <p className="text-xs leading-relaxed text-base-content/55 float-end pr-6">
+                  Dr. Haug
+                </p>
+              </div>
+            </article>
+          </div>
         ) : (
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
@@ -485,7 +516,22 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
       <Panel>
         <SectionTitle>Løft bevis til saken</SectionTitle>
         {!latest ? (
-          <EmptyState>Casework-delen låser seg ikke opp før rommet har svart.</EmptyState>
+          <div className="rounded-box border border-success/30 bg-success/10 p-4">
+            <div className="font-black uppercase tracking-[0.18em] text-success">Første mål</div>
+            <p className="mt-2 text-sm leading-relaxed text-base-content/75">
+              {initialConcernObjective}. Ikke løs Elling ennå — finn inngangen saken faktisk har.
+            </p>
+            <button
+              className="btn btn-success mt-4"
+              onClick={() => store.callGreteFromConcernReport()}
+            >
+              {initialConcernAction}
+            </button>
+            <p className="mt-3 text-xs leading-relaxed text-base-content/55">
+              Grete svarer. Hun er ikke bakgrunn; hun er infrastrukturen som gjør første kontakt
+              mulig.
+            </p>
+          </div>
         ) : (
           <>
             <div className="grid gap-2">

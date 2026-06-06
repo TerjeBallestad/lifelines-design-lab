@@ -36,7 +36,7 @@ export class RootStore {
     ellingState: 'prickly',
   };
 
-  labMode: 'apartment' | 'desk' = 'apartment';
+  labMode: 'apartment' | 'desk' = 'desk';
   selectedApproachId: PhoneApproachId = 'none';
   selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
   frankStance: FrankStance = 'matter_of_fact';
@@ -76,6 +76,13 @@ export class RootStore {
 
   applyDeskVedtak(id: PhoneApproachId): void {
     this.setApproach(id);
+    this.labMode = 'apartment';
+  }
+
+  callGreteFromConcernReport(): void {
+    this.setApproach('grete_primes_first');
+    this.client.trust = Math.min(1, this.client.trust + 0.06);
+    this.room.lastFriction = 'Grete still carries the doorway';
     this.labMode = 'apartment';
   }
 
@@ -160,7 +167,7 @@ export class RootStore {
     this.room = { ...startingRoom };
     this.attempts = [];
     this.selectedDeskEvidenceIds = [];
-    this.labMode = 'apartment';
+    this.labMode = 'desk';
   }
 
   get selectedDie(): DiePoolItem | undefined {
