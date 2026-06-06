@@ -140,7 +140,9 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="badge badge-lg badge-neutral">Dag {store.day}</div>
+              <div className="badge badge-lg badge-info">Handlinger {store.dayActions}/2</div>
               <button className="btn btn-outline btn-accent" onClick={() => store.rollNewDay()}>
                 Ny dag
               </button>
@@ -608,6 +610,42 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             </article>
           </div>
         )}
+        {store.financialStatementVisible ? (
+          <article className="mt-4 rounded-box border border-info/30 bg-info/10 p-4">
+            <div className="badge badge-info mb-3">Dokument: Kontoutskrift</div>
+            <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
+              <p>
+                Grete betaler husleie, strøm og telefon fra samme konto. Elling har små inntekter
+                inn, men ingen faste trekk i eget navn.
+              </p>
+              <p>
+                <strong>Merknad:</strong> Dersom Grete faller bort, blir leiligheten et praktisk
+                spørsmål før den blir et omsorgsspørsmål.
+              </p>
+            </div>
+          </article>
+        ) : store.financialStatementRequested ? (
+          <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-sm">
+            <span>Kontoutskrift bestilt. Dokumentet ventes neste dag.</span>
+          </div>
+        ) : null}
+        {store.socialVisitScheduled ? (
+          <div className="alert alert-success mt-3 border-success/30 bg-success/10 text-sm">
+            <span>Sosialt besøk avtalt. Grete setter fram kaffe før Frank kommer.</span>
+          </div>
+        ) : null}
+        {store.caseLog.length ? (
+          <div className="mt-4 rounded-box border border-base-content/10 bg-base-200 p-3">
+            <div className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-base-content/50">
+              Sakslogg
+            </div>
+            <ol className="grid gap-1 text-xs leading-relaxed text-base-content/65">
+              {store.caseLog.map((entry) => (
+                <li key={entry}>{entry}</li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
       </Panel>
 
       <Panel>
@@ -632,11 +670,29 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 Nye handlinger
               </div>
               <div className="mt-4 grid gap-2">
-                <button className="btn btn-outline btn-success justify-start" type="button">
-                  {requestFinancialStatementAction}
+                <button
+                  className="btn btn-outline btn-success justify-start"
+                  type="button"
+                  onClick={() => store.requestFinancialStatement()}
+                  disabled={
+                    store.dayActions <= 0 ||
+                    store.financialStatementRequested ||
+                    store.financialStatementVisible
+                  }
+                >
+                  {store.financialStatementVisible
+                    ? 'Kontoutskrift mottatt'
+                    : store.financialStatementRequested
+                      ? 'Kontoutskrift bestilt'
+                      : requestFinancialStatementAction}
                 </button>
-                <button className="btn btn-outline btn-success justify-start" type="button">
-                  {scheduleSocialVisitAction}
+                <button
+                  className="btn btn-outline btn-success justify-start"
+                  type="button"
+                  onClick={() => store.scheduleSocialVisit()}
+                  disabled={store.dayActions <= 0 || store.socialVisitScheduled}
+                >
+                  {store.socialVisitScheduled ? 'Sosialt besøk avtalt' : scheduleSocialVisitAction}
                 </button>
               </div>
             </div>

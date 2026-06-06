@@ -36,8 +36,11 @@ The generator never emits the verdict.
   - `Legg rapporten på pulten`
   - `Frankrapport · Første kontakt`
   - `Be om kontoutskrift`
+  - `Kontoutskrift bestilt`
+  - `Ny dag`
+  - `Dokument: Kontoutskrift`
   - `Avtal sosialt besøk`
-- screenshot capture for the start/call/report states
+- screenshot capture for the start/call/report/finance states
 - browser console error checks
 - Slice A visible/source checks for required terms and banned meta-copy
 

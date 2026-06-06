@@ -178,6 +178,32 @@ async function smokeBrowserFlow() {
     await expectVisible(page, 'Avtal sosialt besøk', checks, 'Social visit action appears');
     await capture(page, screenshots, flow, '03-report-next-actions', 'Report and next actions');
 
+    await page.getByRole('button', { name: 'Be om kontoutskrift' }).click();
+    await expectVisible(
+      page,
+      'Kontoutskrift bestilt',
+      checks,
+      'Financial request schedules next-day document',
+    );
+    await expectVisible(page, 'Handlinger 1/2', checks, 'Financial request spends one day action');
+    await capture(page, screenshots, flow, '04-finance-requested', 'Financial statement requested');
+
+    await page.getByRole('button', { name: 'Ny dag' }).click();
+    await expectVisible(
+      page,
+      'Dokument: Kontoutskrift',
+      checks,
+      'Next day resolves financial statement document',
+    );
+    await expectVisible(
+      page,
+      'Grete betaler husleie',
+      checks,
+      'Financial document gives concrete case evidence',
+    );
+    await expectVisible(page, 'Handlinger 2/2', checks, 'Next day restores day actions');
+    await capture(page, screenshots, flow, '05-finance-document', 'Financial statement document');
+
     checks.push({
       claim: 'Playwright clickthrough has no browser console errors',
       result:
@@ -250,6 +276,8 @@ function checkVisibleSource() {
     'frankrapport',
     'første kontakt',
     'kontoutskrift',
+    'kontoutskrift bestilt',
+    'grete betaler husleie',
     'sosialt besøk',
   ];
   const bannedVisible = [

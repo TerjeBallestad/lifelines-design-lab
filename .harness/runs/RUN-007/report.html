@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RUN-007 — Agent Harness Report</title>
+<style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin: 2rem; max-width: 1120px; line-height: 1.5; color: #171717; }
+  code { background: #f2f2f2; padding: 0.1rem 0.25rem; border-radius: 4px; }
+  a { color: #164e9f; }
+  .status { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px; background: #111; color: white; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .card, .step { border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin: 1rem 0; background: #fff; }
+  .muted { color: #666; }
+  .pass { border-left: 6px solid #15803d; }
+  .pivot, .force_pivot { border-left: 6px solid #ca8a04; }
+  .reject, .infra_fail, .failed { border-left: 6px solid #b91c1c; }
+  .timeline { list-style: none; padding-left: 0; }
+  .timeline li { padding: .35rem 0; border-bottom: 1px solid #eee; }
+  details { margin: .5rem 0; }
+  summary { cursor: pointer; font-weight: 650; }
+  pre { overflow-x: auto; background: #f7f7f7; padding: .75rem; border-radius: 8px; }
+</style>
+</head>
+<body>
+<h1>RUN-007 — Agent Harness Report</h1>
+<p><span class="status">COMPLETE</span> Verdict: <strong>PASS</strong></p>
+<p class="muted">Created 2026-06-06T19:40:22.708Z · Updated 2026-06-06T19:40:26.517Z</p>
+
+<h2>Goal</h2>
+<p>Verify Slice B financial request with Playwright clickthrough</p>
+
+<h2>Overview</h2>
+<div class="grid">
+<section class="card pass">
+  <h3>slice-a-generic-harness-smoke</h3>
+  <p><strong>Verify current Slice A through generic agent-harness</strong></p>
+  <p>Status: <strong>PASS</strong><br>Verdict: <strong>PASS</strong><br>Attempt: 1</p>
+  <p>Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.</p>
+</section>
+</div>
+
+<h2>Sprints</h2>
+<section class="step pass">
+  <h3>slice-a-generic-harness-smoke — Verify current Slice A through generic agent-harness</h3>
+  <p>Status: <strong>PASS</strong> · Verdict: <strong>PASS</strong> · Attempt: 1</p>
+  <p>Verify Slice B financial request with Playwright clickthrough
+
+Use this as an adapter smoke: prove the generic harness can negotiate a definition of done, run project verifiers, and expose the evidence without changing gameplay code.</p>
+  <p><strong>Summary:</strong> Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.</p>
+  <h4>Contract negotiation</h4>
+  <p>Status: <strong>AGREED</strong> · Verdict: <strong>PASS</strong> · Rounds: 1</p>
+  <details open><summary>Agreed contract</summary><pre>{
+  &quot;title&quot;: &quot;Slice A generic harness adapter definition of done&quot;,
+  &quot;summary&quot;: &quot;The adapter run is done when the generic harness shows an agreed contract, project-owned verifier evidence, and an evaluator judgment over the existing Slice A player flow.&quot;,
+  &quot;deterministicChecks&quot;: [
+    &quot;npm test passes&quot;,
+    &quot;npm run build passes&quot;,
+    &quot;Local Vite web UI serves index.html&quot;,
+    &quot;Visible/source evidence contains bekymringsmelding, Ring Grete, Frankrapport, kontoutskrift, sosialt besøk, and avoids banned meta copy&quot;
+  ],
+  &quot;qualitativeChecks&quot;: [
+    &quot;Slice A remains narrow: desk → Grete call → Frank report → next actions&quot;,
+    &quot;The report and next actions are game-world surfaces, not design explanation&quot;,
+    &quot;The harness report exposes what planner/generator/evaluator/verifier did&quot;
+  ],
+  &quot;evidence&quot;: [
+    &quot;web-ui-smoke verifier&quot;,
+    &quot;report.html raw IO drilldown&quot;,
+    &quot;report.json normalized summary&quot;
+  ],
+  &quot;nonGoalsAccepted&quot;: [
+    &quot;Do not implement Slice B gameplay in the adapter smoke&quot;,
+    &quot;Do not introduce a fourth implementor role&quot;,
+    &quot;Do not let generator emit final verdicts&quot;,
+    &quot;Do not use project-specific logic inside the generic agent-harness package&quot;
+  ]
+}</pre></details>
+  <details><summary>Round 1 — evaluator PASS</summary>
+    <p><strong>Generator:</strong> Generator proposed a concrete Slice A harness-smoke definition of done.</p>
+    <p><strong>Evaluator:</strong> Evaluator agrees the contract is narrow, verifiable, and player-facing.</p>
+    
+  </details>
+  <h4>Initial acceptance contract</h4><ul><li><code>contract</code> Generator and evaluator agree on a concrete definition of done before implementation/review.</li><li><code>test</code> Project tests and build pass as verifier evidence.</li><li><code>trace</code> Web UI smoke evidence confirms Slice A visible flow terms are present and the app serves locally.</li><li><code>judge</code> Evaluator judges the artifact from player-facing Slice A readability, not code style.</li></ul>
+  <h4>Verifier evidence</h4><section class="card">
+    <p><strong>web-ui-smoke</strong> — done · exit 0</p>
+    <p>Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.</p>
+    <ul><li><code>PASS</code> npm test passes</li><li><code>PASS</code> npm run build passes</li><li><code>PASS</code> Initial Case Desk is visible</li><li><code>PASS</code> Initial concern document is visible</li><li><code>PASS</code> Ring Grete action is visible</li><li><code>PASS</code> Ring Grete opens Frank phone scene</li><li><code>PASS</code> Phone scene includes phone note</li><li><code>PASS</code> Phone scene exposes report action</li><li><code>PASS</code> Report appears on desk after call</li><li><code>PASS</code> Financial statement action appears</li><li><code>PASS</code> Social visit action appears</li><li><code>PASS</code> Financial request schedules next-day document</li><li><code>PASS</code> Financial request spends one day action</li><li><code>PASS</code> Next day resolves financial statement document</li><li><code>PASS</code> Financial document gives concrete case evidence</li><li><code>PASS</code> Next day restores day actions</li><li><code>PASS</code> Playwright clickthrough has no browser console errors</li><li><code>PASS</code> Slice A source contains bekymringsmelding</li><li><code>PASS</code> Slice A source contains etabler kontakt med grete</li><li><code>PASS</code> Slice A source contains ring grete</li><li><code>PASS</code> Slice A source contains frank_call</li><li><code>PASS</code> Slice A source contains frankrapport</li><li><code>PASS</code> Slice A source contains første kontakt</li><li><code>PASS</code> Slice A source contains kontoutskrift</li><li><code>PASS</code> Slice A source contains kontoutskrift bestilt</li><li><code>PASS</code> Slice A source contains grete betaler husleie</li><li><code>PASS</code> Slice A source contains sosialt besøk</li><li><code>PASS</code> Visible/source text avoids rapporten gir ikke svar</li><li><code>PASS</code> Visible/source text avoids ikke løs elling</li><li><code>PASS</code> Visible/source text avoids hva spilleren lærer</li><li><code>PASS</code> Visible/source text avoids infrastrukturen</li></ul>
+  </section>
+  <h4>Evaluator judgments</h4><ul><li><code>PASS</code> The generic harness run is inspectable enough to see contract, verifier evidence, and final judgment. · confidence high<br>report.html/report.json and raw role IO are produced by the generic harness.</li><li><code>PASS</code> Current Slice A remains a player-facing casework loop rather than meta explanation. · confidence medium<br>Verifier checks passed for required terms and banned meta phrases.</li></ul>
+  <h4>Artifacts</h4><ul><li><code>brief</code> <a href="artifacts/generator-implementation.md">artifacts/generator-implementation.md</a> — Generator implementation note</li><li><code>log</code> <a href="artifacts/npm-test.txt">artifacts/npm-test.txt</a> — npm test output</li><li><code>log</code> <a href="artifacts/npm-build.txt">artifacts/npm-build.txt</a> — npm run build output</li><li><code>trace</code> <a href="artifacts/browser-flow.json">artifacts/browser-flow.json</a> — Playwright browser clickthrough trace</li><li><code>screenshot</code> <a href="artifacts/01-case-desk-start.png">artifacts/01-case-desk-start.png</a> — Case Desk start</li><li><code>screenshot</code> <a href="artifacts/02-frank-call.png">artifacts/02-frank-call.png</a> — Frank call scene</li><li><code>screenshot</code> <a href="artifacts/03-report-next-actions.png">artifacts/03-report-next-actions.png</a> — Report and next actions</li><li><code>screenshot</code> <a href="artifacts/04-finance-requested.png">artifacts/04-finance-requested.png</a> — Financial statement requested</li><li><code>screenshot</code> <a href="artifacts/05-finance-document.png">artifacts/05-finance-document.png</a> — Financial statement document</li><li><code>trace</code> <a href="artifacts/slice-a-visible-source-check.json">artifacts/slice-a-visible-source-check.json</a> — Slice A visible source check</li><li><code>review</code> <a href="artifacts/evaluator-review.md">artifacts/evaluator-review.md</a> — Evaluator user-perspective review</li></ul>
+  
+  <h4>Notes</h4><ul><li>No source edits were needed for this smoke run.</li><li>Evaluator judged verifier evidence from player-facing Slice A readability, not implementation style.</li></ul>
+  <details>
+    <summary>Raw role IO</summary>
+    <ul>
+      <li><a href="roles/planner/input.json">planner input</a> · <a href="roles/planner/output.json">output</a> · <a href="roles/planner/stdout.txt">stdout</a> · <a href="roles/planner/stderr.txt">stderr</a></li>
+      <li>contract round 1: <a href="sprints/slice-a-generic-harness-smoke/attempt-001/contract/round-001/generator/input.json">generator input</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/contract/round-001/generator/output.json">generator output</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/contract/round-001/evaluator/input.json">evaluator input</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/contract/round-001/evaluator/output.json">evaluator output</a></li>
+      <li><a href="sprints/slice-a-generic-harness-smoke/attempt-001/generator/input.json">generator input</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/generator/output.json">output</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/generator/stdout.txt">stdout</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/generator/stderr.txt">stderr</a></li>
+      <li>verifier web-ui-smoke: <a href="sprints/slice-a-generic-harness-smoke/attempt-001/verifiers/web-ui-smoke/input.json">input</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/verifiers/web-ui-smoke/output.json">output</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/verifiers/web-ui-smoke/stdout.txt">stdout</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/verifiers/web-ui-smoke/stderr.txt">stderr</a></li>
+      <li><a href="sprints/slice-a-generic-harness-smoke/attempt-001/evaluator/input.json">evaluator input</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/evaluator/output.json">output</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/evaluator/stdout.txt">stdout</a> · <a href="sprints/slice-a-generic-harness-smoke/attempt-001/evaluator/stderr.txt">stderr</a></li>
+    </ul>
+  </details>
+</section>
+<h2>Steps</h2>
+<section class="step pass">
+    <h3>slice-a-generic-harness-smoke — Verify current Slice A through generic agent-harness</h3>
+    <p>Status: <strong>DONE</strong> · Verdict: <strong>PASS</strong> · Attempt: 1</p>
+    <p>Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.</p>
+    <h4>Artifacts</h4><ul><li><code>brief</code> <a href="artifacts/generator-implementation.md">artifacts/generator-implementation.md</a> — Generator implementation note</li><li><code>log</code> <a href="artifacts/npm-test.txt">artifacts/npm-test.txt</a> — npm test output</li><li><code>log</code> <a href="artifacts/npm-build.txt">artifacts/npm-build.txt</a> — npm run build output</li><li><code>trace</code> <a href="artifacts/browser-flow.json">artifacts/browser-flow.json</a> — Playwright browser clickthrough trace</li><li><code>screenshot</code> <a href="artifacts/01-case-desk-start.png">artifacts/01-case-desk-start.png</a> — Case Desk start</li><li><code>screenshot</code> <a href="artifacts/02-frank-call.png">artifacts/02-frank-call.png</a> — Frank call scene</li><li><code>screenshot</code> <a href="artifacts/03-report-next-actions.png">artifacts/03-report-next-actions.png</a> — Report and next actions</li><li><code>screenshot</code> <a href="artifacts/04-finance-requested.png">artifacts/04-finance-requested.png</a> — Financial statement requested</li><li><code>screenshot</code> <a href="artifacts/05-finance-document.png">artifacts/05-finance-document.png</a> — Financial statement document</li><li><code>trace</code> <a href="artifacts/slice-a-visible-source-check.json">artifacts/slice-a-visible-source-check.json</a> — Slice A visible source check</li><li><code>review</code> <a href="artifacts/evaluator-review.md">artifacts/evaluator-review.md</a> — Evaluator user-perspective review</li></ul>
+    <h4>Notes</h4><ul><li>No source edits were needed for this smoke run.</li><li>Evaluator judged verifier evidence from player-facing Slice A readability, not implementation style.</li></ul>
+  </section>
+
+<h2>Role timeline</h2>
+<ul class="timeline">
+<li><code>2026-06-06T19:40:22.709Z</code> run_created</li>
+<li><code>2026-06-06T19:40:22.745Z</code> planner_completed</li>
+<li><code>2026-06-06T19:40:22.745Z</code> sprint_started · slice-a-generic-harness-smoke</li>
+<li><code>2026-06-06T19:40:22.780Z</code> generator_completed</li>
+<li><code>2026-06-06T19:40:22.813Z</code> evaluator_completed</li>
+<li><code>2026-06-06T19:40:22.814Z</code> contract_round_reviewed · slice-a-generic-harness-smoke · round 1 · PASS</li>
+<li><code>2026-06-06T19:40:22.847Z</code> generator_completed</li>
+<li><code>2026-06-06T19:40:26.516Z</code> evaluator_completed</li>
+<li><code>2026-06-06T19:40:26.516Z</code> sprint_evaluated · slice-a-generic-harness-smoke · PASS</li>
+<li><code>2026-06-06T19:40:26.517Z</code> run_completed · PASS</li>
+</ul>
+
+<h2>Raw index</h2>
+<p><a href="report.json">report.json</a> contains the normalized overview used by this report.</p>
+</body>
+</html>

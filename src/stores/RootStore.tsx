@@ -38,6 +38,12 @@ export class RootStore {
 
   labMode: 'apartment' | 'desk' | 'frank_call' = 'desk';
   firstContactReportVisible = false;
+  day = 1;
+  dayActions = 2;
+  financialStatementRequested = false;
+  financialStatementVisible = false;
+  socialVisitScheduled = false;
+  caseLog: string[] = [];
   selectedApproachId: PhoneApproachId = 'none';
   selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
   frankStance: FrankStance = 'matter_of_fact';
@@ -122,14 +128,49 @@ export class RootStore {
   }
 
   rollNewDay(): void {
-    const seed = this.attempts.length + 7;
+    const seed = this.attempts.length + this.day + 7;
     const faces = Array.from(
       { length: 5 },
       (_, index) => (((seed * 11 + index * 7) % 6) + 1) as DieFace,
     );
+    this.day += 1;
+    this.dayActions = 2;
+    if (this.financialStatementRequested && !this.financialStatementVisible) {
+      this.financialStatementVisible = true;
+      this.financialStatementRequested = false;
+      this.caseLog = [
+        ...this.caseLog,
+        `Dag ${this.day}: kontoutskriften kom inn og ligger på pulten.`,
+      ];
+    } else {
+      this.caseLog = [...this.caseLog, `Dag ${this.day}: ny arbeidsdag i saken.`];
+    }
     this.dicePool = makeDicePool(faces);
     this.selectedDieId = this.dicePool[0].id;
     this.room.lastFriction = 'new day / fresh capacity';
+  }
+
+  requestFinancialStatement(): void {
+    if (
+      !this.firstContactReportVisible ||
+      this.financialStatementRequested ||
+      this.financialStatementVisible
+    ) {
+      return;
+    }
+    if (!this.spendDayAction()) return;
+    this.financialStatementRequested = true;
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Frank ber om kontoutskrift. Den ventes neste dag.`,
+    ];
+  }
+
+  scheduleSocialVisit(): void {
+    if (!this.firstContactReportVisible || this.socialVisitScheduled) return;
+    if (!this.spendDayAction()) return;
+    this.socialVisitScheduled = true;
+    this.caseLog = [...this.caseLog, `Dag ${this.day}: sosialt besøk avtales med Grete.`];
   }
 
   runAttempt(): void {
@@ -175,6 +216,18 @@ export class RootStore {
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
     this.firstContactReportVisible = false;
+    this.day = 1;
+    this.dayActions = 2;
+    this.financialStatementRequested = false;
+    this.financialStatementVisible = false;
+    this.socialVisitScheduled = false;
+    this.caseLog = [];
+  }
+
+  private spendDayAction(): boolean {
+    if (this.dayActions <= 0) return false;
+    this.dayActions -= 1;
+    return true;
   }
 
   get selectedDie(): DiePoolItem | undefined {

@@ -1,0 +1,647 @@
+{
+  "verifiers": [
+    {
+      "id": "web-ui-smoke",
+      "status": "done",
+      "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+      "artifacts": [
+        {
+          "kind": "log",
+          "path": "artifacts/npm-test.txt",
+          "title": "npm test output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-build.txt",
+          "title": "npm run build output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/browser-flow.json",
+          "title": "Playwright browser clickthrough trace",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "interactive-ui"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/01-case-desk-start.png",
+          "title": "Case Desk start",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/02-frank-call.png",
+          "title": "Frank call scene",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/03-report-next-actions.png",
+          "title": "Report and next actions",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/04-finance-requested.png",
+          "title": "Financial statement requested",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/05-finance-document.png",
+          "title": "Financial statement document",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/slice-a-visible-source-check.json",
+          "title": "Slice A visible source check",
+          "role": "evaluator",
+          "tags": [
+            "source",
+            "player-facing"
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "claim": "npm test passes",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/npm-test.txt"
+          ]
+        },
+        {
+          "claim": "npm run build passes",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/npm-build.txt"
+          ]
+        },
+        {
+          "claim": "Initial Case Desk is visible",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Initial concern document is visible",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Ring Grete action is visible",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Ring Grete opens Frank phone scene",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Phone scene includes phone note",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Phone scene exposes report action",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Report appears on desk after call",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Financial statement action appears",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Social visit action appears",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Financial request schedules next-day document",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Financial request spends one day action",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Next day resolves financial statement document",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Financial document gives concrete case evidence",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Next day restores day actions",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Playwright clickthrough has no browser console errors",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/browser-flow.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains bekymringsmelding",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains etabler kontakt med grete",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains ring grete",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains frank_call",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains frankrapport",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains første kontakt",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains kontoutskrift",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains kontoutskrift bestilt",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains grete betaler husleie",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains sosialt besøk",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids rapporten gir ikke svar",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids ikke løs elling",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids hva spilleren lærer",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids infrastrukturen",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        }
+      ],
+      "notes": [],
+      "raw": {
+        "status": "done",
+        "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+        "checks": [
+          {
+            "claim": "npm test passes",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/npm-test.txt"
+            ]
+          },
+          {
+            "claim": "npm run build passes",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/npm-build.txt"
+            ]
+          },
+          {
+            "claim": "Initial Case Desk is visible",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Initial concern document is visible",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Ring Grete action is visible",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Ring Grete opens Frank phone scene",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Phone scene includes phone note",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Phone scene exposes report action",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Report appears on desk after call",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Financial statement action appears",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Social visit action appears",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Financial request schedules next-day document",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Financial request spends one day action",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Next day resolves financial statement document",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Financial document gives concrete case evidence",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Next day restores day actions",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Playwright clickthrough has no browser console errors",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/browser-flow.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains bekymringsmelding",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains etabler kontakt med grete",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains ring grete",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains frank_call",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains frankrapport",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains første kontakt",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains kontoutskrift",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains kontoutskrift bestilt",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains grete betaler husleie",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains sosialt besøk",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids rapporten gir ikke svar",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids ikke løs elling",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids hva spilleren lærer",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids infrastrukturen",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "kind": "log",
+            "path": "artifacts/npm-test.txt",
+            "title": "npm test output",
+            "role": "system",
+            "tags": [
+              "deterministic"
+            ]
+          },
+          {
+            "kind": "log",
+            "path": "artifacts/npm-build.txt",
+            "title": "npm run build output",
+            "role": "system",
+            "tags": [
+              "deterministic"
+            ]
+          },
+          {
+            "kind": "trace",
+            "path": "artifacts/browser-flow.json",
+            "title": "Playwright browser clickthrough trace",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "interactive-ui"
+            ]
+          },
+          {
+            "kind": "screenshot",
+            "path": "artifacts/01-case-desk-start.png",
+            "title": "Case Desk start",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "visual"
+            ]
+          },
+          {
+            "kind": "screenshot",
+            "path": "artifacts/02-frank-call.png",
+            "title": "Frank call scene",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "visual"
+            ]
+          },
+          {
+            "kind": "screenshot",
+            "path": "artifacts/03-report-next-actions.png",
+            "title": "Report and next actions",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "visual"
+            ]
+          },
+          {
+            "kind": "screenshot",
+            "path": "artifacts/04-finance-requested.png",
+            "title": "Financial statement requested",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "visual"
+            ]
+          },
+          {
+            "kind": "screenshot",
+            "path": "artifacts/05-finance-document.png",
+            "title": "Financial statement document",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "playwright",
+              "visual"
+            ]
+          },
+          {
+            "kind": "trace",
+            "path": "artifacts/slice-a-visible-source-check.json",
+            "title": "Slice A visible source check",
+            "role": "evaluator",
+            "tags": [
+              "source",
+              "player-facing"
+            ]
+          }
+        ],
+        "notes": []
+      },
+      "code": 0,
+      "completedAt": "2026-06-06T19:40:26.478Z"
+    }
+  ]
+}

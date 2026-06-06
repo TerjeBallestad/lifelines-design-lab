@@ -179,6 +179,29 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('apartment');
   });
 
+  it('schedules the Slice B financial request and resolves the document on the next day', () => {
+    const store = new RootStore();
+    store.callGreteFromConcernReport();
+    store.completeGreteCall();
+
+    expect(store.day).toBe(1);
+    expect(store.dayActions).toBe(2);
+    store.requestFinancialStatement();
+
+    expect(store.dayActions).toBe(1);
+    expect(store.financialStatementRequested).toBe(true);
+    expect(store.financialStatementVisible).toBe(false);
+    expect(store.caseLog.at(-1)).toContain('kontoutskrift');
+
+    store.rollNewDay();
+
+    expect(store.day).toBe(2);
+    expect(store.dayActions).toBe(2);
+    expect(store.financialStatementRequested).toBe(false);
+    expect(store.financialStatementVisible).toBe(true);
+    expect(store.caseLog.at(-1)).toContain('ligger på pulten');
+  });
+
   it('protects the ring-ring phone ladder and complication clock', () => {
     const visibleText = visibleSourceText();
     expect(visibleText).toContain('ring ring');
