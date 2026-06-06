@@ -1,0 +1,1137 @@
+{
+  "id": "RUN-008",
+  "status": "COMPLETE",
+  "verdict": "PASS",
+  "goal": "Verify Slice C social visit apartment reveal with Playwright",
+  "createdAt": "2026-06-06T20:00:57.829Z",
+  "updatedAt": "2026-06-06T20:01:01.931Z",
+  "sprints": [
+    {
+      "id": "slice-a-generic-harness-smoke",
+      "title": "Verify current Slice A through generic agent-harness",
+      "status": "PASS",
+      "verdict": "PASS",
+      "attempt": 1,
+      "summary": "Evaluator passes the adapter smoke: verifier evidence supports the current Slice A player flow and the run is inspectable.",
+      "artifacts": [
+        {
+          "kind": "brief",
+          "path": "artifacts/generator-implementation.md",
+          "title": "Generator implementation note",
+          "role": "generator"
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-test.txt",
+          "title": "npm test output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-build.txt",
+          "title": "npm run build output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/browser-flow.json",
+          "title": "Playwright browser clickthrough trace",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "interactive-ui"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/01-case-desk-start.png",
+          "title": "Case Desk start",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/02-frank-call.png",
+          "title": "Frank call scene",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/03-report-next-actions.png",
+          "title": "Report and next actions",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/04-finance-requested.png",
+          "title": "Financial statement requested",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/05-finance-document.png",
+          "title": "Financial statement document",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/06-social-visit-scheduled.png",
+          "title": "Social visit scheduled",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/07-social-visit-apartment.png",
+          "title": "Social visit apartment reveal",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "screenshot",
+          "path": "artifacts/08-visit-report.png",
+          "title": "Social visit report",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "playwright",
+            "visual"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/slice-a-visible-source-check.json",
+          "title": "Slice A visible source check",
+          "role": "evaluator",
+          "tags": [
+            "source",
+            "player-facing"
+          ]
+        },
+        {
+          "kind": "review",
+          "path": "artifacts/evaluator-review.md",
+          "title": "Evaluator user-perspective review",
+          "role": "evaluator"
+        }
+      ],
+      "issues": [],
+      "judgments": [
+        {
+          "claim": "The generic harness run is inspectable enough to see contract, verifier evidence, and final judgment.",
+          "result": "PASS",
+          "confidence": "high",
+          "reasoning": "report.html/report.json and raw role IO are produced by the generic harness.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/04-finance-requested.png",
+            "artifacts/05-finance-document.png",
+            "artifacts/06-social-visit-scheduled.png",
+            "artifacts/07-social-visit-apartment.png",
+            "artifacts/08-visit-report.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Current Slice A remains a player-facing casework loop rather than meta explanation.",
+          "result": "PASS",
+          "confidence": "medium",
+          "reasoning": "Verifier checks passed for required terms and banned meta phrases.",
+          "evidence": [
+            "artifacts/npm-test.txt",
+            "artifacts/npm-build.txt",
+            "artifacts/browser-flow.json",
+            "artifacts/01-case-desk-start.png",
+            "artifacts/02-frank-call.png",
+            "artifacts/03-report-next-actions.png",
+            "artifacts/04-finance-requested.png",
+            "artifacts/05-finance-document.png",
+            "artifacts/06-social-visit-scheduled.png",
+            "artifacts/07-social-visit-apartment.png",
+            "artifacts/08-visit-report.png",
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        }
+      ],
+      "contract": {
+        "status": "AGREED",
+        "verdict": "PASS",
+        "summary": "Evaluator agrees the contract is narrow, verifiable, and player-facing.",
+        "rounds": 1
+      },
+      "verifiers": [
+        {
+          "id": "web-ui-smoke",
+          "status": "done",
+          "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+          "artifacts": [
+            {
+              "kind": "log",
+              "path": "artifacts/npm-test.txt",
+              "title": "npm test output",
+              "role": "system",
+              "tags": [
+                "deterministic"
+              ]
+            },
+            {
+              "kind": "log",
+              "path": "artifacts/npm-build.txt",
+              "title": "npm run build output",
+              "role": "system",
+              "tags": [
+                "deterministic"
+              ]
+            },
+            {
+              "kind": "trace",
+              "path": "artifacts/browser-flow.json",
+              "title": "Playwright browser clickthrough trace",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "interactive-ui"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/01-case-desk-start.png",
+              "title": "Case Desk start",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/02-frank-call.png",
+              "title": "Frank call scene",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/03-report-next-actions.png",
+              "title": "Report and next actions",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/04-finance-requested.png",
+              "title": "Financial statement requested",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/05-finance-document.png",
+              "title": "Financial statement document",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/06-social-visit-scheduled.png",
+              "title": "Social visit scheduled",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/07-social-visit-apartment.png",
+              "title": "Social visit apartment reveal",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "screenshot",
+              "path": "artifacts/08-visit-report.png",
+              "title": "Social visit report",
+              "role": "evaluator",
+              "tags": [
+                "web",
+                "playwright",
+                "visual"
+              ]
+            },
+            {
+              "kind": "trace",
+              "path": "artifacts/slice-a-visible-source-check.json",
+              "title": "Slice A visible source check",
+              "role": "evaluator",
+              "tags": [
+                "source",
+                "player-facing"
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "claim": "npm test passes",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/npm-test.txt"
+              ]
+            },
+            {
+              "claim": "npm run build passes",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/npm-build.txt"
+              ]
+            },
+            {
+              "claim": "Initial Case Desk is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Initial concern document is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Ring Grete action is visible",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Ring Grete opens Frank phone scene",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Phone scene includes phone note",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Phone scene exposes report action",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Report appears on desk after call",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial statement action appears",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit action appears",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial request schedules next-day document",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial request spends one day action",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Next day resolves financial statement document",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial document gives concrete case evidence",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Next day restores day actions",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit can be performed after scheduling",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit scheduling spends one day action",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit opens apartment reveal",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Visit shows Grete coffee scene",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Visit shows apartment mail clue",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Financial document appears physically in apartment",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Social visit returns a desk report",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Visit report states Grete as hidden practical support",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Playwright clickthrough has no browser console errors",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/browser-flow.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains bekymringsmelding",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains etabler kontakt med grete",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains ring grete",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains frank_call",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains frankrapport",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains første kontakt",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains kontoutskrift",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains kontoutskrift bestilt",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains grete betaler husleie",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains sosialt besøk",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains sosialt besøk hos grete",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains kaffe og kopper",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains post under avisen",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Slice A source contains besøksnotat",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids rapporten gir ikke svar",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids ikke løs elling",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids hva spilleren lærer",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            },
+            {
+              "claim": "Visible/source text avoids infrastrukturen",
+              "result": "PASS",
+              "evidence": [
+                "artifacts/slice-a-visible-source-check.json"
+              ]
+            }
+          ],
+          "notes": [],
+          "raw": {
+            "status": "done",
+            "summary": "Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.",
+            "checks": [
+              {
+                "claim": "npm test passes",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/npm-test.txt"
+                ]
+              },
+              {
+                "claim": "npm run build passes",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/npm-build.txt"
+                ]
+              },
+              {
+                "claim": "Initial Case Desk is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Initial concern document is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Ring Grete action is visible",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Ring Grete opens Frank phone scene",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Phone scene includes phone note",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Phone scene exposes report action",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Report appears on desk after call",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial statement action appears",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit action appears",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial request schedules next-day document",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial request spends one day action",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Next day resolves financial statement document",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial document gives concrete case evidence",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Next day restores day actions",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit can be performed after scheduling",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit scheduling spends one day action",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit opens apartment reveal",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Visit shows Grete coffee scene",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Visit shows apartment mail clue",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Financial document appears physically in apartment",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Social visit returns a desk report",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Visit report states Grete as hidden practical support",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Playwright clickthrough has no browser console errors",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/browser-flow.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains bekymringsmelding",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains etabler kontakt med grete",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains ring grete",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains frank_call",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains frankrapport",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains første kontakt",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains kontoutskrift",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains kontoutskrift bestilt",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains grete betaler husleie",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains sosialt besøk",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains sosialt besøk hos grete",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains kaffe og kopper",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains post under avisen",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Slice A source contains besøksnotat",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids rapporten gir ikke svar",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids ikke løs elling",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids hva spilleren lærer",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              },
+              {
+                "claim": "Visible/source text avoids infrastrukturen",
+                "result": "PASS",
+                "evidence": [
+                  "artifacts/slice-a-visible-source-check.json"
+                ]
+              }
+            ],
+            "artifacts": [
+              {
+                "kind": "log",
+                "path": "artifacts/npm-test.txt",
+                "title": "npm test output",
+                "role": "system",
+                "tags": [
+                  "deterministic"
+                ]
+              },
+              {
+                "kind": "log",
+                "path": "artifacts/npm-build.txt",
+                "title": "npm run build output",
+                "role": "system",
+                "tags": [
+                  "deterministic"
+                ]
+              },
+              {
+                "kind": "trace",
+                "path": "artifacts/browser-flow.json",
+                "title": "Playwright browser clickthrough trace",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "interactive-ui"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/01-case-desk-start.png",
+                "title": "Case Desk start",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/02-frank-call.png",
+                "title": "Frank call scene",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/03-report-next-actions.png",
+                "title": "Report and next actions",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/04-finance-requested.png",
+                "title": "Financial statement requested",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/05-finance-document.png",
+                "title": "Financial statement document",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/06-social-visit-scheduled.png",
+                "title": "Social visit scheduled",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/07-social-visit-apartment.png",
+                "title": "Social visit apartment reveal",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "screenshot",
+                "path": "artifacts/08-visit-report.png",
+                "title": "Social visit report",
+                "role": "evaluator",
+                "tags": [
+                  "web",
+                  "playwright",
+                  "visual"
+                ]
+              },
+              {
+                "kind": "trace",
+                "path": "artifacts/slice-a-visible-source-check.json",
+                "title": "Slice A visible source check",
+                "role": "evaluator",
+                "tags": [
+                  "source",
+                  "player-facing"
+                ]
+              }
+            ],
+            "notes": []
+          },
+          "code": 0,
+          "completedAt": "2026-06-06T20:01:01.894Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "event": "run_created",
+      "ts": "2026-06-06T20:00:57.830Z"
+    },
+    {
+      "event": "planner_completed",
+      "ts": "2026-06-06T20:00:57.866Z"
+    },
+    {
+      "event": "sprint_started",
+      "sprint": "slice-a-generic-harness-smoke",
+      "attempt": 1,
+      "ts": "2026-06-06T20:00:57.866Z"
+    },
+    {
+      "event": "generator_completed",
+      "ts": "2026-06-06T20:00:57.900Z"
+    },
+    {
+      "event": "evaluator_completed",
+      "ts": "2026-06-06T20:00:57.937Z"
+    },
+    {
+      "event": "contract_round_reviewed",
+      "sprint": "slice-a-generic-harness-smoke",
+      "round": 1,
+      "verdict": "PASS",
+      "ts": "2026-06-06T20:00:57.937Z"
+    },
+    {
+      "event": "generator_completed",
+      "ts": "2026-06-06T20:00:57.973Z"
+    },
+    {
+      "event": "evaluator_completed",
+      "ts": "2026-06-06T20:01:01.930Z"
+    },
+    {
+      "event": "sprint_evaluated",
+      "sprint": "slice-a-generic-harness-smoke",
+      "verdict": "PASS",
+      "ts": "2026-06-06T20:01:01.930Z"
+    },
+    {
+      "event": "run_completed",
+      "verdict": "PASS",
+      "ts": "2026-06-06T20:01:01.931Z"
+    }
+  ]
+}

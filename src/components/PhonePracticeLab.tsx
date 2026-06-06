@@ -160,6 +160,18 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           >
             Apartment clocks
           </button>
+          {store.socialVisitScheduled ? (
+            <button
+              className={clsx(
+                'btn',
+                store.labMode === 'social_visit' ? 'btn-primary' : 'btn-outline',
+              )}
+              onClick={() => store.performSocialVisit()}
+              disabled={store.socialVisitReportVisible}
+            >
+              Sosialt besøk
+            </button>
+          ) : null}
           <button
             className={clsx('btn', store.labMode === 'desk' ? 'btn-primary' : 'btn-outline')}
             onClick={() => store.setLabMode('desk')}
@@ -439,6 +451,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
           </main>
         ) : store.labMode === 'frank_call' ? (
           <GreteCallSurface />
+        ) : store.labMode === 'social_visit' ? (
+          <SocialVisitSurface />
         ) : (
           <CaseDeskSurface />
         )}
@@ -499,6 +513,77 @@ const GreteCallSurface = observer(function GreteCallSurface() {
         </div>
         <button className="btn btn-success mt-5" onClick={() => store.completeGreteCall()}>
           Legg rapporten på pulten
+        </button>
+      </Panel>
+    </main>
+  );
+});
+
+const SocialVisitSurface = observer(function SocialVisitSurface() {
+  const store = useRootStore();
+
+  return (
+    <main className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <Panel>
+        <SectionTitle>Sosialt besøk hos Grete</SectionTitle>
+        <p className="text-sm leading-relaxed text-base-content/65">
+          Frank kommer inn i leiligheten mens Grete fortsatt gjør rommet praktisk og sosialt
+          lesbart.
+        </p>
+        <div className="relative mt-5 h-[520px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
+          <Zone className="left-8 top-8 h-36 w-64" label="kjøkkenbordet" />
+          <Zone className="right-10 top-10 h-36 w-56" label="lesestolen" />
+          <Zone className="bottom-12 right-14 h-36 w-52" label="gangen" />
+          <StageObject className="left-20 top-24">kaffe og kopper</StageObject>
+          <StageObject className="left-24 top-44 h-12 w-44">post under avisen</StageObject>
+          {store.financialStatementVisible ? (
+            <StageObject className="left-56 top-44 h-12 w-52">kontoutskrift på benken</StageObject>
+          ) : null}
+          <StageObject className="right-28 top-28">stol vendt bort</StageObject>
+          <Person label="Grete" tone="frank" position="left-28 top-28" />
+          <Person label="Frank" tone="frank" position="left-56 top-28" />
+          <Person label="Elling" tone="client" position="right-28 bottom-28" />
+          <PressureLabel className="left-48 top-12" active>
+            omsorgsarbeid
+          </PressureLabel>
+          <PressureLabel className="left-36 top-56" active>
+            uåpnet post
+          </PressureLabel>
+          <PressureLabel className="right-40 bottom-20" active>
+            holder avstand
+          </PressureLabel>
+        </div>
+      </Panel>
+
+      <Panel>
+        <SectionTitle>Det Frank ser</SectionTitle>
+        <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
+          <div className="rounded-box border border-success/30 bg-success/10 p-4">
+            <div className="font-bold">Grete holder samtalen i gang</div>
+            <p className="mt-1">
+              Hun setter fram kaffe, svarer før Elling rekker å si noe, og oversetter små pauser til
+              forklaringer Frank kan bruke.
+            </p>
+          </div>
+          <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
+            <div className="font-bold">Elling er til stede, men ikke med</div>
+            <p className="mt-1">
+              Han blir i utkanten av rommet. Ikke fiendtlig. Ikke trygg. Mest opptatt av at besøket
+              skal bli ferdig uten at noen krever en prestasjon.
+            </p>
+          </div>
+          <div className="rounded-box border border-info/30 bg-info/10 p-4">
+            <div className="font-bold">Dokumentet får plass i rommet</div>
+            <p className="mt-1">
+              {store.financialStatementVisible
+                ? 'Kontoutskriften ligger fysisk ved posten. Det økonomiske spørsmålet har en adresse i leiligheten.'
+                : 'Posten ligger synlig, men Frank mangler fortsatt dokumentet som forklarer hva den betyr.'}
+            </p>
+          </div>
+        </div>
+        <button className="btn btn-success mt-5" onClick={() => store.completeSocialVisit()}>
+          Skriv besøksnotat
         </button>
       </Panel>
     </main>
@@ -634,6 +719,21 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <span>Sosialt besøk avtalt. Grete setter fram kaffe før Frank kommer.</span>
           </div>
         ) : null}
+        {store.socialVisitReportVisible ? (
+          <article className="mt-4 rounded-box border border-success/30 bg-success/10 p-4">
+            <div className="badge badge-success mb-3">Besøksnotat: Grete bærer rommet</div>
+            <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
+              <p>
+                Frank beskriver kaffe, post og små avklaringer før han beskriver Elling. Grete gjør
+                mer arbeid enn saken først viste.
+              </p>
+              <p>
+                <strong>Usikkerhet:</strong> Elling kan bo i rommet, men det er uklart hvor mye av
+                rommet han faktisk driver selv.
+              </p>
+            </div>
+          </article>
+        ) : null}
         {store.caseLog.length ? (
           <div className="mt-4 rounded-box border border-base-content/10 bg-base-200 p-3">
             <div className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-base-content/50">
@@ -694,6 +794,15 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 >
                   {store.socialVisitScheduled ? 'Sosialt besøk avtalt' : scheduleSocialVisitAction}
                 </button>
+                {store.socialVisitScheduled && !store.socialVisitReportVisible ? (
+                  <button
+                    className="btn btn-success justify-start"
+                    type="button"
+                    onClick={() => store.performSocialVisit()}
+                  >
+                    Gjennomfør sosialt besøk
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>

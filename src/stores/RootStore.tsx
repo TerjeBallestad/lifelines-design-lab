@@ -36,8 +36,9 @@ export class RootStore {
     ellingState: 'prickly',
   };
 
-  labMode: 'apartment' | 'desk' | 'frank_call' = 'desk';
+  labMode: 'apartment' | 'desk' | 'frank_call' | 'social_visit' = 'desk';
   firstContactReportVisible = false;
+  socialVisitReportVisible = false;
   day = 1;
   dayActions = 2;
   financialStatementRequested = false;
@@ -69,7 +70,7 @@ export class RootStore {
     this.selectedSupportIds = [...this.selectedSupportIds.slice(-1), id];
   }
 
-  setLabMode(mode: 'apartment' | 'desk' | 'frank_call'): void {
+  setLabMode(mode: 'apartment' | 'desk' | 'frank_call' | 'social_visit'): void {
     this.labMode = mode;
   }
 
@@ -173,6 +174,24 @@ export class RootStore {
     this.caseLog = [...this.caseLog, `Dag ${this.day}: sosialt besøk avtales med Grete.`];
   }
 
+  performSocialVisit(): void {
+    if (!this.socialVisitScheduled || this.socialVisitReportVisible) return;
+    this.labMode = 'social_visit';
+  }
+
+  completeSocialVisit(): void {
+    if (!this.socialVisitScheduled) return;
+    this.socialVisitReportVisible = true;
+    this.room.lastFriction = this.financialStatementVisible
+      ? 'mail and coffee make Grete visible'
+      : 'coffee visit without documents';
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Frank kommer tilbake med notat fra sosialt besøk.`,
+    ];
+    this.labMode = 'desk';
+  }
+
   runAttempt(): void {
     const die = this.selectedDie;
     if (!die) return;
@@ -216,6 +235,7 @@ export class RootStore {
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
     this.firstContactReportVisible = false;
+    this.socialVisitReportVisible = false;
     this.day = 1;
     this.dayActions = 2;
     this.financialStatementRequested = false;

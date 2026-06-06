@@ -40,12 +40,16 @@ The generator never emits the verdict.
   - `Ny dag`
   - `Dokument: Kontoutskrift`
   - `Avtal sosialt besøk`
-- screenshot capture for the start/call/report/finance states
+  - `Gjennomfør sosialt besøk`
+  - `Sosialt besøk hos Grete`
+  - `Skriv besøksnotat`
+  - `Besøksnotat: Grete bærer rommet`
+- screenshot capture for the start/call/report/finance/social-visit states
 - browser console error checks
-- Slice A visible/source checks for required terms and banned meta-copy
+- visible/source checks for required terms and banned meta-copy
 
 It emits artifacts under `.harness/runs/RUN-*/artifacts/` for the evaluator and report.
 
 ## Current limitation
 
-This is now a real browser clickthrough, but still a narrow Slice A verifier. Slice B should extend the same verifier style instead of broadening the generic harness package: click the new casework action, capture the resulting desk/apartment evidence, and emit claim/evidence pairs for the evaluator.
+This is now a real browser clickthrough through Slice C. The verifier remains intentionally narrow and project-owned. Slice D should extend the same adapter: click Frank chat/observe, capture the new evidence chips, and prove the apartment observation feeds a desk decision without turning the generic harness into game logic.

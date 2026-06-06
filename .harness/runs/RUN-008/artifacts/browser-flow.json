@@ -1,0 +1,259 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:5199/",
+  "serverOutput": "\n> lifelines-design-lab@1.0.0 dev\n> vite --host 127.0.0.1 --port 5199 --strictPort\n\n\n  VITE v8.0.14  ready in 125 ms\n\n  ➜  Local:   http://127.0.0.1:5199/\n/*! 🌼 daisyUI 5.5.20 */\n",
+  "flow": [
+    {
+      "id": "01-case-desk-start",
+      "title": "Case Desk start",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 1 Handlinger 2/2 Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Dokument: Bekymringsmelding Pasient: Grete Halvorsen Gjelder: Elling Halvorsen (35 år) Grete oppgir at Elling bor hjemme, hun har 100% omsorg. Hun beskriver ham som “en smart gutt” og ønsker ikke videre tiltak nå. Lege vurderer at familien kan ha behov for oppfølging dersom Gretes helsetilstand forverres. Etablere kontakt med Grete Kartlegge Ellings hverdag og nettverk Vurdere støtte ved endret omsorgssituasjon Dr. Haug Handlinger FØRSTE MÅL Etabler kontakt med Grete. Ring Grete"
+    },
+    {
+      "id": "02-frank-call",
+      "title": "Frank call scene",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 1 Handlinger 2/2 Ny dag Nullstill Apartment clocks Case Desk Frank på telefon Frank ringer fra kontoret. Grete tar telefonen. F Frank ringer Grete TELEFONSAMTALE · OBSKURERT Frank Hei, dette er Frank Åsli. Jeg ringer fra sosialkontoret. Grete ☕ … … “smart gutt” … døråpning … Frank Vi trenger bare å forstå hverdagen litt bedre. Ikke mer enn det. Grete … passer på … ikke så lett … blir her … Telefonnotat Grete svarte selv. Samtalen ble ført med henne. Elling kom ikke til telefonen. Ny rapport Frankrapport · Første kontakt Legg rapporten på pulten"
+    },
+    {
+      "id": "03-report-next-actions",
+      "title": "Report and next actions",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 1 Handlinger 2/2 Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Handlinger NYE HANDLINGER Be om kontoutskrift Avtal sosialt besøk"
+    },
+    {
+      "id": "04-finance-requested",
+      "title": "Financial statement requested",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 1 Handlinger 1/2 Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Kontoutskrift bestilt. Dokumentet ventes neste dag. SAKSLOGG Dag 1: Frank ber om kontoutskrift. Den ventes neste dag. Handlinger NYE HANDLINGER Kontoutskrift bestilt Avtal sosialt besøk"
+    },
+    {
+      "id": "05-finance-document",
+      "title": "Financial statement document",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 2 Handlinger 2/2 Ny dag Nullstill Apartment clocks Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Dokument: Kontoutskrift Grete betaler husleie, strøm og telefon fra samme konto. Elling har små inntekter inn, men ingen faste trekk i eget navn. Merknad: Dersom Grete faller bort, blir leiligheten et praktisk spørsmål før den blir et omsorgsspørsmål. SAKSLOGG Dag 1: Frank ber om kontoutskrift. Den ventes neste dag. Dag 2: kontoutskriften kom inn og ligger på pulten. Handlinger NYE HANDLINGER Kontoutskrift mottatt Avtal sosialt besøk"
+    },
+    {
+      "id": "06-social-visit-scheduled",
+      "title": "Social visit scheduled",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 2 Handlinger 1/2 Ny dag Nullstill Apartment clocks Sosialt besøk Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Dokument: Kontoutskrift Grete betaler husleie, strøm og telefon fra samme konto. Elling har små inntekter inn, men ingen faste trekk i eget navn. Merknad: Dersom Grete faller bort, blir leiligheten et praktisk spørsmål før den blir et omsorgsspørsmål. Sosialt besøk avtalt. Grete setter fram kaffe før Frank kommer. SAKSLOGG Dag 1: Frank ber om kontoutskrift. Den ventes neste dag. Dag 2: kontoutskriften kom inn og ligger på pulten. Dag 2: sosialt besøk avtales med Grete. Handlinger NYE HANDLINGER Kontoutskrift mottatt Sosialt besøk avtalt Gjennomfør sosialt besøk"
+    },
+    {
+      "id": "07-social-visit-apartment",
+      "title": "Social visit apartment reveal",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 2 Handlinger 1/2 Ny dag Nullstill Apartment clocks Sosialt besøk Case Desk Sosialt besøk hos Grete Frank kommer inn i leiligheten mens Grete fortsatt gjør rommet praktisk og sosialt lesbart. kjøkkenbordet lesestolen gangen kaffe og kopper post under avisen kontoutskrift på benken stol vendt bort Grete Frank Elling OMSORGSARBEID UÅPNET POST HOLDER AVSTAND Det Frank ser Grete holder samtalen i gang Hun setter fram kaffe, svarer før Elling rekker å si noe, og oversetter små pauser til forklaringer Frank kan bruke. Elling er til stede, men ikke med Han blir i utkanten av rommet. Ikke fiendtlig. Ikke trygg. Mest opptatt av at besøket skal bli ferdig uten at noen krever en prestasjon. Dokumentet får plass i rommet Kontoutskriften ligger fysisk ved posten. Det økonomiske spørsmålet har en adresse i leiligheten. Skriv besøksnotat"
+    },
+    {
+      "id": "08-visit-report",
+      "title": "Social visit report",
+      "visibleText": "LIFELINES DESIGN LAB / M2 Telefonøving i stua Bekymringsmelding, hjemmebesøk, telefonøving og rapporter på pulten. Dag 2 Handlinger 1/2 Ny dag Nullstill Apartment clocks Sosialt besøk Case Desk Case Desk Dokumenter, rapporter og notater i saken. Frankrapport · Første kontakt Observasjon: Grete svarte raskt og førte samtalen. Hun omtaler Elling som “en smart gutt”. Usikkerhet: Elling deltok ikke direkte. Det er uklart om han kjenner til henvendelsen eller hva han selv forstår av saken. Anbefalt: innhent økonomisk oversikt og avtal et kort sosialt besøk før saken tolkes for hardt. Dokument: Kontoutskrift Grete betaler husleie, strøm og telefon fra samme konto. Elling har små inntekter inn, men ingen faste trekk i eget navn. Merknad: Dersom Grete faller bort, blir leiligheten et praktisk spørsmål før den blir et omsorgsspørsmål. Sosialt besøk avtalt. Grete setter fram kaffe før Frank kommer. Besøksnotat: Grete bærer rommet Frank beskriver kaffe, post og små avklaringer før han beskriver Elling. Grete gjør mer arbeid enn saken først viste. Usikkerhet: Elling kan bo i rommet, men det er uklart hvor mye av rommet han faktisk driver selv. SAKSLOGG Dag 1: Frank ber om kontoutskrift. Den ventes neste dag. Dag 2: kontoutskriften kom inn og ligger på pulten. Dag 2: sosialt besøk avtales med Grete. Dag 2: Frank kommer tilbake med notat fra sosialt besøk. Handlinger NYE HANDLINGER Kontoutskrift mottatt Sosialt besøk avtalt"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "artifacts/01-case-desk-start.png",
+      "title": "Case Desk start"
+    },
+    {
+      "path": "artifacts/02-frank-call.png",
+      "title": "Frank call scene"
+    },
+    {
+      "path": "artifacts/03-report-next-actions.png",
+      "title": "Report and next actions"
+    },
+    {
+      "path": "artifacts/04-finance-requested.png",
+      "title": "Financial statement requested"
+    },
+    {
+      "path": "artifacts/05-finance-document.png",
+      "title": "Financial statement document"
+    },
+    {
+      "path": "artifacts/06-social-visit-scheduled.png",
+      "title": "Social visit scheduled"
+    },
+    {
+      "path": "artifacts/07-social-visit-apartment.png",
+      "title": "Social visit apartment reveal"
+    },
+    {
+      "path": "artifacts/08-visit-report.png",
+      "title": "Social visit report"
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    }
+  ],
+  "jsErrors": [],
+  "checks": [
+    {
+      "claim": "Initial Case Desk is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Initial concern document is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Ring Grete action is visible",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Ring Grete opens Frank phone scene",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Phone scene includes phone note",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Phone scene exposes report action",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Report appears on desk after call",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial statement action appears",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit action appears",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial request schedules next-day document",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial request spends one day action",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Next day resolves financial statement document",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial document gives concrete case evidence",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Next day restores day actions",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit can be performed after scheduling",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit scheduling spends one day action",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit opens apartment reveal",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Visit shows Grete coffee scene",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Visit shows apartment mail clue",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Financial document appears physically in apartment",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Social visit returns a desk report",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Visit report states Grete as hidden practical support",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    },
+    {
+      "claim": "Playwright clickthrough has no browser console errors",
+      "result": "PASS",
+      "evidence": [
+        "artifacts/browser-flow.json"
+      ]
+    }
+  ]
+}

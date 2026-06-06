@@ -202,6 +202,25 @@ describe('resolvePhoneAttempt', () => {
     expect(store.caseLog.at(-1)).toContain('ligger på pulten');
   });
 
+  it('schedules the Slice C social visit and returns a visit report', () => {
+    const store = new RootStore();
+    store.callGreteFromConcernReport();
+    store.completeGreteCall();
+    store.scheduleSocialVisit();
+
+    expect(store.dayActions).toBe(1);
+    expect(store.socialVisitScheduled).toBe(true);
+    expect(store.socialVisitReportVisible).toBe(false);
+
+    store.performSocialVisit();
+    expect(store.labMode).toBe('social_visit');
+
+    store.completeSocialVisit();
+    expect(store.labMode).toBe('desk');
+    expect(store.socialVisitReportVisible).toBe(true);
+    expect(store.caseLog.at(-1)).toContain('sosialt besøk');
+  });
+
   it('protects the ring-ring phone ladder and complication clock', () => {
     const visibleText = visibleSourceText();
     expect(visibleText).toContain('ring ring');

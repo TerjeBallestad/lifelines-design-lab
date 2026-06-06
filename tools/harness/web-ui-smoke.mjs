@@ -204,6 +204,59 @@ async function smokeBrowserFlow() {
     await expectVisible(page, 'Handlinger 2/2', checks, 'Next day restores day actions');
     await capture(page, screenshots, flow, '05-finance-document', 'Financial statement document');
 
+    await page.getByRole('button', { name: 'Avtal sosialt besøk' }).click();
+    await expectVisible(
+      page,
+      'Gjennomfør sosialt besøk',
+      checks,
+      'Social visit can be performed after scheduling',
+    );
+    await expectVisible(
+      page,
+      'Handlinger 1/2',
+      checks,
+      'Social visit scheduling spends one day action',
+    );
+    await capture(page, screenshots, flow, '06-social-visit-scheduled', 'Social visit scheduled');
+
+    await page.getByRole('button', { name: 'Gjennomfør sosialt besøk' }).click();
+    await expectVisible(
+      page,
+      'Sosialt besøk hos Grete',
+      checks,
+      'Social visit opens apartment reveal',
+    );
+    await expectVisible(page, 'kaffe og kopper', checks, 'Visit shows Grete coffee scene');
+    await expectVisible(page, 'post under avisen', checks, 'Visit shows apartment mail clue');
+    await expectVisible(
+      page,
+      'kontoutskrift på benken',
+      checks,
+      'Financial document appears physically in apartment',
+    );
+    await capture(
+      page,
+      screenshots,
+      flow,
+      '07-social-visit-apartment',
+      'Social visit apartment reveal',
+    );
+
+    await page.getByRole('button', { name: 'Skriv besøksnotat' }).click();
+    await expectVisible(
+      page,
+      'Besøksnotat: Grete bærer rommet',
+      checks,
+      'Social visit returns a desk report',
+    );
+    await expectVisible(
+      page,
+      'Grete gjør mer arbeid',
+      checks,
+      'Visit report states Grete as hidden practical support',
+    );
+    await capture(page, screenshots, flow, '08-visit-report', 'Social visit report');
+
     checks.push({
       claim: 'Playwright clickthrough has no browser console errors',
       result:
@@ -279,6 +332,10 @@ function checkVisibleSource() {
     'kontoutskrift bestilt',
     'grete betaler husleie',
     'sosialt besøk',
+    'sosialt besøk hos grete',
+    'kaffe og kopper',
+    'post under avisen',
+    'besøksnotat',
   ];
   const bannedVisible = [
     'rapporten gir ikke svar',
