@@ -1,0 +1,20 @@
+{
+  "name": "Lifelines Design Lab Harness",
+  "contractNegotiation": {
+    "enabled": true,
+    "maxRounds": 2
+  },
+  "verdicts": ["PASS", "PIVOT", "REJECT", "FORCE_PIVOT", "INFRA_FAIL"],
+  "roles": {
+    "planner": "tools/harness/planner-codex.sh",
+    "generator": "tools/harness/generator-codex.sh",
+    "evaluator": "tools/harness/evaluator-codex.sh"
+  },
+  "verifiers": [
+    {
+      "id": "web-ui-smoke",
+      "command": "tools/harness/web-ui-smoke.mjs",
+      "evidence": "interactive-ui"
+    }
+  ]
+}

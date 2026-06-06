@@ -1,0 +1,1 @@
+{"status":"done","summary":"Implementation phase completed as an adapter smoke; verifier evidence will determine the result.","changedFiles":[],"artifacts":[{"kind":"brief","path":"artifacts/generator-implementation.md","title":"Generator implementation note","role":"generator"}],"notes":["No source edits were needed for this smoke run."]}

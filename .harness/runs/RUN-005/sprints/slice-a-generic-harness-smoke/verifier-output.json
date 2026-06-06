@@ -1,0 +1,311 @@
+{
+  "verifiers": [
+    {
+      "id": "web-ui-smoke",
+      "status": "done",
+      "summary": "Tests, build, local web serving, and Slice A visible-source checks passed.",
+      "artifacts": [
+        {
+          "kind": "log",
+          "path": "artifacts/npm-test.txt",
+          "title": "npm test output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "log",
+          "path": "artifacts/npm-build.txt",
+          "title": "npm run build output",
+          "role": "system",
+          "tags": [
+            "deterministic"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/web-ui-smoke.json",
+          "title": "Web UI smoke trace",
+          "role": "evaluator",
+          "tags": [
+            "web",
+            "interactive-ui"
+          ]
+        },
+        {
+          "kind": "trace",
+          "path": "artifacts/slice-a-visible-source-check.json",
+          "title": "Slice A visible source check",
+          "role": "evaluator",
+          "tags": [
+            "source",
+            "player-facing"
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "claim": "npm test passes",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/npm-test.txt"
+          ]
+        },
+        {
+          "claim": "npm run build passes",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/npm-build.txt"
+          ]
+        },
+        {
+          "claim": "Vite web UI serves index.html locally",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/web-ui-smoke.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains bekymringsmelding",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains etabler kontakt med grete",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains ring grete",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains frank_call",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains frankrapport",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains første kontakt",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains kontoutskrift",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Slice A source contains sosialt besøk",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids rapporten gir ikke svar",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids ikke løs elling",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids hva spilleren lærer",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        },
+        {
+          "claim": "Visible/source text avoids infrastrukturen",
+          "result": "PASS",
+          "evidence": [
+            "artifacts/slice-a-visible-source-check.json"
+          ]
+        }
+      ],
+      "notes": [],
+      "raw": {
+        "status": "done",
+        "summary": "Tests, build, local web serving, and Slice A visible-source checks passed.",
+        "checks": [
+          {
+            "claim": "npm test passes",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/npm-test.txt"
+            ]
+          },
+          {
+            "claim": "npm run build passes",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/npm-build.txt"
+            ]
+          },
+          {
+            "claim": "Vite web UI serves index.html locally",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/web-ui-smoke.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains bekymringsmelding",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains etabler kontakt med grete",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains ring grete",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains frank_call",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains frankrapport",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains første kontakt",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains kontoutskrift",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Slice A source contains sosialt besøk",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids rapporten gir ikke svar",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids ikke løs elling",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids hva spilleren lærer",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          },
+          {
+            "claim": "Visible/source text avoids infrastrukturen",
+            "result": "PASS",
+            "evidence": [
+              "artifacts/slice-a-visible-source-check.json"
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "kind": "log",
+            "path": "artifacts/npm-test.txt",
+            "title": "npm test output",
+            "role": "system",
+            "tags": [
+              "deterministic"
+            ]
+          },
+          {
+            "kind": "log",
+            "path": "artifacts/npm-build.txt",
+            "title": "npm run build output",
+            "role": "system",
+            "tags": [
+              "deterministic"
+            ]
+          },
+          {
+            "kind": "trace",
+            "path": "artifacts/web-ui-smoke.json",
+            "title": "Web UI smoke trace",
+            "role": "evaluator",
+            "tags": [
+              "web",
+              "interactive-ui"
+            ]
+          },
+          {
+            "kind": "trace",
+            "path": "artifacts/slice-a-visible-source-check.json",
+            "title": "Slice A visible source check",
+            "role": "evaluator",
+            "tags": [
+              "source",
+              "player-facing"
+            ]
+          }
+        ],
+        "notes": []
+      },
+      "code": 0,
+      "completedAt": "2026-06-06T19:15:23.191Z"
+    }
+  ]
+}
