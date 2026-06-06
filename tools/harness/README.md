@@ -44,7 +44,12 @@ The generator never emits the verdict.
   - `Sosialt besøk hos Grete`
   - `Skriv besøksnotat`
   - `Besøksnotat: Grete bærer rommet`
-- screenshot capture for the start/call/report/finance/social-visit states
+  - `Se på posten under avisen`
+  - `Snakk lavt med Elling`
+  - `Bevis fra leiligheten`
+  - `Nytt skrivebordsgrep`
+  - `Foreslå praktisk avlastning`
+- screenshot capture for the start/call/report/finance/social-visit/observe-decision states
 - browser console error checks
 - visible/source checks for required terms and banned meta-copy
 
@@ -52,4 +57,4 @@ It emits artifacts under `.harness/runs/RUN-*/artifacts/` for the evaluator and 
 
 ## Current limitation
 
-This is now a real browser clickthrough through Slice C. The verifier remains intentionally narrow and project-owned. Slice D should extend the same adapter: click Frank chat/observe, capture the new evidence chips, and prove the apartment observation feeds a desk decision without turning the generic harness into game logic.
+This is now a real browser clickthrough through Slice D. The verifier remains intentionally narrow and project-owned. Slice E should extend the same adapter only when there is a new concrete player decision to prove; do not add generic dialogue or relationship systems unless the evidence changes a desk action.

@@ -1,0 +1,56 @@
+{
+  "runId": "RUN-009",
+  "sprint": {
+    "id": "slice-a-generic-harness-smoke",
+    "title": "Verify current Slice A through generic agent-harness",
+    "goal": "Verify Slice D Frank observe to desk decision with Playwright\n\nUse this as an adapter smoke: prove the generic harness can negotiate a definition of done, run project verifiers, and expose the evidence without changing gameplay code.",
+    "playerDecisionUnderTest": "Can the player move from bekymringsmelding to Ring Grete, witness Frank contact, receive Frankrapport · Første kontakt, and see the next casework actions?",
+    "touchSurface": [
+      "harness.config.json",
+      "tools/harness/**",
+      "src/components/PhonePracticeLab.tsx",
+      "src/stores/RootStore.tsx",
+      "src/engine/phoneResolver.test.ts"
+    ],
+    "nonGoals": [
+      "Do not implement Slice B gameplay in the adapter smoke",
+      "Do not introduce a fourth implementor role",
+      "Do not let generator emit final verdicts",
+      "Do not use project-specific logic inside the generic agent-harness package"
+    ],
+    "acceptanceContract": [
+      {
+        "kind": "contract",
+        "mode": "qualitative",
+        "claim": "Generator and evaluator agree on a concrete definition of done before implementation/review."
+      },
+      {
+        "kind": "test",
+        "mode": "deterministic",
+        "claim": "Project tests and build pass as verifier evidence."
+      },
+      {
+        "kind": "trace",
+        "mode": "deterministic",
+        "claim": "Web UI smoke evidence confirms Slice A visible flow terms are present and the app serves locally."
+      },
+      {
+        "kind": "judge",
+        "mode": "qualitative",
+        "claim": "Evaluator judges the artifact from player-facing Slice A readability, not code style."
+      }
+    ],
+    "optional": false,
+    "number": 1,
+    "status": "RUNNING",
+    "attempt": 1,
+    "verdict": null,
+    "summary": "",
+    "artifacts": [],
+    "issues": [],
+    "notes": []
+  },
+  "phase": "contract_proposal",
+  "round": 1,
+  "previousEvaluator": null
+}

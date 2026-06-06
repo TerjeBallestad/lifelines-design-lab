@@ -734,6 +734,31 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             </div>
           </article>
         ) : null}
+        {store.apartmentEvidenceIds.length ? (
+          <article className="mt-4 rounded-box border border-accent/30 bg-accent/10 p-4">
+            <div className="badge badge-accent mb-3">Bevis fra leiligheten</div>
+            <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
+              {store.apartmentEvidenceIds.includes('post_pressure') ? (
+                <p>
+                  <strong>Posten ligger framme:</strong> økonomien er ikke bare et dokument; den
+                  ligger som en ting Grete rydder rundt.
+                </p>
+              ) : null}
+              {store.apartmentEvidenceIds.includes('elling_distance') ? (
+                <p>
+                  <strong>Elling holder avstand:</strong> han tåler besøk bedre enn krav. Frank må
+                  begynne med rommet, ikke prestasjonen.
+                </p>
+              ) : null}
+              {store.apartmentEvidenceIds.includes('grete_load') ? (
+                <p>
+                  <strong>Grete bærer samtalen:</strong> hjelpen i hjemmet er allerede et arbeid,
+                  ikke bare en relasjon.
+                </p>
+              ) : null}
+            </div>
+          </article>
+        ) : null}
         {store.caseLog.length ? (
           <div className="mt-4 rounded-box border border-base-content/10 bg-base-200 p-3">
             <div className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-base-content/50">
@@ -805,6 +830,55 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 ) : null}
               </div>
             </div>
+            {store.socialVisitReportVisible ? (
+              <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
+                <div className="font-black uppercase tracking-[0.18em] text-accent">
+                  Frank observerer
+                </div>
+                <div className="mt-4 grid gap-2">
+                  <button
+                    className="btn btn-outline btn-accent justify-start"
+                    type="button"
+                    onClick={() => store.collectApartmentEvidence('post_pressure')}
+                    disabled={store.apartmentEvidenceIds.includes('post_pressure')}
+                  >
+                    Se på posten under avisen
+                  </button>
+                  <button
+                    className="btn btn-outline btn-accent justify-start"
+                    type="button"
+                    onClick={() => store.collectApartmentEvidence('elling_distance')}
+                    disabled={store.apartmentEvidenceIds.includes('elling_distance')}
+                  >
+                    Snakk lavt med Elling
+                  </button>
+                  <button
+                    className="btn btn-outline btn-accent justify-start"
+                    type="button"
+                    onClick={() => store.collectApartmentEvidence('grete_load')}
+                    disabled={store.apartmentEvidenceIds.includes('grete_load')}
+                  >
+                    Spør hva Grete gjorde før besøket
+                  </button>
+                </div>
+                {store.deskDecisionVisible ? (
+                  <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-4">
+                    <div className="font-bold">Nytt skrivebordsgrep</div>
+                    <p className="mt-1 text-sm leading-relaxed">
+                      Start med ett praktisk avlastningsgrep. Ikke mer telefonøving før rommet tåler
+                      mindre Grete-arbeid.
+                    </p>
+                    <button
+                      className="btn btn-success mt-3"
+                      type="button"
+                      onClick={() => store.choosePracticalReliefDecision()}
+                    >
+                      Foreslå praktisk avlastning
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         ) : (
           <>

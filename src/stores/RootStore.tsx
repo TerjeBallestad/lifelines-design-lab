@@ -44,6 +44,8 @@ export class RootStore {
   financialStatementRequested = false;
   financialStatementVisible = false;
   socialVisitScheduled = false;
+  apartmentEvidenceIds: string[] = [];
+  deskDecisionVisible = false;
   caseLog: string[] = [];
   selectedApproachId: PhoneApproachId = 'none';
   selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
@@ -192,6 +194,22 @@ export class RootStore {
     this.labMode = 'desk';
   }
 
+  collectApartmentEvidence(id: 'post_pressure' | 'elling_distance' | 'grete_load'): void {
+    if (!this.socialVisitReportVisible || this.apartmentEvidenceIds.includes(id)) return;
+    this.apartmentEvidenceIds = [...this.apartmentEvidenceIds, id];
+    if (this.apartmentEvidenceIds.length >= 2) {
+      this.deskDecisionVisible = true;
+    }
+  }
+
+  choosePracticalReliefDecision(): void {
+    if (!this.deskDecisionVisible) return;
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Frank anbefaler ett praktisk avlastningsgrep før ny telefonøving.`,
+    ];
+  }
+
   runAttempt(): void {
     const die = this.selectedDie;
     if (!die) return;
@@ -241,6 +259,8 @@ export class RootStore {
     this.financialStatementRequested = false;
     this.financialStatementVisible = false;
     this.socialVisitScheduled = false;
+    this.apartmentEvidenceIds = [];
+    this.deskDecisionVisible = false;
     this.caseLog = [];
   }
 

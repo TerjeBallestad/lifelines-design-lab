@@ -257,6 +257,52 @@ async function smokeBrowserFlow() {
     );
     await capture(page, screenshots, flow, '08-visit-report', 'Social visit report');
 
+    await page.getByRole('button', { name: 'Se på posten under avisen' }).click();
+    await expectVisible(
+      page,
+      'Bevis fra leiligheten',
+      checks,
+      'Observed apartment evidence appears on desk',
+    );
+    await expectVisible(
+      page,
+      'Posten ligger framme',
+      checks,
+      'Mail observation becomes evidence chip',
+    );
+    await capture(page, screenshots, flow, '09-post-evidence', 'Post evidence on desk');
+
+    await page.getByRole('button', { name: 'Snakk lavt med Elling' }).click();
+    await expectVisible(page, 'Elling holder avstand', checks, 'Elling chat becomes evidence chip');
+    await expectVisible(
+      page,
+      'Nytt skrivebordsgrep',
+      checks,
+      'Two evidence chips unlock a new desk decision',
+    );
+    await capture(
+      page,
+      screenshots,
+      flow,
+      '10-elling-evidence-decision',
+      'Elling evidence unlocks decision',
+    );
+
+    await page.getByRole('button', { name: 'Foreslå praktisk avlastning' }).click();
+    await expectVisible(
+      page,
+      'praktisk avlastningsgrep',
+      checks,
+      'Desk decision writes practical relief to case log',
+    );
+    await capture(
+      page,
+      screenshots,
+      flow,
+      '11-practical-relief-decision',
+      'Practical relief decision',
+    );
+
     checks.push({
       claim: 'Playwright clickthrough has no browser console errors',
       result:
@@ -336,6 +382,11 @@ function checkVisibleSource() {
     'kaffe og kopper',
     'post under avisen',
     'besøksnotat',
+    'se på posten under avisen',
+    'snakk lavt med elling',
+    'bevis fra leiligheten',
+    'nytt skrivebordsgrep',
+    'praktisk avlastningsgrep',
   ];
   const bannedVisible = [
     'rapporten gir ikke svar',

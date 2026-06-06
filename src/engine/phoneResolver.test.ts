@@ -221,6 +221,26 @@ describe('resolvePhoneAttempt', () => {
     expect(store.caseLog.at(-1)).toContain('sosialt besøk');
   });
 
+  it('turns Frank observe/chat evidence into a practical desk decision', () => {
+    const store = new RootStore();
+    store.callGreteFromConcernReport();
+    store.completeGreteCall();
+    store.scheduleSocialVisit();
+    store.completeSocialVisit();
+
+    expect(store.deskDecisionVisible).toBe(false);
+    store.collectApartmentEvidence('post_pressure');
+    expect(store.apartmentEvidenceIds).toContain('post_pressure');
+    expect(store.deskDecisionVisible).toBe(false);
+
+    store.collectApartmentEvidence('elling_distance');
+    expect(store.apartmentEvidenceIds).toContain('elling_distance');
+    expect(store.deskDecisionVisible).toBe(true);
+
+    store.choosePracticalReliefDecision();
+    expect(store.caseLog.at(-1)).toContain('praktisk avlastningsgrep');
+  });
+
   it('protects the ring-ring phone ladder and complication clock', () => {
     const visibleText = visibleSourceText();
     expect(visibleText).toContain('ring ring');
