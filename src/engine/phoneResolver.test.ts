@@ -139,13 +139,16 @@ describe('resolvePhoneAttempt', () => {
     }
   });
 
-  it('keeps Apartment and Case Desk as two linked lab surfaces', () => {
+  it('keeps Apartment and Case Desk as linked lab surfaces after the Grete call scene', () => {
     const store = new RootStore();
     expect(store.labMode).toBe('desk');
+    expect(store.firstContactReportVisible).toBe(false);
     store.callGreteFromConcernReport();
-    expect(store.labMode).toBe('apartment');
+    expect(store.labMode).toBe('frank_call');
     expect(store.selectedApproachId).toBe('grete_primes_first');
-    store.setLabMode('desk');
+    store.completeGreteCall();
+    expect(store.labMode).toBe('desk');
+    expect(store.firstContactReportVisible).toBe(true);
     store.setLabMode('apartment');
     store.runAttempt();
     expect(store.latestAttempt).toBeDefined();
@@ -163,6 +166,11 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('bekymringsmelding');
     expect(visibleText).toContain('etabler kontakt med grete');
     expect(visibleText).toContain('ring grete');
+    expect(visibleText).toContain('frankrapport');
+    expect(visibleText).toContain('første kontakt');
+    expect(visibleText).toContain('kontoutskrift');
+    expect(visibleText).toContain('sosialt besøk');
+    expect(visibleText).toContain('obskurert');
     expect(visibleText).toContain('løft bevis');
     expect(visibleText).toContain('ny evne trenger ny grense');
     expect(visibleText).toContain('apartment');

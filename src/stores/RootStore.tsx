@@ -36,7 +36,8 @@ export class RootStore {
     ellingState: 'prickly',
   };
 
-  labMode: 'apartment' | 'desk' = 'desk';
+  labMode: 'apartment' | 'desk' | 'frank_call' = 'desk';
+  firstContactReportVisible = false;
   selectedApproachId: PhoneApproachId = 'none';
   selectedSupportIds: SupportModeId[] = ['practical_help', 'humor_play'];
   frankStance: FrankStance = 'matter_of_fact';
@@ -62,7 +63,7 @@ export class RootStore {
     this.selectedSupportIds = [...this.selectedSupportIds.slice(-1), id];
   }
 
-  setLabMode(mode: 'apartment' | 'desk'): void {
+  setLabMode(mode: 'apartment' | 'desk' | 'frank_call'): void {
     this.labMode = mode;
   }
 
@@ -83,7 +84,12 @@ export class RootStore {
     this.setApproach('grete_primes_first');
     this.client.trust = Math.min(1, this.client.trust + 0.06);
     this.room.lastFriction = 'Grete still carries the doorway';
-    this.labMode = 'apartment';
+    this.labMode = 'frank_call';
+  }
+
+  completeGreteCall(): void {
+    this.firstContactReportVisible = true;
+    this.labMode = 'desk';
   }
 
   setApproach(id: PhoneApproachId): void {
@@ -168,6 +174,7 @@ export class RootStore {
     this.attempts = [];
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
+    this.firstContactReportVisible = false;
   }
 
   get selectedDie(): DiePoolItem | undefined {

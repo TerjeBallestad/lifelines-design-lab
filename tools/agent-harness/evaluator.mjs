@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const runDir = process.argv[process.argv.indexOf('--run-dir') + 1];
@@ -7,23 +7,109 @@ const inputPath = process.argv[process.argv.indexOf('--input') + 1];
 const input = JSON.parse(readFileSync(inputPath, 'utf8'));
 const artifactDir = join(runDir, 'artifacts');
 mkdirSync(artifactDir, { recursive: true });
-const critiquePath = join(artifactDir, 'SB-004-005-evaluator-attack.md');
+
+const component = existsSync('src/components/PhonePracticeLab.tsx')
+  ? readFileSync('src/components/PhonePracticeLab.tsx', 'utf8')
+  : '';
+const store = existsSync('src/stores/RootStore.tsx')
+  ? readFileSync('src/stores/RootStore.tsx', 'utf8')
+  : '';
+const tests = existsSync('src/engine/phoneResolver.test.ts')
+  ? readFileSync('src/engine/phoneResolver.test.ts', 'utf8')
+  : '';
+const all = `${component}\n${store}\n${tests}`.toLowerCase();
+
+const checks = [
+  {
+    id: 'desk_has_concern',
+    question: 'Does the player begin with a concrete bekymringsmelding and a single first goal?',
+    pass: all.includes('bekymringsmelding') && all.includes('etabler kontakt med grete'),
+    revise:
+      'Opening does not clearly establish the concern report as the action source. The player needs one document, one goal, one first action.',
+  },
+  {
+    id: 'call_is_scene',
+    question: 'Does Ring Grete become a distinct Frank phone scene instead of an instant tab jump?',
+    pass:
+      all.includes('frank_call') &&
+      (all.includes('telefonsamtale') ||
+        all.includes('phone scene') ||
+        all.includes('frank på telefon')),
+    revise:
+      'The Grete call is still too mechanical. The player must witness Frank making contact before receiving the report.',
+  },
+  {
+    id: 'conversation_obscured',
+    question: 'Is the conversation obscured rather than turned into exposition transcript?',
+    pass:
+      all.includes('boble') ||
+      all.includes('symbol') ||
+      all.includes('obskur') ||
+      all.includes('…'),
+    revise:
+      'The call risks becoming exposition. Use bubbles/symbols/fragments and let Frank report carry interpretation afterward.',
+  },
+  {
+    id: 'report_spawns',
+    question: 'Does the call create Frankrapport · Første kontakt back at the desk?',
+    pass: all.includes('frankrapport') && all.includes('første kontakt'),
+    revise:
+      'The report is the payoff of the first casework action. Without it, the loop has no desk consequence.',
+  },
+  {
+    id: 'next_actions_unlock',
+    question: 'Does the report unlock the next player decisions?',
+    pass: all.includes('be om kontoutskrift') && all.includes('avtal sosialt besøk'),
+    revise:
+      'The player needs at least two visible next actions after the report: financial request and social visit.',
+  },
+  {
+    id: 'taste_grete_load_bearing',
+    question: 'Does Grete feel like hidden infrastructure rather than a quest-giver?',
+    pass:
+      all.includes('infrastrukturen') ||
+      all.includes('bærer fortsatt døråpningen') ||
+      all.includes('grete førte samtalen'),
+    revise:
+      'Grete must feel like the bridge holding the apartment together. Do not reduce her to a tutorial NPC.',
+  },
+  {
+    id: 'tests_guard_flow',
+    question: 'Do tests guard the staged flow/source terms?',
+    pass:
+      tests.toLowerCase().includes('frank_call') &&
+      tests.toLowerCase().includes('frankrapport') &&
+      tests.toLowerCase().includes('kontoutskrift'),
+    revise:
+      'The source may work visually, but the staged Slice A contract is not test-protected enough.',
+  },
+];
+
+const failures = checks.filter((check) => !check.pass);
+const critiquePath = join(artifactDir, 'SDD-002-slice-a-user-perspective-review.md');
 writeFileSync(
   critiquePath,
-  `# SB-004/SB-005 evaluator attack\n\n## Verdict\n\nPIVOT before source work if the implementation keeps phone practice generic.\n\n## Must reject\n\n- A progress bar labelled \"phone mastery\" without the ring-ring sequence.\n- Choices about Frank's abstract position instead of authored practice steps.\n- A success clock without a complication clock.\n- Any result where phone progress cannot create a phone bill / sex-line problem.\n\n## Must pass\n\n- The apartment surface visibly stages the Frank/Elling practice ladder.\n- The complication clock advances as the phone becomes useful.\n- Tests name the ring-ring ladder and the complication risk.\n- The tone remains concrete, social-realist, and slightly humiliating.\n`,
+  `# SDD-002 Slice A — Evaluator user-perspective review\n\n## Evaluator stance\n\nThis is not a code review. The question is whether the first player-facing casework loop lands.\n\n## Checks\n\n${checks.map((check) => `- [${check.pass ? 'x' : ' '}] **${check.id}** — ${check.question}${check.pass ? '' : `\n  - REVISE: ${check.revise}`}`).join('\n')}\n\n## Verdict rationale\n\n${failures.length ? `REVISE/PIVOT. ${failures.length} user-facing requirement(s) fail. The player would not yet experience the intended casework loop.` : 'PASS. The source scan indicates the player can move from concern report to Frank call scene to first report and new casework decisions. Manual/browser taste review is still recommended before calling the slice truly done.'}\n`,
   'utf8',
 );
 
 console.log(
   JSON.stringify({
     status: 'done',
-    verdict: 'PASS',
-    summary:
-      'Protocol run passes: planner/generator/evaluator artifacts were produced. Evaluator attack is ready to govern source implementation.',
-    issues: [],
-    artifacts: [{ kind: 'critique', path: 'artifacts/SB-004-005-evaluator-attack.md' }],
+    verdict: failures.length ? 'PIVOT' : 'PASS',
+    summary: failures.length
+      ? `User-perspective evaluator found ${failures.length} Slice A issue(s).`
+      : 'User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.',
+    issues: failures.map((check) => ({ id: check.id, issue: check.revise })),
+    artifacts: [
+      {
+        kind: 'user-perspective-review',
+        path: 'artifacts/SDD-002-slice-a-user-perspective-review.md',
+      },
+    ],
     notes: [
-      'This PASS is for harness protocol readiness, not for the eventual source implementation.',
+      'Evaluator emphasizes player comprehension/feeling over code structure.',
+      'A PASS here is source-contract PASS, not a substitute for seeing the UI in browser.',
     ],
   }),
 );

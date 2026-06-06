@@ -95,6 +95,9 @@ const actorCopy: Record<string, string> = {
 const initialConcernDocumentLabel = 'Bekymringsmelding';
 const initialConcernObjective = 'Etabler kontakt med Grete';
 const initialConcernAction = 'Ring Grete';
+const firstContactReportTitle = 'Frankrapport · Første kontakt';
+const requestFinancialStatementAction = 'Be om kontoutskrift';
+const scheduleSocialVisitAction = 'Avtal sosialt besøk';
 
 const frictionCopy: Record<string, string> = {
   'dignity preserved through ridicule': 'verdighet bevart gjennom latterliggjøring',
@@ -435,6 +438,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               )}
             </Panel>
           </main>
+        ) : store.labMode === 'frank_call' ? (
+          <GreteCallSurface />
         ) : (
           <CaseDeskSurface />
         )}
@@ -442,6 +447,89 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
     </div>
   );
 });
+
+const GreteCallSurface = observer(function GreteCallSurface() {
+  const store = useRootStore();
+
+  return (
+    <main className="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+      <Panel>
+        <SectionTitle>Frank på telefon</SectionTitle>
+        <p className="text-sm leading-relaxed text-base-content/65">
+          Spilleren får se at kontakt blir opprettet, men ikke eie hele samtalen. Grete er inngangen
+          til saken; Elling er fortsatt uklar.
+        </p>
+        <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-5">
+          <div className="flex items-center gap-3">
+            <div className="avatar placeholder">
+              <div className="w-14 rounded-full bg-success text-success-content">
+                <span>F</span>
+              </div>
+            </div>
+            <div>
+              <div className="font-bold">Frank ringer Grete</div>
+              <div className="text-xs uppercase tracking-[0.18em] text-base-content/50">
+                Telefonsamtale · obskurert
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 text-sm">
+            <SpeechBubble side="left" label="Frank">
+              Hei, dette er Frank Åsli. Jeg ringer fra sosialkontoret.
+            </SpeechBubble>
+            <SpeechBubble side="right" label="Grete">
+              <span aria-label="obskurert samtale">☕ … … “smart gutt” … døråpning …</span>
+            </SpeechBubble>
+            <SpeechBubble side="left" label="Frank">
+              Vi trenger bare å forstå hverdagen litt bedre. Ikke mer enn det.
+            </SpeechBubble>
+            <SpeechBubble side="right" label="Grete">
+              <span aria-label="obskurert samtale">… passer på … ikke så lett … blir her …</span>
+            </SpeechBubble>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel>
+        <SectionTitle>Hva spilleren lærer</SectionTitle>
+        <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
+          <p>
+            Grete svarer. Hun fører samtalen. Elling blir fortsatt ikke direkte tilgjengelig for
+            systemet.
+          </p>
+          <p>
+            Dette er ikke en løsning. Det er en inngang. Frank kan nå skrive en første rapport og
+            anbefale neste smale casework-steg.
+          </p>
+          <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
+            <div className="font-bold">Rapport som opprettes</div>
+            <p className="mt-1">{firstContactReportTitle}</p>
+          </div>
+        </div>
+        <button className="btn btn-success mt-5" onClick={() => store.completeGreteCall()}>
+          Legg rapporten på pulten
+        </button>
+      </Panel>
+    </main>
+  );
+});
+
+function SpeechBubble({
+  children,
+  label,
+  side,
+}: {
+  children: React.ReactNode;
+  label: string;
+  side: 'left' | 'right';
+}) {
+  return (
+    <div className={clsx('chat', side === 'left' ? 'chat-start' : 'chat-end')}>
+      <div className="chat-header text-xs text-base-content/55">{label}</div>
+      <div className="chat-bubble chat-bubble-primary max-w-md text-sm">{children}</div>
+    </div>
+  );
+}
 
 const CaseDeskSurface = observer(function CaseDeskSurface() {
   const store = useRootStore();
@@ -456,6 +544,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
   );
   const hasAnyEvidence = selected.size > 0;
   const nextApproach = latest?.nextApproachIds[0] ?? 'tolerate_ringtone';
+  const showFirstContactReport = store.firstContactReportVisible && !latest;
 
   return (
     <main className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
@@ -465,7 +554,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           Les det rommet ga fra seg. Løft bare det Frank faktisk kan stå inne for, og bruk det til å
           gjøre neste vedtak smalere.
         </p>
-        {!latest ? (
+        {!latest && !showFirstContactReport ? (
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-warning/30 bg-warning/10 p-4">
               <div className="badge badge-warning mb-3">
@@ -496,17 +585,37 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
               </div>
             </article>
           </div>
+        ) : showFirstContactReport ? (
+          <div className="mt-4 grid gap-4">
+            <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
+              <div className="badge badge-outline mb-3">{firstContactReportTitle}</div>
+              <div className="space-y-3 text-sm leading-relaxed text-base-content/80">
+                <p>
+                  <strong>Observasjon:</strong> Grete svarte raskt og førte samtalen. Hun omtaler
+                  Elling som “en smart gutt”.
+                </p>
+                <p>
+                  <strong>Usikkerhet:</strong> Elling deltok ikke direkte. Det er uklart om han
+                  kjenner til henvendelsen eller hva han selv forstår av saken.
+                </p>
+                <p>
+                  <strong>Anbefalt:</strong> innhent økonomisk oversikt og avtal et kort sosialt
+                  besøk før saken tolkes for hardt.
+                </p>
+              </div>
+            </article>
+          </div>
         ) : (
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
               <div className="badge badge-outline mb-3">Frank-rapport</div>
-              <p className="leading-relaxed text-base-content/80">{latest.frankReport}</p>
+              <p className="leading-relaxed text-base-content/80">{latest!.frankReport}</p>
             </article>
             <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
               <div className="badge badge-outline mb-3">Dokument: telefonnotat</div>
               <p className="leading-relaxed text-base-content/75">
-                Frank fikk se {outcomeCopy[latest.outcome]}. Rommet pekte særlig på{' '}
-                {frictionCopy[latest.finalRoom.lastFriction] ?? latest.finalRoom.lastFriction}.
+                Frank fikk se {outcomeCopy[latest!.outcome]}. Rommet pekte særlig på{' '}
+                {frictionCopy[latest!.finalRoom.lastFriction] ?? latest!.finalRoom.lastFriction}.
               </p>
             </article>
           </div>
@@ -515,7 +624,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
 
       <Panel>
         <SectionTitle>Løft bevis til saken</SectionTitle>
-        {!latest ? (
+        {!latest && !showFirstContactReport ? (
           <div className="rounded-box border border-success/30 bg-success/10 p-4">
             <div className="font-black uppercase tracking-[0.18em] text-success">Første mål</div>
             <p className="mt-2 text-sm leading-relaxed text-base-content/75">
@@ -531,6 +640,29 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
               Grete svarer. Hun er ikke bakgrunn; hun er infrastrukturen som gjør første kontakt
               mulig.
             </p>
+          </div>
+        ) : showFirstContactReport ? (
+          <div className="grid gap-3">
+            <div className="rounded-box border border-success/30 bg-success/10 p-4">
+              <div className="font-black uppercase tracking-[0.18em] text-success">
+                Nye handlinger
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                Rapporten gir ikke svar. Den gir neste smale steg.
+              </p>
+              <div className="mt-4 grid gap-2">
+                <button className="btn btn-outline btn-success justify-start" type="button">
+                  {requestFinancialStatementAction}
+                </button>
+                <button className="btn btn-outline btn-success justify-start" type="button">
+                  {scheduleSocialVisitAction}
+                </button>
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-base-content/55">
+                Konsekvensene av disse bygges i Slice B. Her er poenget at første rapport åpner
+                casework-valg, ikke en konklusjon.
+              </p>
+            </div>
           </div>
         ) : (
           <>

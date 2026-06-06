@@ -1,0 +1,159 @@
+{
+  "id": "RUN-002",
+  "goal": "SDD-002 Slice A: Desk start and Grete call",
+  "mode": "standard",
+  "config": "Lifelines Design Lab Agent Harness",
+  "status": "COMPLETE",
+  "verdict": "PASS",
+  "createdAt": "2026-06-06T10:35:45.718Z",
+  "updatedAt": "2026-06-06T10:35:46.718Z",
+  "sprints": [
+    {
+      "id": "SDD-002-slice-a",
+      "title": "Desk start and Grete call",
+      "goal": "SDD-002 Slice A: Desk start and Grete call\n\nSDD-002 defines Slice A as Desk start and Grete call: Desk renders bekymringsmelding and Frank; clicking Frank shows Ring Grete; phone scene plays with obscured bubbles/symbols; first Frank report appears.\n\nThin plan: prove the opening casework seam before building resources/day advance.",
+      "playerDecisionUnderTest": "Does the player understand that the bekymringsmelding creates one concrete first action, Ring Grete, and that Frank contact produces a report which unlocks the next casework options?",
+      "touchSurface": [
+        "src/stores/RootStore.tsx",
+        "src/components/PhonePracticeLab.tsx",
+        "src/engine/phoneResolver.test.ts"
+      ],
+      "nonGoals": [
+        "No full resources/day-advance system yet",
+        "No financial-request resolution yet",
+        "No social visit/apartment reveal yet",
+        "No LLM Frank chat",
+        "No generic Roottrees board/editor"
+      ],
+      "acceptanceContract": [
+        {
+          "kind": "player-flow",
+          "claim": "The app starts at Case Desk with Bekymringsmelding and one obvious first objective: Etabler kontakt med Grete."
+        },
+        {
+          "kind": "player-flow",
+          "claim": "Clicking Ring Grete enters a distinct Frank phone scene instead of jumping straight to Apartment."
+        },
+        {
+          "kind": "taste",
+          "claim": "The phone scene obscures the exact conversation through bubbles/symbols/fragments; it does not become exposition transcript."
+        },
+        {
+          "kind": "player-flow",
+          "claim": "Completing the phone scene returns to Desk and creates Frankrapport · Første kontakt."
+        },
+        {
+          "kind": "player-decision",
+          "claim": "The report unlocks at least Be om kontoutskrift and Avtal sosialt besøk as next actions, even if Slice B implements their consequences later."
+        },
+        {
+          "kind": "taste",
+          "claim": "Grete feels like load-bearing infrastructure, not background exposition or a generic quest NPC."
+        },
+        {
+          "kind": "test",
+          "claim": "Tests/build verify the staged flow and visible source terms: bekymringsmelding, ring grete, frankrapport, kontoutskrift, sosialt besøk."
+        }
+      ],
+      "optional": false,
+      "number": 1,
+      "status": "PASS",
+      "attempt": 1,
+      "verdict": "PASS",
+      "summary": "User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.",
+      "artifacts": [
+        {
+          "kind": "requirements",
+          "path": "artifacts/SDD-002-slice-a-generator-requirements.md"
+        },
+        {
+          "kind": "user-perspective-review",
+          "path": "artifacts/SDD-002-slice-a-user-perspective-review.md"
+        }
+      ],
+      "issues": [],
+      "notes": [
+        "This role now converts the SDD slice into player-facing goals and verifiable requirements.",
+        "It still does not run an autonomous coding agent; source edits are applied outside the role until the harness supports agent executors.",
+        "Evaluator emphasizes player comprehension/feeling over code structure.",
+        "A PASS here is source-contract PASS, not a substitute for seeing the UI in browser."
+      ],
+      "generator": {
+        "status": "ready_for_evaluator",
+        "summary": "Generator requirements are satisfied by current source scan; evaluator should judge user-facing quality.",
+        "changedFiles": [],
+        "artifacts": [
+          {
+            "kind": "requirements",
+            "path": "artifacts/SDD-002-slice-a-generator-requirements.md"
+          }
+        ],
+        "notes": [
+          "This role now converts the SDD slice into player-facing goals and verifiable requirements.",
+          "It still does not run an autonomous coding agent; source edits are applied outside the role until the harness supports agent executors."
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "SDD-002-slice-a",
+      "title": "Desk start and Grete call",
+      "status": "DONE",
+      "attempt": 1,
+      "verdict": "PASS",
+      "summary": "User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.",
+      "artifacts": [
+        {
+          "kind": "requirements",
+          "path": "artifacts/SDD-002-slice-a-generator-requirements.md"
+        },
+        {
+          "kind": "user-perspective-review",
+          "path": "artifacts/SDD-002-slice-a-user-perspective-review.md"
+        }
+      ],
+      "notes": [
+        "This role now converts the SDD slice into player-facing goals and verifiable requirements.",
+        "It still does not run an autonomous coding agent; source edits are applied outside the role until the harness supports agent executors.",
+        "Evaluator emphasizes player comprehension/feeling over code structure.",
+        "A PASS here is source-contract PASS, not a substitute for seeing the UI in browser."
+      ]
+    }
+  ],
+  "history": [
+    {
+      "event": "run_created",
+      "ts": "2026-06-06T10:35:45.719Z"
+    },
+    {
+      "event": "planner_completed",
+      "ts": "2026-06-06T10:35:46.110Z"
+    },
+    {
+      "event": "sprint_started",
+      "sprint": "SDD-002-slice-a",
+      "attempt": 1,
+      "ts": "2026-06-06T10:35:46.110Z"
+    },
+    {
+      "event": "generator_completed",
+      "ts": "2026-06-06T10:35:46.414Z"
+    },
+    {
+      "event": "evaluator_completed",
+      "ts": "2026-06-06T10:35:46.718Z"
+    },
+    {
+      "event": "sprint_evaluated",
+      "sprint": "SDD-002-slice-a",
+      "verdict": "PASS",
+      "ts": "2026-06-06T10:35:46.718Z"
+    },
+    {
+      "event": "run_completed",
+      "verdict": "PASS",
+      "ts": "2026-06-06T10:35:46.718Z"
+    }
+  ]
+}
