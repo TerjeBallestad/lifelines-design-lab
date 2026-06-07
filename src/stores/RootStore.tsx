@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
+import { findFrankQuestion, type ApartmentEvidenceId } from '../content/frankQuestions';
 import type {
   AttemptResult,
   ClientState,
@@ -44,7 +45,8 @@ export class RootStore {
   financialStatementRequested = false;
   financialStatementVisible = false;
   socialVisitScheduled = false;
-  apartmentEvidenceIds: string[] = [];
+  apartmentEvidenceIds: ApartmentEvidenceId[] = [];
+  askedFrankQuestionIds: string[] = [];
   deskDecisionVisible = false;
   caseLog: string[] = [];
   selectedApproachId: PhoneApproachId = 'none';
@@ -194,12 +196,35 @@ export class RootStore {
     this.labMode = 'desk';
   }
 
-  collectApartmentEvidence(id: 'post_pressure' | 'elling_distance' | 'grete_load'): void {
-    if (!this.socialVisitReportVisible || this.apartmentEvidenceIds.includes(id)) return;
-    this.apartmentEvidenceIds = [...this.apartmentEvidenceIds, id];
+  askFrank(questionId: string): void {
+    if (!this.socialVisitReportVisible || this.askedFrankQuestionIds.includes(questionId)) return;
+    const question = findFrankQuestion(questionId);
+    if (!question) return;
+
+    this.askedFrankQuestionIds = [...this.askedFrankQuestionIds, questionId];
+    if (!this.apartmentEvidenceIds.includes(question.evidenceId)) {
+      this.apartmentEvidenceIds = [...this.apartmentEvidenceIds, question.evidenceId];
+    }
     if (this.apartmentEvidenceIds.length >= 2) {
       this.deskDecisionVisible = true;
     }
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Frank tolker “${question.clueLabel}” og legger til bevis: ${question.evidenceLabel}.`,
+    ];
+  }
+
+  collectApartmentEvidence(id: ApartmentEvidenceId): void {
+    const question = ['post_pressure', 'elling_distance', 'grete_load'].includes(id)
+      ? findFrankQuestion(
+          {
+            post_pressure: 'ask_post_under_paper',
+            elling_distance: 'ask_elling_distance',
+            grete_load: 'ask_grete_load',
+          }[id],
+        )
+      : undefined;
+    if (question) this.askFrank(question.id);
   }
 
   choosePracticalReliefDecision(): void {
@@ -260,6 +285,7 @@ export class RootStore {
     this.financialStatementVisible = false;
     this.socialVisitScheduled = false;
     this.apartmentEvidenceIds = [];
+    this.askedFrankQuestionIds = [];
     this.deskDecisionVisible = false;
     this.caseLog = [];
   }

@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { frankQuestions } from '../content/frankQuestions';
 import {
   phoneActivityClocks,
   phoneApproaches,
@@ -833,34 +834,54 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             {store.socialVisitReportVisible ? (
               <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
                 <div className="font-black uppercase tracking-[0.18em] text-accent">
-                  Frank observerer
+                  Spør Frank om noe i rommet
                 </div>
+                <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+                  Velg en konkret ting spilleren la merke til. Frank svarer med observasjon,
+                  tolkning, usikkerhet og et smalt skrivebordsgrep.
+                </p>
                 <div className="mt-4 grid gap-2">
-                  <button
-                    className="btn btn-outline btn-accent justify-start"
-                    type="button"
-                    onClick={() => store.collectApartmentEvidence('post_pressure')}
-                    disabled={store.apartmentEvidenceIds.includes('post_pressure')}
-                  >
-                    Se på posten under avisen
-                  </button>
-                  <button
-                    className="btn btn-outline btn-accent justify-start"
-                    type="button"
-                    onClick={() => store.collectApartmentEvidence('elling_distance')}
-                    disabled={store.apartmentEvidenceIds.includes('elling_distance')}
-                  >
-                    Snakk lavt med Elling
-                  </button>
-                  <button
-                    className="btn btn-outline btn-accent justify-start"
-                    type="button"
-                    onClick={() => store.collectApartmentEvidence('grete_load')}
-                    disabled={store.apartmentEvidenceIds.includes('grete_load')}
-                  >
-                    Spør hva Grete gjorde før besøket
-                  </button>
+                  {frankQuestions.map((question) => (
+                    <button
+                      key={question.id}
+                      className="btn btn-outline btn-accent h-auto justify-start rounded-box px-4 py-3 text-left normal-case"
+                      type="button"
+                      onClick={() => store.askFrank(question.id)}
+                      disabled={store.askedFrankQuestionIds.includes(question.id)}
+                    >
+                      <span className="grid gap-1">
+                        <strong>{question.prompt}</strong>
+                        <span className="text-xs font-normal opacity-70">{question.clueLabel}</span>
+                      </span>
+                    </button>
+                  ))}
                 </div>
+                {store.askedFrankQuestionIds.length ? (
+                  <div className="mt-4 grid gap-3">
+                    {frankQuestions
+                      .filter((question) => store.askedFrankQuestionIds.includes(question.id))
+                      .map((question) => (
+                        <article
+                          key={question.id}
+                          className="rounded-box border border-base-content/10 bg-base-100 p-4 text-sm leading-relaxed"
+                        >
+                          <div className="badge badge-accent mb-3">Frank svarer</div>
+                          <p>
+                            <strong>Observasjon:</strong> {question.observed}
+                          </p>
+                          <p className="mt-2">
+                            <strong>Tolkning:</strong> {question.interpretation}
+                          </p>
+                          <p className="mt-2">
+                            <strong>Usikkerhet:</strong> {question.uncertainty}
+                          </p>
+                          <p className="mt-2">
+                            <strong>Anbefalt:</strong> {question.recommendation}
+                          </p>
+                        </article>
+                      ))}
+                  </div>
+                ) : null}
                 {store.deskDecisionVisible ? (
                   <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-4">
                     <div className="font-bold">Nytt skrivebordsgrep</div>
