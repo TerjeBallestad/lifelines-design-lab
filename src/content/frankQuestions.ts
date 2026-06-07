@@ -15,36 +15,38 @@ export const frankQuestions: FrankQuestion[] = [
   {
     id: 'ask_post_under_paper',
     evidenceId: 'post_pressure',
-    prompt: 'Hva betyr det at posten ligger under avisen?',
-    clueLabel: 'Post under avisen',
+    prompt: 'Hva betyr det for husleia?',
+    clueLabel: 'Husleia står i Gretes navn',
     roomNotice:
-      'Posten ligger ikke bortgjemt. Grete sier hun har kontroll, og legger avisen pent tilbake over bunken.',
+      'Kontoutskriften ligger ved posten. Husleie, strøm og telefon trekkes fra Gretes konto.',
     reply:
-      'Ja. Det interessante er ikke at posten er ubetalt. Grete virker å ha kontroll på den delen. Det jeg hører er hvor raskt hun gjør den ufarlig: “det ordner seg”, “han trenger bare litt tid”. Det kan være sant. Det kan også være at hun beskytter ham mot et voksent ansvar hun fortsatt tror snart kommer av seg selv.',
-    actionLabel: 'Spør hva Grete tror Elling snart klarer selv',
-    evidenceLabel: 'Grete gjør posten ufarlig',
+      'Det er den viktigste tingen i hele besøket. Grete betaler ikke fordi hun er ute av kontroll. Hun betaler fordi leiligheten fungerer gjennom henne. Hvis hun dør, mister Elling ikke bare en søster. Han mister betalingssystemet sitt. Da kan denne leiligheten ryke ganske fort.',
+    actionLabel: 'Sikre husleie uten Grete',
+    evidenceLabel: 'Leiligheten er avhengig av Gretes konto',
   },
   {
     id: 'ask_elling_distance',
     evidenceId: 'elling_distance',
-    prompt: 'La du merke til hvor Elling plasserte seg?',
-    clueLabel: 'Elling i utkanten',
-    roomNotice: 'Elling blir i rommet, men sitter utenfor samtalen og lar Grete svare først.',
+    prompt: 'Hva klarer Elling selv her?',
+    clueLabel: 'Elling mangler hverdagsferdigheter',
+    roomNotice:
+      'Elling lar Grete svare, hente fram papirer og forklare hva som skjer videre.',
     reply:
-      'Jeg så det. Han ble sittende, men han flyttet kroppen ut av samtalen. Grete svarte for ham før stillheten rakk å bli pinlig. Det betyr ikke at han nekter hjelp. Det betyr at vi ikke skal gjøre neste steg til en prøve foran andre. Hold det kort, konkret og lett å trekke seg fra.',
-    actionLabel: 'Lag et kort forsøk med utvei',
-    evidenceLabel: 'Elling tåler nærvær bedre enn prestasjon',
+      'Ikke nok til å være trygg alene. Han kan bo her når Grete holder rammen: regninger, telefoner, avtaler, små forklaringer. Men jeg ser ikke at han kan overta de tingene hvis hun blir borte. Vi må behandle det som ferdigheter som må øves, ikke som detaljer hun bare kan fortsette å hjelpe med.',
+    actionLabel: 'Kartlegg hvilke oppgaver Elling faktisk gjør selv',
+    evidenceLabel: 'Elling kan ikke drive hverdagen alene',
   },
   {
     id: 'ask_grete_load',
     evidenceId: 'grete_load',
-    prompt: 'Hvor mye av dette er egentlig Grete som holder i gang?',
-    clueLabel: 'Gretes kaffekopp og besøksrutine',
-    roomNotice: 'Grete åpner, serverer og svarer optimistisk før spørsmålene rekker å lande hos Elling.',
+    prompt: 'Hører du hvor sikker Grete er på at dette går bra?',
+    clueLabel: 'Grete tror det snart ordner seg',
+    roomNotice:
+      'Grete sier at Elling “bare trenger litt tid” og snakker om framtiden som om den allerede er på vei til å løse seg.',
     reply:
-      'Ja. Hun er ikke hjelpeløs, og hun er ikke problemet. Men hun glatter over alt som kan bli vanskelig. Det er omsorg, og litt fornektelse. Hvis vi bare spør henne om status, får vi den framtiden hun håper på. Vi må spørre hva Elling faktisk gjør selv i dag.',
-    actionLabel: 'Skille håp fra hva Elling gjør selv',
-    evidenceLabel: 'Grete svarer med framtidshåp',
+      'Ja. Det er ikke inkompetanse. Hun kan betale regninger og skaffe papirer. Problemet er at hun snakker som om Elling snart kommer til å klare voksenlivet bare han får ro. Kanskje hun har rett. Men saken vår kan ikke bygges på håpet hennes. Vi må planlegge for at Grete kan forsvinne før Elling er klar.',
+    actionLabel: 'Lag plan for hvis Grete faller bort',
+    evidenceLabel: 'Gretes håp dekker over risikoen',
   },
 ];
 

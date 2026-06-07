@@ -753,15 +753,15 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
         ) : null}
         {store.socialVisitReportVisible ? (
           <article className="mt-4 rounded-box border border-success/30 bg-success/10 p-4">
-            <div className="badge badge-success mb-3">Besøksnotat: Grete bærer rommet</div>
+            <div className="badge badge-success mb-3">Besøksnotat: Gretes rolle i saken</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Frank beskriver kaffe, post og små avklaringer før han beskriver Elling. Grete gjør
-                mer arbeid enn saken først viste.
+                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi Grete
+                betaler, forklarer og holder avtaler i gang.
               </p>
               <p>
-                <strong>Usikkerhet:</strong> Elling kan bo i rommet, men det er uklart hvor mye av
-                rommet han faktisk driver selv.
+                <strong>Risiko:</strong> Hvis Grete dør, mister Elling både betalingssystemet for
+                leiligheten og mye av hverdagsstøtten rundt den.
               </p>
             </div>
           </article>
@@ -772,20 +772,20 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
               {store.apartmentEvidenceIds.includes('post_pressure') ? (
                 <p>
-                  <strong>Posten ligger framme:</strong> økonomien er ikke bare et dokument; den
-                  ligger som en ting Grete rydder rundt.
+                  <strong>Husleia står i Gretes navn:</strong> Elling mister leilighetens
+                  betalingssystem hvis Grete faller bort.
                 </p>
               ) : null}
               {store.apartmentEvidenceIds.includes('elling_distance') ? (
                 <p>
-                  <strong>Elling holder avstand:</strong> han tåler besøk bedre enn krav. Frank må
-                  begynne med rommet, ikke prestasjonen.
+                  <strong>Elling mangler hverdagsferdigheter:</strong> regninger, telefoner og
+                  avtaler drives fortsatt gjennom Grete.
                 </p>
               ) : null}
               {store.apartmentEvidenceIds.includes('grete_load') ? (
                 <p>
-                  <strong>Grete bærer samtalen:</strong> hjelpen i hjemmet er allerede et arbeid,
-                  ikke bare en relasjon.
+                  <strong>Grete tror det snart ordner seg:</strong> saken må planlegge for risikoen
+                  hun håper ikke kommer.
                 </p>
               ) : null}
             </div>

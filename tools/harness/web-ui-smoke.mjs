@@ -242,7 +242,7 @@ async function smokeBrowserFlow() {
       'Social visit apartment reveal',
     );
 
-    await page.getByRole('button', { name: /Post under avisen/ }).click();
+    await page.getByRole('button', { name: /Husleia står i Gretes navn/ }).click();
     await expectVisible(
       page,
       'Du legger merke til',
@@ -254,19 +254,19 @@ async function smokeBrowserFlow() {
     await page.getByRole('button', { name: 'Skriv besøksnotat' }).click();
     await expectVisible(
       page,
-      'Besøksnotat: Grete bærer rommet',
+      'Besøksnotat: Gretes rolle i saken',
       checks,
       'Social visit returns a desk report',
     );
     await expectVisible(
       page,
-      'Grete gjør mer arbeid',
+      'Hvis Grete dør',
       checks,
-      'Visit report states Grete as hidden practical support',
+      'Visit report states the apartment survival risk',
     );
     await capture(page, screenshots, flow, '09-visit-report', 'Social visit report');
 
-    await page.getByRole('button', { name: /Hva betyr det at posten ligger under avisen/ }).click();
+    await page.getByRole('button', { name: /Hva betyr det for husleia/ }).click();
     await expectVisible(
       page,
       'Frank svarer',
@@ -281,9 +281,9 @@ async function smokeBrowserFlow() {
     );
     await expectVisible(
       page,
-      'Posten ligger framme',
+      'Husleia står i Gretes navn',
       checks,
-      'Mail observation becomes evidence chip',
+      'Rent dependency becomes evidence chip',
     );
     await expectVisible(
       page,
@@ -395,8 +395,11 @@ function checkVisibleSource() {
     'post under avisen',
     'besøksnotat',
     'det du legger merke til',
-    'hva betyr det at posten ligger under avisen',
+    'hva betyr det for husleia',
     'må legges merke til i rommet først',
+    'hvis grete dør',
+    'hverdagsferdigheter',
+    'gretes håp dekker over risikoen',
     'bevis fra leiligheten',
     'nytt skrivebordsgrep',
     'praktisk avlastningsgrep',
