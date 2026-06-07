@@ -18,14 +18,15 @@ export const frankQuestions: FrankQuestion[] = [
     evidenceId: 'post_pressure',
     prompt: 'Hva betyr det at posten ligger under avisen?',
     clueLabel: 'Post under avisen',
-    observed: 'Posten er ikke gjemt, men den er heller ikke håndtert. Grete rydder rundt den.',
+    observed:
+      'Grete la avisen tilbake over konvoluttene mens hun snakket. Hun gjorde det fort, som en vane.',
     interpretation:
-      'Det ser mindre ut som “glemt post” og mer som et punkt i rommet alle vet finnes, men ingen starter alene.',
+      'Det er ikke rot. Det er et fast lite rituale: posten ligger framme nok til å mase, men skjult nok til å slippe å bli åpnet.',
     uncertainty:
-      'Frank vet ikke om Elling forstår regningene, eller om han bare kjenner presset fra dem.',
+      'Jeg vet ikke om Elling ikke kan, ikke vil, eller bare ikke tør å åpne den mens Grete ser på.',
     recommendation:
-      'Ikke start med telefonøving som ny plikt. Start med å gjøre én økonomisk ting mindre truende.',
-    evidenceLabel: 'Posten er et romproblem, ikke bare et dokumentproblem',
+      'Be om én konkret regning og ta den ved kjøkkenbordet. Ikke “økonomi”. Bare denne konvolutten, med Frank til stede og Grete fri fra å forklare.',
+    evidenceLabel: 'Posten blir håndtert som uro, ikke papir',
   },
   {
     id: 'ask_elling_distance',
