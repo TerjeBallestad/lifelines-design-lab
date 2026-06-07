@@ -732,8 +732,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="badge badge-info mb-3">Dokument: Kontoutskrift</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Grete betaler husleie, strøm og telefon fra samme konto. Elling har små inntekter
-                inn, men ingen faste trekk i eget navn.
+                Elling har trygd inn, men ikke nok til husleie og faste utgifter alene. Gretes
+                pensjon dekker gapet som gjør at leiligheten fortsatt går rundt.
               </p>
               <p>
                 <strong>Merknad:</strong> Dersom Grete faller bort, blir leiligheten et praktisk
@@ -756,12 +756,12 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="badge badge-success mb-3">Besøksnotat: Gretes rolle i saken</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi Grete
-                betaler, forklarer og holder avtaler i gang.
+                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi
+                Ellings trygd, Gretes pensjon og Gretes praktiske støtte henger sammen.
               </p>
               <p>
-                <strong>Risiko:</strong> Hvis Grete dør, mister Elling både betalingssystemet for
-                leiligheten og mye av hverdagsstøtten rundt den.
+                <strong>Risiko:</strong> Hvis Grete dør, mister Elling både pengene som dekker
+                husleiegapet og mye av hverdagsstøtten rundt leiligheten.
               </p>
             </div>
           </article>
@@ -772,8 +772,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
               {store.apartmentEvidenceIds.includes('post_pressure') ? (
                 <p>
-                  <strong>Husleia står i Gretes navn:</strong> Elling mister leilighetens
-                  betalingssystem hvis Grete faller bort.
+                  <strong>Trygden dekker ikke leiligheten:</strong> Elling mister Gretes pensjon som
+                  dekker gapet hvis hun faller bort.
                 </p>
               ) : null}
               {store.apartmentEvidenceIds.includes('elling_distance') ? (

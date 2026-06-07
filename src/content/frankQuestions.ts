@@ -15,14 +15,14 @@ export const frankQuestions: FrankQuestion[] = [
   {
     id: 'ask_post_under_paper',
     evidenceId: 'post_pressure',
-    prompt: 'Hva betyr det for husleia?',
-    clueLabel: 'Husleia står i Gretes navn',
+    prompt: 'Holder trygden til husleia?',
+    clueLabel: 'Trygden dekker ikke leiligheten',
     roomNotice:
-      'Kontoutskriften ligger ved posten. Husleie, strøm og telefon trekkes fra Gretes konto.',
+      'Kontoutskriften ligger ved posten. Elling har trygd inn, men husleie, strøm og telefon går gjennom Gretes pensjon.',
     reply:
-      'Det er den viktigste tingen i hele besøket. Grete betaler ikke fordi hun er ute av kontroll. Hun betaler fordi leiligheten fungerer gjennom henne. Hvis hun dør, mister Elling ikke bare moren sin. Han mister betalingssystemet sitt. Da kan denne leiligheten ryke ganske fort.',
-    actionLabel: 'Sikre husleie uten Grete',
-    evidenceLabel: 'Leiligheten er avhengig av Gretes konto',
+      'Det er den viktigste tingen i hele besøket. Elling har trygd, men den bærer ikke husleia og de faste utgiftene alene. Grete er ikke problemet her; hun er velgjøreren som tetter hullet med pensjonen sin. Hvis hun dør, mister Elling moren sin, støtten sin og pengene som gjør at leiligheten går rundt.',
+    actionLabel: 'Finn gapet mellom trygd og faste utgifter',
+    evidenceLabel: 'Leiligheten er avhengig av Gretes pensjon',
   },
   {
     id: 'ask_elling_distance',
