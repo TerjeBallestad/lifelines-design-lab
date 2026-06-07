@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
-import { findFrankQuestion, type ApartmentEvidenceId } from '../content/frankQuestions';
+import { findFrankQuestion, frankQuestions, type ApartmentEvidenceId } from '../content/frankQuestions';
 import type {
   AttemptResult,
   ClientState,
@@ -45,6 +45,7 @@ export class RootStore {
   financialStatementRequested = false;
   financialStatementVisible = false;
   socialVisitScheduled = false;
+  noticedApartmentEvidenceIds: ApartmentEvidenceId[] = [];
   apartmentEvidenceIds: ApartmentEvidenceId[] = [];
   askedFrankQuestionIds: string[] = [];
   deskDecisionVisible = false;
@@ -196,16 +197,28 @@ export class RootStore {
     this.labMode = 'desk';
   }
 
+  noticeApartmentDetail(id: ApartmentEvidenceId): void {
+    if (!this.socialVisitScheduled || this.socialVisitReportVisible) return;
+    if (this.noticedApartmentEvidenceIds.includes(id)) return;
+    const question = frankQuestionsByEvidence[id];
+    this.noticedApartmentEvidenceIds = [...this.noticedApartmentEvidenceIds, id];
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Du legger merke til “${question.clueLabel}” under besøket.`,
+    ];
+  }
+
   askFrank(questionId: string): void {
     if (!this.socialVisitReportVisible || this.askedFrankQuestionIds.includes(questionId)) return;
     const question = findFrankQuestion(questionId);
     if (!question) return;
+    if (!this.noticedApartmentEvidenceIds.includes(question.evidenceId)) return;
 
     this.askedFrankQuestionIds = [...this.askedFrankQuestionIds, questionId];
     if (!this.apartmentEvidenceIds.includes(question.evidenceId)) {
       this.apartmentEvidenceIds = [...this.apartmentEvidenceIds, question.evidenceId];
     }
-    if (this.apartmentEvidenceIds.length >= 2) {
+    if (this.apartmentEvidenceIds.length >= 1) {
       this.deskDecisionVisible = true;
     }
     this.caseLog = [
@@ -284,6 +297,7 @@ export class RootStore {
     this.financialStatementRequested = false;
     this.financialStatementVisible = false;
     this.socialVisitScheduled = false;
+    this.noticedApartmentEvidenceIds = [];
     this.apartmentEvidenceIds = [];
     this.askedFrankQuestionIds = [];
     this.deskDecisionVisible = false;
@@ -344,6 +358,10 @@ export class RootStore {
     }
   }
 }
+
+const frankQuestionsByEvidence = Object.fromEntries(
+  frankQuestions.map((question) => [question.evidenceId, question]),
+) as Record<ApartmentEvidenceId, NonNullable<ReturnType<typeof findFrankQuestion>>>;
 
 export const rootStore = new RootStore();
 export const StoreContext = createContext<RootStore>(rootStore);

@@ -226,18 +226,21 @@ describe('resolvePhoneAttempt', () => {
     store.callGreteFromConcernReport();
     store.completeGreteCall();
     store.scheduleSocialVisit();
-    store.completeSocialVisit();
 
     expect(store.deskDecisionVisible).toBe(false);
+    store.askFrank('ask_post_under_paper');
+    expect(store.askedFrankQuestionIds).not.toContain('ask_post_under_paper');
+
+    store.performSocialVisit();
+    store.noticeApartmentDetail('post_pressure');
+    expect(store.noticedApartmentEvidenceIds).toContain('post_pressure');
+    expect(store.caseLog.at(-1)).toContain('legger merke til');
+
+    store.completeSocialVisit();
     store.askFrank('ask_post_under_paper');
     expect(store.askedFrankQuestionIds).toContain('ask_post_under_paper');
     expect(store.apartmentEvidenceIds).toContain('post_pressure');
     expect(store.caseLog.at(-1)).toContain('Frank tolker');
-    expect(store.deskDecisionVisible).toBe(false);
-
-    store.askFrank('ask_elling_distance');
-    expect(store.askedFrankQuestionIds).toContain('ask_elling_distance');
-    expect(store.apartmentEvidenceIds).toContain('elling_distance');
     expect(store.deskDecisionVisible).toBe(true);
 
     store.choosePracticalReliefDecision();

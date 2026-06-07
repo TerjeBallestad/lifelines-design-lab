@@ -242,6 +242,15 @@ async function smokeBrowserFlow() {
       'Social visit apartment reveal',
     );
 
+    await page.getByRole('button', { name: /Post under avisen/ }).click();
+    await expectVisible(
+      page,
+      'Du legger merke til',
+      checks,
+      'Player marks a concrete room detail before Frank interprets it',
+    );
+    await capture(page, screenshots, flow, '08-noticed-post', 'Player notices post in room');
+
     await page.getByRole('button', { name: 'Skriv besøksnotat' }).click();
     await expectVisible(
       page,
@@ -255,14 +264,20 @@ async function smokeBrowserFlow() {
       checks,
       'Visit report states Grete as hidden practical support',
     );
-    await capture(page, screenshots, flow, '08-visit-report', 'Social visit report');
+    await capture(page, screenshots, flow, '09-visit-report', 'Social visit report');
 
-    await page.getByRole('button', { name: 'Se på posten under avisen' }).click();
+    await page.getByRole('button', { name: /Hva betyr det at posten ligger under avisen/ }).click();
+    await expectVisible(
+      page,
+      'Frank svarer',
+      checks,
+      'Frank gives a canned interpretation for the noticed detail',
+    );
     await expectVisible(
       page,
       'Bevis fra leiligheten',
       checks,
-      'Observed apartment evidence appears on desk',
+      'Frank interpretation turns the room notice into desk evidence',
     );
     await expectVisible(
       page,
@@ -270,23 +285,13 @@ async function smokeBrowserFlow() {
       checks,
       'Mail observation becomes evidence chip',
     );
-    await capture(page, screenshots, flow, '09-post-evidence', 'Post evidence on desk');
-
-    await page.getByRole('button', { name: 'Snakk lavt med Elling' }).click();
-    await expectVisible(page, 'Elling holder avstand', checks, 'Elling chat becomes evidence chip');
     await expectVisible(
       page,
       'Nytt skrivebordsgrep',
       checks,
-      'Two evidence chips unlock a new desk decision',
+      'One interpreted room clue unlocks one changed desk decision',
     );
-    await capture(
-      page,
-      screenshots,
-      flow,
-      '10-elling-evidence-decision',
-      'Elling evidence unlocks decision',
-    );
+    await capture(page, screenshots, flow, '10-frank-post-clue-decision', 'Frank clue unlocks decision');
 
     await page.getByRole('button', { name: 'Foreslå praktisk avlastning' }).click();
     await expectVisible(
@@ -366,7 +371,8 @@ function checkVisibleSource() {
   const component = readFileSync('src/components/PhonePracticeLab.tsx', 'utf8').toLowerCase();
   const store = readFileSync('src/stores/RootStore.tsx', 'utf8').toLowerCase();
   const tests = readFileSync('src/engine/phoneResolver.test.ts', 'utf8').toLowerCase();
-  const all = `${component}\n${store}\n${tests}`;
+  const frankQuestions = readFileSync('src/content/frankQuestions.ts', 'utf8').toLowerCase();
+  const all = `${component}\n${store}\n${tests}\n${frankQuestions}`;
   const required = [
     'bekymringsmelding',
     'etabler kontakt med grete',
@@ -382,8 +388,9 @@ function checkVisibleSource() {
     'kaffe og kopper',
     'post under avisen',
     'besøksnotat',
-    'se på posten under avisen',
-    'snakk lavt med elling',
+    'det du legger merke til',
+    'hva betyr det at posten ligger under avisen',
+    'må legges merke til i rommet først',
     'bevis fra leiligheten',
     'nytt skrivebordsgrep',
     'praktisk avlastningsgrep',

@@ -13,7 +13,7 @@
   "verifiers": [
     {
       "id": "web-ui-smoke",
-      "command": "tools/harness/web-ui-smoke.mjs",
+      "command": "tools/harness/web-ui-smoke.sh",
       "evidence": "interactive-ui"
     }
   ]

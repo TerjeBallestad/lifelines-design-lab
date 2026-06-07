@@ -1,5 +1,6 @@
 node_modules
 dist
+.harness/
 .pm/server.pid
 .pm/server.log
 .DS_Store

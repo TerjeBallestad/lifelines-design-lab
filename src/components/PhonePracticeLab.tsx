@@ -583,6 +583,37 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
             </p>
           </div>
         </div>
+        <div className="mt-4 rounded-box border border-accent/30 bg-accent/10 p-4">
+          <div className="font-black uppercase tracking-[0.18em] text-accent">
+            Det du legger merke til
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-base-content/70">
+            Marker én konkret ting i rommet før Frank skriver notat. Senere kan du spørre om han så
+            det samme.
+          </p>
+          <div className="mt-4 grid gap-2">
+            {frankQuestions.map((question) => {
+              const noticed = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
+              return (
+                <button
+                  key={question.evidenceId}
+                  className={clsx(
+                    'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
+                    noticed ? 'btn-accent text-accent-content' : 'btn-ghost bg-base-200',
+                  )}
+                  type="button"
+                  onClick={() => store.noticeApartmentDetail(question.evidenceId)}
+                  disabled={noticed}
+                >
+                  <span className="grid gap-1">
+                    <strong>{question.clueLabel}</strong>
+                    <span className="text-xs font-normal opacity-75">{question.observed}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <button className="btn btn-success mt-5" onClick={() => store.completeSocialVisit()}>
           Skriv besøksnotat
         </button>
@@ -837,24 +868,30 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   Spør Frank om noe i rommet
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                  Velg en konkret ting spilleren la merke til. Frank svarer med observasjon,
-                  tolkning, usikkerhet og et smalt skrivebordsgrep.
+                  Spør om en konkret ting du la merke til under besøket. Frank svarer med
+                  observasjon, tolkning, usikkerhet og ett smalt skrivebordsgrep.
                 </p>
                 <div className="mt-4 grid gap-2">
-                  {frankQuestions.map((question) => (
-                    <button
-                      key={question.id}
-                      className="btn btn-outline btn-accent h-auto justify-start rounded-box px-4 py-3 text-left normal-case"
-                      type="button"
-                      onClick={() => store.askFrank(question.id)}
-                      disabled={store.askedFrankQuestionIds.includes(question.id)}
-                    >
-                      <span className="grid gap-1">
-                        <strong>{question.prompt}</strong>
-                        <span className="text-xs font-normal opacity-70">{question.clueLabel}</span>
-                      </span>
-                    </button>
-                  ))}
+                  {frankQuestions.map((question) => {
+                    const noticed = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
+                    const asked = store.askedFrankQuestionIds.includes(question.id);
+                    return (
+                      <button
+                        key={question.id}
+                        className="btn btn-outline btn-accent h-auto justify-start rounded-box px-4 py-3 text-left normal-case"
+                        type="button"
+                        onClick={() => store.askFrank(question.id)}
+                        disabled={!noticed || asked}
+                      >
+                        <span className="grid gap-1">
+                          <strong>{question.prompt}</strong>
+                          <span className="text-xs font-normal opacity-70">
+                            {noticed ? question.clueLabel : 'Må legges merke til i rommet først'}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
                 {store.askedFrankQuestionIds.length ? (
                   <div className="mt-4 grid gap-3">
