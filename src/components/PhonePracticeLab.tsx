@@ -1110,8 +1110,8 @@ function ApartmentStage({
   carriedWeaknesses: PressureId[];
 }) {
   return (
-    <div className="relative mt-4 h-[540px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
+    <div className="relative mt-4 h-135 overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-size-[36px_36px]" />
       <Zone className="left-8 top-10 h-40 w-56" label="telefonbordet" />
       <Zone className="right-12 top-12 h-36 w-56" label="lesestolen" />
       <Zone className="bottom-12 right-16 h-36 w-52" label="soveromsdøra" />

@@ -291,7 +291,13 @@ async function smokeBrowserFlow() {
       checks,
       'One interpreted room clue unlocks one changed desk decision',
     );
-    await capture(page, screenshots, flow, '10-frank-post-clue-decision', 'Frank clue unlocks decision');
+    await capture(
+      page,
+      screenshots,
+      flow,
+      '10-frank-post-clue-decision',
+      'Frank clue unlocks decision',
+    );
 
     await page.getByRole('button', { name: 'Foreslå praktisk avlastning' }).click();
     await expectVisible(

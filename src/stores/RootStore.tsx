@@ -1,6 +1,10 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
-import { findFrankQuestion, frankQuestions, type ApartmentEvidenceId } from '../content/frankQuestions';
+import {
+  findFrankQuestion,
+  frankQuestions,
+  type ApartmentEvidenceId,
+} from '../content/frankQuestions';
 import type {
   AttemptResult,
   ClientState,
