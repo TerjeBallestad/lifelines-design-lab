@@ -607,7 +607,7 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
                 >
                   <span className="grid gap-1">
                     <strong>{question.clueLabel}</strong>
-                    <span className="text-xs font-normal opacity-75">{question.observed}</span>
+                    <span className="text-xs font-normal opacity-75">{question.reply}</span>
                   </span>
                 </button>
               );
@@ -903,18 +903,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                           className="rounded-box border border-base-content/10 bg-base-100 p-4 text-sm leading-relaxed"
                         >
                           <div className="badge badge-accent mb-3">Frank svarer</div>
-                          <p>
-                            <strong>Observasjon:</strong> {question.observed}
-                          </p>
-                          <p className="mt-2">
-                            <strong>Tolkning:</strong> {question.interpretation}
-                          </p>
-                          <p className="mt-2">
-                            <strong>Usikkerhet:</strong> {question.uncertainty}
-                          </p>
-                          <p className="mt-2">
-                            <strong>Anbefalt:</strong> {question.recommendation}
-                          </p>
+                          <p>{question.reply}</p>
+                          <div className="badge badge-outline mt-3">{question.actionLabel}</div>
                         </article>
                       ))}
                   </div>
