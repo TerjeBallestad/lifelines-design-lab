@@ -607,7 +607,7 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
                 >
                   <span className="grid gap-1">
                     <strong>{question.clueLabel}</strong>
-                    <span className="text-xs font-normal opacity-75">{question.reply}</span>
+                    <span className="text-xs font-normal opacity-75">{question.roomNotice}</span>
                   </span>
                 </button>
               );
@@ -900,11 +900,30 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                       .map((question) => (
                         <article
                           key={question.id}
-                          className="rounded-box border border-base-content/10 bg-base-100 p-4 text-sm leading-relaxed"
+                          className="rounded-box border border-success/30 bg-success/10 p-5 text-sm leading-relaxed"
                         >
-                          <div className="badge badge-accent mb-3">Frank svarer</div>
-                          <p>{question.reply}</p>
-                          <div className="badge badge-outline mt-3">{question.actionLabel}</div>
+                          <div className="flex items-center gap-3">
+                            <div className="avatar placeholder">
+                              <div className="w-14 rounded-full bg-success text-success-content">
+                                <span>F</span>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="font-bold">Frank svarer</div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-base-content/50">
+                                Romobservasjon · samtale
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-5 grid gap-3">
+                            <SpeechBubble side="right" label="Du">
+                              {question.prompt}
+                            </SpeechBubble>
+                            <SpeechBubble side="left" label="Frank">
+                              {question.reply}
+                            </SpeechBubble>
+                          </div>
+                          <div className="badge badge-outline mt-4">{question.actionLabel}</div>
                         </article>
                       ))}
                   </div>
