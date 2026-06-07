@@ -20,7 +20,7 @@ export const frankQuestions: FrankQuestion[] = [
     roomNotice:
       'Kontoutskriften ligger ved posten. Husleie, strøm og telefon trekkes fra Gretes konto.',
     reply:
-      'Det er den viktigste tingen i hele besøket. Grete betaler ikke fordi hun er ute av kontroll. Hun betaler fordi leiligheten fungerer gjennom henne. Hvis hun dør, mister Elling ikke bare en søster. Han mister betalingssystemet sitt. Da kan denne leiligheten ryke ganske fort.',
+      'Det er den viktigste tingen i hele besøket. Grete betaler ikke fordi hun er ute av kontroll. Hun betaler fordi leiligheten fungerer gjennom henne. Hvis hun dør, mister Elling ikke bare moren sin. Han mister betalingssystemet sitt. Da kan denne leiligheten ryke ganske fort.',
     actionLabel: 'Sikre husleie uten Grete',
     evidenceLabel: 'Leiligheten er avhengig av Gretes konto',
   },
