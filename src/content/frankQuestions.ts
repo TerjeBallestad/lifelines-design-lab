@@ -15,14 +15,14 @@ export const frankQuestions: FrankQuestion[] = [
   {
     id: 'ask_post_under_paper',
     evidenceId: 'post_pressure',
-    prompt: 'Holder trygden til husleia?',
-    clueLabel: 'Trygden dekker ikke leiligheten',
+    prompt: 'Hvem styrer trygden hans?',
+    clueLabel: 'Grete mottar Ellings trygd',
     roomNotice:
-      'Kontoutskriften ligger ved posten. Elling har trygd inn, men husleie, strøm og telefon går gjennom Gretes pensjon.',
+      'Kontoutskriften ligger ved posten. Ellings uføretrygd kommer inn på Gretes konto, og hun betaler husleie, strøm og telefon derfra.',
     reply:
-      'Det er den viktigste tingen i hele besøket. Elling har trygd, men den bærer ikke husleia og de faste utgiftene alene. Grete er ikke problemet her; hun er velgjøreren som tetter hullet med pensjonen sin. Hvis hun dør, mister Elling moren sin, støtten sin og pengene som gjør at leiligheten går rundt.',
-    actionLabel: 'Finn gapet mellom trygd og faste utgifter',
-    evidenceLabel: 'Leiligheten er avhengig av Gretes pensjon',
+      'Det er den viktigste tingen i hele besøket. Elling er vurdert som ute av stand til å jobbe, men pengene hans går ikke gjennom ham. Grete mottar trygden, betaler regningene og holder hverdagen samlet. Hvis hun dør, mister han ikke bare moren sin. Han må plutselig prøve å eie sitt eget liv, med oss som støtte.',
+    actionLabel: 'Flytt økonomistøtten over på Elling',
+    evidenceLabel: 'Grete forvalter Ellings trygd',
   },
   {
     id: 'ask_elling_distance',
@@ -32,7 +32,7 @@ export const frankQuestions: FrankQuestion[] = [
     roomNotice:
       'Elling lar Grete svare, hente fram papirer og forklare hva som skjer videre.',
     reply:
-      'Ikke nok til å være trygg alene. Han kan bo her når Grete holder rammen: regninger, telefoner, avtaler, små forklaringer. Men jeg ser ikke at han kan overta de tingene hvis hun blir borte. Vi må behandle det som ferdigheter som må øves, ikke som detaljer hun bare kan fortsette å hjelpe med.',
+      'Ikke nok til å være trygg alene ennå. Han kan bo her når Grete holder rammen: regninger, telefoner, avtaler, små forklaringer. Men han har aldri fått øve på å stå i det selv. Vi må behandle dette som ferdigheter som kan bygges, ikke som en merkelapp vi skal forklare ferdig.',
     actionLabel: 'Kartlegg hvilke oppgaver Elling faktisk gjør selv',
     evidenceLabel: 'Elling kan ikke drive hverdagen alene',
   },
@@ -44,7 +44,7 @@ export const frankQuestions: FrankQuestion[] = [
     roomNotice:
       'Grete sier at Elling “bare trenger litt tid” og snakker om framtiden som om den allerede er på vei til å løse seg.',
     reply:
-      'Ja. Det er ikke inkompetanse. Hun kan betale regninger og skaffe papirer. Problemet er at hun snakker som om Elling snart kommer til å klare voksenlivet bare han får ro. Kanskje hun har rett. Men saken vår kan ikke bygges på håpet hennes. Vi må planlegge for at Grete kan forsvinne før Elling er klar.',
+      'Ja. Det er ikke inkompetanse. Hun kan betale regninger og skaffe papirer. Problemet er at hun har skjermet ham så lenge at det nesten høres kjærlig og farlig ut samtidig. Vi trenger ikke si alt høyt. Men hvis Grete blir borte, starter spillet egentlig der: Elling får endelig prøve selv, med velferdsstaten som støtte i stedet for moren.',
     actionLabel: 'Lag plan for hvis Grete faller bort',
     evidenceLabel: 'Gretes håp dekker over risikoen',
   },

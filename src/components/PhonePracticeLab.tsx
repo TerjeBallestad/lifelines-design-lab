@@ -732,8 +732,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="badge badge-info mb-3">Dokument: Kontoutskrift</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Elling har trygd inn, men ikke nok til husleie og faste utgifter alene. Gretes
-                pensjon dekker gapet som gjør at leiligheten fortsatt går rundt.
+                Ellings uføretrygd kommer inn på Gretes konto. Hun betaler husleie, strøm og
+                telefon derfra, og Elling håndterer ikke de faste trekkene selv.
               </p>
               <p>
                 <strong>Merknad:</strong> Dersom Grete faller bort, blir leiligheten et praktisk
@@ -757,11 +757,11 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
                 Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi
-                Ellings trygd, Gretes pensjon og Gretes praktiske støtte henger sammen.
+                Grete mottar Ellings trygd, betaler regningene og skjermer ham fra hverdagskravene.
               </p>
               <p>
-                <strong>Risiko:</strong> Hvis Grete dør, mister Elling både pengene som dekker
-                husleiegapet og mye av hverdagsstøtten rundt leiligheten.
+                <strong>Risiko:</strong> Hvis Grete dør, må Elling for første gang prøve å eie økonomien
+                og hverdagen sin med støtte fra saken, ikke fra moren.
               </p>
             </div>
           </article>
@@ -772,8 +772,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
               {store.apartmentEvidenceIds.includes('post_pressure') ? (
                 <p>
-                  <strong>Trygden dekker ikke leiligheten:</strong> Elling mister Gretes pensjon som
-                  dekker gapet hvis hun faller bort.
+                  <strong>Grete mottar Ellings trygd:</strong> saken må flytte økonomistøtten fra
+                  morens skjerming til Ellings egen mestring.
                 </p>
               ) : null}
               {store.apartmentEvidenceIds.includes('elling_distance') ? (

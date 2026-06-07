@@ -197,7 +197,7 @@ async function smokeBrowserFlow() {
     );
     await expectVisible(
       page,
-      'Elling har trygd inn',
+      'Ellings uføretrygd kommer inn',
       checks,
       'Financial document gives concrete case evidence',
     );
@@ -242,7 +242,7 @@ async function smokeBrowserFlow() {
       'Social visit apartment reveal',
     );
 
-    await page.getByRole('button', { name: /Trygden dekker ikke leiligheten/ }).click();
+    await page.getByRole('button', { name: /Grete mottar Ellings trygd/ }).click();
     await expectVisible(
       page,
       'Du legger merke til',
@@ -266,7 +266,7 @@ async function smokeBrowserFlow() {
     );
     await capture(page, screenshots, flow, '09-visit-report', 'Social visit report');
 
-    await page.getByRole('button', { name: /Holder trygden til husleia/ }).click();
+    await page.getByRole('button', { name: /Hvem styrer trygden hans/ }).click();
     await expectVisible(
       page,
       'Frank svarer',
@@ -281,7 +281,7 @@ async function smokeBrowserFlow() {
     );
     await expectVisible(
       page,
-      'Trygden dekker ikke leiligheten',
+      'Grete mottar Ellings trygd',
       checks,
       'Rent dependency becomes evidence chip',
     );
@@ -388,14 +388,14 @@ function checkVisibleSource() {
     'første kontakt',
     'kontoutskrift',
     'kontoutskrift bestilt',
-    'elling har trygd inn',
+    'ellings uføretrygd kommer inn',
     'sosialt besøk',
     'sosialt besøk hos grete',
     'kaffe og kopper',
     'post under avisen',
     'besøksnotat',
     'det du legger merke til',
-    'holder trygden til husleia',
+    'hvem styrer trygden hans',
     'må legges merke til i rommet først',
     'hvis grete dør',
     'hverdagsferdigheter',
