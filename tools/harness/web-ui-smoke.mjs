@@ -370,7 +370,8 @@ function checkVisibleSource() {
   const store = readFileSync('src/stores/RootStore.tsx', 'utf8').toLowerCase();
   const tests = readFileSync('src/engine/phoneResolver.test.ts', 'utf8').toLowerCase();
   const frankQuestions = readFileSync('src/content/frankQuestions.ts', 'utf8').toLowerCase();
-  const all = `${component}\n${store}\n${tests}\n${frankQuestions}`;
+  const intakeCase = readFileSync('src/content/intakeCase.ts', 'utf8').toLowerCase();
+  const all = `${component}\n${store}\n${tests}\n${frankQuestions}\n${intakeCase}`;
   const required = [
     'bekymringsmelding',
     'etabler kontakt med grete',

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import componentSource from '../components/PhonePracticeLab.tsx?raw';
 import contentSource from '../content/phonePractice.ts?raw';
+import intakeCaseSource from '../content/intakeCase.ts?raw';
 import type { AttemptContext } from '../domain/types';
 import resolverSource from './phoneResolver.ts?raw';
 import { actionProbabilities } from '../content/actionCards';
@@ -53,7 +54,7 @@ function stripInternalCode(source: string): string {
 }
 
 function visibleSourceText(): string {
-  return [componentSource, contentSource, resolverSource]
+  return [componentSource, contentSource, intakeCaseSource, resolverSource]
     .map((source) => stripInternalCode(source))
     .join('\n')
     .toLowerCase();

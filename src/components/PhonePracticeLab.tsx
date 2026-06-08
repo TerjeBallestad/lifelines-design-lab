@@ -8,6 +8,7 @@ import {
   adjustedDie,
 } from '../content/actionCards';
 import { frankQuestions, type FrankQuestion } from '../content/frankQuestions';
+import { apartmentEvidenceBriefs, intakeCaseCopy } from '../content/intakeCase';
 import type {
   ActionCard,
   ActionOutcomeClass,
@@ -43,12 +44,15 @@ const frankPositionCopy: Record<FrankPosition, string> = {
   absent_setup: 'Frank har gått ut',
 };
 
-const initialConcernDocumentLabel = 'Bekymringsmelding';
-const initialConcernObjective = 'Etabler kontakt med Grete';
-const initialConcernAction = 'Ring Grete';
-const firstContactReportTitle = 'Frankrapport · Første kontakt';
-const requestFinancialStatementAction = 'Be Grete finne fram økonomisk oversikt';
-const performSocialVisitAction = 'Gjennomfør sosialt besøk';
+const {
+  initialConcern,
+  firstContactReport,
+  financialOverview,
+  socialVisit,
+  frankFocus,
+  financePrompt,
+  deskDecision,
+} = intakeCaseCopy;
 const visiblePreDeathActionCards = actionCards.filter((card) => card.id !== 'phone_first_step');
 
 const frictionCopy: Record<string, string> = {
@@ -228,7 +232,7 @@ const GreteCallSurface = observer(function GreteCallSurface() {
           </p>
           <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
             <div className="font-bold">Ny rapport</div>
-            <p className="mt-1">{firstContactReportTitle}</p>
+            <p className="mt-1">{firstContactReport.title}</p>
           </div>
         </div>
         <button className="btn btn-success mt-5" onClick={() => store.completeGreteCall()}>
@@ -370,29 +374,24 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-warning/30 bg-warning/10 p-4">
               <div className="badge badge-warning mb-3">
-                Dokument: {initialConcernDocumentLabel}
+                Dokument: {initialConcern.documentLabel}
               </div>
               <div className="space-y-3 text-sm leading-relaxed text-base-content/80">
                 <p>
-                  <strong>Pasient:</strong> Grete Halvorsen
+                  <strong>Pasient:</strong> {initialConcern.patient}
                   <br />
-                  <strong>Gjelder:</strong> Elling Halvorsen (35 år)
+                  <strong>Gjelder:</strong> {initialConcern.subject}
                 </p>
-                <p>
-                  Grete oppgir at Elling bor hjemme, hun har 100% omsorg. Hun beskriver ham som “en
-                  smart gutt” og ønsker ikke videre tiltak nå.
-                </p>
-                <p>
-                  Lege vurderer at familien kan ha behov for oppfølging dersom Gretes helsetilstand
-                  forverres.
-                </p>
+                {initialConcern.paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
                 <ul className="ml-4 list-disc space-y-1">
-                  <li>Etablere kontakt med Grete</li>
-                  <li>Kartlegge Ellings hverdag og nettverk</li>
-                  <li>Vurdere støtte ved endret omsorgssituasjon</li>
+                  {initialConcern.tasks.map((task) => (
+                    <li key={task}>{task}</li>
+                  ))}
                 </ul>
                 <p className="text-xs leading-relaxed text-base-content/55 float-end pr-6">
-                  Dr. Haug
+                  {initialConcern.signature}
                 </p>
               </div>
             </article>
@@ -400,20 +399,13 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
         ) : showFirstContactReport ? (
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-base-content/10 bg-base-200 p-4">
-              <div className="badge badge-outline mb-3">{firstContactReportTitle}</div>
+              <div className="badge badge-outline mb-3">{firstContactReport.title}</div>
               <div className="space-y-3 text-sm leading-relaxed text-base-content/80">
-                <p>
-                  <strong>Observasjon:</strong> Grete svarte raskt og førte samtalen. Hun omtaler
-                  Elling som “en smart gutt”.
-                </p>
-                <p>
-                  <strong>Usikkerhet:</strong> Elling deltok ikke direkte. Det er uklart om han
-                  kjenner til henvendelsen eller hva han selv forstår av saken.
-                </p>
-                <p>
-                  <strong>Anbefalt:</strong> gjennomfør det korte besøket Grete gikk med på før
-                  saken tolkes for hardt.
-                </p>
+                {firstContactReport.paragraphs.map((paragraph) => (
+                  <p key={paragraph.label}>
+                    <strong>{paragraph.label}:</strong> {paragraph.text}
+                  </p>
+                ))}
               </div>
             </article>
           </div>
@@ -434,40 +426,42 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
         )}
         {store.financialStatementVisible ? (
           <article className="mt-4 rounded-box border border-info/30 bg-info/10 p-4">
-            <div className="badge badge-info mb-3">Dokument: Økonomisk oversikt</div>
+            <div className="badge badge-info mb-3">{financialOverview.title}</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
-              <p>
-                Ellings uføretrygd kommer inn på Gretes konto. Hun betaler husleie, strøm og telefon
-                derfra, og Elling håndterer ikke de faste trekkene selv.
-              </p>
-              <p>
-                <strong>Merknad:</strong> Dersom Grete faller bort, blir leiligheten et praktisk
-                spørsmål før den blir et omsorgsspørsmål.
-              </p>
+              {financialOverview.paragraphs.map((paragraph) =>
+                typeof paragraph === 'string' ? (
+                  <p key={paragraph}>{paragraph}</p>
+                ) : (
+                  <p key={paragraph.label}>
+                    <strong>{paragraph.label}:</strong> {paragraph.text}
+                  </p>
+                ),
+              )}
             </div>
           </article>
         ) : store.financialStatementRequested ? (
           <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-sm">
-            <span>Økonomisk oversikt bedt om. Grete finner fram papirer til neste dag.</span>
+            <span>{financialOverview.pendingText}</span>
           </div>
         ) : null}
         {store.socialVisitScheduled ? (
           <div className="alert alert-success mt-3 border-success/30 bg-success/10 text-sm">
-            <span>Grete har sagt ja til et kort sosialt besøk.</span>
+            <span>{socialVisit.scheduledText}</span>
           </div>
         ) : null}
         {store.socialVisitReportVisible ? (
           <article className="mt-4 rounded-box border border-success/30 bg-success/10 p-4">
-            <div className="badge badge-success mb-3">Besøksnotat: Gretes rolle i saken</div>
+            <div className="badge badge-success mb-3">{socialVisit.reportTitle}</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
-              <p>
-                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi Grete
-                gjør besøket, posten, pausene og Elling sosialt håndterbart.
-              </p>
-              <p>
-                <strong>Risiko:</strong> Hvis Grete dør, må Elling møte hverdagen med støtte fra
-                saken, ikke med moren som skjult ramme.
-              </p>
+              {socialVisit.reportParagraphs.map((paragraph) =>
+                typeof paragraph === 'string' ? (
+                  <p key={paragraph}>{paragraph}</p>
+                ) : (
+                  <p key={paragraph.label}>
+                    <strong>{paragraph.label}:</strong> {paragraph.text}
+                  </p>
+                ),
+              )}
             </div>
           </article>
         ) : null}
@@ -475,24 +469,14 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           <article className="mt-4 rounded-box border border-accent/30 bg-accent/10 p-4">
             <div className="badge badge-accent mb-3">Bevis fra leiligheten</div>
             <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
-              {store.apartmentEvidenceIds.includes('post_pressure') ? (
-                <p>
-                  <strong>Posten forsvinner under avisen:</strong> saken må finne ut hvem som åpner,
-                  forklarer og betaler det som kommer inn døren.
-                </p>
-              ) : null}
-              {store.apartmentEvidenceIds.includes('elling_distance') ? (
-                <p>
-                  <strong>Elling mangler hverdagsferdigheter:</strong> regninger, telefoner og
-                  avtaler drives fortsatt gjennom Grete.
-                </p>
-              ) : null}
-              {store.apartmentEvidenceIds.includes('grete_load') ? (
-                <p>
-                  <strong>Grete holder besøket oppe:</strong> saken må planlegge for det arbeidet
-                  hun gjør uten å kalle det arbeid.
-                </p>
-              ) : null}
+              {store.apartmentEvidenceIds.map((id) => {
+                const brief = apartmentEvidenceBriefs[id];
+                return (
+                  <p key={id}>
+                    <strong>{brief.label}:</strong> {brief.text}
+                  </p>
+                );
+              })}
             </div>
           </article>
         ) : null}
@@ -516,13 +500,13 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           <div className="rounded-box border border-success/30 bg-success/10 p-4">
             <div className="font-black uppercase tracking-[0.18em] text-success">Første mål</div>
             <p className="mt-2 text-sm leading-relaxed text-base-content/75">
-              {initialConcernObjective}.
+              {initialConcern.objective}.
             </p>
             <button
               className="btn btn-success mt-4"
               onClick={() => store.callGreteFromConcernReport()}
             >
-              {initialConcernAction}
+              {initialConcern.actionLabel}
             </button>
           </div>
         ) : showFirstContactReport ? (
@@ -530,28 +514,27 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             {!store.socialVisitReportVisible ? (
               <div className="rounded-box border border-success/30 bg-success/10 p-4">
                 <div className="font-black uppercase tracking-[0.18em] text-success">
-                  Avtalt med Grete
+                  {socialVisit.nextStepTitle}
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/75">
-                  Grete har sagt ja til et kort sosialt besøk. Frank skal ikke konkludere ennå —
-                  bare se hvordan hjemmet faktisk holdes sammen.
+                  {socialVisit.nextStepText}
                 </p>
                 <button
                   className="btn btn-success mt-4 justify-start"
                   type="button"
                   onClick={() => store.performSocialVisit()}
                 >
-                  {performSocialVisitAction}
+                  {socialVisit.performActionLabel}
                 </button>
               </div>
             ) : null}
             {store.socialVisitReportVisible ? (
               <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
                 <div className="font-black uppercase tracking-[0.18em] text-accent">
-                  Spør Frank om noe du faktisk så
+                  {frankFocus.title}
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                  Velg én ting fra besøket. Frank svarer kort, og svaret kan åpne ett nytt sakssteg.
+                  {frankFocus.intro}
                 </p>
                 <div className="mt-4 grid gap-2">
                   {frankQuestions.map((question) => {
@@ -568,7 +551,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                         <span className="grid gap-1">
                           <strong>{question.prompt}</strong>
                           <span className="text-xs font-normal opacity-70">
-                            {noticed ? question.clueLabel : 'Må legges merke til i rommet først'}
+                            {noticed ? question.clueLabel : frankFocus.unavailableLabel}
                           </span>
                         </span>
                       </button>
@@ -612,11 +595,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 ) : null}
                 {store.apartmentEvidenceIds.includes('post_pressure') ? (
                   <div className="mt-5 rounded-box border border-info/30 bg-info/10 p-4">
-                    <div className="font-bold">Økonomi må avklares senere</div>
-                    <p className="mt-1 text-sm leading-relaxed">
-                      Posten er et spor, ikke et bevis. Etter besøket kan Frank be Grete finne fram
-                      økonomisk oversikt. Dokumentet kommer først neste dag.
-                    </p>
+                    <div className="font-bold">{financePrompt.title}</div>
+                    <p className="mt-1 text-sm leading-relaxed">{financePrompt.text}</p>
                     <button
                       className="btn btn-outline btn-info mt-3"
                       type="button"
@@ -628,26 +608,23 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                       }
                     >
                       {store.financialStatementVisible
-                        ? 'Økonomisk oversikt mottatt'
+                        ? financialOverview.receivedLabel
                         : store.financialStatementRequested
-                          ? 'Økonomisk oversikt bedt om'
-                          : requestFinancialStatementAction}
+                          ? financialOverview.requestedStateLabel
+                          : financialOverview.requestedLabel}
                     </button>
                   </div>
                 ) : null}
                 {store.deskDecisionVisible ? (
                   <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-4">
-                    <div className="font-bold">Nytt sakssteg</div>
-                    <p className="mt-1 text-sm leading-relaxed">
-                      Start med hjelp som flytter én konkret oppgave bort fra Grete uten å ta
-                      hjemmet fra Elling.
-                    </p>
+                    <div className="font-bold">{deskDecision.title}</div>
+                    <p className="mt-1 text-sm leading-relaxed">{deskDecision.text}</p>
                     <button
                       className="btn btn-success mt-3"
                       type="button"
                       onClick={() => store.choosePracticalReliefDecision()}
                     >
-                      Foreslå praktisk avlastning
+                      {deskDecision.actionLabel}
                     </button>
                   </div>
                 ) : null}
