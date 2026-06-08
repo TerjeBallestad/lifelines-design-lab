@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { Eye } from 'lucide-react';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
@@ -99,7 +100,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <div className="badge badge-lg badge-neutral">Dag {store.day}</div>
-              <div className="badge badge-lg badge-info">Handlinger {store.dayActions}/2</div>
+              <ResourceStrip />
               <button className="btn btn-outline btn-accent" onClick={() => store.rollNewDay()}>
                 Ny dag
               </button>
@@ -163,15 +164,6 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
             </Panel>
 
             <div className="grid content-start gap-4">
-              <Panel>
-                <SectionTitle>Handlingsterninger</SectionTitle>
-                <p className="mb-3 text-xs leading-relaxed text-base-content/60">
-                  Velg én terning og legg den på ett tiltakskort. Høy terning gir tryggere åpning,
-                  men kortet bestemmer hva som står på spill.
-                </p>
-                <DiceTray />
-              </Panel>
-
               <ActionCardDeck />
 
               <ActionContextPanel />
@@ -811,7 +803,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface({
                       type="button"
                       onClick={() => store.requestFinancialStatement()}
                       disabled={
-                        store.dayActions <= 0 ||
+                        !store.selectedDie ||
                         store.financialStatementRequested ||
                         store.financialStatementVisible
                       }
@@ -1049,27 +1041,44 @@ function SkillDomainCard({
   );
 }
 
-const DiceTray = observer(function DiceTray() {
+const ResourceStrip = observer(function ResourceStrip() {
   const store = useRootStore();
+  const observationActive = store.labMode === 'social_visit' && !store.socialVisitReportVisible;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {store.dicePool.map((die) => (
-        <button
-          key={die.id}
-          className={clsx(
-            'btn btn-square text-xl font-black',
-            die.used && 'btn-disabled opacity-35',
-            !die.used && store.selectedDieId === die.id && 'btn-primary',
-            !die.used && store.selectedDieId !== die.id && 'btn-outline',
-          )}
-          onClick={() => store.selectDie(die.id)}
-          disabled={die.used}
-          title={die.used ? 'Brukt i dag' : `Terning ${die.face}`}
-        >
-          {die.face}
-        </button>
-      ))}
+    <div className="flex flex-wrap items-center gap-2 rounded-box border border-base-content/10 bg-base-200/70 p-2">
+      <div className="flex items-center gap-1" aria-label="Terninger">
+        <span className="mr-1 text-[0.65rem] font-black uppercase tracking-[0.16em] text-base-content/55">
+          Terninger
+        </span>
+        {store.dicePool.map((die) => (
+          <button
+            key={die.id}
+            className={clsx(
+              'btn btn-square btn-xs text-sm font-black',
+              die.used && 'btn-disabled opacity-35',
+              !die.used && store.selectedDieId === die.id && 'btn-primary',
+              !die.used && store.selectedDieId !== die.id && 'btn-outline',
+            )}
+            type="button"
+            onClick={() => store.selectDie(die.id)}
+            disabled={die.used}
+            title={die.used ? 'Brukt i dag' : `Terning ${die.face}`}
+          >
+            {die.face}
+          </button>
+        ))}
+      </div>
+      <div
+        className={clsx(
+          'badge badge-lg gap-1',
+          observationActive ? 'badge-info' : 'badge-outline opacity-60',
+        )}
+        title="Observasjonstokener i dette besøket"
+      >
+        <Eye size={15} aria-hidden="true" />
+        {store.observationTokensRemaining}/1
+      </div>
     </div>
   );
 });

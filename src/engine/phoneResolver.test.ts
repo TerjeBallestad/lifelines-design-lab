@@ -187,25 +187,25 @@ describe('resolvePhoneAttempt', () => {
     store.completeGreteCall();
 
     expect(store.day).toBe(1);
-    expect(store.dayActions).toBe(2);
     store.requestFinancialStatement();
 
     expect(store.financialStatementRequested).toBe(false);
     store.performSocialVisit();
     store.noticeApartmentDetail('post_pressure');
     store.completeSocialVisit();
-    expect(store.dayActions).toBe(2);
 
+    const dieId = store.selectedDieId;
+    const dieFace = store.selectedDie!.face;
     store.requestFinancialStatement();
-    expect(store.dayActions).toBe(1);
+    expect(store.dicePool.find((die) => die.id === dieId)?.used).toBe(true);
     expect(store.financialStatementRequested).toBe(true);
     expect(store.financialStatementVisible).toBe(false);
+    expect(store.caseLog.at(-1)).toContain(`terning ${dieFace}`);
     expect(store.caseLog.at(-1)).toContain('økonomisk oversikt');
 
     store.rollNewDay();
 
     expect(store.day).toBe(2);
-    expect(store.dayActions).toBe(2);
     expect(store.financialStatementRequested).toBe(false);
     expect(store.financialStatementVisible).toBe(true);
     expect(store.caseLog.at(-1)).toContain('ligger på pulten');
@@ -257,9 +257,13 @@ describe('resolvePhoneAttempt', () => {
     const visibleText = visibleSourceText();
     expect(componentSource).toContain('ActionResolutionDialog');
     expect(componentSource).toContain('ObservationDialog');
+    expect(componentSource).toContain('ResourceStrip');
+    expect(componentSource).toContain('Eye');
     expect(componentSource.toLowerCase()).toContain('koster: 1 terning');
     expect(visibleText).toContain('haug med post');
     expect(visibleText).toContain('observér');
+    expect(componentSource).toContain('aria-label="Terninger"');
+    expect(visibleText).not.toContain('handlinger 2/2');
   });
 
   it('turns room-notice Frank chat into evidence and a practical desk decision', () => {

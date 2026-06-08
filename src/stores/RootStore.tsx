@@ -55,7 +55,6 @@ export class RootStore {
   firstContactReportVisible = false;
   socialVisitReportVisible = false;
   day = 1;
-  dayActions = 2;
   financialStatementRequested = false;
   financialStatementVisible = false;
   socialVisitScheduled = false;
@@ -247,7 +246,6 @@ export class RootStore {
       (_, index) => (((seed * 11 + index * 7) % 6) + 1) as DieFace,
     );
     this.day += 1;
-    this.dayActions = 2;
     if (this.financialStatementRequested && !this.financialStatementVisible) {
       this.financialStatementVisible = true;
       this.financialStatementRequested = false;
@@ -271,17 +269,20 @@ export class RootStore {
     ) {
       return;
     }
-    if (!this.spendDayAction()) return;
+    const die = this.selectedDie;
+    if (!die) return;
+
+    die.used = true;
     this.financialStatementRequested = true;
     this.caseLog = [
       ...this.caseLog,
-      `Dag ${this.day}: Frank ber Grete finne fram økonomisk oversikt. Den ventes neste dag.`,
+      `Dag ${this.day}: Frank bruker terning ${die.face} på å be Grete finne fram økonomisk oversikt. Den ventes neste dag.`,
     ];
+    this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
   }
 
   scheduleSocialVisit(): void {
     if (!this.firstContactReportVisible || this.socialVisitScheduled) return;
-    if (!this.spendDayAction()) return;
     this.socialVisitScheduled = true;
     this.caseLog = [...this.caseLog, `Dag ${this.day}: sosialt besøk avtales med Grete.`];
   }
@@ -429,7 +430,6 @@ export class RootStore {
     this.firstContactReportVisible = false;
     this.socialVisitReportVisible = false;
     this.day = 1;
-    this.dayActions = 2;
     this.financialStatementRequested = false;
     this.financialStatementVisible = false;
     this.socialVisitScheduled = false;
@@ -438,12 +438,6 @@ export class RootStore {
     this.askedFrankQuestionIds = [];
     this.deskDecisionVisible = false;
     this.caseLog = [];
-  }
-
-  private spendDayAction(): boolean {
-    if (this.dayActions <= 0) return false;
-    this.dayActions -= 1;
-    return true;
   }
 
   get selectedDie(): DiePoolItem | undefined {
