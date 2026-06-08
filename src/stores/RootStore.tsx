@@ -67,7 +67,7 @@ export class RootStore {
   room: RoomState = { ...startingRoom };
   attempts: AttemptResult[] = [];
   actionResults: ActionCardResult[] = [];
-  selectedActionCardId: ActionCardId = 'post_folder_review';
+  selectedActionCardId: ActionCardId = 'get_to_know_elling';
   selectedDeskEvidenceIds: string[] = [];
 
   constructor() {
@@ -110,6 +110,11 @@ export class RootStore {
 
   completeGreteCall(): void {
     this.firstContactReportVisible = true;
+    this.socialVisitScheduled = true;
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Grete går med på et kort sosialt besøk.`,
+    ];
     this.labMode = 'desk';
   }
 
@@ -195,7 +200,7 @@ export class RootStore {
       this.financialStatementRequested = false;
       this.caseLog = [
         ...this.caseLog,
-        `Dag ${this.day}: kontoutskriften kom inn og ligger på pulten.`,
+        `Dag ${this.day}: økonomisk oversikt kom inn og ligger på pulten.`,
       ];
     } else {
       this.caseLog = [...this.caseLog, `Dag ${this.day}: ny arbeidsdag i saken.`];
@@ -207,7 +212,7 @@ export class RootStore {
 
   requestFinancialStatement(): void {
     if (
-      !this.firstContactReportVisible ||
+      !this.socialVisitReportVisible ||
       this.financialStatementRequested ||
       this.financialStatementVisible
     ) {
@@ -217,7 +222,7 @@ export class RootStore {
     this.financialStatementRequested = true;
     this.caseLog = [
       ...this.caseLog,
-      `Dag ${this.day}: Frank ber om kontoutskrift. Den ventes neste dag.`,
+      `Dag ${this.day}: Frank ber Grete finne fram økonomisk oversikt. Den ventes neste dag.`,
     ];
   }
 
@@ -234,11 +239,10 @@ export class RootStore {
   }
 
   completeSocialVisit(): void {
-    if (!this.socialVisitScheduled) return;
+    if (!this.noticedApartmentEvidenceIds.length) return;
     this.socialVisitReportVisible = true;
-    this.room.lastFriction = this.financialStatementVisible
-      ? 'mail and coffee make Grete visible'
-      : 'coffee visit without documents';
+    this.dayActions = 0;
+    this.room.lastFriction = 'coffee visit without documents';
     this.caseLog = [
       ...this.caseLog,
       `Dag ${this.day}: Frank kommer tilbake med notat fra sosialt besøk.`,
@@ -248,6 +252,7 @@ export class RootStore {
 
   noticeApartmentDetail(id: ApartmentEvidenceId): void {
     if (!this.socialVisitScheduled || this.socialVisitReportVisible) return;
+    if (this.noticedApartmentEvidenceIds.length >= 1) return;
     if (this.noticedApartmentEvidenceIds.includes(id)) return;
     const question = frankQuestionsByEvidence[id];
     this.noticedApartmentEvidenceIds = [...this.noticedApartmentEvidenceIds, id];
@@ -360,7 +365,7 @@ export class RootStore {
     this.room = { ...startingRoom };
     this.attempts = [];
     this.actionResults = [];
-    this.selectedActionCardId = 'post_folder_review';
+    this.selectedActionCardId = 'get_to_know_elling';
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
     this.firstContactReportVisible = false;
@@ -419,13 +424,13 @@ export class RootStore {
   }
 
   private applyActionOutcome(cardId: ActionCardId, outcomeClass: ActionCardResult['outcomeClass']): void {
-    if (cardId === 'post_folder_review') {
+    if (cardId === 'get_to_know_elling') {
       if (outcomeClass === 'positive') {
         this.client.trust = Math.min(1, this.client.trust + 0.04);
         this.client.overskudd = Math.min(1, this.client.overskudd + 0.02);
       } else if (outcomeClass === 'negative') {
         this.client.overskudd = Math.max(0, this.client.overskudd - 0.05);
-        this.room.lastFriction = 'mail folder became control';
+        this.room.lastFriction = 'Grete answered for Elling again';
       }
     }
 

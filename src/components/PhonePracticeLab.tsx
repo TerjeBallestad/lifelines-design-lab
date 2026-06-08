@@ -7,7 +7,7 @@ import {
   actionRiskCopy,
   adjustedDie,
 } from '../content/actionCards';
-import { frankQuestions } from '../content/frankQuestions';
+import { frankQuestions, type FrankQuestion } from '../content/frankQuestions';
 import type {
   ActionCard,
   ActionOutcomeClass,
@@ -49,8 +49,8 @@ const initialConcernDocumentLabel = 'Bekymringsmelding';
 const initialConcernObjective = 'Etabler kontakt med Grete';
 const initialConcernAction = 'Ring Grete';
 const firstContactReportTitle = 'Frankrapport · Første kontakt';
-const requestFinancialStatementAction = 'Be om kontoutskrift';
-const scheduleSocialVisitAction = 'Avtal sosialt besøk';
+const requestFinancialStatementAction = 'Be Grete finne fram økonomisk oversikt';
+const performSocialVisitAction = 'Gjennomfør sosialt besøk';
 const visiblePreDeathActionCards = actionCards.filter((card) => card.id !== 'phone_first_step');
 
 const frictionCopy: Record<string, string> = {
@@ -227,6 +227,7 @@ const GreteCallSurface = observer(function GreteCallSurface() {
         <SectionTitle>Telefonnotat</SectionTitle>
         <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
           <p>Grete svarte selv. Samtalen ble ført med henne. Elling kom ikke til telefonen.</p>
+          <p>Hun går med på et kort sosialt besøk, men Frank har fortsatt ikke snakket med Elling.</p>
           <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
             <div className="font-bold">Ny rapport</div>
             <p className="mt-1">{firstContactReportTitle}</p>
@@ -242,14 +243,17 @@ const GreteCallSurface = observer(function GreteCallSurface() {
 
 const SocialVisitSurface = observer(function SocialVisitSurface() {
   const store = useRootStore();
+  const remainingObservations = Math.max(0, 1 - store.noticedApartmentEvidenceIds.length);
+  const selectedObservation = frankQuestions.find((question) =>
+    store.noticedApartmentEvidenceIds.includes(question.evidenceId),
+  );
 
   return (
     <main className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
       <Panel>
         <SectionTitle>Sosialt besøk hos Grete</SectionTitle>
         <p className="text-sm leading-relaxed text-base-content/65">
-          Frank kommer inn i leiligheten mens Grete fortsatt gjør rommet praktisk og sosialt
-          lesbart.
+          Grete har sagt ja til et kort besøk. Du får én observasjon før Frank skriver notat.
         </p>
         <div className="relative mt-5 h-[520px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
@@ -257,14 +261,28 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
           <Zone className="right-10 top-10 h-36 w-56" label="lesestolen" />
           <Zone className="bottom-12 right-14 h-36 w-52" label="gangen" />
           <StageObject className="left-20 top-24">kaffe og kopper</StageObject>
-          <StageObject className="left-24 top-44 h-12 w-44">post under avisen</StageObject>
-          {store.financialStatementVisible ? (
-            <StageObject className="left-56 top-44 h-12 w-52">kontoutskrift på benken</StageObject>
-          ) : null}
+          <VisitObjectButton
+            className="left-24 top-44 h-12 w-44"
+            label="post under avisen"
+            question={frankQuestions.find((question) => question.evidenceId === 'post_pressure')!}
+            disabled={remainingObservations <= 0}
+          />
           <StageObject className="right-28 top-28">stol vendt bort</StageObject>
-          <Person label="Grete" tone="frank" position="left-28 top-28" />
+          <VisitPersonButton
+            label="Grete"
+            tone="frank"
+            position="left-28 top-28"
+            question={frankQuestions.find((question) => question.evidenceId === 'grete_load')!}
+            disabled={remainingObservations <= 0}
+          />
           <Person label="Frank" tone="frank" position="left-56 top-28" />
-          <Person label="Elling" tone="client" position="right-28 bottom-28" />
+          <VisitPersonButton
+            label="Elling"
+            tone="client"
+            position="right-28 bottom-28"
+            question={frankQuestions.find((question) => question.evidenceId === 'elling_distance')!}
+            disabled={remainingObservations <= 0}
+          />
           <PressureLabel className="left-48 top-12" active>
             omsorgsarbeid
           </PressureLabel>
@@ -278,69 +296,41 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
       </Panel>
 
       <Panel>
-        <SectionTitle>Det Frank ser</SectionTitle>
-        <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
-          <div className="rounded-box border border-success/30 bg-success/10 p-4">
-            <div className="font-bold">Grete holder samtalen i gang</div>
-            <p className="mt-1">
-              Hun setter fram kaffe, svarer før Elling rekker å si noe, og oversetter små pauser til
-              forklaringer Frank kan bruke.
-            </p>
-          </div>
-          <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
-            <div className="font-bold">Elling er til stede, men ikke med</div>
-            <p className="mt-1">
-              Han blir i utkanten av rommet. Ikke fiendtlig. Ikke trygg. Mest opptatt av at besøket
-              skal bli ferdig uten at noen krever en prestasjon.
-            </p>
-          </div>
-          <div className="rounded-box border border-info/30 bg-info/10 p-4">
-            <div className="font-bold">Dokumentet får plass i rommet</div>
-            <p className="mt-1">
-              {store.financialStatementVisible
-                ? 'Kontoutskriften ligger fysisk ved posten. Det økonomiske spørsmålet har en adresse i leiligheten.'
-                : 'Posten ligger synlig, men Frank mangler fortsatt dokumentet som forklarer hva den betyr.'}
-            </p>
-          </div>
-        </div>
-        <div className="mt-4 rounded-box border border-accent/30 bg-accent/10 p-4">
-          <div className="font-black uppercase tracking-[0.18em] text-accent">
-            Det du legger merke til
+        <SectionTitle>Observasjon</SectionTitle>
+        <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="font-black uppercase tracking-[0.18em] text-accent">
+              Blikk igjen
+            </div>
+            <div className="badge badge-accent">{remainingObservations}/1</div>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-            Marker én konkret ting i rommet før Frank skriver notat. Senere kan du spørre om han så
-            det samme.
+            Klikk én ting i leiligheten: Elling, Grete eller posten. Det du velger bestemmer hva du
+            kan spørre Frank om etter besøksnotatet.
           </p>
-          <div className="mt-4 grid gap-2">
-            {frankQuestions.map((question) => {
-              const noticed = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
-              return (
-                <button
-                  key={question.evidenceId}
-                  className={clsx(
-                    'btn h-auto justify-start rounded-box px-4 py-3 text-left normal-case',
-                    noticed ? 'btn-accent text-accent-content' : 'btn-ghost bg-base-200',
-                  )}
-                  type="button"
-                  onClick={() => store.noticeApartmentDetail(question.evidenceId)}
-                  disabled={noticed}
-                >
-                  <span className="grid gap-1">
-                    <strong>{question.clueLabel}</strong>
-                    <span className="text-xs font-normal opacity-75">{question.roomNotice}</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </div>
-        <button className="btn btn-success mt-5" onClick={() => store.completeSocialVisit()}>
+        {selectedObservation ? (
+          <article className="mt-4 rounded-box border border-success/30 bg-success/10 p-4 text-sm leading-relaxed">
+            <div className="font-bold">Du legger merke til: {selectedObservation.clueLabel}</div>
+            <p className="mt-2 text-base-content/75">{selectedObservation.roomNotice}</p>
+          </article>
+        ) : (
+          <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-sm">
+            <span>Velg ett blikk i rommet før Frank skriver besøksnotat.</span>
+          </div>
+        )}
+        <button
+          className="btn btn-success mt-5"
+          disabled={!selectedObservation}
+          onClick={() => store.completeSocialVisit()}
+        >
           Skriv besøksnotat
         </button>
       </Panel>
     </main>
   );
 });
+
 
 function SpeechBubble({
   children,
@@ -426,8 +416,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   kjenner til henvendelsen eller hva han selv forstår av saken.
                 </p>
                 <p>
-                  <strong>Anbefalt:</strong> innhent økonomisk oversikt og avtal et kort sosialt
-                  besøk før saken tolkes for hardt.
+                  <strong>Anbefalt:</strong> gjennomfør det korte besøket Grete gikk med på før saken
+                  tolkes for hardt.
                 </p>
               </div>
             </article>
@@ -449,7 +439,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
         )}
         {store.financialStatementVisible ? (
           <article className="mt-4 rounded-box border border-info/30 bg-info/10 p-4">
-            <div className="badge badge-info mb-3">Dokument: Kontoutskrift</div>
+            <div className="badge badge-info mb-3">Dokument: Økonomisk oversikt</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
                 Ellings uføretrygd kommer inn på Gretes konto. Hun betaler husleie, strøm og
@@ -463,12 +453,12 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           </article>
         ) : store.financialStatementRequested ? (
           <div className="alert alert-info mt-4 border-info/30 bg-info/10 text-sm">
-            <span>Kontoutskrift bestilt. Dokumentet ventes neste dag.</span>
+            <span>Økonomisk oversikt bedt om. Grete finner fram papirer til neste dag.</span>
           </div>
         ) : null}
         {store.socialVisitScheduled ? (
           <div className="alert alert-success mt-3 border-success/30 bg-success/10 text-sm">
-            <span>Sosialt besøk avtalt. Grete setter fram kaffe før Frank kommer.</span>
+            <span>Grete har sagt ja til et kort sosialt besøk.</span>
           </div>
         ) : null}
         {store.socialVisitReportVisible ? (
@@ -476,12 +466,12 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="badge badge-success mb-3">Besøksnotat: Gretes rolle i saken</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi
-                Grete mottar Ellings trygd, betaler regningene og skjermer ham fra hverdagskravene.
+                Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi Grete
+                gjør besøket, posten, pausene og Elling sosialt håndterbart.
               </p>
               <p>
-                <strong>Risiko:</strong> Hvis Grete dør, må Elling for første gang prøve å eie økonomien
-                og hverdagen sin med støtte fra saken, ikke fra moren.
+                <strong>Risiko:</strong> Hvis Grete dør, må Elling møte hverdagen med støtte fra saken,
+                ikke med moren som skjult ramme.
               </p>
             </div>
           </article>
@@ -492,8 +482,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="grid gap-2 text-sm leading-relaxed text-base-content/80">
               {store.apartmentEvidenceIds.includes('post_pressure') ? (
                 <p>
-                  <strong>Grete mottar Ellings trygd:</strong> saken må flytte økonomistøtten fra
-                  morens skjerming til Ellings egen mestring.
+                  <strong>Posten forsvinner under avisen:</strong> saken må finne ut hvem som åpner,
+                  forklarer og betaler det som kommer inn døren.
                 </p>
               ) : null}
               {store.apartmentEvidenceIds.includes('elling_distance') ? (
@@ -504,8 +494,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
               ) : null}
               {store.apartmentEvidenceIds.includes('grete_load') ? (
                 <p>
-                  <strong>Grete tror det snart ordner seg:</strong> saken må planlegge for risikoen
-                  hun håper ikke kommer.
+                  <strong>Grete holder besøket oppe:</strong> saken må planlegge for det arbeidet hun
+                  gjør uten å kalle det arbeid.
                 </p>
               ) : null}
             </div>
@@ -542,46 +532,24 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
           </div>
         ) : showFirstContactReport ? (
           <div className="grid gap-3">
-            <div className="rounded-box border border-success/30 bg-success/10 p-4">
-              <div className="font-black uppercase tracking-[0.18em] text-success">
-                Velg hva Frank gjør nå
-              </div>
-              <div className="mt-4 grid gap-2">
+            {!store.socialVisitReportVisible ? (
+              <div className="rounded-box border border-success/30 bg-success/10 p-4">
+                <div className="font-black uppercase tracking-[0.18em] text-success">
+                  Avtalt med Grete
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-base-content/75">
+                  Grete har sagt ja til et kort sosialt besøk. Frank skal ikke konkludere ennå —
+                  bare se hvordan hjemmet faktisk holdes sammen.
+                </p>
                 <button
-                  className="btn btn-outline btn-success justify-start"
+                  className="btn btn-success mt-4 justify-start"
                   type="button"
-                  onClick={() => store.requestFinancialStatement()}
-                  disabled={
-                    store.dayActions <= 0 ||
-                    store.financialStatementRequested ||
-                    store.financialStatementVisible
-                  }
+                  onClick={() => store.performSocialVisit()}
                 >
-                  {store.financialStatementVisible
-                    ? 'Kontoutskrift mottatt'
-                    : store.financialStatementRequested
-                      ? 'Kontoutskrift bestilt'
-                      : requestFinancialStatementAction}
+                  {performSocialVisitAction}
                 </button>
-                <button
-                  className="btn btn-outline btn-success justify-start"
-                  type="button"
-                  onClick={() => store.scheduleSocialVisit()}
-                  disabled={store.dayActions <= 0 || store.socialVisitScheduled}
-                >
-                  {store.socialVisitScheduled ? 'Sosialt besøk avtalt' : scheduleSocialVisitAction}
-                </button>
-                {store.socialVisitScheduled && !store.socialVisitReportVisible ? (
-                  <button
-                    className="btn btn-success justify-start"
-                    type="button"
-                    onClick={() => store.performSocialVisit()}
-                  >
-                    Gjennomfør sosialt besøk
-                  </button>
-                ) : null}
               </div>
-            </div>
+            ) : null}
             {store.socialVisitReportVisible ? (
               <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
                 <div className="font-black uppercase tracking-[0.18em] text-accent">
@@ -646,6 +614,31 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                           <div className="badge badge-outline mt-4">{question.actionLabel}</div>
                         </article>
                       ))}
+                  </div>
+                ) : null}
+                {store.apartmentEvidenceIds.includes('post_pressure') ? (
+                  <div className="mt-5 rounded-box border border-info/30 bg-info/10 p-4">
+                    <div className="font-bold">Økonomi må avklares senere</div>
+                    <p className="mt-1 text-sm leading-relaxed">
+                      Posten er et spor, ikke et bevis. Etter besøket kan Frank be Grete finne fram
+                      økonomisk oversikt. Dokumentet kommer først neste dag.
+                    </p>
+                    <button
+                      className="btn btn-outline btn-info mt-3"
+                      type="button"
+                      onClick={() => store.requestFinancialStatement()}
+                      disabled={
+                        store.dayActions <= 0 ||
+                        store.financialStatementRequested ||
+                        store.financialStatementVisible
+                      }
+                    >
+                      {store.financialStatementVisible
+                        ? 'Økonomisk oversikt mottatt'
+                        : store.financialStatementRequested
+                          ? 'Økonomisk oversikt bedt om'
+                          : requestFinancialStatementAction}
+                    </button>
                   </div>
                 ) : null}
                 {store.deskDecisionVisible ? (
@@ -1158,6 +1151,18 @@ function StageObject({ children, className }: { children: React.ReactNode; class
   );
 }
 
+function personClass(tone: 'client' | 'frank', position: string, disabled = false): string {
+  return clsx(
+    'absolute grid h-20 w-20 place-items-center rounded-full border text-sm font-black shadow-xl transition-all duration-500',
+    tone === 'client'
+      ? 'border-info/70 bg-info/25 text-info-content'
+      : 'border-warning/70 bg-warning/25 text-warning-content',
+    !disabled && 'cursor-pointer hover:scale-105 hover:ring-2 hover:ring-accent',
+    disabled && 'opacity-60',
+    position,
+  );
+}
+
 function Person({
   label,
   tone,
@@ -1167,18 +1172,66 @@ function Person({
   tone: 'client' | 'frank';
   position: string;
 }) {
+  return <div className={personClass(tone, position, true)}>{label}</div>;
+}
+
+function VisitPersonButton({
+  label,
+  tone,
+  position,
+  question,
+  disabled,
+}: {
+  label: string;
+  tone: 'client' | 'frank';
+  position: string;
+  question: FrankQuestion;
+  disabled: boolean;
+}) {
+  const store = useRootStore();
+  const selected = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
   return (
-    <div
-      className={clsx(
-        'absolute grid h-20 w-20 place-items-center rounded-full border text-sm font-black shadow-xl transition-all duration-500',
-        tone === 'client'
-          ? 'border-info/70 bg-info/25 text-info-content'
-          : 'border-warning/70 bg-warning/25 text-warning-content',
-        position,
-      )}
+    <button
+      type="button"
+      className={personClass(tone, position, disabled && !selected)}
+      onClick={() => store.noticeApartmentDetail(question.evidenceId)}
+      disabled={disabled && !selected}
+      title={question.clueLabel}
     >
       {label}
-    </div>
+    </button>
+  );
+}
+
+function VisitObjectButton({
+  label,
+  className,
+  question,
+  disabled,
+}: {
+  label: string;
+  className: string;
+  question: FrankQuestion;
+  disabled: boolean;
+}) {
+  const store = useRootStore();
+  const selected = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'absolute grid h-16 w-24 place-items-center rounded-box border border-base-content/20 bg-base-100 text-center text-sm shadow-lg transition-all duration-500',
+        !disabled && 'cursor-pointer hover:scale-105 hover:border-accent hover:ring-2 hover:ring-accent',
+        selected && 'border-accent bg-accent/20 text-accent',
+        disabled && !selected && 'opacity-60',
+        className,
+      )}
+      onClick={() => store.noticeApartmentDetail(question.evidenceId)}
+      disabled={disabled && !selected}
+      title={question.clueLabel}
+    >
+      {label}
+    </button>
   );
 }
 

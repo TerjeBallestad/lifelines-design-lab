@@ -14,28 +14,28 @@ export const actionRiskCopy: Record<ActionCard['risk'], string> = {
 
 export const actionCards: ActionCard[] = [
   {
-    id: 'post_folder_review',
-    title: 'Gjennomgå postmappe',
+    id: 'get_to_know_elling',
+    title: 'Bli litt kjent med Elling',
     type: 'repeatable',
-    skill: 'Økonomi',
+    skill: 'Sosialt',
     risk: 'risky',
-    modifier: 1,
+    modifier: 0,
     body:
-      'Frank legger ett brev på bordet og lar resten ligge. Elling trenger ikke forstå alt. Bare bli værende lenge nok til at brevet ikke forsvinner under avisen.',
+      'Frank prøver å få en grunn til å komme tilbake uten at besøket blir enda en vurdering. Målet er ikke å avdekke et problem, men å finne én ting Elling faktisk bryr seg om.',
     costs: { dice: 1 },
-    clockEffects: ['Post blir Ellings ansvar', 'Grete bærer litt mindre'],
+    clockEffects: ['Elling blir person', 'Nytt besøk mulig'],
     outcomes: {
       positive: {
-        title: 'Elling åpner ett brev selv',
-        text: '+ Økonomi, + mestring: post. Frank noterer at papir kan bli en øvingsflate, ikke bare Gretes arbeid.',
+        title: 'Gro-utklippene kommer fram',
+        text: 'Elling viser fram en samling Gro Harlem Brundtland-utklipp med mer presisjon enn saken hadde ventet. Frank får en faktisk grunn til å besøke ham igjen.',
       },
       neutral: {
-        title: 'Frank leser, Elling blir sittende',
-        text: '+ observasjon: tåler gjennomgang med støtte. Ingen selvstendig handling ennå.',
+        title: 'Elling lar Frank se hyllen',
+        text: 'Han forklarer lite, men flytter seg ikke vekk. Interessen finnes; tilliten gjør det ikke helt ennå.',
       },
       negative: {
-        title: 'Mappen skyves bort',
-        text: '- overskudd. Ny observasjon: post oppleves som kontroll når Grete ikke holder den.',
+        title: 'Grete svarer for ham igjen',
+        text: 'Frank får mer Grete enn Elling. Det er nyttig for saken, men dårlig for å bli kjent med ham.',
       },
     },
   },
@@ -73,17 +73,17 @@ export const actionCards: ActionCard[] = [
     risk: 'fragile',
     modifier: 0,
     body:
-      'Saken kan gjøres tryggere på papiret. Spørsmålet er hva som skjer med Ellings hjem når trygghet blir viktigere enn mestring.',
+      'Trygt for saken. Farlig for tilliten. Et institusjonsspor kan gi ryddige papirer, men Elling kan også forstå at hjemmet hans er blitt noe andre vurderer.',
     costs: { dice: 1 },
     clockEffects: ['Institusjonsklokke', 'Tillit til Frank'],
     outcomes: {
       positive: {
         title: 'Risiko dokumenteres tydelig',
-        text: '+ saksgrunnlag. Et formelt spor åpnes, men det bygger ikke Ellings ferdigheter.',
+        text: '+ saksgrunnlag. Frank får et ryddig risikospor, men ingen ny kontakt med Elling.',
       },
       neutral: {
-        title: 'Saken sendes videre',
-        text: 'Grete blir urolig. Frank får ryddige papirer og mindre kontakt.',
+        title: 'Grete blir varsom',
+        text: 'Hun skjønner at kommunen tenker større enn praktisk hjelp. Videre hjemmebesøk blir kjøligere.',
       },
       negative: {
         title: 'Grete trekker seg, døren lukkes',

@@ -43,7 +43,7 @@ export type OutcomeId =
 export type OutcomeClass = 'negative' | 'neutral' | 'positive';
 
 export type ActionOutcomeClass = OutcomeClass;
-export type ActionCardId = 'post_folder_review' | 'phone_first_step' | 'institution_assessment';
+export type ActionCardId = 'get_to_know_elling' | 'phone_first_step' | 'institution_assessment';
 
 export interface ActionCardOutcome {
   title: string;

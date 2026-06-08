@@ -169,7 +169,7 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('ring grete');
     expect(visibleText).toContain('frankrapport');
     expect(visibleText).toContain('første kontakt');
-    expect(visibleText).toContain('kontoutskrift');
+    expect(visibleText).toContain('økonomisk oversikt');
     expect(visibleText).toContain('sosialt besøk');
     expect(visibleText).toContain('obskurert');
     expect(visibleText).toContain('neste sakssteg');
@@ -180,7 +180,7 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('apartment');
   });
 
-  it('schedules the Slice B financial request and resolves the document on the next day', () => {
+  it('requests financial overview only after the visit report and resolves it next day', () => {
     const store = new RootStore();
     store.callGreteFromConcernReport();
     store.completeGreteCall();
@@ -189,27 +189,37 @@ describe('resolvePhoneAttempt', () => {
     expect(store.dayActions).toBe(2);
     store.requestFinancialStatement();
 
+    expect(store.financialStatementRequested).toBe(false);
+    store.performSocialVisit();
+    store.noticeApartmentDetail('post_pressure');
+    store.completeSocialVisit();
+    expect(store.dayActions).toBe(0);
+
+    store.requestFinancialStatement();
+    expect(store.financialStatementRequested).toBe(false);
+    store.rollNewDay();
+    store.requestFinancialStatement();
+
     expect(store.dayActions).toBe(1);
     expect(store.financialStatementRequested).toBe(true);
     expect(store.financialStatementVisible).toBe(false);
-    expect(store.caseLog.at(-1)).toContain('kontoutskrift');
+    expect(store.caseLog.at(-1)).toContain('økonomisk oversikt');
 
     store.rollNewDay();
 
-    expect(store.day).toBe(2);
+    expect(store.day).toBe(3);
     expect(store.dayActions).toBe(2);
     expect(store.financialStatementRequested).toBe(false);
     expect(store.financialStatementVisible).toBe(true);
     expect(store.caseLog.at(-1)).toContain('ligger på pulten');
   });
 
-  it('schedules the Slice C social visit and returns a visit report', () => {
+  it('sets up the social visit from Grete call and returns a visit report after one observation', () => {
     const store = new RootStore();
     store.callGreteFromConcernReport();
     store.completeGreteCall();
-    store.scheduleSocialVisit();
 
-    expect(store.dayActions).toBe(1);
+    expect(store.dayActions).toBe(2);
     expect(store.socialVisitScheduled).toBe(true);
     expect(store.socialVisitReportVisible).toBe(false);
 
@@ -217,8 +227,15 @@ describe('resolvePhoneAttempt', () => {
     expect(store.labMode).toBe('social_visit');
 
     store.completeSocialVisit();
+    expect(store.socialVisitReportVisible).toBe(false);
+    store.noticeApartmentDetail('elling_distance');
+    store.noticeApartmentDetail('grete_load');
+    expect(store.noticedApartmentEvidenceIds).toEqual(['elling_distance']);
+
+    store.completeSocialVisit();
     expect(store.labMode).toBe('desk');
     expect(store.socialVisitReportVisible).toBe(true);
+    expect(store.dayActions).toBe(0);
     expect(store.caseLog.at(-1)).toContain('sosialt besøk');
   });
 
@@ -226,7 +243,6 @@ describe('resolvePhoneAttempt', () => {
     const store = new RootStore();
     store.callGreteFromConcernReport();
     store.completeGreteCall();
-    store.scheduleSocialVisit();
 
     expect(store.deskDecisionVisible).toBe(false);
     store.askFrank('ask_post_under_paper');
@@ -278,12 +294,12 @@ describe('resolvePhoneAttempt', () => {
     const store = new RootStore();
     const dieId = store.selectedDieId;
 
-    store.playActionCard('post_folder_review');
+    store.playActionCard('get_to_know_elling');
 
     expect(store.dicePool.find((die) => die.id === dieId)?.used).toBe(true);
     expect(store.actionResults).toHaveLength(1);
-    expect(store.latestActionResult?.cardId).toBe('post_folder_review');
-    expect(store.caseLog.at(-1)).toContain('Gjennomgå postmappe');
+    expect(store.latestActionResult?.cardId).toBe('get_to_know_elling');
+    expect(store.caseLog.at(-1)).toContain('Bli litt kjent med Elling');
   });
 
   it('routes the phone action card through the room resolver instead of direct stat buying', () => {
