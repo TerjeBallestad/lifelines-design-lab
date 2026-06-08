@@ -172,8 +172,8 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('kontoutskrift');
     expect(visibleText).toContain('sosialt besøk');
     expect(visibleText).toContain('obskurert');
-    expect(visibleText).toContain('handlinger');
-    expect(visibleText).toContain('ny evne trenger ny grense');
+    expect(visibleText).toContain('neste sakssteg');
+    expect(visibleText).toContain('neste steg trenger en grense');
     expect(visibleText).not.toContain('rapporten gir ikke svar');
     expect(visibleText).not.toContain('ikke løs elling');
     expect(visibleText).not.toContain('hva spilleren lærer');
