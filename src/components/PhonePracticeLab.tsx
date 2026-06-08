@@ -267,10 +267,9 @@ const actionDialogCopy: Record<
     body: 'Frank prøver å få Grete til å slippe ham inn uten at hun føler seg overkjørt.',
     confirmLabel: 'Legg terning på samtalen',
     bands: {
-      negative: '1–2: 50% nøytralt / 50% negativt. Grete lukker seg eller setter saken på vent.',
-      neutral:
-        '3–4: 25% positivt / 50% nøytralt / 25% negativt. Besøket kan åpne seg, holde seg stramt eller slå tilbake.',
-      positive: '5: 50% positivt / 50% nøytralt. 6: 100% positivt. Frank får den beste åpningen.',
+      negative: 'Grete lukker seg eller setter saken på vent.',
+      neutral: 'Besøket kan åpne seg, holde seg stramt eller slå tilbake.',
+      positive: 'Frank får den beste åpningen.',
     },
   },
   social_visit: {
@@ -278,10 +277,9 @@ const actionDialogCopy: Record<
     body: 'Frank bruker tid på å komme inn i rommet. Terningen avgjør temperaturen, ikke hva du observerer.',
     confirmLabel: 'Start besøket',
     bands: {
-      negative: '1–2: 50% nøytralt / 50% negativt. Grete styrer rommet eller besøket blir anspent.',
-      neutral:
-        '3–4: 25% positivt / 50% nøytralt / 25% negativt. Frank får et holdepunkt, men temperaturen kan bikke.',
-      positive: '5: 50% positivt / 50% nøytralt. 6: 100% positivt. Noe løsner uten å miste tillit.',
+      negative: 'Grete styrer rommet eller besøket blir anspent.',
+      neutral: 'Frank får et holdepunkt, men temperaturen kan bikke.',
+      positive: 'Noe løsner uten å miste tillit.',
     },
   },
 };
