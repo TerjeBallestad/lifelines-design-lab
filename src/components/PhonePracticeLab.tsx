@@ -1,5 +1,12 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import {
+  actionCards,
+  actionOutcomeCopy,
+  actionProbabilities,
+  actionRiskCopy,
+  adjustedDie,
+} from '../content/actionCards';
 import { frankQuestions } from '../content/frankQuestions';
 import {
   phoneActivityClocks,
@@ -9,6 +16,8 @@ import {
   telefonAversjon,
 } from '../content/phonePractice';
 import type {
+  ActionCard,
+  ActionOutcomeClass,
   AttemptResult,
   EllingPosition,
   FrankPosition,
@@ -273,71 +282,17 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               </Panel>
 
               <Panel>
-                <SectionTitle>3. Første telefonsteg</SectionTitle>
-                <div className="grid gap-2">
-                  {phoneApproaches.map((approach) => (
-                    <button
-                      key={approach.id}
-                      className={clsx(
-                        'btn h-auto justify-start rounded-box border-base-content/10 px-4 py-3 text-left normal-case',
-                        approach.id === store.selectedApproachId
-                          ? 'btn-accent text-accent-content'
-                          : 'btn-ghost bg-base-200 hover:bg-base-100',
-                      )}
-                      onClick={() => store.setApproach(approach.id)}
-                    >
-                      <span className="grid gap-1">
-                        <strong>{approach.label}</strong>
-                        <span className="text-xs font-normal leading-relaxed opacity-70">
-                          {approach.description}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                <SectionTitle>Handlingsterninger</SectionTitle>
+                <p className="mb-3 text-xs leading-relaxed text-base-content/60">
+                  Dagens handlingsrom ligger åpent først. Legg en terning på et kort, så viser
+                  kortet hvilket rom utfallet kan falle i.
+                </p>
+                <DiceTray />
               </Panel>
 
-              <Panel>
-                <SectionTitle>4. Bruk en terning</SectionTitle>
-                <div className="flex flex-wrap gap-2">
-                  {store.dicePool.map((die) => (
-                    <button
-                      key={die.id}
-                      className={clsx(
-                        'btn btn-square text-xl font-black',
-                        die.used && 'btn-disabled opacity-35',
-                        !die.used && store.selectedDieId === die.id && 'btn-primary',
-                        !die.used && store.selectedDieId !== die.id && 'btn-outline',
-                      )}
-                      onClick={() => store.selectDie(die.id)}
-                      disabled={die.used}
-                    >
-                      {die.face}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-3 text-xs text-base-content/60">
-                  Terningen hjelper forsøket i gang. Rommet avgjør fortsatt hvor langt det går.
-                </p>
-                <select
-                  className="select select-bordered mt-4 w-full"
-                  value={store.frankStance}
-                  onChange={(event) => store.setFrankStance(event.target.value as FrankStance)}
-                >
-                  {frankStances.map((stance) => (
-                    <option key={stance} value={stance}>
-                      Frank: {frankStanceCopy[stance]}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="btn btn-success mt-4 w-full"
-                  onClick={() => store.runAttempt()}
-                  disabled={!store.selectedDie}
-                >
-                  Prøv telefonen {store.attempts.length + 1}
-                </button>
-              </Panel>
+              <ActionCardDeck />
+
+              <ActionContextPanel />
 
               <Panel>
                 <SectionTitle>Hva Elling kan øve på</SectionTitle>
@@ -1066,6 +1021,249 @@ function ClaimBucket({ title, text, active }: { title: string; text: string; act
       <p className="mt-1 leading-relaxed">{text}</p>
     </div>
   );
+}
+
+const ActionContextPanel = observer(function ActionContextPanel() {
+  const store = useRootStore();
+  const selectedCard = actionCards.find((card) => card.id === store.selectedActionCardId) ?? actionCards[0];
+  const phoneApproach = phoneApproaches.find((approach) => approach.id === store.selectedApproachId);
+
+  return (
+    <Panel>
+      <SectionTitle>Ferdigheter og ramme</SectionTitle>
+      <div className="grid gap-3">
+        <div className="rounded-box border border-warning/30 bg-warning/10 p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.18em] text-warning">
+                Ressursramme
+              </div>
+              <div className="mt-1 text-2xl font-black">14 mynter</div>
+            </div>
+            <div className="text-right text-xs leading-relaxed text-base-content/60">
+              Mynter åpner tiltak.
+              <br />
+              Terninger bruker dagens handlingsrom.
+            </div>
+          </div>
+        </div>
+
+        <SkillDomainCard
+          title="Selvbjerging"
+          level={2}
+          skills={['Mat', 'Husarbeid', 'Økonomi ?', 'Rutine']}
+          activeSkill={selectedCard.skill}
+        />
+        <SkillDomainCard
+          title="Indre liv"
+          level={3}
+          skills={['Observasjon', 'Skriving', 'Følelsesreg.', 'Refleksjon']}
+          activeSkill={selectedCard.skill}
+        />
+        <SkillDomainCard
+          title="Sosialt"
+          level={1}
+          skills={['Muntlig uttrykk', 'Telefon og ærend ?', 'Tillit']}
+          activeSkill={selectedCard.skill}
+        />
+
+        <div className="rounded-box border border-base-content/10 bg-base-200 p-3 text-xs leading-relaxed">
+          <div className="font-bold">Kortet styrer forsøket</div>
+          <p className="mt-1 text-base-content/65">
+            Valgt kort: {selectedCard.title}. Telefonkortet bruker fortsatt rommet, Frank-posisjon,
+            støtteform og valgt tilnærming: {phoneApproach?.label ?? 'ingen'}.
+          </p>
+        </div>
+      </div>
+    </Panel>
+  );
+});
+
+function SkillDomainCard({
+  title,
+  level,
+  skills,
+  activeSkill,
+}: {
+  title: string;
+  level: number;
+  skills: string[];
+  activeSkill: string;
+}) {
+  return (
+    <div className="rounded-box border border-base-content/10 bg-base-200 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="font-black uppercase tracking-[0.16em] text-base-content/60">{title}</div>
+        <div className="badge badge-secondary">lvl {level}</div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {skills.map((skill) => {
+          const active = activeSkill && skill.toLowerCase().includes(activeSkill.toLowerCase());
+          return (
+            <span key={skill} className={clsx('badge', active ? 'badge-accent' : 'badge-ghost')}>
+              {skill}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const DiceTray = observer(function DiceTray() {
+  const store = useRootStore();
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {store.dicePool.map((die) => (
+        <button
+          key={die.id}
+          className={clsx(
+            'btn btn-square text-xl font-black',
+            die.used && 'btn-disabled opacity-35',
+            !die.used && store.selectedDieId === die.id && 'btn-primary',
+            !die.used && store.selectedDieId !== die.id && 'btn-outline',
+          )}
+          onClick={() => store.selectDie(die.id)}
+          disabled={die.used}
+          title={die.used ? 'Brukt i dag' : `Terning ${die.face}`}
+        >
+          {die.face}
+        </button>
+      ))}
+    </div>
+  );
+});
+
+const ActionCardDeck = observer(function ActionCardDeck() {
+  const store = useRootStore();
+  const selectedDie = store.selectedDie;
+  const latest = store.actionResults.slice(-1)[0];
+
+  return (
+    <Panel>
+      <SectionTitle>Tiltakskort</SectionTitle>
+      <div className="mb-4 rounded-box border border-warning/30 bg-warning/10 p-3 text-xs leading-relaxed text-base-content/70">
+        Rammen er 14 mynter, men hvert forsøk koster én terning. Mynter åpner tiltak. Terningen
+        avgjør hvor god åpningen er akkurat nå.
+      </div>
+      <div className="grid gap-3">
+        {actionCards.map((card) => (
+          <ActionCardView
+            key={card.id}
+            card={card}
+            selected={store.selectedActionCardId === card.id}
+            dieFace={selectedDie?.face}
+            onSelect={() => store.selectActionCard(card.id)}
+          />
+        ))}
+      </div>
+      <button
+        className="btn btn-success mt-4 w-full"
+        disabled={!selectedDie}
+        onClick={() => store.playSelectedActionCard()}
+      >
+        Legg terning på valgt kort
+      </button>
+      {latest ? (
+        <div className="mt-4 rounded-box border border-accent/30 bg-accent/10 p-4 text-sm leading-relaxed">
+          <div className="font-black uppercase tracking-[0.18em] text-accent">
+            Siste kort: {actionOutcomeCopy[latest.outcomeClass]}
+          </div>
+          <p className="mt-2 font-bold">{latest.title}</p>
+          <p className="mt-1 text-base-content/70">{latest.text}</p>
+          <div className="badge badge-outline mt-3">
+            terning {latest.dieFace} → {latest.adjustedDie}
+          </div>
+        </div>
+      ) : null}
+    </Panel>
+  );
+});
+
+function ActionCardView({
+  card,
+  selected,
+  dieFace,
+  onSelect,
+}: {
+  card: ActionCard;
+  selected: boolean;
+  dieFace?: number;
+  onSelect: () => void;
+}) {
+  const total = dieFace ? adjustedDie(dieFace as 1 | 2 | 3 | 4 | 5 | 6, card.modifier) : undefined;
+  const chances = total ? actionProbabilities(total) : undefined;
+
+  return (
+    <article
+      className={clsx(
+        'rounded-box border p-4 text-left transition',
+        selected ? 'border-accent bg-accent/15' : 'border-base-content/10 bg-base-200 hover:bg-base-100',
+      )}
+      role="button"
+      tabIndex={0}
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') onSelect();
+      }}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="badge badge-neutral">
+          {card.type === 'repeatable' ? 'Gjentakbar' : 'Kritisk'}
+        </span>
+        <span className={riskBadgeClass(card.risk)}>{actionRiskCopy[card.risk]}</span>
+        <span className="badge badge-outline">{card.skill}</span>
+        <span className="badge badge-outline">mod {signed(card.modifier)}</span>
+      </div>
+      <h3 className="mt-3 text-lg font-black">{card.title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-base-content/70">{card.body}</p>
+      <div className="mt-3 rounded-box border border-base-content/10 bg-base-100 p-3">
+        <div className="flex items-center justify-between gap-3 text-sm font-bold">
+          <span>Input terning</span>
+          <span>{dieFace ? `${dieFace} ${signed(card.modifier)} = ${total}` : 'velg terning'}</span>
+        </div>
+        {chances ? (
+          <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+            {(['positive', 'neutral', 'negative'] as ActionOutcomeClass[]).map((kind) => (
+              <div key={kind} className="rounded-box bg-base-200 p-2">
+                <div className="font-bold">{actionOutcomeCopy[kind]}</div>
+                <div>{pct(chances[kind])}</div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div className="mt-3 grid gap-2 text-xs leading-relaxed">
+        {(['positive', 'neutral', 'negative'] as ActionOutcomeClass[]).map((kind) => (
+          <div key={kind} className="rounded-box border border-base-content/10 bg-base-100 p-2">
+            <span className="font-bold">{actionOutcomeCopy[kind]}: </span>
+            {card.outcomes[kind].title}
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {card.clockEffects.map((clock) => (
+          <span key={clock} className="badge badge-ghost">
+            {clock}
+          </span>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function riskBadgeClass(risk: ActionCard['risk']): string {
+  return clsx(
+    'badge',
+    risk === 'safe' && 'badge-success',
+    risk === 'risky' && 'badge-warning',
+    risk === 'fragile' && 'badge-error',
+  );
+}
+
+function signed(value: number): string {
+  return value > 0 ? `+${value}` : `${value}`;
 }
 
 function Panel({ children, className }: { children: React.ReactNode; className?: string }) {

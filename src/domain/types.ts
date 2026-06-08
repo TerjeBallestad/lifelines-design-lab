@@ -42,6 +42,37 @@ export type OutcomeId =
 
 export type OutcomeClass = 'negative' | 'neutral' | 'positive';
 
+export type ActionOutcomeClass = OutcomeClass;
+export type ActionCardId = 'post_folder_review' | 'phone_first_step' | 'institution_assessment';
+
+export interface ActionCardOutcome {
+  title: string;
+  text: string;
+}
+
+export interface ActionCard {
+  id: ActionCardId;
+  title: string;
+  type: 'repeatable' | 'critical';
+  skill: string;
+  risk: 'safe' | 'risky' | 'fragile';
+  modifier: number;
+  body: string;
+  costs: { dice: number; coins?: number };
+  clockEffects: string[];
+  outcomes: Record<ActionOutcomeClass, ActionCardOutcome>;
+}
+
+export interface ActionCardResult {
+  id: string;
+  cardId: ActionCardId;
+  dieFace: DieFace;
+  adjustedDie: number;
+  outcomeClass: ActionOutcomeClass;
+  title: string;
+  text: string;
+}
+
 export interface ClientState {
   overskudd: number;
   trust: number;

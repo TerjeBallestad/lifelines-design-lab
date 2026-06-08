@@ -3,6 +3,7 @@ import componentSource from '../components/PhonePracticeLab.tsx?raw';
 import contentSource from '../content/phonePractice.ts?raw';
 import type { AttemptContext } from '../domain/types';
 import resolverSource from './phoneResolver.ts?raw';
+import { actionProbabilities } from '../content/actionCards';
 import { RootStore } from '../stores/RootStore';
 import { phoneBarkLines, resolvePhoneAttempt } from './phoneResolver';
 
@@ -264,5 +265,35 @@ describe('resolvePhoneAttempt', () => {
     store.runAttempt();
     expect(store.phonePracticeClockProgress).toBeGreaterThan(0);
     expect(store.phoneComplicationClockProgress).toBeGreaterThanOrEqual(0);
+  });
+
+  it('shows Citizen Sleeper-style action card odds from adjusted dice', () => {
+    expect(actionProbabilities(6)).toEqual({ positive: 1, neutral: 0, negative: 0 });
+    expect(actionProbabilities(4)).toEqual({ positive: 0.5, neutral: 0.5, negative: 0 });
+    expect(actionProbabilities(3)).toEqual({ positive: 0.25, neutral: 0.5, negative: 0.25 });
+    expect(actionProbabilities(1)).toEqual({ positive: 0, neutral: 0.5, negative: 0.5 });
+  });
+
+  it('spends a die on an action card and records the result on the card layer', () => {
+    const store = new RootStore();
+    const dieId = store.selectedDieId;
+
+    store.playActionCard('post_folder_review');
+
+    expect(store.dicePool.find((die) => die.id === dieId)?.used).toBe(true);
+    expect(store.actionResults).toHaveLength(1);
+    expect(store.latestActionResult?.cardId).toBe('post_folder_review');
+    expect(store.caseLog.at(-1)).toContain('Gjennomgå postmappe');
+  });
+
+  it('routes the phone action card through the room resolver instead of direct stat buying', () => {
+    const store = new RootStore();
+    store.selectActionCard('phone_first_step');
+    store.playSelectedActionCard();
+
+    expect(store.actionResults).toHaveLength(1);
+    expect(store.attempts).toHaveLength(1);
+    expect(store.latestActionResult?.cardId).toBe('phone_first_step');
+    expect(store.latestAttempt).toBeDefined();
   });
 });

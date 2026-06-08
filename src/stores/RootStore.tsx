@@ -1,11 +1,14 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
+import { adjustedDie, getActionCard, resolveActionOutcome } from '../content/actionCards';
 import {
   findFrankQuestion,
   frankQuestions,
   type ApartmentEvidenceId,
 } from '../content/frankQuestions';
 import type {
+  ActionCardId,
+  ActionCardResult,
   AttemptResult,
   ClientState,
   DieFace,
@@ -63,6 +66,8 @@ export class RootStore {
   selectedDieId = this.dicePool[2]?.id ?? this.dicePool[0].id;
   room: RoomState = { ...startingRoom };
   attempts: AttemptResult[] = [];
+  actionResults: ActionCardResult[] = [];
+  selectedActionCardId: ActionCardId = 'post_folder_review';
   selectedDeskEvidenceIds: string[] = [];
 
   constructor() {
@@ -118,6 +123,46 @@ export class RootStore {
   selectDie(id: string): void {
     const die = this.dicePool.find((item) => item.id === id && !item.used);
     if (die) this.selectedDieId = id;
+  }
+
+  selectActionCard(id: ActionCardId): void {
+    this.selectedActionCardId = id;
+  }
+
+  playSelectedActionCard(): void {
+    this.playActionCard(this.selectedActionCardId);
+  }
+
+  playActionCard(cardId: ActionCardId): void {
+    const die = this.selectedDie;
+    if (!die) return;
+    const card = getActionCard(cardId);
+    const total = adjustedDie(die.face, card.modifier);
+    const outcomeClass =
+      cardId === 'phone_first_step'
+        ? this.resolvePhoneActionViaRoom(die.face)
+        : resolveActionOutcome(cardId, die.face, card.modifier, this.day + this.actionResults.length);
+    const outcome = card.outcomes[outcomeClass];
+
+    die.used = true;
+    this.actionResults = [
+      ...this.actionResults,
+      {
+        id: `${cardId}-${this.day}-${this.actionResults.length + 1}`,
+        cardId,
+        dieFace: die.face,
+        adjustedDie: total,
+        outcomeClass,
+        title: outcome.title,
+        text: outcome.text,
+      },
+    ];
+    this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
+    this.applyActionOutcome(cardId, outcomeClass);
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: ${card.title} med terning ${die.face} ga ${outcome.title.toLowerCase()}.`,
+    ];
   }
 
   setFrankStance(stance: FrankStance): void {
@@ -281,6 +326,28 @@ export class RootStore {
     this.setApproach(id);
   }
 
+  private resolvePhoneActionViaRoom(dieFace: DieFace): ActionCardResult['outcomeClass'] {
+    if (this.selectedApproachId === 'none') this.selectedApproachId = 'tolerate_ringtone';
+    const result = resolvePhoneAttempt({
+      client: { ...this.client },
+      approachId: this.selectedApproachId,
+      dieFace,
+      frankStance: this.frankStance,
+      frankPosition: this.frankPosition,
+      scriptState: this.scriptState,
+      supportIds: [...this.selectedSupportIds],
+      attemptIndex: this.attempts.length + 1,
+    });
+
+    this.attempts.push(result);
+    this.selectedDeskEvidenceIds = [];
+    this.room = { ...result.finalRoom };
+    this.frankPosition = result.finalRoom.frankPosition;
+    this.scriptState = result.finalRoom.scriptState;
+    this.applyResultPressure(result);
+    return result.outcomeClass;
+  }
+
   reset(): void {
     this.client = { overskudd: 0.54, trust: 0.42, phoneMastery: 0.18, ellingState: 'prickly' };
     this.selectedApproachId = 'none';
@@ -292,6 +359,8 @@ export class RootStore {
     this.selectedDieId = this.dicePool[2]?.id ?? this.dicePool[0].id;
     this.room = { ...startingRoom };
     this.attempts = [];
+    this.actionResults = [];
+    this.selectedActionCardId = 'post_folder_review';
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
     this.firstContactReportVisible = false;
@@ -322,6 +391,10 @@ export class RootStore {
     return this.attempts.at(-1);
   }
 
+  get latestActionResult(): ActionCardResult | undefined {
+    return this.actionResults.at(-1);
+  }
+
   get activeRoom(): RoomState {
     return this.latestAttempt?.finalRoom ?? this.room;
   }
@@ -343,6 +416,28 @@ export class RootStore {
     ).length;
     const openLineProgress = completedAttempts * 2 + partialAttempts;
     return Math.min(4, openLineProgress);
+  }
+
+  private applyActionOutcome(cardId: ActionCardId, outcomeClass: ActionCardResult['outcomeClass']): void {
+    if (cardId === 'post_folder_review') {
+      if (outcomeClass === 'positive') {
+        this.client.trust = Math.min(1, this.client.trust + 0.04);
+        this.client.overskudd = Math.min(1, this.client.overskudd + 0.02);
+      } else if (outcomeClass === 'negative') {
+        this.client.overskudd = Math.max(0, this.client.overskudd - 0.05);
+        this.room.lastFriction = 'mail folder became control';
+      }
+    }
+
+    if (cardId === 'institution_assessment') {
+      if (outcomeClass === 'negative') {
+        this.client.trust = Math.max(0, this.client.trust - 0.1);
+        this.room.doorClosed = true;
+        this.room.lastFriction = 'institution track threatened home';
+      } else if (outcomeClass === 'positive') {
+        this.client.trust = Math.max(0, this.client.trust - 0.03);
+      }
+    }
   }
 
   private applyResultPressure(result: AttemptResult): void {
