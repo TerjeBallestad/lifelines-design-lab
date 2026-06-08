@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   actionCards,
@@ -54,6 +55,7 @@ const {
   deskDecision,
 } = intakeCaseCopy;
 const visiblePreDeathActionCards = actionCards.filter((card) => card.id !== 'phone_first_step');
+type ActionDialogKind = 'grete_call' | 'social_visit';
 
 const frictionCopy: Record<string, string> = {
   'dignity preserved through ridicule': 'verdighet bevart gjennom latterliggjøring',
@@ -79,6 +81,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
   const store = useRootStore();
   const latest = store.latestAttempt;
   const activeRoom = store.activeRoom;
+  const [actionDialog, setActionDialog] = useState<ActionDialogKind | null>(null);
 
   return (
     <div className="min-h-screen bg-base-300 text-base-content">
@@ -120,8 +123,12 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
                 'btn',
                 store.labMode === 'social_visit' ? 'btn-primary' : 'btn-outline',
               )}
-              onClick={() => store.performSocialVisit()}
-              disabled={store.socialVisitReportVisible}
+              onClick={() =>
+                store.labMode === 'social_visit'
+                  ? store.setLabMode('social_visit')
+                  : setActionDialog('social_visit')
+              }
+              disabled={store.socialVisitReportVisible || !store.selectedDie}
             >
               Sosialt besøk
             </button>
@@ -175,8 +182,11 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
         ) : store.labMode === 'social_visit' ? (
           <SocialVisitSurface />
         ) : (
-          <CaseDeskSurface />
+          <CaseDeskSurface openActionDialog={setActionDialog} />
         )}
+        {actionDialog ? (
+          <ActionResolutionDialog kind={actionDialog} onClose={() => setActionDialog(null)} />
+        ) : null}
       </div>
     </div>
   );
@@ -243,9 +253,101 @@ const GreteCallSurface = observer(function GreteCallSurface() {
   );
 });
 
+const actionDialogCopy: Record<
+  ActionDialogKind,
+  {
+    title: string;
+    body: string;
+    confirmLabel: string;
+    bands: Record<ActionOutcomeClass, string>;
+  }
+> = {
+  grete_call: {
+    title: 'Ring Grete',
+    body: 'Frank prøver å få Grete til å slippe ham inn uten at hun føler seg overkjørt.',
+    confirmLabel: 'Legg terning på samtalen',
+    bands: {
+      negative: '1–2: Grete lukker seg. Saken får motstand før besøket finnes.',
+      neutral: '3–4: Hun går med på et kort besøk, men setter rammene stramt.',
+      positive: '5–6: Hun åpner litt mer, og Frank får en trygg inngang til leiligheten.',
+    },
+  },
+  social_visit: {
+    title: 'Sosialt besøk',
+    body: 'Frank bruker tid på å komme inn i rommet. Terningen avgjør temperaturen, ikke hva du observerer.',
+    confirmLabel: 'Start besøket',
+    bands: {
+      negative: '1–2: Anspent besøk. Grete styrer rommet hardt.',
+      neutral: '3–4: Rolig nok. Frank får ett godt holdepunkt.',
+      positive: '5–6: Noe løsner. Frank får ett holdepunkt uten å miste tillit.',
+    },
+  },
+};
+
+const ActionResolutionDialog = observer(function ActionResolutionDialog({
+  kind,
+  onClose,
+}: {
+  kind: ActionDialogKind;
+  onClose: () => void;
+}) {
+  const store = useRootStore();
+  const die = store.selectedDie;
+  const copy = actionDialogCopy[kind];
+  const resolve = () => {
+    if (kind === 'grete_call') store.resolveGreteCallWithSelectedDie();
+    if (kind === 'social_visit') store.startSocialVisitWithSelectedDie();
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/55 p-4">
+      <section className="card w-full max-w-xl border border-accent/40 bg-base-100 shadow-2xl">
+        <div className="card-body gap-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-accent">
+                Sakssteg · Koster: 1 terning
+              </div>
+              <h2 className="mt-2 text-2xl font-black">{copy.title}</h2>
+            </div>
+            <button className="btn btn-ghost btn-sm" type="button" onClick={onClose}>
+              Lukk
+            </button>
+          </div>
+          <p className="text-sm leading-relaxed text-base-content/70">{copy.body}</p>
+          <div className="rounded-box border border-base-content/10 bg-base-200 p-4">
+            <div className="flex items-center justify-between gap-3 text-sm font-bold">
+              <span>Valgt terning</span>
+              <span>{die ? die.face : 'ingen ledig terning'}</span>
+            </div>
+            <div className="mt-3 grid gap-2 text-xs leading-relaxed">
+              {(['positive', 'neutral', 'negative'] as ActionOutcomeClass[]).map((kind) => (
+                <div key={kind} className="rounded-box border border-base-content/10 bg-base-100 p-2">
+                  <span className="font-bold">{actionOutcomeCopy[kind]}: </span>
+                  {copy.bands[kind]}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-wrap justify-end gap-2">
+            <button className="btn btn-outline" type="button" onClick={onClose}>
+              Avbryt
+            </button>
+            <button className="btn btn-success" type="button" onClick={resolve} disabled={!die}>
+              {copy.confirmLabel}
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+});
+
 const SocialVisitSurface = observer(function SocialVisitSurface() {
   const store = useRootStore();
-  const remainingObservations = Math.max(0, 1 - store.noticedApartmentEvidenceIds.length);
+  const remainingObservations = store.observationTokensRemaining;
+  const [inspectionQuestion, setInspectionQuestion] = useState<FrankQuestion | null>(null);
   const selectedObservation = frankQuestions.find((question) =>
     store.noticedApartmentEvidenceIds.includes(question.evidenceId),
   );
@@ -265,9 +367,10 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
           <StageObject className="left-20 top-24">kaffe og kopper</StageObject>
           <VisitObjectButton
             className="left-24 top-44 h-12 w-44"
-            label="post under avisen"
+            label="Haug med post"
             question={frankQuestions.find((question) => question.evidenceId === 'post_pressure')!}
             disabled={remainingObservations <= 0}
+            onInspect={setInspectionQuestion}
           />
           <StageObject className="right-28 top-28">stol vendt bort</StageObject>
           <VisitPersonButton
@@ -276,6 +379,7 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
             position="left-28 top-28"
             question={frankQuestions.find((question) => question.evidenceId === 'grete_load')!}
             disabled={remainingObservations <= 0}
+            onInspect={setInspectionQuestion}
           />
           <Person label="Frank" tone="frank" position="left-56 top-28" />
           <VisitPersonButton
@@ -284,6 +388,7 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
             position="right-28 bottom-28"
             question={frankQuestions.find((question) => question.evidenceId === 'elling_distance')!}
             disabled={remainingObservations <= 0}
+            onInspect={setInspectionQuestion}
           />
           <PressureLabel className="left-48 top-12" active>
             omsorgsarbeid
@@ -327,7 +432,64 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
           Skriv besøksnotat
         </button>
       </Panel>
+      {inspectionQuestion ? (
+        <ObservationDialog question={inspectionQuestion} onClose={() => setInspectionQuestion(null)} />
+      ) : null}
     </main>
+  );
+});
+
+function observationTitle(question: FrankQuestion): string {
+  if (question.evidenceId === 'post_pressure') return 'Haug med post';
+  if (question.evidenceId === 'grete_load') return 'Grete';
+  return 'Elling';
+}
+
+const ObservationDialog = observer(function ObservationDialog({
+  question,
+  onClose,
+}: {
+  question: FrankQuestion;
+  onClose: () => void;
+}) {
+  const store = useRootStore();
+  const alreadyObserved = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
+  const canObserve = store.observationTokensRemaining > 0 && !alreadyObserved;
+  const observe = () => {
+    store.noticeApartmentDetail(question.evidenceId);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/55 p-4">
+      <section className="card w-full max-w-lg border border-accent/40 bg-base-100 shadow-2xl">
+        <div className="card-body gap-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.2em] text-accent">
+                Observasjon · token {store.observationTokensRemaining}/1
+              </div>
+              <h2 className="mt-2 text-2xl font-black">{observationTitle(question)}</h2>
+            </div>
+            <button className="btn btn-ghost btn-sm" type="button" onClick={onClose}>
+              Lukk
+            </button>
+          </div>
+          <p className="text-sm leading-relaxed text-base-content/70">{question.roomNotice}</p>
+          <div className="rounded-box border border-base-content/10 bg-base-200 p-3 text-sm">
+            <strong>Dette låser Frank-spørsmål:</strong> {question.prompt}
+          </div>
+          <div className="flex flex-wrap justify-end gap-2">
+            <button className="btn btn-outline" type="button" onClick={onClose}>
+              Ikke nå
+            </button>
+            <button className="btn btn-success" type="button" onClick={observe} disabled={!canObserve}>
+              {alreadyObserved ? 'Observert' : 'Observér'}
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 });
 
@@ -348,7 +510,11 @@ function SpeechBubble({
   );
 }
 
-const CaseDeskSurface = observer(function CaseDeskSurface() {
+const CaseDeskSurface = observer(function CaseDeskSurface({
+  openActionDialog,
+}: {
+  openActionDialog: (kind: ActionDialogKind) => void;
+}) {
   const store = useRootStore();
   const latest = store.latestAttempt;
   const selected = new Set(store.selectedDeskEvidenceIds);
@@ -504,7 +670,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             </p>
             <button
               className="btn btn-success mt-4"
-              onClick={() => store.callGreteFromConcernReport()}
+              onClick={() => openActionDialog('grete_call')}
+              disabled={!store.selectedDie}
             >
               {initialConcern.actionLabel}
             </button>
@@ -522,7 +689,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 <button
                   className="btn btn-success mt-4 justify-start"
                   type="button"
-                  onClick={() => store.performSocialVisit()}
+                  onClick={() => openActionDialog('social_visit')}
+                  disabled={!store.selectedDie}
                 >
                   {socialVisit.performActionLabel}
                 </button>
@@ -1152,12 +1320,14 @@ function VisitPersonButton({
   position,
   question,
   disabled,
+  onInspect,
 }: {
   label: string;
   tone: 'client' | 'frank';
   position: string;
   question: FrankQuestion;
   disabled: boolean;
+  onInspect: (question: FrankQuestion) => void;
 }) {
   const store = useRootStore();
   const selected = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
@@ -1165,7 +1335,7 @@ function VisitPersonButton({
     <button
       type="button"
       className={personClass(tone, position, disabled && !selected)}
-      onClick={() => store.noticeApartmentDetail(question.evidenceId)}
+      onClick={() => onInspect(question)}
       disabled={disabled && !selected}
       title={question.clueLabel}
     >
@@ -1179,11 +1349,13 @@ function VisitObjectButton({
   className,
   question,
   disabled,
+  onInspect,
 }: {
   label: string;
   className: string;
   question: FrankQuestion;
   disabled: boolean;
+  onInspect: (question: FrankQuestion) => void;
 }) {
   const store = useRootStore();
   const selected = store.noticedApartmentEvidenceIds.includes(question.evidenceId);
@@ -1198,7 +1370,7 @@ function VisitObjectButton({
         disabled && !selected && 'opacity-60',
         className,
       )}
-      onClick={() => store.noticeApartmentDetail(question.evidenceId)}
+      onClick={() => onInspect(question)}
       disabled={disabled && !selected}
       title={question.clueLabel}
     >

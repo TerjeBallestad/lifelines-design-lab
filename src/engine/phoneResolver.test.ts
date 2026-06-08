@@ -194,13 +194,9 @@ describe('resolvePhoneAttempt', () => {
     store.performSocialVisit();
     store.noticeApartmentDetail('post_pressure');
     store.completeSocialVisit();
-    expect(store.dayActions).toBe(0);
+    expect(store.dayActions).toBe(2);
 
     store.requestFinancialStatement();
-    expect(store.financialStatementRequested).toBe(false);
-    store.rollNewDay();
-    store.requestFinancialStatement();
-
     expect(store.dayActions).toBe(1);
     expect(store.financialStatementRequested).toBe(true);
     expect(store.financialStatementVisible).toBe(false);
@@ -208,36 +204,62 @@ describe('resolvePhoneAttempt', () => {
 
     store.rollNewDay();
 
-    expect(store.day).toBe(3);
+    expect(store.day).toBe(2);
     expect(store.dayActions).toBe(2);
     expect(store.financialStatementRequested).toBe(false);
     expect(store.financialStatementVisible).toBe(true);
     expect(store.caseLog.at(-1)).toContain('ligger på pulten');
   });
 
-  it('sets up the social visit from Grete call and returns a visit report after one observation', () => {
+  it('spends selected dice to resolve the Grete call and start the social visit', () => {
     const store = new RootStore();
-    store.callGreteFromConcernReport();
-    store.completeGreteCall();
+    const greteDieId = store.selectedDieId;
+    const greteDieFace = store.selectedDie!.face;
 
-    expect(store.dayActions).toBe(2);
+    store.resolveGreteCallWithSelectedDie();
+
+    expect(store.dicePool.find((die) => die.id === greteDieId)?.used).toBe(true);
+    expect(store.firstContactReportVisible).toBe(true);
     expect(store.socialVisitScheduled).toBe(true);
-    expect(store.socialVisitReportVisible).toBe(false);
+    expect(store.labMode).toBe('desk');
+    expect(store.caseLog.at(-1)).toContain(`Ring Grete med terning ${greteDieFace}`);
 
-    store.performSocialVisit();
+    const visitDieId = store.selectedDieId;
+    const visitDieFace = store.selectedDie!.face;
+    store.startSocialVisitWithSelectedDie();
+
+    expect(store.dicePool.find((die) => die.id === visitDieId)?.used).toBe(true);
     expect(store.labMode).toBe('social_visit');
+    expect(store.caseLog.at(-1)).toContain(`Sosialt besøk med terning ${visitDieFace}`);
+  });
 
+  it('keeps observation tokens separate from dice actions inside the apartment visit', () => {
+    const store = new RootStore();
+    store.resolveGreteCallWithSelectedDie();
+    store.startSocialVisitWithSelectedDie();
+
+    expect(store.observationTokensRemaining).toBe(1);
     store.completeSocialVisit();
     expect(store.socialVisitReportVisible).toBe(false);
+
     store.noticeApartmentDetail('elling_distance');
+    expect(store.observationTokensRemaining).toBe(0);
     store.noticeApartmentDetail('grete_load');
     expect(store.noticedApartmentEvidenceIds).toEqual(['elling_distance']);
 
     store.completeSocialVisit();
     expect(store.labMode).toBe('desk');
     expect(store.socialVisitReportVisible).toBe(true);
-    expect(store.dayActions).toBe(0);
     expect(store.caseLog.at(-1)).toContain('sosialt besøk');
+  });
+
+  it('renders action and observation dialogs instead of immediate social visit clicks', () => {
+    const visibleText = visibleSourceText();
+    expect(componentSource).toContain('ActionResolutionDialog');
+    expect(componentSource).toContain('ObservationDialog');
+    expect(componentSource.toLowerCase()).toContain('koster: 1 terning');
+    expect(visibleText).toContain('haug med post');
+    expect(visibleText).toContain('observér');
   });
 
   it('turns room-notice Frank chat into evidence and a practical desk decision', () => {

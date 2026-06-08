@@ -115,6 +115,40 @@ export class RootStore {
     this.labMode = 'desk';
   }
 
+  resolveGreteCallWithSelectedDie(): void {
+    if (this.firstContactReportVisible) return;
+    const die = this.selectedDie;
+    if (!die) return;
+
+    this.setApproach('grete_primes_first');
+    die.used = true;
+    this.client.trust = Math.min(1, this.client.trust + (die.face >= 5 ? 0.08 : 0.04));
+    this.room.lastFriction = die.face <= 2 ? 'Grete still carries the doorway' : 'setup changed';
+    this.firstContactReportVisible = true;
+    this.socialVisitScheduled = true;
+    this.labMode = 'desk';
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Ring Grete med terning ${die.face}. Hun går med på et kort sosialt besøk.`,
+    ];
+    this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
+  }
+
+  startSocialVisitWithSelectedDie(): void {
+    if (!this.socialVisitScheduled || this.socialVisitReportVisible || this.labMode === 'social_visit') return;
+    const die = this.selectedDie;
+    if (!die) return;
+
+    die.used = true;
+    this.room.lastFriction = die.face <= 2 ? 'Grete still carries the doorway' : 'coffee visit without documents';
+    this.caseLog = [
+      ...this.caseLog,
+      `Dag ${this.day}: Sosialt besøk med terning ${die.face}. Frank får ett blikk i leiligheten.`,
+    ];
+    this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
+    this.labMode = 'social_visit';
+  }
+
   setApproach(id: PhoneApproachId): void {
     this.selectedApproachId = id;
     if (id === 'written_script' && this.scriptState === 'missing') {
@@ -243,7 +277,6 @@ export class RootStore {
   completeSocialVisit(): void {
     if (!this.noticedApartmentEvidenceIds.length) return;
     this.socialVisitReportVisible = true;
-    this.dayActions = 0;
     this.room.lastFriction = 'coffee visit without documents';
     this.caseLog = [
       ...this.caseLog,
@@ -400,6 +433,10 @@ export class RootStore {
 
   get latestActionResult(): ActionCardResult | undefined {
     return this.actionResults.at(-1);
+  }
+
+  get observationTokensRemaining(): number {
+    return Math.max(0, 1 - this.noticedApartmentEvidenceIds.length);
   }
 
   get activeRoom(): RoomState {
