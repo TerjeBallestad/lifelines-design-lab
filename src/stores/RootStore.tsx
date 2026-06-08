@@ -111,10 +111,7 @@ export class RootStore {
   completeGreteCall(): void {
     this.firstContactReportVisible = true;
     this.socialVisitScheduled = true;
-    this.caseLog = [
-      ...this.caseLog,
-      `Dag ${this.day}: Grete går med på et kort sosialt besøk.`,
-    ];
+    this.caseLog = [...this.caseLog, `Dag ${this.day}: Grete går med på et kort sosialt besøk.`];
     this.labMode = 'desk';
   }
 
@@ -146,7 +143,12 @@ export class RootStore {
     const outcomeClass =
       cardId === 'phone_first_step'
         ? this.resolvePhoneActionViaRoom(die.face)
-        : resolveActionOutcome(cardId, die.face, card.modifier, this.day + this.actionResults.length);
+        : resolveActionOutcome(
+            cardId,
+            die.face,
+            card.modifier,
+            this.day + this.actionResults.length,
+          );
     const outcome = card.outcomes[outcomeClass];
 
     die.used = true;
@@ -423,7 +425,10 @@ export class RootStore {
     return Math.min(4, openLineProgress);
   }
 
-  private applyActionOutcome(cardId: ActionCardId, outcomeClass: ActionCardResult['outcomeClass']): void {
+  private applyActionOutcome(
+    cardId: ActionCardId,
+    outcomeClass: ActionCardResult['outcomeClass'],
+  ): void {
     if (cardId === 'get_to_know_elling') {
       if (outcomeClass === 'positive') {
         this.client.trust = Math.min(1, this.client.trust + 0.04);

@@ -21,7 +21,6 @@ import type {
 } from '../domain/types';
 import { useRootStore } from '../stores/RootStore';
 
-
 const outcomeCopy: Record<string, string> = {
   retreat: 'soveromsdøren vant',
   anger_retreat: 'sinne vendt mot Frank',
@@ -43,7 +42,6 @@ const frankPositionCopy: Record<FrankPosition, string> = {
   seated_away: 'Frank sitter unna',
   absent_setup: 'Frank har gått ut',
 };
-
 
 const initialConcernDocumentLabel = 'Bekymringsmelding';
 const initialConcernObjective = 'Etabler kontakt med Grete';
@@ -87,9 +85,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-accent">
                 Lifelines Design Lab / M2
               </p>
-              <h1 className="text-4xl font-black tracking-tight md:text-5xl">
-                Saken om Elling
-              </h1>
+              <h1 className="text-4xl font-black tracking-tight md:text-5xl">Saken om Elling</h1>
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-base-content/70">
                 Les saken, gjør ett sakssteg, se hva det faktisk betyr i rommet.
               </p>
@@ -227,7 +223,9 @@ const GreteCallSurface = observer(function GreteCallSurface() {
         <SectionTitle>Telefonnotat</SectionTitle>
         <div className="grid gap-3 text-sm leading-relaxed text-base-content/75">
           <p>Grete svarte selv. Samtalen ble ført med henne. Elling kom ikke til telefonen.</p>
-          <p>Hun går med på et kort sosialt besøk, men Frank har fortsatt ikke snakket med Elling.</p>
+          <p>
+            Hun går med på et kort sosialt besøk, men Frank har fortsatt ikke snakket med Elling.
+          </p>
           <div className="rounded-box border border-warning/30 bg-warning/10 p-4">
             <div className="font-bold">Ny rapport</div>
             <p className="mt-1">{firstContactReportTitle}</p>
@@ -299,9 +297,7 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
         <SectionTitle>Observasjon</SectionTitle>
         <div className="rounded-box border border-accent/30 bg-accent/10 p-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="font-black uppercase tracking-[0.18em] text-accent">
-              Blikk igjen
-            </div>
+            <div className="font-black uppercase tracking-[0.18em] text-accent">Blikk igjen</div>
             <div className="badge badge-accent">{remainingObservations}/1</div>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-base-content/70">
@@ -330,7 +326,6 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
     </main>
   );
 });
-
 
 function SpeechBubble({
   children,
@@ -416,8 +411,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   kjenner til henvendelsen eller hva han selv forstår av saken.
                 </p>
                 <p>
-                  <strong>Anbefalt:</strong> gjennomfør det korte besøket Grete gikk med på før saken
-                  tolkes for hardt.
+                  <strong>Anbefalt:</strong> gjennomfør det korte besøket Grete gikk med på før
+                  saken tolkes for hardt.
                 </p>
               </div>
             </article>
@@ -442,8 +437,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
             <div className="badge badge-info mb-3">Dokument: Økonomisk oversikt</div>
             <div className="space-y-2 text-sm leading-relaxed text-base-content/80">
               <p>
-                Ellings uføretrygd kommer inn på Gretes konto. Hun betaler husleie, strøm og
-                telefon derfra, og Elling håndterer ikke de faste trekkene selv.
+                Ellings uføretrygd kommer inn på Gretes konto. Hun betaler husleie, strøm og telefon
+                derfra, og Elling håndterer ikke de faste trekkene selv.
               </p>
               <p>
                 <strong>Merknad:</strong> Dersom Grete faller bort, blir leiligheten et praktisk
@@ -470,8 +465,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                 gjør besøket, posten, pausene og Elling sosialt håndterbart.
               </p>
               <p>
-                <strong>Risiko:</strong> Hvis Grete dør, må Elling møte hverdagen med støtte fra saken,
-                ikke med moren som skjult ramme.
+                <strong>Risiko:</strong> Hvis Grete dør, må Elling møte hverdagen med støtte fra
+                saken, ikke med moren som skjult ramme.
               </p>
             </div>
           </article>
@@ -494,8 +489,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
               ) : null}
               {store.apartmentEvidenceIds.includes('grete_load') ? (
                 <p>
-                  <strong>Grete holder besøket oppe:</strong> saken må planlegge for det arbeidet hun
-                  gjør uten å kalle det arbeid.
+                  <strong>Grete holder besøket oppe:</strong> saken må planlegge for det arbeidet
+                  hun gjør uten å kalle det arbeid.
                 </p>
               ) : null}
             </div>
@@ -556,8 +551,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   Spør Frank om noe du faktisk så
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-base-content/70">
-                  Velg én ting fra besøket. Frank svarer kort, og svaret kan åpne ett nytt
-                  sakssteg.
+                  Velg én ting fra besøket. Frank svarer kort, og svaret kan åpne ett nytt sakssteg.
                 </p>
                 <div className="mt-4 grid gap-2">
                   {frankQuestions.map((question) => {
@@ -645,8 +639,8 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                   <div className="mt-5 rounded-box border border-success/30 bg-success/10 p-4">
                     <div className="font-bold">Nytt sakssteg</div>
                     <p className="mt-1 text-sm leading-relaxed">
-                      Start med hjelp som flytter én konkret oppgave bort fra Grete uten å ta hjemmet
-                      fra Elling.
+                      Start med hjelp som flytter én konkret oppgave bort fra Grete uten å ta
+                      hjemmet fra Elling.
                     </p>
                     <button
                       className="btn btn-success mt-3"
@@ -958,7 +952,9 @@ function ActionCardView({
     <article
       className={clsx(
         'rounded-box border p-4 text-left transition',
-        selected ? 'border-accent bg-accent/15' : 'border-base-content/10 bg-base-200 hover:bg-base-100',
+        selected
+          ? 'border-accent bg-accent/15'
+          : 'border-base-content/10 bg-base-200 hover:bg-base-100',
       )}
       role="button"
       tabIndex={0}
@@ -1042,7 +1038,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="card-title mb-2 text-lg">{children}</h2>;
 }
 
-
 function ApartmentStage({
   room,
   carriedWeaknesses,
@@ -1123,7 +1118,6 @@ function PressureLabel({
     </div>
   );
 }
-
 
 function Zone({ label, className }: { label: string; className: string }) {
   return (
@@ -1221,7 +1215,8 @@ function VisitObjectButton({
       type="button"
       className={clsx(
         'absolute grid h-16 w-24 place-items-center rounded-box border border-base-content/20 bg-base-100 text-center text-sm shadow-lg transition-all duration-500',
-        !disabled && 'cursor-pointer hover:scale-105 hover:border-accent hover:ring-2 hover:ring-accent',
+        !disabled &&
+          'cursor-pointer hover:scale-105 hover:border-accent hover:ring-2 hover:ring-accent',
         selected && 'border-accent bg-accent/20 text-accent',
         disabled && !selected && 'opacity-60',
         className,
@@ -1275,13 +1270,9 @@ function RoomPills({ room }: { room: RoomState }) {
   );
 }
 
-
-
 function scriptObjectLabel(scriptState: ScriptState): string {
   if (scriptState === 'missing') return 'uten manus';
   if (scriptState === 'used') return 'brukt manus';
   if (scriptState === 'ignored') return 'manuset ble liggende';
   return 'telefonmanus';
 }
-
-

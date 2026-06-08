@@ -20,8 +20,7 @@ export const actionCards: ActionCard[] = [
     skill: 'Sosialt',
     risk: 'risky',
     modifier: 0,
-    body:
-      'Frank prøver å få en grunn til å komme tilbake uten at besøket blir enda en vurdering. Målet er ikke å avdekke et problem, men å finne én ting Elling faktisk bryr seg om.',
+    body: 'Frank prøver å få en grunn til å komme tilbake uten at besøket blir enda en vurdering. Målet er ikke å avdekke et problem, men å finne én ting Elling faktisk bryr seg om.',
     costs: { dice: 1 },
     clockEffects: ['Elling blir person', 'Nytt besøk mulig'],
     outcomes: {
@@ -46,8 +45,7 @@ export const actionCards: ActionCard[] = [
     skill: 'Telefon og ærend',
     risk: 'fragile',
     modifier: 0,
-    body:
-      'Telefonen står på bordet. Frank kan tilby manus, men ikke svare for ham. Målet er ett lite steg, ikke en samtale som beviser noe.',
+    body: 'Telefonen står på bordet. Frank kan tilby manus, men ikke svare for ham. Målet er ett lite steg, ikke en samtale som beviser noe.',
     costs: { dice: 1 },
     clockEffects: ['Telefontrening: ring ring', 'Åpen linje: ny regning'],
     outcomes: {
@@ -72,8 +70,7 @@ export const actionCards: ActionCard[] = [
     skill: 'Saksforståelse',
     risk: 'fragile',
     modifier: 0,
-    body:
-      'Trygt for saken. Farlig for tilliten. Et institusjonsspor kan gi ryddige papirer, men Elling kan også forstå at hjemmet hans er blitt noe andre vurderer.',
+    body: 'Trygt for saken. Farlig for tilliten. Et institusjonsspor kan gi ryddige papirer, men Elling kan også forstå at hjemmet hans er blitt noe andre vurderer.',
     costs: { dice: 1 },
     clockEffects: ['Institusjonsklokke', 'Tillit til Frank'],
     outcomes: {

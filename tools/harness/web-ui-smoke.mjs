@@ -11,6 +11,7 @@ mkdirSync(artifactsDir, { recursive: true });
 const checks = [];
 const artifacts = [];
 const notes = [];
+const requestFinancialOverviewAction = 'Be Grete finne fram økonomisk oversikt';
 
 try {
   const testResult = run('npm', ['test']);
@@ -174,50 +175,19 @@ async function smokeBrowserFlow() {
       checks,
       'Report appears on desk after call',
     );
-    await expectVisible(page, 'Be om kontoutskrift', checks, 'Financial statement action appears');
-    await expectVisible(page, 'Avtal sosialt besøk', checks, 'Social visit action appears');
-    await capture(page, screenshots, flow, '03-report-next-actions', 'Report and next actions');
-
-    await page.getByRole('button', { name: 'Be om kontoutskrift' }).click();
     await expectVisible(
       page,
-      'Kontoutskrift bestilt',
+      'Grete har sagt ja til et kort sosialt besøk',
       checks,
-      'Financial request schedules next-day document',
+      'Social visit is scheduled by the Grete call',
     );
-    await expectVisible(page, 'Handlinger 1/2', checks, 'Financial request spends one day action');
-    await capture(page, screenshots, flow, '04-finance-requested', 'Financial statement requested');
-
-    await page.getByRole('button', { name: 'Ny dag' }).click();
-    await expectVisible(
-      page,
-      'Dokument: Kontoutskrift',
-      checks,
-      'Next day resolves financial statement document',
-    );
-    await expectVisible(
-      page,
-      'Ellings uføretrygd kommer inn',
-      checks,
-      'Financial document gives concrete case evidence',
-    );
-    await expectVisible(page, 'Handlinger 2/2', checks, 'Next day restores day actions');
-    await capture(page, screenshots, flow, '05-finance-document', 'Financial statement document');
-
-    await page.getByRole('button', { name: 'Avtal sosialt besøk' }).click();
     await expectVisible(
       page,
       'Gjennomfør sosialt besøk',
       checks,
-      'Social visit can be performed after scheduling',
+      'Social visit can be performed after the call report',
     );
-    await expectVisible(
-      page,
-      'Handlinger 1/2',
-      checks,
-      'Social visit scheduling spends one day action',
-    );
-    await capture(page, screenshots, flow, '06-social-visit-scheduled', 'Social visit scheduled');
+    await capture(page, screenshots, flow, '03-report-next-actions', 'Report and next actions');
 
     await page.getByRole('button', { name: 'Gjennomfør sosialt besøk' }).click();
     await expectVisible(
@@ -228,12 +198,6 @@ async function smokeBrowserFlow() {
     );
     await expectVisible(page, 'kaffe og kopper', checks, 'Visit shows Grete coffee scene');
     await expectVisible(page, 'post under avisen', checks, 'Visit shows apartment mail clue');
-    await expectVisible(
-      page,
-      'kontoutskrift på benken',
-      checks,
-      'Financial document appears physically in apartment',
-    );
     await capture(
       page,
       screenshots,
@@ -242,7 +206,7 @@ async function smokeBrowserFlow() {
       'Social visit apartment reveal',
     );
 
-    await page.getByRole('button', { name: /Grete mottar Ellings trygd/ }).click();
+    await page.getByRole('button', { name: /post under avisen/ }).click();
     await expectVisible(
       page,
       'Du legger merke til',
@@ -266,7 +230,7 @@ async function smokeBrowserFlow() {
     );
     await capture(page, screenshots, flow, '09-visit-report', 'Social visit report');
 
-    await page.getByRole('button', { name: /Hvem styrer trygden hans/ }).click();
+    await page.getByRole('button', { name: /Hva betyr posten under avisen/ }).click();
     await expectVisible(
       page,
       'Frank svarer',
@@ -281,13 +245,13 @@ async function smokeBrowserFlow() {
     );
     await expectVisible(
       page,
-      'Grete mottar Ellings trygd',
+      'Uåpnet post peker mot økonomi',
       checks,
-      'Rent dependency becomes evidence chip',
+      'Post pressure becomes evidence chip',
     );
     await expectVisible(
       page,
-      'Nytt skrivebordsgrep',
+      'Nytt sakssteg',
       checks,
       'One interpreted room clue unlocks one changed desk decision',
     );
@@ -298,6 +262,34 @@ async function smokeBrowserFlow() {
       '10-frank-post-clue-decision',
       'Frank clue unlocks decision',
     );
+
+    await page.getByRole('button', { name: 'Ny dag' }).click();
+    await expectVisible(page, 'Handlinger 2/2', checks, 'New day restores capacity');
+    await page.getByRole('button', { name: requestFinancialOverviewAction }).click();
+    await expectVisible(
+      page,
+      'Økonomisk oversikt bedt om',
+      checks,
+      'Financial request schedules next-day document',
+    );
+    await expectVisible(page, 'Handlinger 1/2', checks, 'Financial request spends one day action');
+    await capture(page, screenshots, flow, '04-finance-requested', 'Financial overview requested');
+
+    await page.getByRole('button', { name: 'Ny dag' }).click();
+    await expectVisible(
+      page,
+      'Dokument: Økonomisk oversikt',
+      checks,
+      'Next day resolves financial overview document',
+    );
+    await expectVisible(
+      page,
+      'Ellings uføretrygd kommer inn',
+      checks,
+      'Financial document gives concrete case evidence',
+    );
+    await expectVisible(page, 'Handlinger 2/2', checks, 'Next day restores day actions');
+    await capture(page, screenshots, flow, '05-finance-document', 'Financial overview document');
 
     await page.getByRole('button', { name: 'Foreslå praktisk avlastning' }).click();
     await expectVisible(
@@ -386,22 +378,22 @@ function checkVisibleSource() {
     'frank_call',
     'frankrapport',
     'første kontakt',
-    'kontoutskrift',
-    'kontoutskrift bestilt',
+    'økonomisk oversikt',
+    'økonomisk oversikt bedt om',
     'ellings uføretrygd kommer inn',
     'sosialt besøk',
     'sosialt besøk hos grete',
     'kaffe og kopper',
     'post under avisen',
     'besøksnotat',
-    'det du legger merke til',
-    'hvem styrer trygden hans',
+    'du legger merke til',
+    'hva betyr posten under avisen',
     'må legges merke til i rommet først',
     'hvis grete dør',
     'hverdagsferdigheter',
     'gretes håp dekker over risikoen',
     'bevis fra leiligheten',
-    'nytt skrivebordsgrep',
+    'nytt sakssteg',
     'praktisk avlastningsgrep',
   ];
   const bannedVisible = [
