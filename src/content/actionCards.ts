@@ -102,29 +102,19 @@ export function adjustedDie(face: DieFace, modifier: number): number {
 
 export function actionProbabilities(total: number): Record<ActionOutcomeClass, number> {
   if (total >= 6) return { positive: 1, neutral: 0, negative: 0 };
-  if (total >= 4) return { positive: 0.5, neutral: 0.5, negative: 0 };
-  if (total === 3) return { positive: 0.25, neutral: 0.5, negative: 0.25 };
+  if (total === 5) return { positive: 0.5, neutral: 0.5, negative: 0 };
+  if (total >= 3) return { positive: 0.25, neutral: 0.5, negative: 0.25 };
   return { positive: 0, neutral: 0.5, negative: 0.5 };
 }
 
 export function resolveActionOutcome(
-  cardId: ActionCardId,
   face: DieFace,
   modifier: number,
-  seed: number,
+  random: () => number = Math.random,
 ): ActionOutcomeClass {
   const probabilities = actionProbabilities(adjustedDie(face, modifier));
-  const roll = seededRoll(`${cardId}:${face}:${modifier}:${seed}`);
+  const roll = random();
   if (roll < probabilities.positive) return 'positive';
   if (roll < probabilities.positive + probabilities.neutral) return 'neutral';
   return 'negative';
-}
-
-function seededRoll(input: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < input.length; index += 1) {
-    hash ^= input.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0) / 4294967296;
 }

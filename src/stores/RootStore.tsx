@@ -1,6 +1,11 @@
 import { createContext, useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
-import { adjustedDie, getActionCard, resolveActionOutcome } from '../content/actionCards';
+import {
+  actionOutcomeCopy,
+  adjustedDie,
+  getActionCard,
+  resolveActionOutcome,
+} from '../content/actionCards';
 import {
   findFrankQuestion,
   frankQuestions,
@@ -37,6 +42,8 @@ const startingRoom: RoomState = {
 };
 
 export class RootStore {
+  readonly random: () => number;
+
   client: ClientState = {
     overskudd: 0.54,
     trust: 0.42,
@@ -70,8 +77,9 @@ export class RootStore {
   selectedActionCardId: ActionCardId = 'get_to_know_elling';
   selectedDeskEvidenceIds: string[] = [];
 
-  constructor() {
-    makeAutoObservable(this, {}, { autoBind: true });
+  constructor(random: () => number = Math.random) {
+    this.random = random;
+    makeAutoObservable(this, { random: false }, { autoBind: true });
   }
 
   toggleSupport(id: SupportModeId): void {
@@ -119,31 +127,45 @@ export class RootStore {
     if (this.firstContactReportVisible) return;
     const die = this.selectedDie;
     if (!die) return;
+    const outcomeClass = resolveActionOutcome(die.face, 0, this.random);
 
     this.setApproach('grete_primes_first');
     die.used = true;
-    this.client.trust = Math.min(1, this.client.trust + (die.face >= 5 ? 0.08 : 0.04));
-    this.room.lastFriction = die.face <= 2 ? 'Grete still carries the doorway' : 'setup changed';
+    this.client.trust = Math.min(
+      1,
+      this.client.trust + this.trustDeltaForActionOutcome(outcomeClass),
+    );
+    this.room.lastFriction =
+      outcomeClass === 'negative' ? 'Grete still carries the doorway' : 'setup changed';
     this.firstContactReportVisible = true;
     this.socialVisitScheduled = true;
     this.labMode = 'desk';
     this.caseLog = [
       ...this.caseLog,
-      `Dag ${this.day}: Ring Grete med terning ${die.face}. Hun går med på et kort sosialt besøk.`,
+      `Dag ${this.day}: Ring Grete med terning ${die.face} ga ${actionOutcomeCopy[outcomeClass].toLowerCase()}. Hun går med på et kort sosialt besøk.`,
     ];
     this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
   }
 
   startSocialVisitWithSelectedDie(): void {
-    if (!this.socialVisitScheduled || this.socialVisitReportVisible || this.labMode === 'social_visit') return;
+    if (
+      !this.socialVisitScheduled ||
+      this.socialVisitReportVisible ||
+      this.labMode === 'social_visit'
+    )
+      return;
     const die = this.selectedDie;
     if (!die) return;
+    const outcomeClass = resolveActionOutcome(die.face, 0, this.random);
 
     die.used = true;
-    this.room.lastFriction = die.face <= 2 ? 'Grete still carries the doorway' : 'coffee visit without documents';
+    this.room.lastFriction =
+      outcomeClass === 'negative'
+        ? 'Grete still carries the doorway'
+        : 'coffee visit without documents';
     this.caseLog = [
       ...this.caseLog,
-      `Dag ${this.day}: Sosialt besøk med terning ${die.face}. Frank får ett blikk i leiligheten.`,
+      `Dag ${this.day}: Sosialt besøk med terning ${die.face} ga ${actionOutcomeCopy[outcomeClass].toLowerCase()}. Frank får ett blikk i leiligheten.`,
     ];
     this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
     this.labMode = 'social_visit';
@@ -177,12 +199,7 @@ export class RootStore {
     const outcomeClass =
       cardId === 'phone_first_step'
         ? this.resolvePhoneActionViaRoom(die.face)
-        : resolveActionOutcome(
-            cardId,
-            die.face,
-            card.modifier,
-            this.day + this.actionResults.length,
-          );
+        : resolveActionOutcome(die.face, card.modifier, this.random);
     const outcome = card.outcomes[outcomeClass];
 
     die.used = true;
@@ -386,6 +403,12 @@ export class RootStore {
     this.scriptState = result.finalRoom.scriptState;
     this.applyResultPressure(result);
     return result.outcomeClass;
+  }
+
+  private trustDeltaForActionOutcome(outcomeClass: ActionCardResult['outcomeClass']): number {
+    if (outcomeClass === 'positive') return 0.08;
+    if (outcomeClass === 'neutral') return 0.04;
+    return 0;
   }
 
   reset(): void {

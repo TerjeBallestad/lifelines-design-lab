@@ -267,9 +267,10 @@ const actionDialogCopy: Record<
     body: 'Frank prøver å få Grete til å slippe ham inn uten at hun føler seg overkjørt.',
     confirmLabel: 'Legg terning på samtalen',
     bands: {
-      negative: '1–2: Grete lukker seg. Saken får motstand før besøket finnes.',
-      neutral: '3–4: Hun går med på et kort besøk, men setter rammene stramt.',
-      positive: '5–6: Hun åpner litt mer, og Frank får en trygg inngang til leiligheten.',
+      negative: '1–2: 50% nøytralt / 50% negativt. Grete lukker seg eller setter saken på vent.',
+      neutral:
+        '3–4: 25% positivt / 50% nøytralt / 25% negativt. Besøket kan åpne seg, holde seg stramt eller slå tilbake.',
+      positive: '5: 50% positivt / 50% nøytralt. 6: 100% positivt. Frank får den beste åpningen.',
     },
   },
   social_visit: {
@@ -277,9 +278,10 @@ const actionDialogCopy: Record<
     body: 'Frank bruker tid på å komme inn i rommet. Terningen avgjør temperaturen, ikke hva du observerer.',
     confirmLabel: 'Start besøket',
     bands: {
-      negative: '1–2: Anspent besøk. Grete styrer rommet hardt.',
-      neutral: '3–4: Rolig nok. Frank får ett godt holdepunkt.',
-      positive: '5–6: Noe løsner. Frank får ett holdepunkt uten å miste tillit.',
+      negative: '1–2: 50% nøytralt / 50% negativt. Grete styrer rommet eller besøket blir anspent.',
+      neutral:
+        '3–4: 25% positivt / 50% nøytralt / 25% negativt. Frank får et holdepunkt, men temperaturen kan bikke.',
+      positive: '5: 50% positivt / 50% nøytralt. 6: 100% positivt. Noe løsner uten å miste tillit.',
     },
   },
 };
@@ -294,6 +296,7 @@ const ActionResolutionDialog = observer(function ActionResolutionDialog({
   const store = useRootStore();
   const die = store.selectedDie;
   const copy = actionDialogCopy[kind];
+  const chances = die ? actionProbabilities(die.face) : undefined;
   const resolve = () => {
     if (kind === 'grete_call') store.resolveGreteCallWithSelectedDie();
     if (kind === 'social_visit') store.startSocialVisitWithSelectedDie();
@@ -318,12 +321,44 @@ const ActionResolutionDialog = observer(function ActionResolutionDialog({
           <p className="text-sm leading-relaxed text-base-content/70">{copy.body}</p>
           <div className="rounded-box border border-base-content/10 bg-base-200 p-4">
             <div className="flex items-center justify-between gap-3 text-sm font-bold">
-              <span>Valgt terning</span>
+              <span>Velg terning</span>
               <span>{die ? die.face : 'ingen ledig terning'}</span>
             </div>
+            <div className="mt-3 flex flex-wrap gap-2" aria-label="Velg terning for sakssteg">
+              {store.dicePool.map((item) => (
+                <button
+                  key={item.id}
+                  className={clsx(
+                    'btn btn-square btn-sm text-base font-black',
+                    item.used && 'btn-disabled opacity-35',
+                    !item.used && store.selectedDieId === item.id && 'btn-primary',
+                    !item.used && store.selectedDieId !== item.id && 'btn-outline',
+                  )}
+                  type="button"
+                  onClick={() => store.selectDie(item.id)}
+                  disabled={item.used}
+                  title={item.used ? 'Brukt i dag' : `Terning ${item.face}`}
+                >
+                  {item.face}
+                </button>
+              ))}
+            </div>
+            {chances ? (
+              <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                {(['positive', 'neutral', 'negative'] as ActionOutcomeClass[]).map((kind) => (
+                  <div key={kind} className="rounded-box bg-base-100 p-2">
+                    <div className="font-bold">{actionOutcomeCopy[kind]}</div>
+                    <div>{pct(chances[kind])}</div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <div className="mt-3 grid gap-2 text-xs leading-relaxed">
               {(['positive', 'neutral', 'negative'] as ActionOutcomeClass[]).map((kind) => (
-                <div key={kind} className="rounded-box border border-base-content/10 bg-base-100 p-2">
+                <div
+                  key={kind}
+                  className="rounded-box border border-base-content/10 bg-base-100 p-2"
+                >
                   <span className="font-bold">{actionOutcomeCopy[kind]}: </span>
                   {copy.bands[kind]}
                 </div>
@@ -433,7 +468,10 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
         </button>
       </Panel>
       {inspectionQuestion ? (
-        <ObservationDialog question={inspectionQuestion} onClose={() => setInspectionQuestion(null)} />
+        <ObservationDialog
+          question={inspectionQuestion}
+          onClose={() => setInspectionQuestion(null)}
+        />
       ) : null}
     </main>
   );
@@ -483,7 +521,12 @@ const ObservationDialog = observer(function ObservationDialog({
             <button className="btn btn-outline" type="button" onClick={onClose}>
               Ikke nå
             </button>
-            <button className="btn btn-success" type="button" onClick={observe} disabled={!canObserve}>
+            <button
+              className="btn btn-success"
+              type="button"
+              onClick={observe}
+              disabled={!canObserve}
+            >
               {alreadyObserved ? 'Observert' : 'Observér'}
             </button>
           </div>

@@ -4,7 +4,7 @@ import contentSource from '../content/phonePractice.ts?raw';
 import intakeCaseSource from '../content/intakeCase.ts?raw';
 import type { AttemptContext } from '../domain/types';
 import resolverSource from './phoneResolver.ts?raw';
-import { actionProbabilities } from '../content/actionCards';
+import { actionProbabilities, resolveActionOutcome } from '../content/actionCards';
 import { RootStore } from '../stores/RootStore';
 import { phoneBarkLines, resolvePhoneAttempt } from './phoneResolver';
 
@@ -308,9 +308,19 @@ describe('resolvePhoneAttempt', () => {
 
   it('shows Citizen Sleeper-style action card odds from adjusted dice', () => {
     expect(actionProbabilities(6)).toEqual({ positive: 1, neutral: 0, negative: 0 });
-    expect(actionProbabilities(4)).toEqual({ positive: 0.5, neutral: 0.5, negative: 0 });
+    expect(actionProbabilities(5)).toEqual({ positive: 0.5, neutral: 0.5, negative: 0 });
+    expect(actionProbabilities(4)).toEqual({ positive: 0.25, neutral: 0.5, negative: 0.25 });
     expect(actionProbabilities(3)).toEqual({ positive: 0.25, neutral: 0.5, negative: 0.25 });
+    expect(actionProbabilities(2)).toEqual({ positive: 0, neutral: 0.5, negative: 0.5 });
     expect(actionProbabilities(1)).toEqual({ positive: 0, neutral: 0.5, negative: 0.5 });
+  });
+
+  it('resolves action outcomes through the probability roll, not fixed die bands', () => {
+    expect(resolveActionOutcome(4, 0, () => 0.1)).toBe('positive');
+    expect(resolveActionOutcome(4, 0, () => 0.4)).toBe('neutral');
+    expect(resolveActionOutcome(4, 0, () => 0.9)).toBe('negative');
+    expect(resolveActionOutcome(5, 0, () => 0.75)).toBe('neutral');
+    expect(resolveActionOutcome(6, 0, () => 0.99)).toBe('positive');
   });
 
   it('spends a die on an action card and records the result on the card layer', () => {
