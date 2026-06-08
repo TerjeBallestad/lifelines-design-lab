@@ -415,15 +415,6 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
             disabled={remainingObservations <= 0}
             onInspect={setInspectionQuestion}
           />
-          <PressureLabel className="left-48 top-12" active>
-            omsorgsarbeid
-          </PressureLabel>
-          <PressureLabel className="left-36 top-56" active>
-            uåpnet post
-          </PressureLabel>
-          <PressureLabel className="right-40 bottom-20" active>
-            holder avstand
-          </PressureLabel>
         </div>
       </Panel>
 
@@ -503,10 +494,18 @@ const ObservationDialog = observer(function ObservationDialog({
               Lukk
             </button>
           </div>
-          <p className="text-sm leading-relaxed text-base-content/70">{question.roomNotice}</p>
-          <div className="rounded-box border border-base-content/10 bg-base-200 p-3 text-sm">
-            <strong>Dette låser Frank-spørsmål:</strong> {question.prompt}
-          </div>
+          {alreadyObserved ? (
+            <>
+              <p className="text-sm leading-relaxed text-base-content/70">{question.roomNotice}</p>
+              <div className="rounded-box border border-base-content/10 bg-base-200 p-3 text-sm">
+                <strong>Dette låser Frank-spørsmål:</strong> {question.prompt}
+              </div>
+            </>
+          ) : (
+            <p className="text-sm leading-relaxed text-base-content/70">
+              Bruk observasjonstoken på {observationTitle(question)}.
+            </p>
+          )}
           <div className="flex flex-wrap justify-end gap-2">
             <button className="btn btn-outline" type="button" onClick={onClose}>
               Ikke nå
@@ -1387,7 +1386,7 @@ function VisitPersonButton({
       className={personClass(tone, position, disabled && !selected)}
       onClick={() => onInspect(question)}
       disabled={disabled && !selected}
-      title={question.clueLabel}
+      title={selected ? question.clueLabel : label}
     >
       {label}
     </button>
@@ -1422,7 +1421,7 @@ function VisitObjectButton({
       )}
       onClick={() => onInspect(question)}
       disabled={disabled && !selected}
-      title={question.clueLabel}
+      title={selected ? question.clueLabel : label}
     >
       {label}
     </button>

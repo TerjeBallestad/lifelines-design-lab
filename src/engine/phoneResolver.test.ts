@@ -257,6 +257,9 @@ describe('resolvePhoneAttempt', () => {
     const visibleText = visibleSourceText();
     expect(componentSource).toContain('ActionResolutionDialog');
     expect(componentSource).toContain('ObservationDialog');
+    expect(componentSource).toContain('alreadyObserved ?');
+    expect(componentSource).toContain('Bruk observasjonstoken på');
+    expect(componentSource).not.toContain('holder avstand');
     expect(componentSource).toContain('ResourceStrip');
     expect(componentSource).toContain('Eye');
     expect(componentSource.toLowerCase()).toContain('koster: 1 terning');
