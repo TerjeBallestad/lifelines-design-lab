@@ -223,7 +223,7 @@ export class RootStore {
     this.caseLog = [
       ...this.caseLog,
       result.tirade
-        ? `Dag ${this.day}: ${result.title} ga tirade og nytt bevis.`
+        ? `Dag ${this.day}: ${result.title} ga observasjon og nytt bevis.`
         : `Dag ${this.day}: ${result.title} ga nytt bevis.`,
     ];
     this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;

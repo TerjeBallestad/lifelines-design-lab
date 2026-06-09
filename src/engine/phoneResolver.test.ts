@@ -361,7 +361,7 @@ describe('resolvePhoneAttempt', () => {
     expect(store.selectedSkillProfileId).toBe('elling');
     expect(store.skillProfiles.map((profile) => profile.id)).toEqual(['elling', 'grete']);
     expect(store.skillProfiles[0].domains.map((domain) => domain.title)).toEqual([
-      'Selvbjerging',
+      'Husholdning',
       'Sosialt',
       'Indre liv',
     ]);
@@ -395,28 +395,28 @@ describe('resolvePhoneAttempt', () => {
     ).toBeGreaterThan(5);
   });
 
-  it('uses a negative Frank skill probe to reveal evidence through a tirade instead of buying a stat', () => {
+  it('uses a negative room-evidence skill read to reveal uncertainty without pretending Frank tested the phone', () => {
     const store = new RootStore(() => 0.99);
     store.selectedDieId = store.dicePool.find((die) => die.face === 1)!.id;
 
-    store.runSkillProbe('telephone_probe');
+    store.runSkillProbe('post_observation');
 
     expect(store.skillProbeResults).toHaveLength(1);
     expect(store.latestSkillProbeResult?.outcomeClass).toBe('negative');
     expect(store.latestSkillProbeResult?.evidence).toContain(
-      'Telefon prøvesituasjon: motstand mot ringing, ikke bevis på manglende språk.',
+      'Posten peker mot at Grete styrer regninger og frister. Det sier ennå ikke hva Elling kan alene.',
     );
-    expect(store.latestSkillProbeResult?.tirade).toContain('telefonen er et overfall');
-    expect(store.caseLog.at(-1)).toContain('tirade');
+    expect(store.latestSkillProbeResult?.tirade).toContain('Post er ikke et karaktervitne');
+    expect(store.caseLog.at(-1)).toContain('observasjon og nytt bevis');
     expect(
       store.ellingSkillProfile.domains
         .flatMap((domain) => domain.skills)
-        .find((skill) => skill.id === 'social_courage')?.value,
+        .find((skill) => skill.id === 'planning')?.value,
     ).toBe('1?');
     expect(
       store.ellingSkillProfile.domains
         .flatMap((domain) => domain.skills)
-        .find((skill) => skill.id === 'conversation')?.value,
+        .find((skill) => skill.id === 'routine')?.value,
     ).toBe('???');
     expect(store.skillTrainingHintVisible).toBe(true);
   });
@@ -429,8 +429,11 @@ describe('resolvePhoneAttempt', () => {
     expect(visibleText).toContain('???');
     expect(visibleText).toContain('sosialt mot');
     expect(visibleText).toContain('matlaging');
-    expect(visibleText).toContain('prøv telefon med frank');
+    expect(visibleText).toContain('les posten med frank');
+    expect(visibleText).toContain('besøksnotat');
     expect(visibleText).toContain('mestring');
+    expect(visibleText).not.toContain('prøv telefon med frank');
+    expect(visibleText).not.toContain('telefon prøvesituasjon');
     expect(visibleText).not.toContain('autisme');
     expect(visibleText).not.toContain('diagnose');
   });

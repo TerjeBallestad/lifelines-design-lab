@@ -35,7 +35,7 @@ export interface SkillProfile {
   domains: SkillDomain[];
 }
 
-export type SkillProbeId = 'telephone_probe';
+export type SkillProbeId = 'post_observation';
 
 export interface SkillProbeResult {
   id: string;
@@ -61,7 +61,7 @@ export function createInitialSkillProfiles(): SkillProfile[] {
       caption: 'Direkte observert ferdighetsbilde. Mye er fortsatt ???.',
       domains: [
         {
-          title: 'Selvbjerging',
+          title: 'Husholdning',
           skills: skills([
             { id: 'housekeeping', name: 'Husarbeid', value: '???' },
             { id: 'cooking', name: 'Matlaging', value: '???' },
@@ -95,7 +95,7 @@ export function createInitialSkillProfiles(): SkillProfile[] {
       caption: 'Kjent fra tidligere kontakt, papirer og hverdagsdrift.',
       domains: [
         {
-          title: 'Selvbjerging',
+          title: 'Husholdning',
           skills: skills([
             { id: 'housekeeping', name: 'Husarbeid', value: 3 },
             { id: 'cooking', name: 'Matlaging', value: 3 },
@@ -152,44 +152,50 @@ export function resolveSkillProbe(
   dieFace: number,
   outcomeClass: ActionOutcomeClass,
 ): SkillProbeResult {
-  if (probeId !== 'telephone_probe') throw new Error(`Unknown skill probe: ${probeId}`);
+  if (probeId !== 'post_observation') throw new Error(`Unknown skill probe: ${probeId}`);
 
   if (outcomeClass === 'negative') {
     return {
-      id: `telephone_probe-${dieFace}-${outcomeClass}`,
+      id: `post_observation-${dieFace}-${outcomeClass}`,
       probeId,
-      title: 'Prøv telefon med Frank',
+      title: 'Les posten med Frank',
       outcomeClass,
       dieFace,
       tirade:
-        'Elling forklarer at telefonen er et overfall med ringelyd, og at siviliserte mennesker skriver brev når de vil hverandre noe.',
-      evidence: ['Telefon prøvesituasjon: motstand mot ringing, ikke bevis på manglende språk.'],
-      updates: { social_courage: '1?' },
-      trainingHint: 'Mestring: la telefonen ringe uten å ta den før neste samtale prøves.',
+        'Post er ikke et karaktervitne. Den ligger der bare, og det kan den fortsette med ganske lenge.',
+      evidence: [
+        'Posten peker mot at Grete styrer regninger og frister. Det sier ennå ikke hva Elling kan alene.',
+      ],
+      updates: { planning: '1?' },
+      trainingHint: 'Mestring: én regning åpnes sammen med Frank før saken antar mer.',
     };
   }
 
   if (outcomeClass === 'neutral') {
     return {
-      id: `telephone_probe-${dieFace}-${outcomeClass}`,
+      id: `post_observation-${dieFace}-${outcomeClass}`,
       probeId,
-      title: 'Prøv telefon med Frank',
+      title: 'Les posten med Frank',
       outcomeClass,
       dieFace,
-      evidence: ['Telefon prøvesituasjon: Elling blir ved bordet, men samtalen starter ikke.'],
-      updates: { social_courage: '1?', conversation: '1?' },
-      trainingHint: 'Mestring: øv på én ferdig første setning med manus.',
+      evidence: [
+        'Posten under avisen viser et praktisk hull: frister og faste trekk går gjennom Grete.',
+      ],
+      updates: { planning: '1?', routine: '1?' },
+      trainingHint: 'Mestring: finn én fast plass for brev før økonomien tolkes videre.',
     };
   }
 
   return {
-    id: `telephone_probe-${dieFace}-${outcomeClass}`,
+    id: `post_observation-${dieFace}-${outcomeClass}`,
     probeId,
-    title: 'Prøv telefon med Frank',
+    title: 'Les posten med Frank',
     outcomeClass,
     dieFace,
-    evidence: ['Telefon prøvesituasjon: Elling sier én setning når rammen er smal nok.'],
-    updates: { social_courage: 1, conversation: '1?' },
-    trainingHint: 'Mestring: gjenta samme korte ringevindu før kravet økes.',
+    evidence: [
+      'Frank kan knytte posten til Husholdning: Elling må trolig øve på brev, frister og faste trekk.',
+    ],
+    updates: { planning: 1, routine: '1?' },
+    trainingHint: 'Mestring: la Elling sortere ett brev mens Grete ikke svarer for ham.',
   };
 }

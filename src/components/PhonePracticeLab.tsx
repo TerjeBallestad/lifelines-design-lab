@@ -984,7 +984,7 @@ const ActionContextPanel = observer(function ActionContextPanel() {
         </div>
 
         <SkillDomainCard
-          title="Selvbjerging"
+          title="Husholdning"
           level={2}
           skills={['Mat', 'Husarbeid', 'Økonomi ?', 'Rutine']}
           activeSkill={selectedCard.skill}
@@ -1018,6 +1018,9 @@ const SkillSheetSpike = observer(function SkillSheetSpike() {
   const store = useRootStore();
   const selected = store.selectedSkillProfile;
   const latestProbe = store.latestSkillProbeResult;
+  const canReadPost =
+    store.noticedApartmentEvidenceIds.includes('post_pressure') ||
+    store.apartmentEvidenceIds.includes('post_pressure');
 
   return (
     <div className="rounded-box border border-accent/30 bg-accent/10 p-3">
@@ -1053,19 +1056,19 @@ const SkillSheetSpike = observer(function SkillSheetSpike() {
       <div className="mt-3 rounded-box border border-base-content/10 bg-base-100 p-3 text-xs leading-relaxed">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <div className="font-bold">Frank-probe</div>
+            <div className="font-bold">Frank leser et spor</div>
             <p className="mt-1 text-base-content/65">
-              Prøv telefon med Frank. Terningen avgjør hvor god prøvesituasjonen blir, ikke om
-              Elling plutselig kan telefon.
+              Etter besøksnotatet kan Frank knytte konkrete spor til ferdigheter. Posten under
+              avisen peker mot Husholdning, men beviser ikke hva Elling kan alene.
             </p>
           </div>
           <button
             className="btn btn-sm btn-accent"
             type="button"
-            onClick={() => store.runSkillProbe('telephone_probe')}
-            disabled={!store.selectedDie}
+            onClick={() => store.runSkillProbe('post_observation')}
+            disabled={!store.selectedDie || !canReadPost}
           >
-            Prøv telefon med Frank
+            Les posten med Frank
           </button>
         </div>
         {latestProbe ? (
