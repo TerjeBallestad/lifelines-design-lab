@@ -144,7 +144,7 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
 
         {store.labMode === 'apartment' ? (
           <main className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.9fr]">
-            <Panel className="min-h-[660px] self-start">
+            <Panel className="min-h-165 self-start">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <SectionTitle>Stua</SectionTitle>
@@ -384,8 +384,8 @@ const SocialVisitSurface = observer(function SocialVisitSurface() {
         <p className="text-sm leading-relaxed text-base-content/65">
           Grete har sagt ja til et kort besøk. Du får én observasjon før Frank skriver notat.
         </p>
-        <div className="relative mt-5 h-[520px] overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-[length:36px_36px]" />
+        <div className="relative mt-5 h-130 overflow-hidden rounded-box border-2 border-base-content/20 bg-base-300 shadow-inner">
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px)] bg-size-[36px_36px]" />
           <Zone className="left-8 top-8 h-36 w-64" label="kjøkkenbordet" />
           <Zone className="right-10 top-10 h-36 w-56" label="lesestolen" />
           <Zone className="bottom-12 right-14 h-36 w-52" label="gangen" />
@@ -486,7 +486,8 @@ const ObservationDialog = observer(function ObservationDialog({
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="text-xs font-black uppercase tracking-[0.2em] text-accent">
-                Observasjon · token {store.observationTokensRemaining}/1
+                Observasjon <Eye className="inline-block h-4 w-4 align-text-bottom" />{' '}
+                {store.observationTokensRemaining}/1
               </div>
               <h2 className="mt-2 text-2xl font-black">{observationTitle(question)}</h2>
             </div>
@@ -503,7 +504,8 @@ const ObservationDialog = observer(function ObservationDialog({
             </>
           ) : (
             <p className="text-sm leading-relaxed text-base-content/70">
-              Bruk observasjonstoken på {observationTitle(question)}.
+              Bruk <Eye className="inline-block h-4 w-4 align-text-bottom" /> på{' '}
+              {observationTitle(question)}.
             </p>
           )}
           <div className="flex flex-wrap justify-end gap-2">
