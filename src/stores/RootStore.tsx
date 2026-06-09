@@ -11,6 +11,16 @@ import {
   frankQuestions,
   type ApartmentEvidenceId,
 } from '../content/frankQuestions';
+import {
+  createInitialSkillProfiles,
+  resolveSkillProbe,
+  updateProfileSkill,
+  type SkillProbeId,
+  type SkillProbeResult,
+  type SkillProfile,
+  type SkillProfileId,
+  type SkillId,
+} from '../content/skillProfiles';
 import type {
   ActionCardId,
   ActionCardResult,
@@ -73,6 +83,9 @@ export class RootStore {
   room: RoomState = { ...startingRoom };
   attempts: AttemptResult[] = [];
   actionResults: ActionCardResult[] = [];
+  skillProfiles: SkillProfile[] = createInitialSkillProfiles();
+  selectedSkillProfileId: SkillProfileId = 'elling';
+  skillProbeResults: SkillProbeResult[] = [];
   selectedActionCardId: ActionCardId = 'get_to_know_elling';
   selectedDeskEvidenceIds: string[] = [];
 
@@ -184,6 +197,36 @@ export class RootStore {
 
   selectActionCard(id: ActionCardId): void {
     this.selectedActionCardId = id;
+  }
+
+  selectSkillProfile(id: SkillProfileId): void {
+    this.selectedSkillProfileId = id;
+  }
+
+  runSkillProbe(probeId: SkillProbeId): void {
+    const die = this.selectedDie;
+    if (!die) return;
+    const outcomeClass = resolveActionOutcome(die.face, 0, this.random);
+    const result = resolveSkillProbe(probeId, die.face, outcomeClass);
+
+    die.used = true;
+    this.skillProbeResults = [...this.skillProbeResults, result];
+    for (const [skillId, value] of Object.entries(result.updates)) {
+      this.skillProfiles = updateProfileSkill(
+        this.skillProfiles,
+        'elling',
+        skillId as SkillId,
+        value,
+        result.evidence[0],
+      );
+    }
+    this.caseLog = [
+      ...this.caseLog,
+      result.tirade
+        ? `Dag ${this.day}: ${result.title} ga tirade og nytt bevis.`
+        : `Dag ${this.day}: ${result.title} ga nytt bevis.`,
+    ];
+    this.selectedDieId = this.dicePool.find((item) => !item.used)?.id ?? this.selectedDieId;
   }
 
   playSelectedActionCard(): void {
@@ -424,6 +467,9 @@ export class RootStore {
     this.room = { ...startingRoom };
     this.attempts = [];
     this.actionResults = [];
+    this.skillProfiles = createInitialSkillProfiles();
+    this.selectedSkillProfileId = 'elling';
+    this.skillProbeResults = [];
     this.selectedActionCardId = 'get_to_know_elling';
     this.selectedDeskEvidenceIds = [];
     this.labMode = 'desk';
@@ -450,6 +496,29 @@ export class RootStore {
 
   get latestActionResult(): ActionCardResult | undefined {
     return this.actionResults.at(-1);
+  }
+
+  get ellingSkillProfile(): SkillProfile {
+    return this.skillProfiles.find((profile) => profile.id === 'elling') ?? this.skillProfiles[0];
+  }
+
+  get greteSkillProfile(): SkillProfile {
+    return this.skillProfiles.find((profile) => profile.id === 'grete') ?? this.skillProfiles[1];
+  }
+
+  get selectedSkillProfile(): SkillProfile {
+    return (
+      this.skillProfiles.find((profile) => profile.id === this.selectedSkillProfileId) ??
+      this.ellingSkillProfile
+    );
+  }
+
+  get latestSkillProbeResult(): SkillProbeResult | undefined {
+    return this.skillProbeResults.at(-1);
+  }
+
+  get skillTrainingHintVisible(): boolean {
+    return this.skillProbeResults.length > 0;
   }
 
   get observationTokensRemaining(): number {

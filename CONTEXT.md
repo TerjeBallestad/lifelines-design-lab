@@ -9,12 +9,28 @@ The player-facing municipal work surface that gathers evidence, forms hypotheses
 _Avoid_: single caseworker, abstract municipality, optimization dashboard
 
 **Hva mangler Elling? board**:
-The default Case Desk surface revealed by the bekymringsmelding, showing fixed life-domain categories whose evidence and functional status start as unknown. Sub-questions and hypotheses emerge under those categories as the case develops.
-_Avoid_: hidden unlockable checklist, diagnosis board, service scoring grid
+The default Case Desk surface revealed by the bekymringsmelding, showing fixed life-domain categories whose evidence and functional status start as unknown. Sub-questions and hypotheses emerge under those categories as the case develops. It may be presented with deliberately RPG-like stat-sheet framing when the framing makes functional life skills legible and dryly funny, but evidence and case consequences must remain concrete.
+_Avoid_: hidden unlockable checklist, diagnosis board, service scoring grid, generic optimization dashboard
 
 **Functional gap**:
-A life function that is missing, unreliable, or currently carried by Grete rather than by Elling, a scaffold, or a service. Functional gaps describe what fails in everyday life, not what diagnosis Elling has.
-_Avoid_: diagnosis, deficit, symptom
+A life function that is missing, unreliable, undertrained, or currently carried by Grete rather than by Elling, a scaffold, or a service. Functional gaps describe what fails in everyday life and what can be trained or supported, not what diagnosis Elling has.
+_Avoid_: diagnosis, symptom, permanent deficit
+
+**Skill level**:
+A deliberately RPG-like casework estimate of a broad capability such as Cooking, Planning, Social Courage, or Reflection. Skill levels use the same 3-domain / 12-skill taxonomy as `lifelines-core-loop` so Elling, Grete, and other characters can be compared cleanly. Skills are broader than activity-specific Mastery: a skill describes general capability, while Mastery describes proficiency built by repeating one concrete activity. Elling's skill levels can be probed by sending Frank into action-dice situations that test what he can do, what he avoids, and what kind of support changes the result. Skill levels are playable and trainable, but they remain evidence-backed case estimates rather than clinical measurements.
+_Avoid_: diagnosis score, personality stat, hidden truth meter, bespoke moral labels
+
+**Mastery**:
+Activity-specific proficiency built by doing a concrete activity repeatedly. Mastery answers "how practiced is this character at this activity?" while Skill level answers "what broad capability does this character have?" A character can have high Mastery in a narrow activity, such as reading or looking through a telescope, without having high Skill levels across the related domain.
+_Avoid_: broad skill, diagnosis, personality trait
+
+**Skill probe**:
+A Frank-mediated action that uses an action die to test a suspected skill gap and produce concrete evidence for the Case Desk. The die does not randomize whether Elling has the skill; it tests the quality, safety, and pressure of the situation Frank creates. A bad probe can trigger Elling's defensive tirade or retreat instead of compliance, and still produce evidence about conditions, trust, and failure shape. Probes primarily update case knowledge about broad Skill levels; training and repeated activities primarily build activity-specific Mastery, which may later justify raising a broad Skill level. This split is provisional and should be explored in the design lab.
+_Avoid_: exam minigame, abstract stat check, diagnosis test, obedience check
+
+**Defensive tirade**:
+Elling's funny, face-saving refusal pattern when a probe or training attempt corners him too directly. A defensive tirade can end or damage the current attempt, move trust/pressure, and reveal a specific defense style such as pompous logic, grievance, shame, absurd dignity, or principled objection. It should produce useful evidence for a better next probe rather than function as pure flavor failure.
+_Avoid_: random bark, comedy-only failure, proof that Elling is impossible
 
 **Tiltak**:
 A humane municipal support action chosen to bridge a functional gap while preserving as much agency and skill-building as the situation allows.
@@ -57,8 +73,8 @@ The final Case Desk synthesis of whether Elling can keep living in the apartment
 _Avoid_: house, housing score, independence score
 
 **Appointment chain**:
-The first playable routine for the `Hva mangler Elling?` board: why Elling cannot get to an appointment without Grete. The canonical hypothesis is assembled from smaller working hypotheses showing that Elling understands the appointment, but Grete normally builds and repairs the chain across letter opening, date translation, calendar writing, route checking, phone scripting, morning start, and recovery after contact.
-_Avoid_: tutorial quest, appointment score
+A later tiltak/practice routine for the `Hva mangler Elling?` board: why Elling cannot get to an appointment without Grete. The canonical hypothesis is assembled from smaller working hypotheses showing that Elling understands the appointment, but Grete normally builds and repairs the chain across letter opening, date translation, calendar writing, route checking, phone scripting, morning start, and recovery after contact. It should not carry the opening slice before the player understands Grete's load-bearing role.
+_Avoid_: opening tutorial quest, appointment score
 
 **Knowledge card**:
 A casework excerpt that tells the player whether a working hypothesis was confirmed, refuted, or complicated by Frank's investigation. A complicated result is valuable case knowledge: evidence changed the shape of the question rather than cleanly proving or disproving it.

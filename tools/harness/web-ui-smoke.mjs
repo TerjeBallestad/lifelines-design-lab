@@ -158,17 +158,19 @@ async function smokeBrowserFlow() {
     await capture(page, screenshots, flow, '01-case-desk-start', 'Case Desk start');
 
     await page.getByRole('button', { name: 'Ring Grete' }).click();
-    await expectVisible(page, 'Frank på telefon', checks, 'Ring Grete opens Frank phone scene');
-    await expectVisible(page, 'Telefonnotat', checks, 'Phone scene includes phone note');
     await expectVisible(
       page,
-      'Legg rapporten på pulten',
+      'Sakssteg · Koster: 1 terning',
       checks,
-      'Phone scene exposes report action',
+      'Ring Grete opens action die dialog',
     );
-    await capture(page, screenshots, flow, '02-frank-call', 'Frank call scene');
-
-    await page.getByRole('button', { name: 'Legg rapporten på pulten' }).click();
+    await expectVisible(
+      page,
+      'Legg terning på samtalen',
+      checks,
+      'Grete call spends a die explicitly',
+    );
+    await page.getByRole('button', { name: 'Legg terning på samtalen' }).click();
     await expectVisible(
       page,
       'Frankrapport · Første kontakt',
@@ -192,12 +194,19 @@ async function smokeBrowserFlow() {
     await page.getByRole('button', { name: 'Gjennomfør sosialt besøk' }).click();
     await expectVisible(
       page,
+      'Start besøket',
+      checks,
+      'Social visit also resolves through a die dialog',
+    );
+    await page.getByRole('button', { name: 'Start besøket' }).click();
+    await expectVisible(
+      page,
       'Sosialt besøk hos Grete',
       checks,
       'Social visit opens apartment reveal',
     );
     await expectVisible(page, 'kaffe og kopper', checks, 'Visit shows Grete coffee scene');
-    await expectVisible(page, 'post under avisen', checks, 'Visit shows apartment mail clue');
+    await expectVisible(page, 'Haug med post', checks, 'Visit shows apartment mail clue');
     await capture(
       page,
       screenshots,
@@ -206,7 +215,14 @@ async function smokeBrowserFlow() {
       'Social visit apartment reveal',
     );
 
-    await page.getByRole('button', { name: /post under avisen/ }).click();
+    await page.getByRole('button', { name: /Haug med post/ }).click();
+    await expectVisible(
+      page,
+      'Bruk observasjonstoken',
+      checks,
+      'Observation opens a token dialog before marking the room detail',
+    );
+    await page.getByRole('button', { name: 'Observér' }).click();
     await expectVisible(
       page,
       'Du legger merke til',
@@ -264,7 +280,7 @@ async function smokeBrowserFlow() {
     );
 
     await page.getByRole('button', { name: 'Ny dag' }).click();
-    await expectVisible(page, 'Handlinger 2/2', checks, 'New day restores capacity');
+    await expectVisible(page, 'TERNINGER', checks, 'New day restores dice capacity');
     await page.getByRole('button', { name: requestFinancialOverviewAction }).click();
     await expectVisible(
       page,
@@ -272,7 +288,6 @@ async function smokeBrowserFlow() {
       checks,
       'Financial request schedules next-day document',
     );
-    await expectVisible(page, 'Handlinger 1/2', checks, 'Financial request spends one day action');
     await capture(page, screenshots, flow, '04-finance-requested', 'Financial overview requested');
 
     await page.getByRole('button', { name: 'Ny dag' }).click();
@@ -288,7 +303,7 @@ async function smokeBrowserFlow() {
       checks,
       'Financial document gives concrete case evidence',
     );
-    await expectVisible(page, 'Handlinger 2/2', checks, 'Next day restores day actions');
+    await expectVisible(page, 'TERNINGER', checks, 'Next day keeps dice visible');
     await capture(page, screenshots, flow, '05-finance-document', 'Financial overview document');
 
     await page.getByRole('button', { name: 'Foreslå praktisk avlastning' }).click();

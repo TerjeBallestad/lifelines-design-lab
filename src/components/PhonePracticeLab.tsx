@@ -11,6 +11,7 @@ import {
 } from '../content/actionCards';
 import { frankQuestions, type FrankQuestion } from '../content/frankQuestions';
 import { apartmentEvidenceBriefs, intakeCaseCopy } from '../content/intakeCase';
+import type { SkillEntry, SkillProfile } from '../content/skillProfiles';
 import type {
   ActionCard,
   ActionOutcomeClass,
@@ -504,7 +505,7 @@ const ObservationDialog = observer(function ObservationDialog({
             </>
           ) : (
             <p className="text-sm leading-relaxed text-base-content/70">
-              Bruk <Eye className="inline-block h-4 w-4 align-text-bottom" /> på{' '}
+              Bruk observasjonstoken på <Eye className="inline-block h-4 w-4 align-text-bottom" />{' '}
               {observationTitle(question)}.
             </p>
           )}
@@ -964,6 +965,8 @@ const ActionContextPanel = observer(function ActionContextPanel() {
     <Panel>
       <SectionTitle>Ferdigheter og ramme</SectionTitle>
       <div className="grid gap-3">
+        <SkillSheetSpike />
+
         <div className="rounded-box border border-warning/30 bg-warning/10 p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -1010,6 +1013,124 @@ const ActionContextPanel = observer(function ActionContextPanel() {
     </Panel>
   );
 });
+
+const SkillSheetSpike = observer(function SkillSheetSpike() {
+  const store = useRootStore();
+  const selected = store.selectedSkillProfile;
+  const latestProbe = store.latestSkillProbeResult;
+
+  return (
+    <div className="rounded-box border border-accent/30 bg-accent/10 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.18em] text-accent">
+            RPG-ferdigheter
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-base-content/65">
+            Klikk Elling eller Grete. ??? betyr at saken ikke vet nok ennå. Mestring er smalere: det
+            handler om én aktivitet som er gjort flere ganger.
+          </p>
+        </div>
+        <div className="join">
+          {store.skillProfiles.map((profile) => (
+            <button
+              key={profile.id}
+              className={clsx(
+                'btn join-item btn-sm',
+                store.selectedSkillProfileId === profile.id ? 'btn-accent' : 'btn-outline',
+              )}
+              type="button"
+              onClick={() => store.selectSkillProfile(profile.id)}
+            >
+              {profile.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <SkillSheetCard profile={selected} />
+
+      <div className="mt-3 rounded-box border border-base-content/10 bg-base-100 p-3 text-xs leading-relaxed">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="font-bold">Frank-probe</div>
+            <p className="mt-1 text-base-content/65">
+              Prøv telefon med Frank. Terningen avgjør hvor god prøvesituasjonen blir, ikke om
+              Elling plutselig kan telefon.
+            </p>
+          </div>
+          <button
+            className="btn btn-sm btn-accent"
+            type="button"
+            onClick={() => store.runSkillProbe('telephone_probe')}
+            disabled={!store.selectedDie}
+          >
+            Prøv telefon med Frank
+          </button>
+        </div>
+        {latestProbe ? (
+          <div className="mt-3 grid gap-2">
+            <div className="badge badge-outline">{latestProbe.title}</div>
+            {latestProbe.tirade ? (
+              <blockquote className="rounded-box bg-base-200 p-3 text-base-content/75">
+                “{latestProbe.tirade}”
+              </blockquote>
+            ) : null}
+            {latestProbe.evidence.map((item) => (
+              <div key={item} className="rounded-box bg-base-200 p-2">
+                {item}
+              </div>
+            ))}
+            {store.skillTrainingHintVisible ? (
+              <div className="rounded-box border border-success/30 bg-success/10 p-2">
+                {latestProbe.trainingHint}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+});
+
+function SkillSheetCard({ profile }: { profile: SkillProfile }) {
+  return (
+    <div className="mt-3 rounded-box border border-base-content/10 bg-base-100 p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-lg font-black">{profile.name}</div>
+          <p className="text-xs leading-relaxed text-base-content/60">{profile.caption}</p>
+        </div>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {profile.domains.map((domain) => (
+          <div key={domain.title} className="rounded-box bg-base-200 p-2">
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-base-content/55">
+              {domain.title}
+            </div>
+            <div className="mt-2 grid gap-1">
+              {domain.skills.map((skill) => (
+                <SkillStatRow key={skill.id} skill={skill} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkillStatRow({ skill }: { skill: SkillEntry }) {
+  const unknown = skill.value === '???';
+  return (
+    <div className="flex items-center justify-between gap-2 rounded bg-base-100 px-2 py-1">
+      <span>{skill.name}</span>
+      <span className={clsx('badge font-mono', unknown ? 'badge-ghost' : 'badge-secondary')}>
+        {skill.value}
+      </span>
+    </div>
+  );
+}
 
 function SkillDomainCard({
   title,

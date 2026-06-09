@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import componentSource from '../components/PhonePracticeLab.tsx?raw';
 import contentSource from '../content/phonePractice.ts?raw';
 import intakeCaseSource from '../content/intakeCase.ts?raw';
+import skillProfileSource from '../content/skillProfiles.ts?raw';
 import type { AttemptContext } from '../domain/types';
 import resolverSource from './phoneResolver.ts?raw';
 import { actionProbabilities, resolveActionOutcome } from '../content/actionCards';
@@ -38,6 +39,7 @@ function stripInternalCode(source: string): string {
     .filter((line) => !line.trim().startsWith('import '))
     .filter((line) => !line.includes('className='))
     .filter((line) => !line.includes('const outcomes'))
+    .filter((line) => !line.includes('outcomeClass'))
     .filter((line) => !line.includes('support_coverage'))
     .filter((line) => !line.includes('carried_weakness'))
     .filter((line) => !line.includes("fact('outcome'"));
@@ -54,7 +56,7 @@ function stripInternalCode(source: string): string {
 }
 
 function visibleSourceText(): string {
-  return [componentSource, contentSource, intakeCaseSource, resolverSource]
+  return [componentSource, contentSource, intakeCaseSource, skillProfileSource, resolverSource]
     .map((source) => stripInternalCode(source))
     .join('\n')
     .toLowerCase();
@@ -351,5 +353,85 @@ describe('resolvePhoneAttempt', () => {
     expect(store.attempts).toHaveLength(1);
     expect(store.latestActionResult?.cardId).toBe('phone_first_step');
     expect(store.latestAttempt).toBeDefined();
+  });
+
+  it('starts the stat-sheet spike with shared core-loop skills for Elling and Grete', () => {
+    const store = new RootStore();
+
+    expect(store.selectedSkillProfileId).toBe('elling');
+    expect(store.skillProfiles.map((profile) => profile.id)).toEqual(['elling', 'grete']);
+    expect(store.skillProfiles[0].domains.map((domain) => domain.title)).toEqual([
+      'Selvbjerging',
+      'Sosialt',
+      'Indre liv',
+    ]);
+    expect(store.skillProfiles[0].domains[0].skills.map((skill) => skill.name)).toEqual([
+      'Husarbeid',
+      'Matlaging',
+      'Rutine',
+      'Planlegging',
+    ]);
+    expect(store.skillProfiles[0].domains[1].skills.map((skill) => skill.name)).toEqual([
+      'Sosialt mot',
+      'Samtale',
+      'Selvhevdelse',
+      'Følelsesregulering',
+    ]);
+    expect(store.skillProfiles[0].domains[2].skills.map((skill) => skill.name)).toEqual([
+      'Selvuttrykk',
+      'Skriftlig struktur',
+      'Kreativitet',
+      'Refleksjon',
+    ]);
+    expect(
+      store.ellingSkillProfile.domains
+        .flatMap((domain) => domain.skills)
+        .some((skill) => skill.value === '???'),
+    ).toBe(true);
+    expect(
+      store.greteSkillProfile.domains
+        .flatMap((domain) => domain.skills)
+        .filter((skill) => typeof skill.value === 'number').length,
+    ).toBeGreaterThan(5);
+  });
+
+  it('uses a negative Frank skill probe to reveal evidence through a tirade instead of buying a stat', () => {
+    const store = new RootStore(() => 0.99);
+    store.selectedDieId = store.dicePool.find((die) => die.face === 1)!.id;
+
+    store.runSkillProbe('telephone_probe');
+
+    expect(store.skillProbeResults).toHaveLength(1);
+    expect(store.latestSkillProbeResult?.outcomeClass).toBe('negative');
+    expect(store.latestSkillProbeResult?.evidence).toContain(
+      'Telefon prøvesituasjon: motstand mot ringing, ikke bevis på manglende språk.',
+    );
+    expect(store.latestSkillProbeResult?.tirade).toContain('telefonen er et overfall');
+    expect(store.caseLog.at(-1)).toContain('tirade');
+    expect(
+      store.ellingSkillProfile.domains
+        .flatMap((domain) => domain.skills)
+        .find((skill) => skill.id === 'social_courage')?.value,
+    ).toBe('1?');
+    expect(
+      store.ellingSkillProfile.domains
+        .flatMap((domain) => domain.skills)
+        .find((skill) => skill.id === 'conversation')?.value,
+    ).toBe('???');
+    expect(store.skillTrainingHintVisible).toBe(true);
+  });
+
+  it('renders the RPG stat sheet and probe language without turning it into diagnosis copy', () => {
+    const visibleText = visibleSourceText();
+    expect(visibleText).toContain('ferdigheter');
+    expect(visibleText).toContain('elling');
+    expect(visibleText).toContain('grete');
+    expect(visibleText).toContain('???');
+    expect(visibleText).toContain('sosialt mot');
+    expect(visibleText).toContain('matlaging');
+    expect(visibleText).toContain('prøv telefon med frank');
+    expect(visibleText).toContain('mestring');
+    expect(visibleText).not.toContain('autisme');
+    expect(visibleText).not.toContain('diagnose');
   });
 });
