@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { Eye } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   actionCards,
@@ -16,6 +16,9 @@ import type {
   ActionCard,
   ActionOutcomeClass,
   AttemptResult,
+  CaseDocumentId,
+  CaseEvidenceAnchor,
+  CaseEvidenceFactId,
   EllingPosition,
   FrankPosition,
   PhoneApproachId,
@@ -180,6 +183,8 @@ export const PhonePracticeLab = observer(function PhonePracticeLab() {
         {actionDialog ? (
           <ActionResolutionDialog kind={actionDialog} onClose={() => setActionDialog(null)} />
         ) : null}
+        <EvidenceToast />
+        {store.evidenceCanvasOpen ? <EvidenceCanvas /> : null}
       </div>
     </div>
   );
@@ -545,6 +550,235 @@ function SpeechBubble({
   );
 }
 
+function isCaseEvidenceAnchor(item: string | CaseEvidenceAnchor): item is CaseEvidenceAnchor {
+  return typeof item !== 'string';
+}
+
+const DeskEvidenceLoop = observer(function DeskEvidenceLoop() {
+  const store = useRootStore();
+  const [affordanceReady, setAffordanceReady] = useState(false);
+  const document = store.activeCaseDocument;
+
+  useEffect(() => {
+    setAffordanceReady(false);
+    const timer = window.setTimeout(() => setAffordanceReady(true), 10_000);
+    return () => window.clearTimeout(timer);
+  }, [document.id]);
+
+  return (
+    <section className="mt-4 overflow-hidden rounded-box border border-base-content/20 bg-[#f5ecd5] text-[#1f1a13] shadow-xl">
+      <div className="grid gap-0 lg:grid-cols-[230px_1fr]">
+        <aside className="border-b border-[#1f1a13]/20 bg-[#e8dcc2] p-3 lg:border-b-0 lg:border-r">
+          <div className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] opacity-60">
+            Saksdokumenter · 3
+          </div>
+          <div className="grid gap-2">
+            {store.caseDocuments.map((item) => (
+              <button
+                key={item.id}
+                className={clsx(
+                  'rounded border px-3 py-2 text-left transition',
+                  item.id === document.id
+                    ? 'border-[#1f1a13] bg-[#fff8df] shadow-sm'
+                    : 'border-[#1f1a13]/20 bg-[#f5ecd5]/70 hover:border-[#1f1a13]/50',
+                )}
+                type="button"
+                onClick={() => store.selectCaseDocument(item.id as CaseDocumentId)}
+              >
+                <div className="font-serif text-sm font-bold">{item.title}</div>
+                <div className="mt-1 text-[10px] uppercase tracking-[0.14em] opacity-60">
+                  {item.source}
+                </div>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <article className="relative min-h-[430px] p-5 md:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-[#1f1a13] pb-3">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] opacity-60">
+                {document.register}
+              </div>
+              <h3 className="mt-1 font-serif text-2xl font-black tracking-tight">{document.title}</h3>
+              <div className="mt-1 text-xs uppercase tracking-[0.16em] opacity-60">
+                {document.source} · {document.date}
+              </div>
+            </div>
+            <span className="rounded border-2 border-[#9a3412] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#9a3412] opacity-80">
+              Lest
+            </span>
+          </div>
+
+          <div className="mt-6 grid gap-4 font-serif text-[16px] leading-8">
+            {document.body.map((part, index) =>
+              isCaseEvidenceAnchor(part) ? (
+                <EvidencePhrase
+                  key={part.id}
+                  factId={part.id}
+                  text={part.text}
+                  affordanceReady={affordanceReady}
+                />
+              ) : (
+                <p key={`${document.id}-${index}`} className="max-w-3xl">
+                  {part}
+                </p>
+              ),
+            )}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+});
+
+const EvidencePhrase = observer(function EvidencePhrase({
+  factId,
+  text,
+  affordanceReady,
+}: {
+  factId: CaseEvidenceFactId;
+  text: string;
+  affordanceReady: boolean;
+}) {
+  const store = useRootStore();
+  const lifted = store.isCaseFactLifted(factId);
+
+  return (
+    <p className="max-w-3xl">
+      <button
+        className={clsx(
+          'group relative inline rounded px-1 text-left font-serif leading-8 transition',
+          lifted ? 'bg-[#fff8b0] shadow-[inset_0_-0.25em_0_rgba(255,232,94,0.75)]' : 'hover:bg-[#fff8b0]/30',
+          !lifted && affordanceReady ? 'underline decoration-[#8b6f27]/50 decoration-2 underline-offset-4' : '',
+        )}
+        type="button"
+        onClick={() => store.liftCaseFact(factId)}
+        disabled={lifted}
+        aria-label={`Løft faktum: ${text}`}
+      >
+        {text}
+        {!lifted ? (
+          <span className="pointer-events-none ml-2 inline-flex translate-y-[-1px] items-center rounded-full border border-[#1f1a13]/20 bg-[#fff8df] px-2 py-0.5 text-[10px] font-sans font-black uppercase tracking-[0.18em] opacity-0 transition group-hover:opacity-100">
+            🔎 Løft
+          </span>
+        ) : null}
+      </button>
+    </p>
+  );
+});
+
+const EvidenceToast = observer(function EvidenceToast() {
+  const store = useRootStore();
+  const toast = store.evidenceToast;
+  if (!toast) return null;
+
+  return (
+    <button
+      className="fixed bottom-5 right-5 z-50 w-[min(360px,calc(100vw-2rem))] rounded-box border border-accent/40 bg-base-100 p-4 text-left shadow-2xl transition hover:border-accent"
+      type="button"
+      onClick={() => {
+        store.openEvidenceCanvas();
+        store.dismissEvidenceToast();
+      }}
+    >
+      <div className="text-xs font-black uppercase tracking-[0.2em] text-accent">{toast.title}</div>
+      <div className="mt-1 font-bold">{toast.body}</div>
+      <div className="mt-2 text-xs text-base-content/55">Klikk for å åpne Sakens fakta</div>
+    </button>
+  );
+});
+
+const EvidenceCanvas = observer(function EvidenceCanvas() {
+  const store = useRootStore();
+  const factsByDomain = new Map<string, typeof store.liftedCaseFacts>();
+  for (const fact of store.liftedCaseFacts) {
+    factsByDomain.set(fact.domain, [...(factsByDomain.get(fact.domain) ?? []), fact]);
+  }
+
+  return (
+    <div className="fixed inset-0 z-40 grid place-items-center bg-black/55 p-4">
+      <section className="max-h-[90vh] w-full max-w-5xl overflow-auto rounded-box border border-base-content/20 bg-[#eadfca] p-5 text-[#1f1a13] shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b-2 border-[#1f1a13] pb-3">
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-[0.24em] opacity-60">
+              Strukturert canvas · read-only
+            </div>
+            <h2 className="font-serif text-3xl font-black">Sakens fakta</h2>
+          </div>
+          <button className="btn btn-sm" type="button" onClick={store.closeEvidenceCanvas}>
+            Lukk
+          </button>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+          <div className="grid content-start gap-4">
+            {[...factsByDomain.entries()].map(([domain, facts]) => (
+              <section key={domain} className="rounded border border-[#1f1a13]/25 bg-[#f9f1dc] p-4 shadow-sm">
+                <div className="text-[10px] font-black uppercase tracking-[0.22em] opacity-60">
+                  {domain}
+                </div>
+                <div className="mt-3 grid gap-2">
+                  {facts.map((fact) => (
+                    <article key={fact.id} className="rounded border border-[#1f1a13]/15 bg-[#fff8df] p-3">
+                      <div className="font-serif text-lg font-bold">Faktum: {fact.shortText}</div>
+                      <p className="mt-1 text-sm leading-relaxed opacity-75">«{fact.originalQuote}»</p>
+                      <div className="mt-2 text-[10px] uppercase tracking-[0.18em] opacity-60">
+                        {fact.category} · Snakk med: {fact.discussable_with.join(', ')}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
+            {!store.liftedCaseFacts.length ? (
+              <div className="rounded border border-dashed border-[#1f1a13]/30 bg-[#f9f1dc] p-4 text-sm opacity-70">
+                Ingen fakta løftet ennå. Les dokumentene og løft konkrete setninger.
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid content-start gap-4">
+            <section className="rounded border border-[#1f1a13]/25 bg-[#f9f1dc] p-4 shadow-sm">
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] opacity-60">
+                Arbeidshypoteser
+              </div>
+              {store.unlockedCaseHypotheses.length ? (
+                <div className="mt-3 grid gap-3">
+                  {store.unlockedCaseHypotheses.map((hypothesis) => (
+                    <article key={hypothesis.id} className="rounded border-2 border-[#1f1a13] bg-[#fff8df] p-4">
+                      <div className="font-serif text-xl font-black">{hypothesis.title}</div>
+                      <div className="mt-1 inline-flex rounded border border-[#9a3412] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#9a3412]">
+                        Status: {hypothesis.status}
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed">{hypothesis.assessment}</p>
+                      <div className="mt-3 text-xs uppercase tracking-[0.14em] opacity-60">
+                        Bygger på:{' '}
+                        {hypothesis.requiredFactIds
+                          .map((id) => store.liftedCaseFacts.find((fact) => fact.id === id)?.shortText)
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </div>
+                      <div className="mt-2 text-xs uppercase tracking-[0.14em] opacity-60">
+                        Snakk med: {hypothesis.discussable_with.join(', ')}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed opacity-70">
+                  Ingen arbeidshypotese ennå. Økonomi/bolig-hypotesen låses først opp når to
+                  relevante fakta er løftet.
+                </p>
+              )}
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+});
+
 const CaseDeskSurface = observer(function CaseDeskSurface({
   openActionDialog,
 }: {
@@ -571,6 +805,15 @@ const CaseDeskSurface = observer(function CaseDeskSurface({
         <p className="text-sm leading-relaxed text-base-content/65">
           Dokumenter, rapporter og notater i saken.
         </p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <button className="btn btn-outline btn-accent" type="button" onClick={store.openEvidenceCanvas}>
+            Sakens fakta
+            {store.evidenceUnreadCount ? (
+              <span className="badge badge-accent ml-2">{store.evidenceUnreadCount}</span>
+            ) : null}
+          </button>
+        </div>
+        <DeskEvidenceLoop />
         {!latest && !showFirstContactReport ? (
           <div className="mt-4 grid gap-4">
             <article className="rounded-box border border-warning/30 bg-warning/10 p-4">

@@ -181,6 +181,58 @@ export interface EvidenceFact {
   value: boolean | number | string;
 }
 
+export type CaseDocumentId = 'haug_bekymringsmelding' | 'economy_record' | 'rent_warning';
+export type CaseDomainId = 'Økonomi/bolig' | 'Dokument' | 'Risiko' | 'Ressurs';
+export type CaseCharacterId = 'Frank' | 'Grete' | 'Elling';
+export type CaseEvidenceFactId =
+  | 'haug_grete_carries_work'
+  | 'grete_pays_rent'
+  | 'rent_paid_late';
+export type CaseHypothesisId = 'grete_carries_economy';
+
+export interface CaseEvidenceAnchor {
+  id: CaseEvidenceFactId;
+  text: string;
+}
+
+export interface CaseDocument {
+  id: CaseDocumentId;
+  title: string;
+  register: string;
+  source: string;
+  date: string;
+  body: Array<string | CaseEvidenceAnchor>;
+}
+
+export interface CaseEvidenceFact {
+  id: CaseEvidenceFactId;
+  sourceDocumentId: CaseDocumentId;
+  domain: CaseDomainId;
+  shortText: string;
+  originalQuote: string;
+  category: string;
+  discussable_with: CaseCharacterId[];
+  contributesTo?: CaseHypothesisId;
+  immediateHypothesisId?: CaseHypothesisId;
+}
+
+export interface CaseHypothesis {
+  id: CaseHypothesisId;
+  title: string;
+  status: 'Foreløpig';
+  assessment: string;
+  threshold: number;
+  requiredFactIds: CaseEvidenceFactId[];
+  discussable_with: CaseCharacterId[];
+}
+
+export interface EvidenceToast {
+  id: string;
+  kind: 'fact' | 'hypothesis';
+  title: string;
+  body: string;
+}
+
 export interface AttemptResult {
   seed: number;
   context: AttemptContext;

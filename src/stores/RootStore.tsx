@@ -7,6 +7,13 @@ import {
   resolveActionOutcome,
 } from '../content/actionCards';
 import {
+  caseDocuments,
+  getCaseDocument,
+  getCaseFact,
+  getCaseHypothesis,
+  unlockedHypothesisIds,
+} from '../content/evidenceDesk';
+import {
   findFrankQuestion,
   frankQuestions,
   type ApartmentEvidenceId,
@@ -25,9 +32,16 @@ import type {
   ActionCardId,
   ActionCardResult,
   AttemptResult,
+  CaseDocument,
+  CaseDocumentId,
+  CaseEvidenceFact,
+  CaseEvidenceFactId,
+  CaseHypothesis,
+  CaseHypothesisId,
   ClientState,
   DieFace,
   DiePoolItem,
+  EvidenceToast,
   FrankPosition,
   FrankStance,
   PhoneApproachId,
@@ -88,6 +102,12 @@ export class RootStore {
   skillProbeResults: SkillProbeResult[] = [];
   selectedActionCardId: ActionCardId = 'get_to_know_elling';
   selectedDeskEvidenceIds: string[] = [];
+  activeCaseDocumentId: CaseDocumentId = 'haug_bekymringsmelding';
+  liftedCaseFactIds: CaseEvidenceFactId[] = [];
+  seenCaseFactIds: CaseEvidenceFactId[] = [];
+  seenHypothesisIds: CaseHypothesisId[] = [];
+  evidenceToast: EvidenceToast | undefined = undefined;
+  evidenceCanvasOpen = false;
 
   constructor(random: () => number = Math.random) {
     this.random = random;
@@ -114,6 +134,55 @@ export class RootStore {
       return;
     }
     this.selectedDeskEvidenceIds = [...this.selectedDeskEvidenceIds, id];
+  }
+
+  selectCaseDocument(id: CaseDocumentId): void {
+    this.activeCaseDocumentId = id;
+  }
+
+  liftCaseFact(id: CaseEvidenceFactId): void {
+    if (this.liftedCaseFactIds.includes(id)) return;
+    const before = this.unlockedCaseHypothesisIds;
+    const fact = getCaseFact(id);
+    this.liftedCaseFactIds = [...this.liftedCaseFactIds, id];
+    this.seenCaseFactIds = [...this.seenCaseFactIds, id];
+
+    const after = this.unlockedCaseHypothesisIds;
+    const newHypothesisId = after.find((hypothesisId) => !before.includes(hypothesisId));
+    if (newHypothesisId) {
+      const hypothesis = getCaseHypothesis(newHypothesisId);
+      this.seenHypothesisIds = [...this.seenHypothesisIds, newHypothesisId];
+      this.evidenceToast = {
+        id: `hypothesis-${newHypothesisId}-${this.liftedCaseFactIds.length}`,
+        kind: 'hypothesis',
+        title: 'Arbeidshypotese låst opp',
+        body: hypothesis.title,
+      };
+      return;
+    }
+
+    this.evidenceToast = {
+      id: `fact-${id}-${this.liftedCaseFactIds.length}`,
+      kind: 'fact',
+      title: `Faktum lagt til · ${fact.domain}`,
+      body: fact.shortText,
+    };
+  }
+
+  openEvidenceCanvas(): void {
+    this.evidenceCanvasOpen = true;
+  }
+
+  closeEvidenceCanvas(): void {
+    this.evidenceCanvasOpen = false;
+  }
+
+  dismissEvidenceToast(): void {
+    this.evidenceToast = undefined;
+  }
+
+  isCaseFactLifted(id: CaseEvidenceFactId): boolean {
+    return this.liftedCaseFactIds.includes(id);
   }
 
   applyDeskVedtak(id: PhoneApproachId): void {
@@ -484,6 +553,36 @@ export class RootStore {
     this.askedFrankQuestionIds = [];
     this.deskDecisionVisible = false;
     this.caseLog = [];
+    this.activeCaseDocumentId = 'haug_bekymringsmelding';
+    this.liftedCaseFactIds = [];
+    this.seenCaseFactIds = [];
+    this.seenHypothesisIds = [];
+    this.evidenceToast = undefined;
+    this.evidenceCanvasOpen = false;
+  }
+
+  get caseDocuments(): CaseDocument[] {
+    return caseDocuments;
+  }
+
+  get activeCaseDocument(): CaseDocument {
+    return getCaseDocument(this.activeCaseDocumentId);
+  }
+
+  get liftedCaseFacts(): CaseEvidenceFact[] {
+    return this.liftedCaseFactIds.map((id) => getCaseFact(id));
+  }
+
+  get unlockedCaseHypothesisIds(): CaseHypothesisId[] {
+    return unlockedHypothesisIds(this.liftedCaseFactIds);
+  }
+
+  get unlockedCaseHypotheses(): CaseHypothesis[] {
+    return this.unlockedCaseHypothesisIds.map((id) => getCaseHypothesis(id));
+  }
+
+  get evidenceUnreadCount(): number {
+    return Math.max(0, this.seenCaseFactIds.length + this.seenHypothesisIds.length);
   }
 
   get selectedDie(): DiePoolItem | undefined {

@@ -4,77 +4,61 @@ import { join } from 'node:path';
 
 const inputFlag = process.argv.indexOf('--input');
 const input = inputFlag >= 0 ? JSON.parse(readFileSync(process.argv[inputFlag + 1], 'utf8')) : {};
-const sddPath = join(process.cwd(), '.pm/data/designs/SDD-002.md');
+const sddPath = join(process.cwd(), '.pm/data/designs/SDD-004.md');
+const planPath = join(process.cwd(), '.pm/data/plans/PLAN-002.json');
 const sdd = existsSync(sddPath) ? readFileSync(sddPath, 'utf8') : '';
-const goal = input.goal ?? 'SDD-002 Slice A';
+const plan = existsSync(planPath) ? readFileSync(planPath, 'utf8') : '';
+const goal = input.goal ?? 'SDD-004 Desk Evidence Loop';
+const processMode = input.process?.mode ?? input.mode ?? 'deliver';
 
-const sliceA = sdd.includes('Slice A')
-  ? 'SDD-002 defines Slice A as Desk start and Grete call: Desk renders bekymringsmelding and Frank; clicking Frank shows Ring Grete; phone scene plays with obscured bubbles/symbols; first Frank report appears.'
-  : 'Use the SDD-002 Slice A target from the goal.';
+const sdd004Contract = [
+  'Three documents only: Dr. Haug/clinical referral frame, economy record, rent warning/late-payment document.',
+  'Use case_session_spike_v3.html as visual/content reference: paper texture, stamps, restrained Norwegian case-document tone, highlighter-yellow after lift.',
+  'Click-to-lift authored evidence anchors; delayed subtle underline/margin affordance before lift; no pre-highlighted answers.',
+  'Fact notifications show fact + domain before threshold; hypothesis notification only after threshold.',
+  'Sakens fakta is a separate Blake Manor-like structured/read-only evidence canvas, not a sidebar or freeform editor.',
+  'One authored cluster unlocks Arbeidshypotese: Grete bærer økonomien only after economy/rent facts earn it.',
+  'No SDD-005/006 consequence simulation, clocks, tiltak, right/wrong grading, or freeform chat UI.',
+];
 
 console.log(
   JSON.stringify({
     sprints: [
       {
-        id: 'SDD-002-slice-a',
-        title: 'Desk start and Grete call',
-        goal: `${goal}\n\n${sliceA}\n\nThin plan: prove the opening casework seam before building resources/day advance.`,
+        id: 'SDD-004-desk-evidence-loop',
+        title: 'Desk Evidence Loop: three documents to one working hypothesis',
+        goal: `${goal}\n\nProcess mode: ${processMode}. Deliver a player-facing slice, not architecture hardening.\n\nSDD-004 present: ${sdd.includes('Desk Evidence Loop')}. PLAN-002 present: ${plan.includes('SDD-004 Desk Evidence Loop')}.`,
         playerDecisionUnderTest:
-          'Does the player understand that the bekymringsmelding creates one concrete first action, Ring Grete, and that Frank contact produces a report which unlocks the next casework options?',
+          'Does the player feel they are building a municipal case file from ordinary documents, rather than looting highlighted clues or being graded right/wrong?',
         touchSurface: [
+          'src/content/intakeCase.ts',
+          'src/domain/types.ts',
           'src/stores/RootStore.tsx',
           'src/components/PhonePracticeLab.tsx',
-          'src/engine/phoneResolver.test.ts',
+          'src/styles.css',
+        ],
+        referenceSurface: [
+          '/Users/godstemning/dev/lifelines-core-loop/wireframes/case_session_spike_v3.html#SAKSDOKUMENTER',
         ],
         nonGoals: [
-          'No full resources/day-advance system yet',
-          'No financial-request resolution yet',
-          'No social visit/apartment reveal yet',
-          'No LLM Frank chat',
-          'No generic Roottrees board/editor',
+          'No full freeform evidence canvas or draggable node editor',
+          'No Åpne spørsmål implementation',
+          'No vedtak/tiltak or apartment consequence simulation',
+          'No clock consequences',
+          'No right/wrong grading of interpretations',
+          'No broad Frank/client chat UI; only discussable_with hooks',
+          'No five-document case expansion',
         ],
-        acceptanceContract: [
-          {
-            kind: 'player-flow',
-            claim:
-              'The app starts at Case Desk with Bekymringsmelding and one obvious first objective: Etabler kontakt med Grete.',
-          },
-          {
-            kind: 'player-flow',
-            claim:
-              'Clicking Ring Grete enters a distinct Frank phone scene instead of jumping straight to Apartment.',
-          },
-          {
-            kind: 'taste',
-            claim:
-              'The phone scene obscures the exact conversation through bubbles/symbols/fragments; it does not become exposition transcript.',
-          },
-          {
-            kind: 'player-flow',
-            claim:
-              'Completing the phone scene returns to Desk and creates Frankrapport · Første kontakt.',
-          },
-          {
-            kind: 'player-decision',
-            claim:
-              'The report unlocks at least Be om kontoutskrift and Avtal sosialt besøk as next actions, even if Slice B implements their consequences later.',
-          },
-          {
-            kind: 'taste',
-            claim:
-              'The call/report uses in-world facts about Grete answering and Elling not coming to the phone; visible copy does not explain Grete as a design role.',
-          },
-          {
-            kind: 'taste',
-            claim:
-              'Visible copy avoids meta-description such as telling the player what to learn, what the report means, or what conclusion to draw.',
-          },
+        acceptanceContract: sdd004Contract.map((claim, index) => ({
+          kind: index < 2 ? 'content-style' : index < 5 ? 'player-flow' : 'taste',
+          claim,
+        })).concat([
           {
             kind: 'test',
             claim:
-              'Tests/build verify the staged flow and visible source terms: bekymringsmelding, ring grete, frankrapport, kontoutskrift, sosialt besøk.',
+              'Tests/smoke checks verify click-to-lift, notification, threshold-gated hypothesis unlock, and structured evidence canvas content.',
           },
-        ],
+        ]),
         optional: false,
       },
     ],

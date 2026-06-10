@@ -36,6 +36,10 @@ _Avoid_: random bark, comedy-only failure, proof that Elling is impossible
 A humane municipal support action chosen to bridge a functional gap while preserving as much agency and skill-building as the situation allows.
 _Avoid_: prescription, treatment, solution tier
 
+**Tiltak package**:
+A linked set of municipal support actions chosen after evidence has established both the immediate risk and the functional barriers behind it. For Elling's apartment case, a good package must usually combine housing/economy stabilisation, replacement of Grete-carried functions, and one fragile independence scaffold. A package is not a generic upgrade bundle; each part should answer a concrete piece of evidence.
+_Avoid_: single magic solution, service bundle tier, treatment plan, stat build
+
 **Brittle tiltak**:
 A plausible support action based on a wrong or partial working hypothesis that may stabilize the immediate situation while preserving dependency, increasing burden, or failing to build capacity. Brittle tiltak can be chosen before the player understands a whole functional chain, but brittleness is shown through consequences and Frank's plain-language reports rather than as a player-facing label.
 _Avoid_: failed option, trap choice
@@ -87,3 +91,7 @@ _Avoid_: gamer hint, clinical diagnosis prose, poetic explanation
 **Action die**:
 A one-use capacity face with a global visible outcome-class contract across action contexts. The die affects access, friction, trust, and evidence quality; it does not randomize the underlying truth of a functional gap.
 _Avoid_: truth roll, deterministic branch selector
+
+**Clock**:
+A Citizen Sleeper-style visible progress track toward a concrete story beat, payout, complication, or verdict. A clock is not a generic meter that goes up and down. Actions add segments to one or more clocks; when a clock fills, something happens in the fiction. Paired clocks can represent competing possible outcomes, such as `Bostøtte innvilget` versus `Husleierestanse`.
+_Avoid_: abstract risk meter, stat bar, reversible mood gauge, hidden score

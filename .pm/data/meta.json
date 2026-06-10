@@ -8,9 +8,9 @@
     "DC": 0,
     "GAP": 0,
     "SDD": 8,
-    "PLAN": 1,
+    "PLAN": 2,
     "SPRINT": 0,
-    "TASK": 4,
+    "TASK": 7,
     "MILESTONE": 0
   }
 }

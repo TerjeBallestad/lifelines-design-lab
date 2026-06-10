@@ -1,0 +1,87 @@
+{
+  "id": "PLAN-002",
+  "title": "SDD-004 Desk Evidence Loop",
+  "sddId": "SDD-004",
+  "stage": "completed",
+  "sprintId": null,
+  "context": {
+    "setupNotes": "Deliver the smallest SDD-004 evidence loop slice. Use agent-harness in deliver mode as adversarial taste/process pressure before implementation. Keep scope to document reading, authored evidence anchors, notifications, structured Sakens fakta canvas, and one Arbeidshypotese cluster.",
+    "relevantFiles": [
+      "src/components/PhonePracticeLab.tsx",
+      "src/stores/RootStore.tsx",
+      "src/content/intakeCase.ts",
+      "src/domain/types.ts",
+      "src/styles.css",
+      "tools/agent-harness/lifelines-design-lab.config.json",
+      "tools/agent-harness/planner.mjs",
+      "tools/agent-harness/generator.mjs",
+      "tools/agent-harness/evaluator.mjs",
+      "/Users/godstemning/dev/lifelines-core-loop/wireframes/case_session_spike_v3.html"
+    ],
+    "designDecisions": [
+      "First proof uses three documents and one hypothesis cluster, not the whole eventual case.",
+      "Facts auto-file to domains/questions; player interprets through system-authored provisional Arbeidshypotese notes.",
+      "No SDD-005/006 simulation answer yet; feedback is notification and evidence-canvas formation only.",
+      "Sakens fakta is a separate Blake Manor-like structured/read-only evidence canvas, not a persistent sidebar or freeform editor.",
+      "Borrow case_session_spike_v3 visual/content style, including highlighter-yellow after lift; do not pre-highlight answers."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-005",
+      "title": "Run SDD-004 agent-harness deliver pass",
+      "description": "Update/run the design-lab agent-harness roles against SDD-004 and capture planner/generator/evaluator artifacts focused on player-facing taste risks.",
+      "steps": [
+        "Adapt role scripts from stale SDD-002 Slice A to SDD-004 Desk Evidence Loop",
+        "Run /Users/godstemning/dev/agent-harness/bin/harness run in deliver mode",
+        "Inspect report/artifacts and summarize PASS/PIVOT/REJECT guidance"
+      ],
+      "verification": "A .harness run exists with role IO, report.html, and evaluator verdict targeting SDD-004 rather than SDD-002.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "completed",
+      "progressNotes": [
+        "RUN-013 produced expected PIVOT checklist; RUN-015 later passed after implementation. report: .harness/runs/RUN-015/report.html"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "title": "Implement document evidence loop slice",
+      "description": "Build the three-document Desk Evidence Loop with click-to-lift, delayed affordance, highlighter collected state, notifications, structured Sakens fakta canvas, and one economy hypothesis cluster.",
+      "steps": [
+        "Author three document records and evidence anchors",
+        "Add evidence/hypothesis state and threshold logic",
+        "Implement document viewer interactions and notifications",
+        "Implement structured/read-only Sakens fakta canvas",
+        "Preserve wireframe-inspired visual/content style"
+      ],
+      "verification": "Focused tests and browser/smoke checks prove facts lift, notifications appear, hypothesis unlocks only after threshold, and evidence canvas shows facts/hypothesis.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "completed",
+      "progressNotes": [
+        "Implemented src/content/evidenceDesk.ts, evidence/hypothesis store state, DeskEvidenceLoop UI, notifications, Sakens fakta canvas, and threshold-gated Arbeidshypotese."
+      ]
+    },
+    {
+      "id": "TASK-007",
+      "title": "Playtest verdict against SDD-004 questions",
+      "description": "Run a local browser/playtest check and answer the SDD-004 verdict questions from actual interaction.",
+      "steps": [
+        "Run test/build/smoke harness",
+        "Exercise the three-document flow manually or via Playwright smoke",
+        "Record whether the loop feels like building a municipal case file"
+      ],
+      "verification": "A concrete verdict note exists with evidence from tool/browser output and any remaining risks.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "completed",
+      "progressNotes": [
+        "Verified npm test, npm run build, agent-harness RUN-015 PASS, and browser smoke at http://127.0.0.1:5173."
+      ]
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-06-10T16:57:49.810Z",
+  "updatedAt": "2026-06-10T16:57:49.810Z"
+}

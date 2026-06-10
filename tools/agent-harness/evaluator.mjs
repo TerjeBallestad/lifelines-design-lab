@@ -8,101 +8,104 @@ const input = JSON.parse(readFileSync(inputPath, 'utf8'));
 const artifactDir = join(runDir, 'artifacts');
 mkdirSync(artifactDir, { recursive: true });
 
-const component = existsSync('src/components/PhonePracticeLab.tsx')
-  ? readFileSync('src/components/PhonePracticeLab.tsx', 'utf8')
-  : '';
-const store = existsSync('src/stores/RootStore.tsx')
-  ? readFileSync('src/stores/RootStore.tsx', 'utf8')
-  : '';
-const tests = existsSync('src/engine/phoneResolver.test.ts')
-  ? readFileSync('src/engine/phoneResolver.test.ts', 'utf8')
-  : '';
-const all = `${component}\n${store}\n${tests}`.toLowerCase();
-const visibleComponent = component.toLowerCase();
+const paths = [
+  'src/components/PhonePracticeLab.tsx',
+  'src/stores/RootStore.tsx',
+  'src/content/evidenceDesk.ts',
+  'src/content/intakeCase.ts',
+  'src/domain/types.ts',
+  'src/styles.css',
+];
+const all = paths.map((path) => (existsSync(path) ? readFileSync(path, 'utf8') : '')).join('\n');
+const lower = all.toLowerCase();
 
 const checks = [
   {
-    id: 'desk_has_concern',
-    question: 'Does the player begin with a concrete bekymringsmelding and a single first goal?',
-    pass: all.includes('bekymringsmelding') && all.includes('etabler kontakt med grete'),
+    id: 'municipal_case_file_feeling',
+    question: 'Does the loop feel like building a municipal case file from ordinary documents?',
+    pass: lower.includes('sakens fakta') && lower.includes('arbeidshypotese') && lower.includes('bekymringsmelding'),
     revise:
-      'Opening does not clearly establish the concern report as the action source. The player needs one document, one goal, one first action.',
+      'The visible/source contract does not yet make case-file formation central. The player needs documents, captured facts, and a provisional case note.',
   },
   {
-    id: 'call_is_scene',
-    question: 'Does Ring Grete become a distinct Frank phone scene instead of an instant tab jump?',
+    id: 'not_loot_highlights',
+    question: 'Are answers not immediately pre-highlighted before the player acts?',
     pass:
-      all.includes('frank_call') &&
-      (all.includes('telefonsamtale') ||
-        all.includes('phone scene') ||
-        all.includes('frank på telefon')),
+      (lower.includes('delay') || lower.includes('timeout') || lower.includes('forsink')) &&
+      !(lower.includes('pre-highlight') || lower.includes('always highlighted')),
     revise:
-      'The Grete call is still too mechanical. The player must witness Frank making contact before receiving the report.',
+      'The evidence affordance risks hidden-object looting or highlighted homework. Use delayed subtle affordance before highlighter-yellow collected state.',
   },
   {
-    id: 'conversation_obscured',
-    question: 'Is the conversation obscured rather than turned into exposition transcript?',
+    id: 'notification_not_interruption',
+    question: 'Does notification capture evidence without forcing a modal interruption?',
+    pass: lower.includes('faktum lagt til') && (lower.includes('toast') || lower.includes('notification')),
+    revise:
+      'Fact capture needs a satisfying notification/toast and must not auto-open the evidence canvas.',
+  },
+  {
+    id: 'canvas_worth_opening',
+    question: 'Is Sakens fakta a separate structured evidence canvas worth opening, not just an inventory list?',
     pass:
-      all.includes('boble') ||
-      all.includes('symbol') ||
-      all.includes('obskur') ||
-      all.includes('…'),
+      lower.includes('sakens fakta') &&
+      (lower.includes('canvas') || lower.includes('evidence-canvas')) &&
+      (lower.includes('bygg') || lower.includes('backed_by') || lower.includes('bygger på')),
     revise:
-      'The call risks becoming exposition. Use bubbles/symbols/fragments and let Frank report carry interpretation afterward.',
+      'The evidence board risks being a generic inventory. It should show facts grouped by domain/question and the working hypothesis with backing evidence.',
   },
   {
-    id: 'report_spawns',
-    question: 'Does the call create Frankrapport · Første kontakt back at the desk?',
-    pass: all.includes('frankrapport') && all.includes('første kontakt'),
-    revise:
-      'The report is the payoff of the first casework action. Without it, the loop has no desk consequence.',
-  },
-  {
-    id: 'next_actions_unlock',
-    question: 'Does the report unlock the next player decisions?',
-    pass: all.includes('be om kontoutskrift') && all.includes('avtal sosialt besøk'),
-    revise:
-      'The player needs at least two visible next actions after the report: financial request and social visit.',
-  },
-  {
-    id: 'grete_contact_content',
-    question:
-      'Does the call/report show concrete contact facts instead of explaining Grete as a design role?',
+    id: 'hypothesis_earned',
+    question: 'Does Arbeidshypotese: Grete bærer økonomien feel earned from rent/economy facts?',
     pass:
-      (all.includes('grete svarte') || all.includes('grete tar telefonen')) &&
-      all.includes('elling kom ikke til telefonen'),
+      lower.includes('grete bærer økonomien') &&
+      lower.includes('grete betaler husleien') &&
+      lower.includes('husleien er betalt sent') &&
+      lower.includes('threshold'),
     revise:
-      'Use in-world facts: Grete answered, Grete led the call, Elling did not come to the phone. Do not explain the design role to the player.',
+      'The hypothesis must not appear as a designer conclusion. Gate it behind the economy/rent fact cluster.',
   },
   {
-    id: 'no_meta_player_explanation',
-    question: 'Does visible copy avoid telling the player what to conclude or feel?',
+    id: 'provisional_not_correct_answer',
+    question: 'Does the player understand the hypothesis is provisional rather than a correct-answer stamp?',
     pass:
-      !visibleComponent.includes('hva spilleren lærer') &&
-      !visibleComponent.includes('rapporten gir ikke svar') &&
-      !visibleComponent.includes('ikke løs elling') &&
-      !visibleComponent.includes('finn inngangen') &&
-      !visibleComponent.includes('infrastrukturen'),
+      lower.includes('foreløpig') &&
+      !lower.includes('correct') &&
+      !lower.includes('riktig svar') &&
+      !lower.includes('wrong answer'),
     revise:
-      'Visible copy should only lay out game-world content: documents, actions, reports, objects, people, costs, dates. Remove meta lines that describe the intended experience.',
+      'Case reasoning should not be graded. Mark the hypothesis as Foreløpig and leave consequence judgement to later SDDs.',
   },
   {
-    id: 'tests_guard_flow',
-    question: 'Do tests guard the staged flow/source terms?',
+    id: 'scope_guard',
+    question: 'Does the slice avoid SDD-005/006 systems and freeform tooling?',
     pass:
-      tests.toLowerCase().includes('frank_call') &&
-      tests.toLowerCase().includes('frankrapport') &&
-      tests.toLowerCase().includes('kontoutskrift'),
+      !lower.includes('apartment consequence') &&
+      !lower.includes('clock movement') &&
+      !lower.includes('tiltak consequence') &&
+      !lower.includes('drag node') &&
+      !lower.includes('freeform canvas'),
     revise:
-      'The source may work visually, but the staged Slice A contract is not test-protected enough.',
+      'Scope drift detected. SDD-004 should stop at evidence capture, structured canvas, and provisional hypothesis formation.',
+  },
+  {
+    id: 'wireframe_style_reference',
+    question: 'Does the implementation preserve the old wireframe visual/content style?',
+    pass:
+      lower.includes('case_session_spike_v3') ||
+      lower.includes('helsrapport') ||
+      lower.includes('helserapport') ||
+      lower.includes('#fff8b0') ||
+      lower.includes('stamp'),
+    revise:
+      'Use the old wireframe for paper texture, stamps, restrained Norwegian document registers, and highlighter-yellow collected state.',
   },
 ];
 
 const failures = checks.filter((check) => !check.pass);
-const critiquePath = join(artifactDir, 'SDD-002-slice-a-user-perspective-review.md');
+const critiquePath = join(artifactDir, 'SDD-004-user-perspective-review.md');
 writeFileSync(
   critiquePath,
-  `# SDD-002 Slice A — Evaluator user-perspective review\n\n## Evaluator stance\n\nThis is not a code review. The question is whether the first player-facing casework loop lands.\n\n## Checks\n\n${checks.map((check) => `- [${check.pass ? 'x' : ' '}] **${check.id}** — ${check.question}${check.pass ? '' : `\n  - REVISE: ${check.revise}`}`).join('\n')}\n\n## Verdict rationale\n\n${failures.length ? `REVISE/PIVOT. ${failures.length} user-facing requirement(s) fail. The player would not yet experience the intended casework loop.` : 'PASS. The source scan indicates the player can move from concern report to Frank call scene to first report and new casework decisions. Manual/browser taste review is still recommended before calling the slice truly done.'}\n`,
+  `# SDD-004 — Evaluator user-perspective review\n\n## Evaluator stance\n\nThis is not a code review. The question is whether the desk evidence loop feels like municipal casework rather than clue looting.\n\n## Checks\n\n${checks.map((check) => `- [${check.pass ? 'x' : ' '}] **${check.id}** — ${check.question}${check.pass ? '' : `\n  - REVISE: ${check.revise}`}`).join('\n')}\n\n## Verdict rationale\n\n${failures.length ? `PIVOT. ${failures.length} user-facing requirement(s) fail or are not yet implemented. This is expected before source work; use these failures as the build checklist.` : 'PASS. Source scan suggests the SDD-004 player-facing contract is present. Still run browser/playtest review before calling the slice done.'}\n`,
   'utf8',
 );
 
@@ -111,13 +114,13 @@ console.log(
     status: 'done',
     verdict: failures.length ? 'PIVOT' : 'PASS',
     summary: failures.length
-      ? `User-perspective evaluator found ${failures.length} Slice A issue(s).`
-      : 'User-perspective evaluator passes Slice A source contract; next gate is browser/taste smoke.',
+      ? `User-perspective evaluator found ${failures.length} SDD-004 issue(s).`
+      : 'User-perspective evaluator passes SDD-004 source contract; next gate is browser/taste smoke.',
     issues: failures.map((check) => ({ id: check.id, issue: check.revise })),
     artifacts: [
       {
         kind: 'user-perspective-review',
-        path: 'artifacts/SDD-002-slice-a-user-perspective-review.md',
+        path: 'artifacts/SDD-004-user-perspective-review.md',
       },
     ],
     notes: [
