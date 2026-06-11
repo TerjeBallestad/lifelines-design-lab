@@ -275,6 +275,76 @@ button.quiet { border-color: var(--ink-faint); color: var(--ink-dim); box-shadow
 .reg-notat::before { content: ""; position: absolute; left: 44px; top: 0; bottom: 0; width: 1px; background: var(--hint-warn); opacity: 0.4; }
 .reg-vedtak .doc-body { font-family: var(--hand-1); }
 
+/* coins */
+.coin {
+  display: inline-block;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e8c563, var(--hint-gold) 70%);
+  border: 1.5px solid var(--ink);
+  vertical-align: -2px;
+  margin-right: 2px;
+}
+.coin.spent { background: var(--paper-fold); opacity: 0.6; }
+
+/* domain icons */
+.dico {
+  display: inline-block;
+  font-size: 12px;
+  width: 19px; height: 19px;
+  line-height: 17px;
+  text-align: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50% 45% 50% 45%;
+  margin-right: 5px;
+  vertical-align: -3px;
+}
+
+/* redacted hypothesis slots */
+.hypo-opt .redact {
+  color: transparent;
+  background: repeating-linear-gradient(90deg, var(--ink-faint) 0 18px, transparent 18px 24px);
+  opacity: 0.45;
+  border-radius: 2px;
+  user-select: none;
+}
+
+/* fact detail modal */
+#fact-overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,21,16,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 95;
+  padding: 20px;
+}
+#fact-overlay.open { display: flex; }
+#fact-card {
+  width: min(440px, 92vw);
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 4px 7px 5px 7px;
+  padding: 18px 20px;
+  box-shadow: 5px 6px 0 rgba(0,0,0,0.4);
+}
+#fact-card .fc-rel { margin-top: 12px; }
+#fact-card .fc-rel h4 { font-family: var(--hand-3); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 5px; }
+#fact-card .fc-link {
+  display: block;
+  font-family: var(--hand-1);
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--ink-faint);
+  cursor: pointer;
+}
+#fact-card .fc-link:hover { color: var(--hint-gold); }
+.fact-chip { cursor: pointer; }
+.fact-chip:hover { border-color: var(--hint-gold); }
+.q-fact-min { cursor: pointer; }
+.q-fact-min:hover { border-color: var(--hint-gold); }
+.q-opens { margin-top: 7px; font-family: var(--hand-3); font-size: 10px; letter-spacing: 0.5px; color: #7a6420; }
+
 /* evidence anchors */
 .ev {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="11" cy="11" r="7.5" fill="rgba(245,241,232,0.6)" stroke="%232a2520" stroke-width="2.6"/><line x1="17" y1="17" x2="27" y2="27" stroke="%232a2520" stroke-width="3.4" stroke-linecap="round"/></svg>') 11 11, pointer;
@@ -521,12 +591,12 @@ button.quiet { border-color: var(--ink-faint); color: var(--ink-dim); box-shadow
   <div id="topbar">
     <div class="case-head">
       <div>
-        <h1>SAK 2026/04412 · OLSEN, ELLING</h1>
-        <div class="sub">BYDEL FROGNER · SOSIALTJENESTEN &nbsp;·&nbsp; MELDT: DR. J. HAUG, FROGNER LEGESENTER</div>
+        <h1>SAK 99/0412 · OLSEN, ELLING</h1>
+        <div class="sub">OSLO KOMMUNE · SOSIALKONTORET &nbsp;·&nbsp; MELDT: DR. J. HAUG, LEGESENTERET &nbsp;·&nbsp; FEBRUAR 1999</div>
       </div>
       <div style="margin-left:auto;text-align:right;">
-        <div class="sub">RESSURSRAMME 12 000 KR/MND</div>
-        <div class="sub" id="head-disponert">DISPONERT: 0 KR</div>
+        <div class="sub">TILTAKSRAMME: 6 MYNTER/MND</div>
+        <div class="sub" id="head-disponert">DISPONERT: —</div>
       </div>
     </div>
     <div class="resource"><div class="num" id="res-day">1</div><div class="lab">dag</div></div>
@@ -577,6 +647,7 @@ button.quiet { border-color: var(--ink-faint); color: var(--ink-dim); box-shadow
 </div>
 
 <div id="reader-overlay"><div id="reader-doc"></div></div>
+<div id="fact-overlay"><div id="fact-card"></div></div>
 <div id="toasts"></div>
 <div id="reflection" class="story-overlay" style="display:none;"></div>
 
@@ -617,7 +688,7 @@ button.quiet { border-color: var(--ink-faint); color: var(--ink-dim); box-shadow
    ===================================================================== */
 
 const PROLOGUE = [
-  { cap: "FROGNER LEGESENTER · TIRSDAG I FEBRUAR" },
+  { cap: "LEGESENTERET · TIRSDAG I FEBRUAR 1999" },
   { who: "DR. HAUG", say: "Prøvesvarene er kommet. Det er som vi trodde." },
   { who: "GRETE", say: "Ja." },
   { dir: "Det er stille en stund. Noen ler av noe i naborommet." },
@@ -632,7 +703,7 @@ const PROLOGUE = [
   { dir: "Grete tar på seg hanskene. Én finger om gangen." },
   { who: "GRETE", say: "Dere får gjøre det dere må." },
   { dir: "Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet «alvorlig». Sender." },
-  { stamp: "MOTTATT · BYDEL FROGNER", end: "Meldingen ligger på pulten din." }
+  { stamp: "MOTTATT · SOSIALKONTORET", end: "Meldingen ligger på pulten din." }
 ];
 
 const DOMAINS = ["Økonomi/bolig", "Hverdag/rutine", "Helse/risiko", "Nettverk/sosialt", "Ressurser"];
@@ -645,14 +716,15 @@ const FACTS = {
   f_saarbar:       { domain: "Helse/risiko",    cat: "Risiko",      text: "Elling vurderes som sårbar ved bortfall av pårørende.", quote: "pasienten fremstår sårbar ved bortfall av pårørende", supports: ["q_hverdag"], discuss: ["Frank"] },
   f_ingen_tjenester:{ domain: "Nettverk/sosialt", cat: "Dokument",  text: "Elling har ingen kontakt med øvrige tjenester.", quote: "ikke i kontakt med øvrige tjenester", supports: ["q_kontakt"], discuss: ["Frank"] },
 
-  f_trygd:         { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Elling mottar uføretrygd: 17 240 kr/mnd.", quote: "NAV UFØRETRYGD +17 240,00", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank"] },
-  f_alt_via_grete: { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Nesten hele trygden overføres fast til Gretes konto.", quote: "FAST OVERFØRING G. OLSEN −15 000,00", supports: ["q_okonomi"], discuss: ["Frank", "Grete"] },
-  f_husleie:       { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Husleien er 12 400 kr og betales fra Gretes konto.", quote: "SØGAARD EIENDOM AS −12 400,00", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank", "Grete"] },
-  f_gap:           { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Faste utgifter (19 870 kr) overstiger Ellings inntekt (17 240 kr).", quote: "samlede faste utgifter for husholdningen: 19 870 kr/mnd", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank"] },
-  f_ingen_matkjop: { domain: "Hverdag/rutine",  cat: "Økonomi",     text: "Ingen matkjøp fra Ellings konto. Mat skjer gjennom Grete.", quote: "ingen varekjøp registrert siste tre måneder", supports: ["q_hverdag"], discuss: ["Frank"] },
+  f_trygd:         { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Ellings uføretrygd: to mynter i måneden.", quote: "trygden hans: to mynter. den kommer den første, og den går rett videre.", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank"] },
+  f_alt_via_grete: { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.", quote: "alle betalinger går gjennom Grete. postgiroene ligger i en skoeske, ferdig utfylt.", supports: ["q_okonomi"], discuss: ["Frank", "Grete"] },
+  f_husleie:       { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Husleien er tre mynter og betales av Grete.", quote: "husleien: tre mynter. den betales kontant til huseieren, av Grete, den første.", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank", "Grete"] },
+  f_gap:           { domain: "Økonomi/bolig",   cat: "Økonomi",     text: "Uten Gretes pensjon mangler husholdet to mynter hver måned.", quote: "regnestykket går opp — med henne. uten henne mangler det to mynter. hver måned.", supports: ["q_okonomi", "q_bolig"], discuss: ["Frank"] },
+  f_ingen_matkjop: { domain: "Hverdag/rutine",  cat: "Økonomi",     text: "Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.", quote: "jeg fant ikke ett kjøp som var hans. ikke ett.", supports: ["q_hverdag"], discuss: ["Frank"] },
 
-  f_sen_husleie:   { domain: "Økonomi/bolig",   cat: "Risiko",      text: "Husleien er betalt etter forfall. Det begynner å synes utad.", quote: "registrert innbetalt ni dager etter forfall", supports: ["q_bolig"], discuss: ["Frank"] },
-  f_andre_gang:    { domain: "Økonomi/bolig",   cat: "Risiko",      text: "Andre forsinkelse på tre måneder. Gretes system slår sprekker.", quote: "annen gang på tre måneder", supports: ["q_bolig"], discuss: ["Frank"] },
+  f_leie_stoppet:  { domain: "Økonomi/bolig",   cat: "Risiko",      text: "Husleien har stoppet. Betalingskjeden døde med Grete.", quote: "leien for mars er ikke kommet", supports: ["q_bolig", "q_kollaps"], discuss: ["Frank"] },
+  f_huseier_kommer:{ domain: "Økonomi/bolig",   cat: "Risiko",      text: "Huseieren varsler at han kommer innom. Torsdag.", quote: "jeg kommer innom på torsdag, så får vi snakke om veien videre", supports: ["q_bolig", "q_kontakt"], discuss: ["Frank"] },
+  f_leie_privat:   { domain: "Økonomi/bolig",   cat: "Dokument",    text: "Leieforholdet er privat og muntlig innarbeidet siden 1971. Ingen kontrakt å lene seg på.", quote: "din mor og jeg har holdt på siden -71 uten papirer. det har aldri vært nødvendig.", supports: ["q_bolig"], discuss: ["Frank"] },
 
   f_klarer_seg:    { domain: "Nettverk/sosialt", cat: "Samtale",    text: "Grete avviser bekymringen. Gjentar formuleringen.", quote: "«Han klarer seg. Han har alltid klart seg.»", supports: ["q_hverdag"], discuss: ["Frank"] },
   f_ingen_plan:    { domain: "Helse/risiko",    cat: "Samtale",     text: "Det finnes ingen plan for hvem som overtar etter Grete.", quote: "jeg spurte hvem som overtar hvis hun blir innlagt. det ble stille.", supports: ["q_hverdag", "q_bolig"], discuss: ["Frank", "Grete"] },
@@ -663,10 +735,14 @@ const FACTS = {
   f_kalender:      { domain: "Hverdag/rutine",  cat: "Observasjon", text: "Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem.", quote: "alle avtaler ført med samme håndskrift. det er ikke Ellings.", supports: ["q_hverdag"], discuss: ["Frank"] },
   f_matbokser:     { domain: "Hverdag/rutine",  cat: "Observasjon", text: "Maten er preppet av Grete, merket med ukedager. Elling varmer.", quote: "middagsbokser merket med ukedager, mandag til søndag", supports: ["q_hverdag", "q_selv"], discuss: ["Frank", "Grete"] },
   f_bok:           { domain: "Ressurser",       cat: "Ressurs",     text: "Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er en ressurs.", quote: "en bok om polarekspedisjoner. han noterte i margen. systematisk, små bokstaver.", supports: ["q_selv"], discuss: ["Frank"] },
+  f_utklipp:       { domain: "Ressurser",       cat: "Ressurs",     text: "Elling samler og systematiserer: utklipp av Gro og Arbeiderpartiet, datert og ordnet.", quote: "over skrivebordet: avisutklipp, sirlig montert. Gro, landsmøter, 1. mai. årstall i hjørnene.", supports: ["q_selv"], discuss: ["Frank"] },
   f_avstand:       { domain: "Nettverk/sosialt", cat: "Observasjon", text: "Elling holder avstand til fremmede. Alltid et møbel mellom.", quote: "han flyttet seg slik at det alltid var et møbel mellom oss", supports: ["q_kontakt", "q_selv"], discuss: ["Frank"] },
   f_smart_gutt:    { domain: "Nettverk/sosialt", cat: "Samtale",    text: "Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.", quote: "«du så hvordan han er. han er en smart gutt.»", supports: ["q_hverdag", "q_selv"], discuss: ["Frank"] },
 
-  f_ubesvart:      { domain: "Nettverk/sosialt", cat: "Observasjon", text: "Elling tar ikke telefonen — heller ikke fra kommunen.", quote: "åtte ring. ingen svar. ingen svarer-funksjon.", supports: ["q_kontakt"], discuss: ["Frank"] },
+  f_ubesvart:      { domain: "Nettverk/sosialt", cat: "Observasjon", text: "Elling tar ikke telefonen — heller ikke når den ringer i hans egen stue.", quote: "åtte ring. fasttelefonen står to meter fra stolen hans.", supports: ["q_kontakt"], discuss: ["Frank"] },
+  f_dor_glott:     { domain: "Nettverk/sosialt", cat: "Samtale",     text: "Døren er på gløtt: kontakt er mulig — i Ellings tempo, med én fast person.", quote: "han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. det er en dør på gløtt.", supports: ["q_kontakt", "q_selv"], discuss: ["Frank"] },
+  f_tirade:        { domain: "Ressurser",        cat: "Observasjon", text: "Press utløser foredrag, ikke mestring. Tempoet må være hans.", quote: "et kvarter langt foredrag om apparatets historie og iboende uforskammethet", supports: ["q_selv", "q_kontakt"], discuss: ["Frank"] },
+  f_egen_mappe:    { domain: "Ressurser",        cat: "Observasjon", text: "Elling lager egne systemer når ingen krever det av ham.", quote: "en mappe han hadde laget selv. den var merket. små bokstaver.", supports: ["q_selv"], discuss: ["Frank"] },
 
   f_innlagt:       { domain: "Helse/risiko",    cat: "Dokument",    text: "Grete er akutt innlagt på Ullevål.", quote: "innlagt akutt 14.02", supports: ["q_hverdag", "q_bolig"], discuss: ["Frank"] },
   f_elling_uvarslet:{ domain: "Helse/risiko",   cat: "Dokument",    text: "Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.", quote: "pasienten oppgir at sønnen ikke er varslet. ber om at kommunen ser til ham.", supports: ["q_kontakt", "q_kollaps"], discuss: ["Frank"] },
@@ -678,53 +754,54 @@ const FACTS = {
 /* Dokumenter. body = HTML med authored hotspots: <span class="ev" data-fact="…"> */
 const DOCUMENTS = {
   doc_bekymring: {
-    kind: "BEKYMRINGSMELDING", title: "Frogner legesenter · Dr. J. Haug", reg: "reg-klinisk",
+    kind: "BEKYMRINGSMELDING", title: "Legesenteret · Dr. J. Haug", reg: "reg-klinisk",
     peek: "«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»",
-    head: `<div class="frame-title"><span>BEKYMRINGSMELDING</span><span class="meta">FROGNER LEGESENTER · DR. J. HAUG · 11.02</span></div>`,
+    head: `<div class="frame-title"><span>BEKYMRINGSMELDING</span><span class="meta">LEGESENTERET · DR. J. HAUG · 11.02.1999</span></div>`,
     body: `
-      <p><span class="tag">GJELDER</span><br><strong>Olsen, Elling · f. 14.03.1991 · Gabels gate 14, 0272 Oslo</strong></p>
-      <p>Undertegnede er fastlege for Grete Olsen (f. 1954) og hennes sønn Elling Olsen. Mor er under utredning og behandling for <span class="ev" data-fact="f_grete_syk">sykdom med kort forventet forløp</span>. Hun er informert om at denne meldingen sendes.</p>
-      <p>Sønnen bor i familiens leilighet i Gabels gate. <span class="ev" data-fact="f_aldri_alene">Han har etter det opplyste aldri bodd alene</span>. Han er uføretrygdet og er etter det undertegnede kjenner til <span class="ev" data-fact="f_ingen_tjenester">ikke i kontakt med øvrige tjenester</span>.</p>
+      <p><span class="tag">GJELDER</span><br><strong>Olsen, Elling · f. 14.03.1964</strong></p>
+      <p>Undertegnede er fastlege for Grete Olsen (f. 1927) og hennes sønn Elling Olsen. Mor er under utredning og behandling for <span class="ev" data-fact="f_grete_syk">sykdom med kort forventet forløp</span>. Hun er informert om at denne meldingen sendes.</p>
+      <p>Mor og sønn bor sammen i en treroms blokkleilighet, fjerde etasje. <span class="ev" data-fact="f_aldri_alene">Sønnen har aldri bodd alene</span>. Han er uføretrygdet og er etter det undertegnede kjenner til <span class="ev" data-fact="f_ingen_tjenester">ikke i kontakt med øvrige tjenester</span>.</p>
       <p><span class="ev" data-fact="f_grete_baerer">Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester</span>. Omfanget er ikke kartlagt.</p>
       <p><span class="ev" data-fact="f_saarbar">Pasienten fremstår sårbar ved bortfall av pårørende</span>. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.</p>
       <p style="margin-top:18px;">Med hilsen<br><span style="font-family:var(--hand-2);font-size:19px;">Jørgen Haug</span><br><span class="tag">spes. allmennmedisin</span></p>`
   },
 
   doc_konto: {
-    kind: "ØKONOMISK OVERSIKT", title: "Kontoutskrifter · innhentet med samtykke", reg: "reg-bank",
-    peek: "Norsk Sparebank · to kontoer · februar",
-    head: `<div class="frame-title"><span>NORSK SPAREBANK · KONTOUTSKRIFT</span><span class="meta">INNHENTET AV 4012 M/ SAMTYKKE FRA G. OLSEN</span></div>`,
+    kind: "ØKONOMISK OVERSIKT", title: "Frank · husholdets økonomi", reg: "reg-notat",
+    peek: "«Regnestykket går opp — med henne.»",
+    head: `<div class="frame-title" style="border-bottom-color:var(--ink-faint);"><span style="font-family:var(--hand-2);font-size:18px;">Økonomisk oversikt · 4012 F. Solberg</span><span class="meta">GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET</span></div>`,
     body: `
-      <p><span class="tag">KONTO 1 · OLSEN, ELLING</span></p>
-      <table>
-        <tr><th>DATO</th><th>TEKST</th><th class="amt">BELØP</th></tr>
-        <tr><td>01.02</td><td><span class="ev" data-fact="f_trygd">NAV UFØRETRYGD</span></td><td class="amt">+17 240,00</td></tr>
-        <tr><td>03.02</td><td><span class="ev" data-fact="f_alt_via_grete">FAST OVERFØRING G. OLSEN</span></td><td class="amt">−15 000,00</td></tr>
-        <tr><td>—</td><td><span class="ev" data-fact="f_ingen_matkjop">Ingen varekjøp registrert siste tre måneder</span></td><td class="amt"></td></tr>
-      </table>
-      <p><span class="tag">KONTO 2 · OLSEN, GRETE</span></p>
-      <table>
-        <tr><td>01.02</td><td>NAV ALDERSPENSJON</td><td class="amt">+24 310,00</td></tr>
-        <tr><td>03.02</td><td>OVERFØRING E. OLSEN</td><td class="amt">+15 000,00</td></tr>
-        <tr><td>05.02</td><td><span class="ev" data-fact="f_husleie">SØGAARD EIENDOM AS · HUSLEIE GBLSGT 14</span></td><td class="amt">−12 400,00</td></tr>
-        <tr><td>05.02</td><td>HAFSLUND · AVTALEGIRO</td><td class="amt">−1 980,00</td></tr>
-        <tr><td>06.02</td><td>MENY FROGNER</td><td class="amt">−2 412,50</td></tr>
-        <tr><td>12.02</td><td>APOTEK 1 · AVTALEGIRO</td><td class="amt">−1 145,00</td></tr>
-      </table>
-      <p><span class="tag">SAKSBEHANDLERS MERKNAD</span><br>
-      <span class="ev" data-fact="f_gap">Samlede faste utgifter for husholdningen: 19 870 kr/mnd.</span> Alle betalingsavtaler står i Gretes navn.</p>`
+      <p>Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.</p>
+      <p>Inn: <span class="ev" data-fact="f_trygd">trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.</span> Pensjonen hennes: tre mynter.</p>
+      <p>Ut: <span class="ev" data-fact="f_husleie">husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.</span> Strøm, mat og resten: to mynter til sammen.</p>
+      <p><span class="ev" data-fact="f_alt_via_grete">Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.</span> Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.</p>
+      <p>Jeg gikk gjennom kvitteringene. <span class="ev" data-fact="f_ingen_matkjop">Jeg fant ikke ett kjøp som var hans. Ikke ett.</span></p>
+      <p><span class="ev" data-fact="f_gap">Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.</span></p>`
   },
 
-  doc_husleievarsel: {
-    kind: "VARSEL", title: "Søgaard Eiendom AS · forsinket leie", reg: "reg-formell",
-    peek: "«Ved vesentlig mislighold kan leieforholdet…»",
-    head: `<div class="frame-title"><span>SØGAARD EIENDOM AS</span><span class="meta">GABELS GATE 14 · LEIL. 3 · 13.02</span></div>`,
+  doc_papirer: {
+    kind: "ØKONOMISK OVERSIKT", title: "Frank · papirene i leiligheten", reg: "reg-notat",
+    peek: "«Skoesken sto der hun forlot den.»",
+    head: `<div class="frame-title" style="border-bottom-color:var(--ink-faint);"><span style="font-family:var(--hand-2);font-size:18px;">Papirgjennomgang · 4012 F. Solberg</span><span class="meta">ETTER DØDSFALLET · MED ELLING I ROMMET</span></div>`,
     body: `
-      <p><span class="tag">VARSEL OM FORSINKET LEIEBETALING</span></p>
-      <p>Det vises til leieavtale av 12.05.1989, Gabels gate 14, leilighet 3. Leie for februar ble <span class="ev" data-fact="f_sen_husleie">registrert innbetalt ni dager etter forfall</span>.</p>
-      <p>Dette er <span class="ev" data-fact="f_andre_gang">annen gang på tre måneder</span> at leien innbetales etter forfall. Vi gjør oppmerksom på at ved vesentlig mislighold kan leieforholdet bringes til opphør, jf. husleieloven § 9-9.</p>
-      <p>Vi ber om at fremtidig leie innbetales innen forfall den 1. i hver måned.</p>
-      <p style="margin-top:18px;">Med vennlig hilsen<br>Søgaard Eiendom AS<br><span class="tag">forvaltning</span></p>`
+      <p>Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.</p>
+      <p>Inn: <span class="ev" data-fact="f_trygd">trygden hans — to mynter i måneden.</span> Pensjonen hennes er opphørt.</p>
+      <p>Ut: <span class="ev" data-fact="f_husleie">husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.</span></p>
+      <p><span class="ev" data-fact="f_alt_via_grete">Alle avtaler står i Gretes navn.</span> <span class="ev" data-fact="f_ingen_matkjop">Ikke ett kjøp i kvitteringene er hans.</span></p>
+      <p><span class="ev" data-fact="f_gap">Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.</span></p>
+      <p>Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.</p>`
+  },
+
+  doc_huseier: {
+    kind: "BREV", title: "Brev fra huseieren · T. Bakkerud", reg: "reg-formell",
+    peek: "«Jeg hører at din mor er gått bort.»",
+    head: `<div class="frame-title"><span>T. BAKKERUD</span><span class="meta">HÅNDSKREVET · LEVERT I POSTKASSEN · VIDEREFORMIDLET AV 4012</span></div>`,
+    body: `
+      <p>Til Elling Olsen.</p>
+      <p>Jeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen.</p>
+      <p>Jeg må likevel skrive om det praktiske. <span class="ev" data-fact="f_leie_stoppet">Leien for mars er ikke kommet.</span> <span class="ev" data-fact="f_leie_privat">Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.</span> Nå vet jeg ikke hvem jeg skal forholde meg til.</p>
+      <p>Jeg vil ikke lage vanskeligheter. Men <span class="ev" data-fact="f_huseier_kommer">jeg kommer innom på torsdag, så får vi snakke om veien videre.</span></p>
+      <p style="margin-top:18px;">Vennlig hilsen<br><span style="font-family:var(--hand-2);font-size:19px;">T. Bakkerud</span></p>`
   },
 
   doc_frank_tlf: {
@@ -743,13 +820,14 @@ const DOCUMENTS = {
   doc_frank_visit: {
     kind: "RAPPORT", title: "Frank · hjemmebesøk Gabels gate 14", reg: "reg-notat",
     peek: "«Hun hadde dekket på med tre kopper.»",
-    head: `<div class="frame-title" style="border-bottom-color:var(--ink-faint);"><span style="font-family:var(--hand-2);font-size:18px;">Hjemmebesøk · 4012 F. Solberg</span><span class="meta">GABELS GATE 14 · AVTALT VIA G. OLSEN</span></div>`,
+    head: `<div class="frame-title" style="border-bottom-color:var(--ink-faint);"><span style="font-family:var(--hand-2);font-size:18px;">Hjemmebesøk · 4012 F. Solberg</span><span class="meta">BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN</span></div>`,
     body: `
       <p>Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.</p>
-      <p>I gangen: <span class="ev" data-fact="f_post">en bunke uåpnet post på skoskapet. Øverst: NAV, Bydel Frogner, Søgaard Eiendom.</span> Grete flyttet bunken da hun så at jeg så.</p>
+      <p>I gangen: <span class="ev" data-fact="f_post">en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.</span> Grete flyttet bunken da hun så at jeg så.</p>
       <p>På kjøkkenveggen: <span class="ev" data-fact="f_kalender">kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.</span></p>
       <p>I kjøleskapet (Grete viste meg, uoppfordret, som et bevis): <span class="ev" data-fact="f_matbokser">middagsbokser merket med ukedager, mandag til søndag.</span> «Han varmer dem selv.» Det hørtes ut som et forsvar.</p>
       <p>Elling satt i stuen med <span class="ev" data-fact="f_bok">en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.</span> Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.</p>
+      <p>Over skrivebordet hans: <span class="ev" data-fact="f_utklipp">avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.</span> Det er ikke rot. Det er et arkiv.</p>
       <p><span class="ev" data-fact="f_avstand">Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.</span> Ikke demonstrativt. Bare slik det ble.</p>
       <p>Grete fulgte meg ut. I trappen sa hun: <span class="ev" data-fact="f_smart_gutt">«Du så hvordan han er. Han er en smart gutt.»</span> Hun er 72. Han er 35. Gutt.</p>`
   },
@@ -757,10 +835,10 @@ const DOCUMENTS = {
   doc_innleggelse: {
     kind: "MELDING", title: "OUS Ullevål · innleggelse", reg: "reg-klinisk",
     peek: "«…ber om at kommunen ser til ham.»",
-    head: `<div class="frame-title"><span>OSLO UNIVERSITETSSYKEHUS · ULLEVÅL</span><span class="meta">TIL BYDEL FROGNER · 14.02</span></div>`,
+    head: `<div class="frame-title"><span>ULLEVÅL SYKEHUS</span><span class="meta">TIL SOSIALKONTORET · 14.02.1999</span></div>`,
     body: `
       <p><span class="tag">MELDING OM INNLEGGELSE</span></p>
-      <p>Grete Olsen (f. 1954) ble <span class="ev" data-fact="f_innlagt">innlagt akutt 14.02</span>, kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen.</p>
+      <p>Grete Olsen (f. 1927) ble <span class="ev" data-fact="f_innlagt">innlagt akutt 14.02</span>, kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen.</p>
       <p><span class="ev" data-fact="f_elling_uvarslet">Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.</span> Hun var tydelig på dette før hun ble lagt i behandling.</p>
       <p><span class="tag">SOSIALMEDISINSK ENHET · OUS</span></p>`
   },
@@ -768,10 +846,10 @@ const DOCUMENTS = {
   doc_dodsfall: {
     kind: "MELDING", title: "OUS Ullevål · dødsfall", reg: "reg-klinisk",
     peek: "—",
-    head: `<div class="frame-title"><span>OSLO UNIVERSITETSSYKEHUS · ULLEVÅL</span><span class="meta">TIL BYDEL FROGNER · 15.02</span></div>`,
+    head: `<div class="frame-title"><span>ULLEVÅL SYKEHUS</span><span class="meta">TIL SOSIALKONTORET · 15.02.1999</span></div>`,
     body: `
       <p><span class="tag">MELDING OM DØDSFALL</span></p>
-      <p>Grete Olsen, f. 21.09.1954. <span class="ev" data-fact="f_dod">Dødsfall konstatert 15.02 kl. 04:12.</span></p>
+      <p>Grete Olsen, f. 21.09.1927. <span class="ev" data-fact="f_dod">Dødsfall konstatert 15.02 kl. 04:12.</span></p>
       <p>Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. <span class="ev" data-fact="f_brevsprekken">Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.</span></p>
       <p>Saken overføres kommunen for videre oppfølging av gjenlevende.</p>
       <p><span class="tag">SOSIALMEDISINSK ENHET · OUS</span></p>`
@@ -784,47 +862,47 @@ const QUESTIONS = {
     title: "Hvem holder økonomien i gang?",
     appearsOn: ["f_grete_baerer", "f_trygd", "f_husleie"],
     hypos: [
-      { id: "h_ok_grete", label: "Grete bærer betalingskjeden.", needs: ["f_husleie", "f_alt_via_grete"],
-        note: "Husleie og faste betalinger ser ut til å fungere gjennom Gretes system. Må ses mot Ellings inntekt, faste utgifter og posthåndtering." },
-      { id: "h_ok_unngaar", label: "Elling forstår økonomien, men unngår post.", needs: ["f_post"],
-        note: "Det er ikke avklart om problemet er forståelse eller kanal. Uåpnet post tilsier at papiret aldri når frem til en vurdering." },
-      { id: "h_ok_gap", label: "Inntekten dekker ikke boligen uten Gretes bidrag.", needs: ["f_gap"],
-        note: "Ellings trygd (17 240) dekker ikke husholdningens faste utgifter (19 870). Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko." }
+      { id: "h_ok_grete", label: "Grete bærer betalingskjeden.", needs: ["f_husleie", "f_alt_via_grete"], opens: ["t_forvaltning"],
+        note: "Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør." },
+      { id: "h_ok_unngaar", label: "Elling forstår økonomien, men unngår post.", needs: ["f_post", "f_bok"], opens: ["t_dokgjennomgang"],
+        note: "Kapasiteten til å forstå er observert. Papiret når likevel aldri frem til en vurdering, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse." },
+      { id: "h_ok_gap", label: "Trygden dekker ikke boligen uten Gretes pensjon.", needs: ["f_gap"], opens: ["t_bostotte"],
+        note: "Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko." }
     ]
   },
   q_bolig: {
     title: "Kan Elling bli boende når Grete ikke lenger bærer hverdagen?",
-    appearsOn: ["f_gap", "f_sen_husleie", "f_husleie"],
+    appearsOn: ["f_gap", "f_leie_stoppet", "f_husleie"],
     hypos: [
-      { id: "h_b_sikres", label: "Boligen kan sikres — med bostøtte og forvaltning av faste betalinger.", needs: ["f_gap", "f_trygd"],
-        note: "Med bostøtte og en ordnet betalingskjede kan leieforholdet videreføres. Forutsetter at søknad fremmes før restanse oppstår." },
-      { id: "h_b_flytte", label: "Boligen kan ikke holdes. Flytting bør forberedes nå.", needs: ["f_gap", "f_andre_gang"],
-        note: "Leieforholdet vurderes som ikke bærekraftig. Alternativ bolig bør kartlegges før en oppsigelse tvinger frem en akutt flytting." },
-      { id: "h_b_uavklart", label: "Uavklart — økonomien må kartlegges først.", needs: [],
-        note: "Saken mangler økonomisk grunnlag for en boligvurdering. Kontoutskrift og utgiftsoversikt må innhentes." }
+      { id: "h_b_sikres", label: "Boligen kan sikres — med bostøtte og ordnet betalingskjede.", needs: ["f_gap", "f_trygd"], opens: ["t_bostotte", "t_forvaltning"],
+        note: "Med bostøtte og en ordnet betalingskjede kan leieforholdet videreføres. Forutsetter at søknaden fremmes før restansen blir en sak." },
+      { id: "h_b_flytte", label: "Boligen kan ikke holdes. Flytting bør forberedes nå.", needs: ["f_gap", "f_leie_privat"], opens: ["t_huseier"],
+        note: "Leieforholdet er privat, muntlig og uten vern. Vurderingen er at alternativ bolig bør kartlegges før huseieren tvinger frem en akutt løsning." },
+      { id: "h_b_uavklart", label: "Uavklart — økonomien må kartlegges først.", needs: [], opens: [],
+        note: "Saken mangler økonomisk grunnlag for en boligvurdering. Be Frank lage en økonomisk oversikt." }
     ]
   },
   q_hverdag: {
     title: "Hva bærer Grete i hverdagen — og hva skjer når hun ikke kan?",
     appearsOn: ["f_grete_baerer", "f_klarer_seg"],
     hypos: [
-      { id: "h_h_infra", label: "Grete er usynlig infrastruktur: mat, kalender, post, kontakt.", needs: ["f_kalender", "f_matbokser"],
+      { id: "h_h_infra", label: "Grete er usynlig infrastruktur: mat, kalender, post, kontakt.", needs: ["f_kalender", "f_matbokser"], opens: ["t_hjemmehjelp", "t_matlevering"],
         note: "Husholdets funksjoner — mat, avtaler, post, kontakt med tjenester — utføres i dag av mor. Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring." },
-      { id: "h_h_kanmer", label: "Elling klarer mer enn det ser ut. Grete har bare alltid gjort det først.", needs: ["f_bok"],
-        note: "Observert kapasitet (konsentrasjon, systematikk) tilsier at enkelte funksjoner kan være trenbare. Ikke testet. Grete har aldri latt det bli testet." },
-      { id: "h_h_system", label: "Husholdet fungerer bare som system med to.", needs: ["f_matbokser", "f_ingen_matkjop"],
+      { id: "h_h_kanmer", label: "Elling klarer mer enn det ser ut. Grete har bare alltid gjort det først.", needs: ["f_bok", "f_utklipp"], opens: ["t_brev"],
+        note: "Observert kapasitet — konsentrasjon, arkiv, system — tilsier at funksjoner er trenbare. Ikke testet. Grete har aldri latt det bli testet." },
+      { id: "h_h_system", label: "Husholdet fungerer bare som system med to.", needs: ["f_matbokser", "f_ingen_matkjop"], opens: ["t_hjemmehjelp"],
         note: "Husholdet er bygget som ett system med to roller. Den ene rollen faller bort. Systemet er ikke vurdert for én." }
     ]
   },
   q_selv: {
     title: "Hva kan Elling lære seg, med riktig stillas?",
-    appearsOn: ["f_bok", "f_matbokser", "f_aldri_alene"],
+    appearsOn: ["f_bok", "f_utklipp", "f_matbokser", "f_aldri_alene"],
     hypos: [
-      { id: "h_s_trenbar", label: "Konsentrasjonen er sterk. Rutiner kan trenes — én om gangen.", needs: ["f_bok"],
-        note: "Kapasitet til fordypning og system er observert. Vurderingen er at avgrensede rutiner kan bygges med støtte, forutsatt lavt tempo og fast person." },
-      { id: "h_s_formell", label: "Ferdighetene er der ikke. Formell støtte må bære alt.", needs: ["f_saarbar"],
+      { id: "h_s_trenbar", label: "Konsentrasjonen er sterk. Rutiner kan trenes — én om gangen.", needs: ["f_bok"], opens: ["t_brev", "t_regning"],
+        note: "Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk." },
+      { id: "h_s_formell", label: "Ferdighetene er der ikke. Formell støtte må bære alt.", needs: ["f_saarbar"], opens: ["t_institusjon"],
         note: "Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon." },
-      { id: "h_s_ukjent", label: "Vet ikke — før noe er prøvd med støtte.", needs: [],
+      { id: "h_s_ukjent", label: "Vet ikke — før noe er prøvd med støtte.", needs: [], opens: ["t_brev"],
         note: "Kommunen har ingen observasjon av Elling i en mestringssituasjon. Vurdering uten utprøving vil være gjetning." }
     ]
   },
@@ -832,11 +910,11 @@ const QUESTIONS = {
     title: "Hvordan når kommunen Elling uten Grete?",
     appearsOn: ["f_elling_tlf", "f_avstand", "f_ingen_tjenester"],
     hypos: [
-      { id: "h_k_oppmote", label: "Telefonen er stengt kanal. Fast person og oppmøte kan virke.", needs: ["f_elling_tlf", "f_avstand"],
-        note: "Telefon vurderes som uegnet kanal. Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. Tempoet settes av Elling." },
-      { id: "h_k_skriftlig", label: "All kontakt må gå skriftlig.", needs: ["f_post"],
+      { id: "h_k_oppmote", label: "Telefonen er stengt kanal. Fast person og oppmøte kan virke.", needs: ["f_elling_tlf", "f_avstand"], opens: ["t_hjemmehjelp"],
+        note: "Fasttelefonen vurderes som uegnet kanal. Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. Tempoet settes av Elling." },
+      { id: "h_k_skriftlig", label: "All kontakt må gå skriftlig.", needs: ["f_post"], opens: ["t_dokgjennomgang"],
         note: "Skriftlig kanal forutsetter at post åpnes. Det er ikke sannsynliggjort. Kanalen kan være riktig på sikt, men er i dag like stengt som telefonen." },
-      { id: "h_k_via_grete", label: "Kontakt må gå via Grete så lenge hun lever.", needs: ["f_klarer_seg"],
+      { id: "h_k_via_grete", label: "Kontakt må gå via Grete så lenge hun lever.", needs: ["f_klarer_seg"], opens: [],
         note: "Grete er i dag eneste fungerende kanal inn. Vedtaket bør merke seg at denne kanalen har kort forventet varighet." }
     ]
   },
@@ -844,11 +922,11 @@ const QUESTIONS = {
     title: "Hva kollapser først nå?",
     appearsOn: ["f_dod"],
     hypos: [
-      { id: "h_c_penger", label: "Økonomien. Husleien stopper denne måneden.", needs: ["f_gap"],
-        note: "Betalingskjeden lå i Gretes konto og avtaleverk. Den opphørte 15.02. Restanse løper fra første forfall." },
-      { id: "h_c_mat", label: "Maten. Boksene i kjøleskapet tar slutt om dager.", needs: ["f_matbokser"],
+      { id: "h_c_penger", label: "Økonomien. Husleien stopper denne måneden.", needs: ["f_gap"], opens: ["t_forvaltning", "t_huseier"],
+        note: "Betalingskjeden lå i Gretes skoeske og hukommelse. Den opphørte 15.02. Restanse løper fra første forfall." },
+      { id: "h_c_mat", label: "Maten. Boksene i kjøleskapet tar slutt om dager.", needs: ["f_matbokser"], opens: ["t_matlevering"],
         note: "Matforsyningen var preppet uke for uke. Siste leveranse skjedde før innleggelsen. Det finnes ingen neste." },
-      { id: "h_c_kontakt", label: "Kontakten. Uten kanal inn er alt annet teori.", needs: ["f_brevsprekken"],
+      { id: "h_c_kontakt", label: "Kontakten. Uten kanal inn er alt annet teori.", needs: ["f_brevsprekken"], opens: ["t_hjemmehjelp"],
         note: "Kommunen har per i dag ingen bekreftet kanal til Elling. Tiltak uten kanal er vedtak på papir." }
     ]
   }
@@ -856,31 +934,29 @@ const QUESTIONS = {
 
 /* Tiltak. slot: s1 bolig/økonomi · s2 erstatt Grete · s3 skjør rutine · press */
 const TILTAK = {
-  t_bostotte:     { slot: "s1", title: "Søk bostøtte", cost: 0, needs: ["f_trygd", "f_husleie"],
+  t_bostotte:     { slot: "s1", title: "Søk bostøtte", cost: 0, needs: ["f_trygd", "f_husleie"], needsHypo: ["h_ok_gap", "h_b_sikres"],
                     desc: "Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid.", sim: "bostotte" },
-  t_forvaltning:  { slot: "s1", title: "Frivillig forvaltning av faste betalinger", cost: 0, needs: ["f_alt_via_grete"],
-                    desc: "Kommunen overtar betalingskjeden Grete bar. Trygt. Bygger ingenting.", sim: "forvaltning" },
-  t_boligkontor:  { slot: "s1", title: "Kontakt boligkontoret om kommunal garanti", cost: 0, needs: ["f_sen_husleie"],
-                    desc: "Demper Søgaard Eiendom. Kjøper tid, ikke løsning.", sim: "garanti" },
+  t_forvaltning:  { slot: "s1", title: "Frivillig forvaltning av faste betalinger", cost: 1, needs: ["f_alt_via_grete"], needsHypo: ["h_ok_grete", "h_b_sikres", "h_c_penger"],
+                    desc: "Kommunen overtar skoesken. Trygt. Bygger ingenting.", sim: "forvaltning" },
+  t_huseier:      { slot: "s1", title: "Snakk med huseieren", cost: 0, needs: ["f_huseier_kommer"], needsHypo: ["h_b_sikres", "h_b_flytte", "h_c_penger"],
+                    desc: "Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.", sim: "garanti" },
 
-  t_hjemmehjelp:  { slot: "s2", title: "Hjemmehjelp 2× uke — Frank", cost: 4200, needs: ["f_grete_baerer"],
+  t_hjemmehjelp:  { slot: "s2", title: "Hjemmehjelp 2× uke — Frank", cost: 2, needs: ["f_grete_baerer"], needsHypo: ["h_h_infra", "h_h_system", "h_k_oppmote", "h_c_kontakt"],
                     desc: "Fast person, fast tid. Den eneste kanalen inn som har virket hittil.", sim: "hjemmehjelp" },
-  t_matlevering:  { slot: "s2", title: "Matombringing", cost: 3100, needs: ["f_matbokser"],
+  t_matlevering:  { slot: "s2", title: "Matombringing", cost: 1, needs: ["f_matbokser"], needsHypo: ["h_h_infra", "h_c_mat"],
                     desc: "Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.", sim: "mat" },
-  t_dokgjennomgang:{ slot: "s2", title: "Fast dokumentgjennomgang", cost: 1800, needs: ["f_post"],
+  t_dokgjennomgang:{ slot: "s2", title: "Fast dokumentgjennomgang", cost: 1, needs: ["f_post"], needsHypo: ["h_ok_unngaar", "h_k_skriftlig", "h_h_infra"],
                     desc: "Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.", sim: "dok" },
-  t_alarm:        { slot: "s2", title: "Trygghetsalarm", cost: 900, needs: ["f_saarbar"],
-                    desc: "Standard tiltak. Forutsetter at den monteres — og bæres.", sim: "alarm" },
 
-  t_brev:         { slot: "s3", title: "Åpne ett brev sammen med Frank", cost: 0, needs: ["f_post"], needsVisit: true,
+  t_brev:         { slot: "s3", title: "Åpne ett brev sammen med Frank", cost: 0, needs: ["f_post"], needsHypo: ["h_h_kanmer", "h_s_trenbar", "h_s_ukjent"], needsVisit: true,
                     desc: "Ett brev. Ikke bunken. Frank legger det på bordet og venter.", sim: "brev" },
-  t_regning:      { slot: "s3", title: "Betal én regning med støtte", cost: 0, needs: ["f_gap"], needsVisit: true,
+  t_regning:      { slot: "s3", title: "Betal én regning med støtte", cost: 0, needs: ["f_gap"], needsHypo: ["h_s_trenbar"], needsVisit: true,
                     desc: "Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.", sim: "regning" },
   t_telefon:      { slot: "s3", title: "Telefontrening med manus", cost: 0, needs: ["f_elling_tlf"], early: true,
-                    desc: "Manus ved apparatet. Krever trygghet som kanskje ikke finnes ennå.", sim: "telefon" },
+                    desc: "Manus ved apparatet i stuen. Krever trygghet som kanskje ikke finnes ennå.", sim: "telefon" },
 
   t_institusjon:  { slot: "press", title: "Institusjonsvurdering / omsorgsbolig", cost: 0, needs: ["f_saarbar"],
-                    desc: "Bureaukratisk lesbart. Trygt på papiret. Gabels gate 14 blir i så fall et avsluttet kapittel.", sim: "institusjon" }
+                    desc: "Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.", sim: "institusjon" }
 };
 
 const SLOT_LABELS = {
@@ -894,12 +970,14 @@ const SLOT_LABELS = {
 const DISPATCHES = {
   d_ring_grete: { title: "Ring Grete", desc: "Førstekontakt. Hun vet hvorfor du ringer.",
                   avail: s => !s.docs.doc_frank_tlf && s.greteStage < 4, result: { doc: "doc_frank_tlf", delay: 0 } },
-  d_konto:      { title: "Be om økonomisk oversikt", desc: "Kontoutskrifter, med samtykke fra Grete. Tar en dag.",
+  d_konto:      { title: "Be om økonomisk oversikt", desc: "Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.",
                   avail: s => !s.docs.doc_konto && !s.pending.some(p => p.doc === "doc_konto") && s.greteStage < 4, result: { doc: "doc_konto", delay: 1 } },
   d_besok:      { title: "Avtal hjemmebesøk", desc: "Gjennom Grete. Rapport i morgen tidlig.",
                   avail: s => !!s.docs.doc_frank_tlf && !s.docs.doc_frank_visit && !s.pending.some(p => p.doc === "doc_frank_visit") && s.greteStage < 4, result: { doc: "doc_frank_visit", delay: 1 } },
-  d_ring_elling:{ title: "Ring Elling direkte", desc: "Det er verdt å vite hva som skjer.",
-                  avail: s => !s.facts.f_ubesvart, result: { fact: "f_ubesvart", log: "Frank ringte Elling. Åtte ring. Ingen svar. Ingen svarer-funksjon." } },
+  d_ring_elling:{ title: "Ring leiligheten", desc: "Grete tar den ikke lenger. Spørsmålet er om noen gjør det.",
+                  avail: s => !s.facts.f_ubesvart && s.greteStage >= 4, result: { fact: "f_ubesvart", log: "Frank ringte leiligheten. Åtte ring. Fasttelefonen står to meter fra stolen hans." } },
+  d_papirer:    { title: "Gå gjennom papirene i leiligheten", desc: "Skoesken står der fortsatt. Noen må åpne den.",
+                  avail: s => s.greteStage >= 5 && !s.docs.doc_konto && !s.docs.doc_papirer && (s.sim.doorOpened || s.tiltak.includes("t_hjemmehjelp")), result: { doc: "doc_papirer", delay: 0 } },
   d_besok_alene:{ title: "Hjemmebesøk uten avtale", desc: "Ingen Grete å avtale med lenger. Frank stiller på døren.",
                   avail: s => s.greteStage >= 5, result: { special: "visit_after" } },
   d_bostotte_f: { title: "Følg opp bostøttesøknaden", desc: "Purr Husbanken. Sjekk at dokumentene er komplette.",
@@ -919,7 +997,9 @@ const CHAT = [
   { id: "c_bok", needs: "f_bok", q: "Boken og notatene — hva sier det deg?",
     a: "Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet. Det er to forskjellige problemer, og de har to forskjellige løsninger." },
   { id: "c_avstand", needs: "f_avstand", q: "Møbelet mellom dere — hvor lang vei er det inn?",
-    a: "Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den." },
+    a: `Lang. Men <span class="ev" data-fact="f_dor_glott">han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.</span> Den lukkes hvis vi river i den.` },
+  { id: "c_gro", needs: "f_utklipp", q: "Utklippene av Gro — hva gjør vi med det?",
+    a: "Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg, men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der." },
   { id: "c_brevsprekk", needs: "f_brevsprekken", q: "Brevsprekken. Hørte han det, tror du?",
     a: "Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren." },
   { id: "c_videre", needs: "f_dod", q: "Hva gjør vi nå, Frank?",
@@ -935,7 +1015,7 @@ const CLOCK_DEFS = {
   ck_rutine:   { name: "Skjør rutine", q: "Tåler én rutine å bli båret av Elling, med stillas?",
                  good: { label: "Rutine tåler støtte", size: 4 }, bad: { label: "Presset for hardt", size: 4 }, showWhen: s => s.tiltak.some(t => TILTAK[t].slot === "s3") },
   ck_restanse: { name: "Husleierestanse", q: "Blir leieproblemet en aktiv sak før støtten er på plass?",
-                 bad: { label: "Restanse bygges", size: 6 }, showWhen: s => !!s.docs.doc_husleievarsel },
+                 bad: { label: "Restanse bygges", size: 6 }, showWhen: s => !!s.docs.doc_huseier },
   ck_grete:    { name: "Grete tilgjengelig", q: "Hvor lenge bærer hun?", scenario: true, size: 5,
                  stages: ["Grete bærer alt", "Grete blir sliten", "Grete avlyser", "Grete er innlagt", "Grete er død"], showWhen: () => true }
 };
@@ -1019,12 +1099,17 @@ function hypoAvailable(h) {
   return h.needs.every(fid => state.facts[fid]);
 }
 
+/* Arbeidshypoteser er foreløpige — de kan byttes når som helst. */
 function chooseHypo(qId, hypoId) {
   const q = QUESTIONS[qId];
   const h = q.hypos.find(x => x.id === hypoId);
   if (!h || !hypoAvailable(h)) return false;
-  state.questions[qId].hypo = hypoId;
+  state.questions[qId].hypo = state.questions[qId].hypo === hypoId ? null : hypoId;
   return true;
+}
+
+function hypoChosen(hId) {
+  return Object.values(state.questions).some(st => st.hypo === hId);
 }
 
 function chosenHypos() {
@@ -1038,6 +1123,10 @@ function tiltakAvailable(tid) {
   if (state.tiltak.includes(tid)) return { ok: false, why: "iverksatt" };
   if (!t.needs.every(fid => state.facts[fid])) return { ok: false, why: "mangler grunnlag i sakens fakta" };
   if (t.needsVisit && !state.docs.doc_frank_visit) return { ok: false, why: "krever gjennomført hjemmebesøk" };
+  if (t.needsHypo && !t.needsHypo.some(hypoChosen)) {
+    const qTitles = [...new Set(t.needsHypo.map(h => Object.entries(QUESTIONS).find(([, q]) => q.hypos.some(x => x.id === h))?.[1].title))];
+    return { ok: false, why: "krever arbeidshypotese under: «" + qTitles[0] + "»" };
+  }
   return { ok: true };
 }
 
@@ -1069,14 +1158,14 @@ function enactVedtak() {
 
   // Generer vedtaksdokument
   const docId = "doc_vedtak_" + state.vedtakCount;
-  const rows = chosen.map(tid => `<p>— ${TILTAK[tid].title}${TILTAK[tid].cost ? ` <span class="tag">(${TILTAK[tid].cost.toLocaleString("no")} kr/mnd)</span>` : ""}</p>`).join("");
+  const rows = chosen.map(tid => `<p>— ${TILTAK[tid].title}${TILTAK[tid].cost ? ` <span class="tag">(${"●".repeat(TILTAK[tid].cost)} ${TILTAK[tid].cost} mynt${TILTAK[tid].cost > 1 ? "er" : ""}/mnd)</span>` : ""}</p>`).join("");
   const hypoRows = chosenHypos().map(({ hypo }) => `<p style="font-size:13px;color:var(--ink-dim);">Arbeidshypotese lagt til grunn: ${hypo.label}</p>`).join("") || `<p style="font-size:13px;color:var(--ink-dim);">Ingen arbeidshypotese lagt til grunn.</p>`;
   DOCUMENTS[docId] = {
-    kind: "VEDTAK", title: `Vedtak ${state.vedtakCount} · Bydel Frogner`, reg: "reg-vedtak",
+    kind: "VEDTAK", title: `Vedtak ${state.vedtakCount} · Sosialkontoret`, reg: "reg-vedtak",
     peek: "Iverksettes fra i morgen.",
-    head: `<div class="frame-title"><span>VEDTAK · SAK 2026/04412</span><span class="meta">BYDEL FROGNER · DAG ${state.day}</span></div>`,
+    head: `<div class="frame-title"><span>VEDTAK · SAK 99/0412</span><span class="meta">SOSIALKONTORET · DAG ${state.day}</span></div>`,
     body: `
-      <p>Bydel Frogner fatter med dette vedtak om følgende tiltak for Olsen, Elling, jf. helse- og omsorgstjenesteloven § 3-2:</p>
+      <p>Sosialkontoret fatter med dette vedtak om følgende tiltak for Olsen, Elling, jf. sosialtjenesteloven § 4-3:</p>
       ${rows}
       <p style="margin-top:10px;">${hypoRows}</p>
       <p>Tiltakene iverksettes fra dag ${state.day + 1}. Vedtaket kan påklages. Saken følges opp av hjemmetjenesten v/ 4012 Solberg.</p>
@@ -1150,7 +1239,7 @@ function cover() {
   const t = state.tiltak;
   return {
     channel: t.includes("t_hjemmehjelp") || state.clocks.ck_rutine.good > 0 || state.sim.doorOpened,
-    money: t.includes("t_forvaltning") || state.clocks.ck_bostotte.done || t.includes("t_boligkontor"),
+    money: t.includes("t_forvaltning") || state.clocks.ck_bostotte.done || t.includes("t_huseier"),
     food: t.includes("t_matlevering"),
     dok: t.includes("t_dokgjennomgang"),
     routine: t.some(x => TILTAK[x].slot === "s3"),
@@ -1162,7 +1251,9 @@ const FLAVOR = [
   "21:10 — teleskopet ved vinduet. 40 min. Himmelen var overskyet.",
   "Kryssordet fra lørdagsavisen. Tre ord fylt inn, alle riktige.",
   "Boken om Maud-ekspedisjonen. Margnotater, små bokstaver.",
+  "Utklippsboken: nytt utklipp limt inn under «1994». Limstift, linjal, årstall i hjørnet.",
   "10:48 — naboen i vinduet et øyeblikk. E. så, uten å bevege seg.",
+  "NRK Kveldsnytt. Han satt gjennom hele sendingen. Reiste seg da innenrikspolitikken var over.",
   "Han brettet pleddet på Gretes stol. La det tilbake nøyaktig slik det lå."
 ];
 let flavorIdx = 0;
@@ -1178,7 +1269,7 @@ function simTick() {
     // Grete bærer. Stabilt — det er hele poenget.
     s.needs.security = 55; s.needs.hunger = Math.max(s.needs.hunger, 70);
     if (s.visitLevel > 0 && day >= 3) log(flavor());
-    if (day === 3 && s.visitLevel > 0) log("Grete kom 16:10 med to nye bokser. Hun ble ikke sittende. Hun pleier å bli sittende.");
+    if (day === 3 && s.visitLevel > 0) log("Grete var på kjøkkenet fra 15:30. Kjøttkaker. Hun fylte fire nye bokser og satte seg ikke ned mens de spiste.");
     return;
   }
 
@@ -1236,7 +1327,7 @@ function simTick() {
         "Brevrutine: Frank la ett brev på bordet og ventet. E. så på det. Det var alt. Det var nok.",
         "Brevrutine: E. åpnet konvolutten. Leste avsenderen høyt. La den fra seg. Frank sa ingenting.",
         "Brevrutine: E. åpnet brevet og leste første avsnitt. «De vil ha et svar innen fjorten dager.» Det var en vurdering.",
-        "Brevrutine: E. la brevet i en mappe han hadde laget selv. Den var merket. Små bokstaver."
+        `Brevrutine: E. la brevet i <span class="ev" data-fact="f_egen_mappe">en mappe han hadde laget selv. Den var merket. Små bokstaver.</span>`
       ];
       log(steps[state.clocks.ck_rutine.good - 1], "tiltak");
     }
@@ -1246,11 +1337,7 @@ function simTick() {
 
   if (state.tiltak.includes("t_telefon") && state.clocks.ck_rutine.bad >= 2 && !s.tiradeLogged) {
     s.tiradeLogged = true;
-    log("Telefontrening avbrutt. E. reiste seg, holdt et kvarter langt foredrag om apparatets historie og iboende uforskammethet, og gikk inn på soverommet. Frank noterte: manuset lå urørt. Avstanden til apparatet var aldri under to meter.", "tiltak");
-  }
-
-  if (state.tiltak.includes("t_alarm") && !c.channel) {
-    if (!s.alarmLogged) { s.alarmLogged = true; log("Trygghetsalarmen ligger uåpnet i esken på dørmatten.", "tiltak"); }
+    log(`Telefontrening avbrutt. E. reiste seg, holdt <span class="ev" data-fact="f_tirade">et kvarter langt foredrag om apparatets historie og iboende uforskammethet</span>, og gikk inn på soverommet. Manuset lå urørt.`, "tiltak");
   }
 
   if (c.institusjon && !s.instLogged) {
@@ -1261,7 +1348,7 @@ function simTick() {
   // Penger
   if (!c.money) {
     state.clocks.ck_restanse.bad = Math.min(6, state.clocks.ck_restanse.bad + 1);
-    if (state.clocks.ck_restanse.bad === 3) log("Brev fra Søgaard Eiendom. Det ligger uåpnet. Det ser tykkere ut enn de andre.");
+    if (state.clocks.ck_restanse.bad === 3) log("Ny lapp fra Bakkerud i postkassen. Kortere enn brevet. Bare ett spørsmålstegn til slutt.");
   } else if (state.tiltak.includes("t_forvaltning") && !s.forvLogged) {
     s.forvLogged = true;
     log("Forvaltningskontoret har overtatt de faste betalingene. Husleien for mars er sikret.", "tiltak");
@@ -1277,9 +1364,8 @@ function simTick() {
 const SCRIPT = {
   2: s => { state.greteStage = 2; },
   3: s => {
-    receiveDoc("doc_husleievarsel");
     state.greteStage = 3;
-    return [{ tag: "NY POST PÅ PULTEN", text: "Søgaard Eiendom AS · varsel", kind: "day" }];
+    return [{ tag: "BESKJED FRA FRANK", text: "Grete skulle ringe tilbake om papirene. Hun ringte ikke.", kind: "day" }];
   },
   4: s => {
     receiveDoc("doc_innleggelse");
@@ -1291,6 +1377,10 @@ const SCRIPT = {
     state.greteStage = 5;
     if (!state.questions.q_kollaps) state.questions.q_kollaps = { visible: true, hypo: null };
     return [{ tag: "MELDING FRA ULLEVÅL", text: "Grete Olsen er død.", kind: "day" }];
+  },
+  6: s => {
+    receiveDoc("doc_huseier");
+    return [{ tag: "NY POST PÅ PULTEN", text: "Håndskrevet brev · T. Bakkerud", kind: "day" }];
   },
   8: s => { endGame(); return []; }
 };
@@ -1344,7 +1434,7 @@ function endGame() {
   let para1, para2, closing;
   if (c.institusjon) {
     para1 = "Kartlegging for omsorgsbolig er igangsatt. Saken er bureaukratisk lesbar og kan lukkes administrativt ved tildeling.";
-    para2 = "Skjemaet ligger fortsatt uåpnet i posten hans. Leiligheten i Gabels gate er i så fall et avsluttet kapittel.";
+    para2 = "Skjemaet ligger fortsatt uåpnet i posten hans. Leiligheten — den eneste verden han kjenner — er i så fall et avsluttet kapittel.";
     closing = "«Han er en smart gutt,» sa hun i trappen. Det var det siste hun sa til kommunen.";
   } else if (c.money && (c.channel || rut.good > 0)) {
     para1 = "Husleien for mars er sikret. " + (state.clocks.ck_bostotte.done ? "Bostøtte er under behandling." : "Betalingskjeden er midlertidig forvaltet.") + " Leieforholdet består.";
@@ -1358,7 +1448,7 @@ function endGame() {
     closing = "Vedtaket var riktig utfylt. Det var ikke nok.";
   } else if (c.channel || c.food || c.dok) {
     para1 = "Noen bærer deler av hverdagen. " + (c.food ? "Mat kommer inn. " : "") + (c.dok ? "Posten åpnes. " : "") + (c.channel ? "Døren går opp for én person." : "");
-    para2 = "Ingen betaler den. Restanseklokken står på " + r + " av 6. Søgaard Eiendom har sendt nytt brev. Det ser tykkere ut enn de andre.";
+    para2 = "Ingen betaler den. Restanseklokken står på " + r + " av 6. Bakkerud har lagt en ny lapp i postkassen. Han kommer på torsdag.";
     closing = "Hverdagen har fått stillas. Grunnmuren har ingen.";
   } else {
     para1 = "Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.";
@@ -1383,6 +1473,40 @@ function endGame() {
 
 const $ = sel => document.querySelector(sel);
 const esc = s => s.replace(/</g, "&lt;");
+
+const DOMAIN_ICONS = {
+  "Økonomi/bolig":   { g: "●", c: "var(--hint-gold)" },
+  "Hverdag/rutine":  { g: "⌂", c: "var(--hint-green)" },
+  "Helse/risiko":    { g: "✚", c: "var(--hint-warn)" },
+  "Nettverk/sosialt":{ g: "☎", c: "var(--hint-blue)" },
+  "Ressurser":       { g: "✦", c: "var(--hint-purple)" }
+};
+function dico(domain) {
+  const d = DOMAIN_ICONS[domain];
+  return `<span class="dico" style="color:${d.c};">${d.g}</span>`;
+}
+function coins(n, cls) {
+  return n ? Array.from({ length: n }, () => `<span class="coin ${cls || ""}"></span>`).join("") : "—";
+}
+
+/* Løft fra hvor som helst: dokumenter, Frank-samtale, loggen. Én delegert lytter. */
+document.addEventListener("click", e => {
+  const span = e.target.closest(".ev");
+  if (!span || span.classList.contains("collected")) return;
+  const fid = span.dataset.fact;
+  if (!fid || !FACTS[fid]) return;
+  const res = liftFact(fid);
+  if (!res) return;
+  span.classList.remove("nudged");
+  span.classList.add("collected");
+  toast({ tag: "FAKTUM LAGT TIL · " + res.fact.domain, text: res.fact.text, kind: "fact" });
+  for (const qId of res.newQuestions) toast({ tag: "ÅPENT SPØRSMÅL", text: QUESTIONS[qId].title, kind: "hypo" });
+  renderAll();
+});
+
+function decorateEvs(root) {
+  root.querySelectorAll(".ev").forEach(s => { if (state.facts[s.dataset.fact]) s.classList.add("collected"); });
+}
 
 /* ---------- toasts ---------- */
 function toast(t) {
@@ -1463,11 +1587,7 @@ function openDoc(id) {
   const r = $("#reader-doc");
   r.className = d.reg;
   r.innerHTML = `<button id="reader-close" class="quiet" onclick="closeDoc()">LUKK</button>${d.head}<div class="doc-body">${d.body}</div>`;
-  r.querySelectorAll(".ev").forEach(span => {
-    const fid = span.dataset.fact;
-    if (state.facts[fid]) span.classList.add("collected");
-    else span.onclick = () => liftFromDoc(span, fid);
-  });
+  decorateEvs(r);
   clearTimeout(nudgeTimer);
   nudgeTimer = setTimeout(() => {
     r.querySelectorAll(".ev:not(.collected)").forEach(s => s.classList.add("nudged"));
@@ -1478,18 +1598,30 @@ function openDoc(id) {
 function closeDoc() { clearTimeout(nudgeTimer); $("#reader-overlay").classList.remove("open"); renderAll(); }
 $("#reader-overlay").addEventListener("click", e => { if (e.target.id === "reader-overlay") closeDoc(); });
 
-function liftFromDoc(span, fid) {
-  const res = liftFact(fid);
-  if (!res) return;
-  span.classList.remove("nudged");
-  span.classList.add("collected");
-  span.onclick = null;
-  toast({ tag: "FAKTUM LAGT TIL · " + res.fact.domain, text: res.fact.text, kind: "fact" });
-  for (const qId of res.newQuestions) {
-    toast({ tag: "ÅPENT SPØRSMÅL", text: QUESTIONS[qId].title, kind: "hypo" });
-  }
-  renderBadges();
+/* ---------- faktum-detalj (Blake Manor-stil: hva henger dette sammen med?) ---------- */
+function openFact(fid) {
+  const f = FACTS[fid], st = state.facts[fid];
+  if (!f || !st) return;
+  const srcDoc = Object.keys(DOCUMENTS).find(did => (DOCUMENTS[did].body || "").includes(`data-fact="${fid}"`));
+  const qs = f.supports.filter(qId => state.questions[qId]);
+  $("#fact-card").innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:4px;">${dico(f.domain)}<span class="tag">${f.domain} · ${f.cat} · DAG ${st.day}</span></div>
+    <div style="font-family:var(--hand-2);font-size:19px;font-weight:600;line-height:1.3;margin:6px 0 4px;">${f.text}</div>
+    <div style="font-family:var(--hand-1);font-size:12.5px;font-style:italic;color:var(--ink-dim);">«${f.quote}»</div>
+    <div class="fc-rel"><h4>HENGER SAMMEN MED</h4>
+      ${qs.map(qId => `<span class="fc-link" onclick="closeFact();showSurface('sporsmal')">? &nbsp;${QUESTIONS[qId].title}</span>`).join("") || `<span class="tag">ingen åpne spørsmål ennå</span>`}
+    </div>
+    <div class="fc-rel"><h4>KAN DRØFTES MED</h4>
+      ${f.discuss.map(p => p === "Frank"
+        ? `<span class="fc-link" onclick="closeFact();showSurface('frank')">☎ &nbsp;Frank</span>`
+        : `<span class="fc-link" style="color:var(--ink-faint);cursor:default;">${state.greteStage >= 5 ? "✝" : "○"} &nbsp;${p}${state.greteStage >= 5 ? " — ikke lenger mulig" : " — i en senere utgave"}</span>`).join("")}
+    </div>
+    ${srcDoc ? `<div class="fc-rel"><h4>KILDE</h4><span class="fc-link" onclick="closeFact();openDoc('${srcDoc}')">▤ &nbsp;${DOCUMENTS[srcDoc].title}</span></div>` : ""}
+    <div style="text-align:right;margin-top:12px;"><button class="quiet" onclick="closeFact()">LUKK</button></div>`;
+  $("#fact-overlay").classList.add("open");
 }
+function closeFact() { $("#fact-overlay").classList.remove("open"); }
+$("#fact-overlay").addEventListener("click", e => { if (e.target.id === "fact-overlay") closeFact(); });
 
 /* ---------- sakens fakta ---------- */
 function renderFakta() {
@@ -1502,8 +1634,8 @@ function renderFakta() {
     return `<div class="domain-col"><h3><span>${d}</span><span>${list.length || "—"}</span></h3>
       ${list.map(({ fid, st }) => {
         const f = FACTS[fid];
-        return `<div class="fact-chip ${st.fresh ? "fresh" : ""}">
-          <div class="f-text">${f.text}</div>
+        return `<div class="fact-chip ${st.fresh ? "fresh" : ""}" onclick="openFact('${fid}')">
+          <div class="f-text">${dico(f.domain)}${f.text}</div>
           <div class="f-quote">«${f.quote}»</div>
           <div class="f-src">${f.cat} · dag ${st.day} · kan drøftes med: ${f.discuss.join(", ")}</div>
         </div>`;
@@ -1530,7 +1662,7 @@ function renderQuestions() {
       <span class="pill ${pillCls} q-state">${stateLabel}</span>
       <div class="q-title">${q.title}</div>
       <div class="q-facts">
-        ${sup.map(fid => `<span class="q-fact-min" data-line-fact="${fid}" title="${esc(FACTS[fid].quote)}">${FACTS[fid].text}</span>`).join("")}
+        ${sup.map(fid => `<span class="q-fact-min" data-line-fact="${fid}" title="${esc(FACTS[fid].quote)}" onclick="openFact('${fid}')">${dico(FACTS[fid].domain)}${FACTS[fid].text}</span>`).join("")}
         ${sup.length < 2 ? `<span class="q-fact-min q-fact-missing">… saken mangler grunnlag</span>` : ""}
       </div>
       <div class="hypo-list">
@@ -1538,13 +1670,13 @@ function renderQuestions() {
           const ok = hypoAvailable(h);
           const cls = qst.hypo === h.id ? "chosen" : ok ? "" : "blocked";
           const missing = h.needs.filter(f => !state.facts[f]);
-          return `<div class="hypo-opt ${cls}" onclick="${ok && !qst.hypo ? `uiChooseHypo('${qId}','${h.id}')` : ""}">
+          return `<div class="hypo-opt ${cls}" onclick="${ok ? `uiChooseHypo('${qId}','${h.id}')` : ""}">
             <span class="h-mark">${qst.hypo === h.id ? "☒" : "☐"}</span>
-            <span>${h.label}${!ok ? ` <span class="tag" style="color:var(--hint-warn);">— mangler grunnlag (${missing.length} faktum)</span>` : ""}</span>
+            <span>${ok ? h.label : `<span class="redact">${h.label}</span> <span class="tag">uleselig — mangler ${missing.length} faktum</span>`}</span>
           </div>`;
         }).join("")}
       </div>
-      ${chosen ? `<div class="arbeidshypo"><div class="ah-head">ARBEIDSHYPOTESE · FORELØPIG</div><div class="ah-body">${chosen.note}</div></div>` : ""}
+      ${chosen ? `<div class="arbeidshypo"><div class="ah-head">ARBEIDSHYPOTESE · FORELØPIG — KAN BYTTES</div><div class="ah-body">${chosen.note}</div>${chosen.opens && chosen.opens.length ? `<div class="q-opens">→ GIR GRUNNLAG FOR: ${chosen.opens.map(tid => TILTAK[tid].title.toUpperCase()).join(" · ")}</div>` : ""}</div>` : ""}
     </div>`;
   }).join("");
   requestAnimationFrame(drawLines);
@@ -1553,7 +1685,7 @@ function renderQuestions() {
 function uiChooseHypo(qId, hId) {
   if (chooseHypo(qId, hId)) {
     const h = QUESTIONS[qId].hypos.find(x => x.id === hId);
-    toast({ tag: "ARBEIDSHYPOTESE NOTERT", text: h.label, kind: "hypo" });
+    if (state.questions[qId].hypo === hId) toast({ tag: "ARBEIDSHYPOTESE NOTERT", text: h.label, kind: "hypo" });
     renderAll();
   }
 }
@@ -1604,13 +1736,13 @@ function renderVedtak() {
             <div class="t-desc">${t.desc}</div>
             ${!av.ok && !isActive ? `<div class="t-req">▸ ${av.why}</div>` : ""}
           </span>
-          <span class="t-cost">${t.cost ? t.cost.toLocaleString("no") + " kr/mnd" : "—"}</span>
+          <span class="t-cost">${coins(t.cost)}</span>
         </div>`;
       }).join("");
     }).join("") +
     `<div style="margin-top:18px;display:flex;align-items:center;gap:14px;">
       <button class="primary" onclick="uiEnact()" ${state.draft.length && state.phase === "play" ? "" : "disabled"}>FATT VEDTAK (${state.draft.length} tiltak)</button>
-      <span class="tag">disponeres: ${(spentCost() + draftCost()).toLocaleString("no")} / 12 000 kr/mnd ${spentCost() + draftCost() > 12000 ? '· <span style="color:var(--hint-warn);">over rammen</span>' : ""}</span>
+      <span class="tag" style="display:flex;align-items:center;gap:6px;">RAMME: ${coins(spentCost() + draftCost(), "spent")}${coins(Math.max(0, 6 - spentCost() - draftCost()))}</span>
     </div>`;
   renderClocks();
 }
@@ -1618,8 +1750,8 @@ function renderVedtak() {
 function toggleDraft(tid) {
   const i = state.draft.indexOf(tid);
   if (i >= 0) state.draft.splice(i, 1);
-  else if (spentCost() + draftCost() + TILTAK[tid].cost <= 12000) state.draft.push(tid);
-  else { toast({ tag: "RESSURSRAMME", text: "12 000 kr/mnd. Noe må ut.", kind: "hypo" }); return; }
+  else if (spentCost() + draftCost() + TILTAK[tid].cost <= 6) state.draft.push(tid);
+  else { toast({ tag: "TILTAKSRAMME", text: "Seks mynter i måneden. Noe må ut.", kind: "hypo" }); return; }
   renderVedtak();
 }
 
@@ -1677,6 +1809,7 @@ function renderFrank() {
     <div class="chat-log">${state.chatLog.map(m => `<div class="chat-msg ${m.who === "DEG" ? "you" : ""}"><div class="who">${m.who}</div><div class="bubble">${m.text}</div></div>`).join("")
       || `<div style="font-family:var(--hand-2);font-size:16px;color:var(--ink-faint);">Spørsmålene låses opp av sakens fakta.</div>`}</div>
     <div class="chat-ask">${askable.map(c => `<button onclick="uiAsk('${c.id}')">${c.q}</button>`).join("")}</div>`;
+  decorateEvs(chat);
   const log = chat.querySelector(".chat-log");
   log.scrollTop = log.scrollHeight;
 }
@@ -1731,6 +1864,7 @@ function renderApt() {
       </div>
     </div>
   </div>`;
+  decorateEvs(wrap);
 }
 
 /* ---------- badges + topbar ---------- */
@@ -1741,7 +1875,7 @@ function renderBadges() {
   setBadge("#badge-frank", CHAT.filter(c => state.facts[c.needs] && !state.asked.includes(c.id)).length);
   $("#res-day").textContent = state.day;
   $("#res-actions").textContent = state.actions;
-  $("#head-disponert").textContent = "DISPONERT: " + spentCost().toLocaleString("no") + " KR";
+  $("#head-disponert").innerHTML = "DISPONERT: " + (spentCost() ? coins(spentCost()) : "—");
 }
 
 /* ---------- neste dag + slutt ---------- */

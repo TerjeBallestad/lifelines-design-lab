@@ -69,6 +69,22 @@ never speculates psychologically — behavior only.
   but nodes are not draggable in v1.
 - Save/load, audio, localization.
 
+## v2 (samme dag, etter Terjes gjennomspilling)
+
+- 1999, drabantby-blokk, mor og sønn bor sammen. Trygdekontoret, fasttelefon, kontant husleie.
+- Privat huseier (T. Bakkerud, muntlig avtale fra -71). Husleieproblemet oppstår ETTER dødsfallet —
+  brevet hans er story-beat-kroken («jeg kommer innom på torsdag»).
+- Kroner ute, mynter inn: tiltaksramme 6 mynter/mnd, husleie tre, trygd to. Gamey ressurser,
+  sosialrealistisk overflate.
+- Arbeidshypoteser kan byttes (de er foreløpige). Hver hypotese viser hva den gir grunnlag for,
+  og tiltak i slot 1/2 krever en hypotese — det er konsekvensen av å mene noe.
+- Låste hypoteser er nå Roottrees-style synlige ukjente: sladdede linjer, ikke leselige svaralternativer.
+- Fakta kan løftes fra Frank-samtalen og loggen, ikke bare dokumenter (delegert .ev-håndtering).
+- Faktum-detalj (Blake Manor): klikk en brikke → hva den henger sammen med, hvem den kan drøftes
+  med, kilden. Domeneikoner på alle brikker.
+- Trygghetsalarm fjernet. «Ring Elling direkte» → «Ring leiligheten», kun når Grete er borte.
+- Gro/Arbeiderpartiet-arkivet inn som ressurs-faktum, samtale og logg-flavor.
+
 ## Verdict question
 
 > Does gathering facts, holding open questions, and committing to a vedtak feel like
