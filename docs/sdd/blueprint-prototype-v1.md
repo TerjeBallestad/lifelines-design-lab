@@ -31,12 +31,12 @@ Prologue (legekontoret — bekymringsmelding sendes)
 
 ## Architecture (maps to Godot)
 
-| Layer | In prototype | In Godot later |
-| --- | --- | --- |
-| CONTENT | plain JS data: documents, hotspots, facts, questions, hypotheses, tiltak, dispatches, clocks, script | Resources (.tres), authored content |
-| SIM (mock) | character state from core-loop values (Elling Blue/Green, attention 20; Grete White/Green, attention 117), daily tick, tiltak modifiers, authored event pools | the real core-loop simulation |
-| ENGINE | pure functions: liftFact, refreshQuestions, chooseHypothesis, dispatch, enactVedtak, advanceDay, clock movement | resolver autoloads |
-| STORE/UI | one state object, per-surface render | scenes + signals |
+| Layer      | In prototype                                                                                                                                                  | In Godot later                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| CONTENT    | plain JS data: documents, hotspots, facts, questions, hypotheses, tiltak, dispatches, clocks, script                                                          | Resources (.tres), authored content |
+| SIM (mock) | character state from core-loop values (Elling Blue/Green, attention 20; Grete White/Green, attention 117), daily tick, tiltak modifiers, authored event pools | the real core-loop simulation       |
+| ENGINE     | pure functions: liftFact, refreshQuestions, chooseHypothesis, dispatch, enactVedtak, advanceDay, clock movement                                               | resolver autoloads                  |
+| STORE/UI   | one state object, per-surface render                                                                                                                          | scenes + signals                    |
 
 ## Contracts honored from the SDDs
 

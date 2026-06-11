@@ -40,6 +40,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Include blueprint prototype
+        run: |
+          mkdir -p dist/prototypes
+          cp prototypes/blueprint_v1.html dist/prototypes/blueprint_v1.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
