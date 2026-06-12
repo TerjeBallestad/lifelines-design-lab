@@ -1,0 +1,6 @@
+
+> lifelines-design-lab@1.0.0 lint
+> tsc -b --noEmit && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!

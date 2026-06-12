@@ -1,0 +1,4361 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index 9d50387..5be1319 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,5 +1,39 @@
++import { useState } from 'react';
++import { BlueprintLab } from './components/blueprint/BlueprintLab';
+ import { PhonePracticeLab } from './components/PhonePracticeLab';
+ 
+ export default function App() {
+-  return <PhonePracticeLab />;
++  const [surface, setSurface] = useState<'blueprint' | 'phone'>('blueprint');
++
++  return (
++    <div className="min-h-screen">
++      <div className="sticky top-0 z-30 border-b border-black/10 bg-base-100/95 px-3 py-2 backdrop-blur">
++        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-2">
++          <div>
++            <div className="text-xs font-black uppercase tracking-[0.18em] text-base-content/50">
++              Lifelines Design Lab
++            </div>
++            <div className="font-black">Playable surfaces</div>
++          </div>
++          <div className="join">
++            <button
++              className={`btn join-item btn-sm ${surface === 'blueprint' ? 'btn-primary' : 'btn-outline'}`}
++              type="button"
++              onClick={() => setSurface('blueprint')}
++            >
++              Blueprint v1
++            </button>
++            <button
++              className={`btn join-item btn-sm ${surface === 'phone' ? 'btn-primary' : 'btn-outline'}`}
++              type="button"
++              onClick={() => setSurface('phone')}
++            >
++              Phone Practice Lab
++            </button>
++          </div>
++        </div>
++      </div>
++      {surface === 'blueprint' ? <BlueprintLab /> : <PhonePracticeLab />}
++    </div>
++  );
+ }
+diff --git a/src/components/blueprint/BlueprintLab.test.tsx b/src/components/blueprint/BlueprintLab.test.tsx
+new file mode 100644
+index 0000000..171e1f0
+--- /dev/null
++++ b/src/components/blueprint/BlueprintLab.test.tsx
+@@ -0,0 +1,219 @@
++// @vitest-environment jsdom
++
++import { act } from 'react';
++import { createRoot, type Root } from 'react-dom/client';
++import { afterEach, describe, expect, it } from 'vitest';
++import { BlueprintLab } from './BlueprintLab';
++
++(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
++  true;
++
++let root: Root | undefined;
++let host: HTMLDivElement | undefined;
++
++function renderBlueprint(width = 1024) {
++  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width });
++  host = document.createElement('div');
++  document.body.append(host);
++  root = createRoot(host);
++  act(() => {
++    root!.render(<BlueprintLab />);
++  });
++}
++
++afterEach(() => {
++  if (root) {
++    act(() => root!.unmount());
++  }
++  host?.remove();
++  root = undefined;
++  host = undefined;
++  document.body.innerHTML = '';
++});
++
++function clickButton(text: string) {
++  const button = Array.from(document.querySelectorAll('button')).find(
++    (candidate) => candidate.textContent?.includes(text) && !candidate.hasAttribute('disabled'),
++  );
++  if (!button) {
++    const matches = Array.from(document.querySelectorAll('button'))
++      .filter((candidate) => candidate.textContent?.includes(text))
++      .map((candidate) => `${candidate.textContent} disabled=${candidate.hasAttribute('disabled')}`)
++      .join('\n');
++    throw new Error(`Missing enabled button containing: ${text}\n${matches}`);
++  }
++  act(() => {
++    (button as HTMLButtonElement).click();
++  });
++}
++
++function clickTab(text: string) {
++  const button = Array.from(document.querySelectorAll('button.blueprint-tab')).find(
++    (candidate) => candidate.textContent?.includes(text) && !candidate.hasAttribute('disabled'),
++  );
++  if (!button) throw new Error(`Missing enabled tab containing: ${text}`);
++  act(() => {
++    (button as HTMLButtonElement).click();
++  });
++}
++
++function clickAriaButton(label: string) {
++  const button = Array.from(document.querySelectorAll('button')).find(
++    (candidate) =>
++      candidate.getAttribute('aria-label') === label && !candidate.hasAttribute('disabled'),
++  );
++  if (!button) throw new Error(`Missing enabled aria button: ${label}`);
++  act(() => {
++    (button as HTMLButtonElement).click();
++  });
++}
++
++function clickEvidence(factId: string) {
++  const button = document.querySelector<HTMLButtonElement>(
++    `[data-testid="blueprint-evidence-${factId}"]`,
++  );
++  if (!button) throw new Error(`Missing evidence button: ${factId}`);
++  act(() => {
++    button.click();
++  });
++  return button;
++}
++
++function startAtDesk() {
++  renderBlueprint();
++  expect(document.body.textContent).toContain('LEGESENTERET');
++  clickButton('Hopp over');
++  expect(document.body.textContent).toContain('Én melding. Én pult. Begynn der.');
++}
++
++function openDocument(title: string) {
++  clickButton(title);
++  expect(document.body.textContent).toContain('Gul markering vises først etter');
++}
++
++function closeDocument() {
++  clickButton('Lukk');
++}
++
++function liftFirstDocumentFacts() {
++  openDocument('Legesenteret');
++  clickEvidence('f_grete_baerer');
++  clickEvidence('f_saarbar');
++  clickEvidence('f_aldri_alene');
++  clickEvidence('f_ingen_tjenester');
++  closeDocument();
++}
++
++function runFrankDocumentLoop() {
++  clickTab('Frank');
++  clickAriaButton('Ring Grete');
++  clickButton('Send · Be om økonomisk oversikt');
++  clickButton('Neste dag');
++  clickButton('Send · Avtal hjemmebesøk');
++  clickButton('Neste dag');
++  clickTab('Pulten');
++
++  openDocument('husholdets økonomi');
++  for (const factId of ['f_trygd', 'f_husleie', 'f_alt_via_grete', 'f_gap', 'f_ingen_matkjop']) {
++    clickEvidence(factId);
++  }
++  closeDocument();
++
++  openDocument('hjemmebesøk');
++  for (const factId of ['f_post', 'f_kalender', 'f_matbokser', 'f_bok', 'f_avstand']) {
++    clickEvidence(factId);
++  }
++  closeDocument();
++}
++
++describe('BlueprintLab rendered interaction trace', () => {
++  it('honors the SDD-004 evidence contract in the document reader', () => {
++    startAtDesk();
++    openDocument('Legesenteret');
++
++    const evidence = document.querySelector<HTMLButtonElement>(
++      '[data-testid="blueprint-evidence-f_grete_baerer"]',
++    );
++    expect(evidence).toBeTruthy();
++    expect(evidence?.className).not.toContain('collected');
++    expect(evidence?.getAttribute('aria-pressed')).toBe('false');
++
++    evidence?.focus();
++    expect(document.activeElement).toBe(evidence);
++    clickEvidence('f_grete_baerer');
++
++    const collected = document.querySelector<HTMLButtonElement>(
++      '[data-testid="blueprint-evidence-f_grete_baerer"]',
++    );
++    expect(collected?.className).toContain('collected');
++    expect(collected?.getAttribute('aria-pressed')).toBe('true');
++    expect(document.body.textContent).toContain('FAKTUM LAGT TIL');
++  });
++
++  it('plays the React caseworker loop from prologue through reflection', () => {
++    startAtDesk();
++    liftFirstDocumentFacts();
++    runFrankDocumentLoop();
++
++    clickTab('Åpne spørsmål');
++    clickButton('Grete bærer betalingskjeden.');
++    clickButton('Grete er usynlig infrastruktur');
++    clickButton('Konsentrasjonen er sterk');
++    expect(document.body.textContent).toContain('Arbeidshypotese');
++
++    clickTab('Vedtak og tiltak');
++    clickButton('Frivillig forvaltning');
++    clickButton('Hjemmehjelp 2x uke');
++    clickButton('Åpne ett brev');
++    clickButton('Institusjonsvurdering');
++    clickButton('Fatt vedtak');
++    expect(document.body.textContent).toContain('Logg · det kommunen vet');
++
++    clickTab('Frank');
++    clickButton('Posten i gangen');
++    expect(document.body.textContent).toContain('FRANK');
++
++    clickButton('Neste dag');
++    expect(document.body.textContent).toContain('Grete er innlagt');
++    clickButton('Neste dag');
++    expect(document.body.textContent).toContain('Grete Olsen er død');
++    clickButton('Neste dag');
++    clickTab('Pulten');
++    expect(document.body.textContent).toContain('Brev fra huseieren');
++    clickButton('Neste dag');
++    clickButton('Neste dag');
++
++    expect(document.body.textContent).toContain('Dag 8 · saken fortsetter');
++    expect(document.body.textContent).toContain('Frank · status dag 8');
++  });
++
++  it('exposes the first Frank dispatch with the exact accessible name used by browser smoke', () => {
++    startAtDesk();
++    clickTab('Frank');
++
++    const dispatch = document.querySelector<HTMLButtonElement>(
++      '[data-testid="blueprint-dispatch-d_ring_grete"]',
++    );
++
++    expect(dispatch).toBeTruthy();
++    expect(dispatch?.getAttribute('aria-label')).toBe('Ring Grete');
++    expect(dispatch?.textContent).toContain('Send · Ring Grete');
++  });
++
++  it('keeps the first mobile-width path playable at 390px', () => {
++    renderBlueprint(390);
++    clickButton('Hopp over');
++    clickButton('Legesenteret');
++    clickEvidence('f_grete_baerer');
++    clickEvidence('f_saarbar');
++    clickEvidence('f_aldri_alene');
++    closeDocument();
++
++    clickTab('Åpne spørsmål');
++    expect(document.body.textContent).toContain('Hva bærer Grete');
++    clickButton('Ferdighetene er der ikke');
++    expect(document.body.textContent).toContain('Arbeidshypotese');
++    clickButton('Neste dag');
++    expect(document.body.textContent).toContain('DAG 2');
++  });
++});
+diff --git a/src/components/blueprint/BlueprintLab.tsx b/src/components/blueprint/BlueprintLab.tsx
+new file mode 100644
+index 0000000..1cb5b39
+--- /dev/null
++++ b/src/components/blueprint/BlueprintLab.tsx
+@@ -0,0 +1,1097 @@
++import clsx from 'clsx';
++import {
++  ArrowRight,
++  BookOpen,
++  ClipboardList,
++  Coins,
++  FileText,
++  Home,
++  MessageSquare,
++  RotateCcw,
++  Search,
++  Send,
++  Sparkles,
++} from 'lucide-react';
++import { observer } from 'mobx-react-lite';
++import { useState, type ReactNode } from 'react';
++import {
++  blueprintDayName,
++  blueprintDomains,
++  blueprintFacts,
++  blueprintPrologue,
++  blueprintQuestions,
++  blueprintSlotLabels,
++  blueprintTiltak,
++} from '../../content/blueprint';
++import type {
++  BlueprintDocument,
++  BlueprintDomain,
++  BlueprintFact,
++  BlueprintSurface,
++  BlueprintTextRun,
++  BlueprintTiltakSlot,
++} from '../../domain/blueprint';
++import { BlueprintStore } from '../../stores/BlueprintStore';
++
++const surfaces: Array<{ id: BlueprintSurface; label: string; icon: ReactNode }> = [
++  { id: 'pulten', label: 'Pulten', icon: <FileText size={16} /> },
++  { id: 'fakta', label: 'Sakens fakta', icon: <BookOpen size={16} /> },
++  { id: 'sporsmal', label: 'Åpne spørsmål', icon: <Search size={16} /> },
++  { id: 'vedtak', label: 'Vedtak og tiltak', icon: <ClipboardList size={16} /> },
++  { id: 'frank', label: 'Frank', icon: <MessageSquare size={16} /> },
++  { id: 'leiligheten', label: 'Leiligheten', icon: <Home size={16} /> },
++];
++
++const domainIcon: Record<BlueprintDomain, string> = {
++  'Økonomi/bolig': '●',
++  'Hverdag/rutine': '⌂',
++  'Helse/risiko': '+',
++  'Nettverk/sosialt': '☎',
++  Ressurser: '✦',
++};
++
++export function BlueprintLab() {
++  const [store] = useState(() => new BlueprintStore());
++  return <BlueprintSurface store={store} />;
++}
++
++const BlueprintSurface = observer(function BlueprintSurface({ store }: { store: BlueprintStore }) {
++  return (
++    <div className="blueprint-root min-h-screen bg-[#382f26] text-[#2a2520]">
++      {store.progress.phase === 'prologue' ? <Prologue store={store} /> : null}
++      <div
++        className={clsx(
++          'mx-auto max-w-[1480px] px-3 pb-10 pt-4 md:px-6',
++          store.progress.phase === 'prologue' && 'hidden',
++        )}
++      >
++        <Header store={store} />
++        <Tabs store={store} />
++        <main className="blueprint-sheet min-h-[680px] p-3 md:p-5">
++          {store.activeSurface === 'pulten' ? <Desk store={store} /> : null}
++          {store.activeSurface === 'fakta' ? <FactsBoard store={store} /> : null}
++          {store.activeSurface === 'sporsmal' ? <QuestionsBoard store={store} /> : null}
++          {store.activeSurface === 'vedtak' ? <VedtakBoard store={store} /> : null}
++          {store.activeSurface === 'frank' ? <FrankBoard store={store} /> : null}
++          {store.activeSurface === 'leiligheten' ? <ApartmentBoard store={store} /> : null}
++        </main>
++      </div>
++      <DocumentReader store={store} />
++      <FactDialog store={store} />
++      <Notices store={store} />
++      {store.reflectionVisible ? <Reflection store={store} /> : null}
++    </div>
++  );
++});
++
++const Prologue = observer(function Prologue({ store }: { store: BlueprintStore }) {
++  const shown = blueprintPrologue.slice(0, store.prologueIndex + 1);
++  const last = shown.at(-1);
++  const finished = Boolean(last?.stamp);
++
++  return (
++    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#382f26] p-4">
++      <section className="blueprint-story-card max-h-[88vh] w-full max-w-2xl overflow-y-auto p-7 md:p-9">
++        <div className="mb-6 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#6b6259]">
++          {shown.find((beat) => beat.cap)?.cap}
++        </div>
++        <div className="grid gap-4">
++          {shown
++            .filter((beat) => !beat.cap)
++            .map((beat, index) =>
++              beat.dir ? (
++                <p key={index} className="text-sm italic leading-relaxed text-[#6b6259]">
++                  {beat.dir}
++                </p>
++              ) : beat.stamp ? (
++                <div key={index} className="py-4 text-center">
++                  <span className="blueprint-stamp">{beat.stamp}</span>
++                  <p className="mt-4 text-xl font-semibold">{beat.end}</p>
++                </div>
++              ) : (
++                <div key={index}>
++                  <div className="text-xs font-bold uppercase tracking-[0.18em] text-[#6b6259]">
++                    {beat.who}
++                  </div>
++                  <p className="text-2xl font-semibold leading-snug">{beat.say}</p>
++                </div>
++              ),
++            )}
++        </div>
++        <div className="mt-7 flex flex-wrap justify-end gap-2">
++          {finished ? (
++            <button className="blueprint-button primary" type="button" onClick={store.startCase}>
++              <ArrowRight size={16} />
++              Til pulten
++            </button>
++          ) : (
++            <>
++              <button className="blueprint-button quiet" type="button" onClick={store.startCase}>
++                Hopp over
++              </button>
++              <button
++                className="blueprint-button primary"
++                type="button"
++                onClick={store.advancePrologue}
++              >
++                <ArrowRight size={16} />
++                Videre
++              </button>
++            </>
++          )}
++        </div>
++      </section>
++    </div>
++  );
++});
++
++const Header = observer(function Header({ store }: { store: BlueprintStore }) {
++  return (
++    <header className="mb-3 grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
++      <div className="blueprint-case-head">
++        <div>
++          <h1 className="text-lg font-black uppercase tracking-[0.12em]">
++            Sak 99/0412 · Olsen, Elling
++          </h1>
++          <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[#6b6259]">
++            Oslo kommune · sosialkontoret · meldt av Dr. J. Haug · februar 1999
++          </p>
++        </div>
++        <div className="mt-3 text-xs uppercase tracking-[0.14em] text-[#6b6259] md:mt-0 md:text-right">
++          Tiltaksramme: 6 mynter/mnd
++          <br />
++          Disponert: {store.spentCost || '—'}
++        </div>
++      </div>
++      <ResourceBox value={store.progress.day} label="dag" />
++      <ResourceBox value={store.progress.actions} label="handlinger" />
++      <button className="blueprint-resource action" type="button" onClick={store.advanceDay}>
++        <ArrowRight size={22} />
++        <span>Neste dag</span>
++      </button>
++    </header>
++  );
++});
++
++function ResourceBox({ value, label }: { value: number | string; label: string }) {
++  return (
++    <div className="blueprint-resource">
++      <div className="text-3xl font-black leading-none">{value}</div>
++      <div>{label}</div>
++    </div>
++  );
++}
++
++const Tabs = observer(function Tabs({ store }: { store: BlueprintStore }) {
++  const factBadge = store.progress.unreadFacts;
++  const questionBadge = store.visibleQuestions.filter((entry) => {
++    const state = store.progress.questions[entry.id];
++    return (
++      !state.hypothesisId &&
++      entry.question.hypotheses.some((hypothesis) =>
++        hypothesis.needs.every((factId) => store.progress.facts[factId]),
++      )
++    );
++  }).length;
++  const frankBadge = store.askableFrankPrompts.length;
++
++  return (
++    <nav className="flex flex-wrap gap-1 px-1">
++      {surfaces.map((surface) => {
++        const badge =
++          surface.id === 'fakta'
++            ? factBadge
++            : surface.id === 'sporsmal'
++              ? questionBadge
++              : surface.id === 'frank'
++                ? frankBadge
++                : 0;
++        return (
++          <button
++            key={surface.id}
++            className={clsx('blueprint-tab', store.activeSurface === surface.id && 'active')}
++            type="button"
++            onClick={() => store.showSurface(surface.id)}
++          >
++            {surface.icon}
++            {surface.label}
++            {badge > 0 ? <span className="blueprint-tab-badge">{badge}</span> : null}
++          </button>
++        );
++      })}
++    </nav>
++  );
++});
++
++const Desk = observer(function Desk({ store }: { store: BlueprintStore }) {
++  return (
++    <section className="blueprint-desk min-h-[640px] rounded-sm p-4 md:p-6">
++      <div className="flex flex-wrap gap-6">
++        {store.documentEntries.map(({ id, document, state }, index) => {
++          const evidence = store.evidenceCount(document);
++          return (
++            <button
++              key={id}
++              className={clsx('blueprint-desk-doc', state.read && 'read')}
++              style={{ transform: `rotate(${(((index * 137) % 50) - 25) / 10}deg)` }}
++              type="button"
++              onClick={() => store.openDocument(id)}
++            >
++              {state.isNew ? <span className="blueprint-stamp new">NY</span> : null}
++              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6259]">
++                {document.kind} · dag {state.day}
++              </span>
++              <span className="mt-2 block text-left text-base font-black leading-tight">
++                {document.title}
++              </span>
++              <span className="mt-2 block text-left text-sm leading-snug text-[#6b6259]">
++                {document.peek}
++              </span>
++              {evidence.total ? (
++                <span className="absolute bottom-2 right-3 text-[10px] uppercase tracking-[0.12em] text-[#a49a8c]">
++                  {evidence.lifted}/{evidence.total} merket
++                </span>
++              ) : null}
++            </button>
++          );
++        })}
++      </div>
++      <p className="mt-8 max-w-xl text-lg font-semibold text-[#cfc4b2]">
++        {store.progress.greteStage >= 5
++          ? 'Mappen er tyngre enn den var. Det er fortsatt bare én sak i den.'
++          : store.progress.day === 1
++            ? 'Én melding. Én pult. Begynn der.'
++            : 'Pulten svarer først når du ber noen gjøre noe.'}
++      </p>
++    </section>
++  );
++});
++
++const DocumentReader = observer(function DocumentReader({ store }: { store: BlueprintStore }) {
++  const document = store.currentDocument;
++  if (!document || !store.openDocumentId) return null;
++
++  return (
++    <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-[#1a1510]/60 p-3 py-8">
++      <article
++        className={clsx('blueprint-reader w-full max-w-3xl p-5 md:p-8', `reg-${document.register}`)}
++      >
++        <button
++          className="blueprint-button quiet float-right"
++          type="button"
++          onClick={store.closeDocument}
++        >
++          Lukk
++        </button>
++        <div className="mb-5 border-b-2 border-[#2a2520] pb-2">
++          <div className="flex flex-wrap items-baseline justify-between gap-2">
++            <h2 className="text-lg font-black uppercase tracking-[0.12em]">{document.kind}</h2>
++            <span className="text-xs uppercase tracking-[0.14em] text-[#6b6259]">
++              {document.meta}
++            </span>
++          </div>
++          <p className="mt-1 text-xl font-semibold">{document.title}</p>
++        </div>
++        <div className="mb-4 rounded border border-[#c89a2e]/60 bg-[#c89a2e]/10 p-3 text-sm leading-relaxed">
++          Tekst med prikket strek kan løftes til Sakens fakta. Gul markering vises først etter at
++          faktum er løftet.
++        </div>
++        <div className="grid gap-4 text-base leading-8">
++          {document.blocks.map((block) => (
++            <p key={block.id}>
++              <RunText runs={block.runs} store={store} />
++            </p>
++          ))}
++        </div>
++      </article>
++    </div>
++  );
++});
++
++const RunText = observer(function RunText({
++  runs,
++  store,
++}: {
++  runs: BlueprintTextRun[];
++  store: BlueprintStore;
++}) {
++  return (
++    <>
++      {runs.map((run, index) => {
++        if (!run.factId) return <span key={`${run.text}-${index}`}>{run.text}</span>;
++        const lifted = Boolean(store.progress.facts[run.factId]);
++        return (
++          <button
++            key={`${run.factId}-${index}`}
++            className={clsx('blueprint-evidence', lifted && 'collected')}
++            type="button"
++            data-testid={`blueprint-evidence-${run.factId}`}
++            aria-pressed={lifted}
++            aria-label={lifted ? `Faktum samlet: ${run.text}` : `Løft faktum: ${run.text}`}
++            onClick={() => store.liftFact(run.factId!)}
++          >
++            <span>{run.text}</span>
++            {!lifted ? <Search aria-hidden size={13} /> : <Sparkles aria-hidden size={13} />}
++          </button>
++        );
++      })}
++    </>
++  );
++});
++
++const FactsBoard = observer(function FactsBoard({ store }: { store: BlueprintStore }) {
++  return (
++    <section>
++      <FrameTitle title="Sakens fakta" meta="Auto-arkivert på domene · kilde påført" />
++      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
++        {store.factsByDomain.map(({ domain, facts }) => (
++          <div key={domain} className="min-w-0">
++            <h3 className="mb-3 flex justify-between border-b border-[#a49a8c] pb-1 text-xs font-bold uppercase tracking-[0.14em] text-[#6b6259]">
++              <span>{domain}</span>
++              <span>{facts.length || '—'}</span>
++            </h3>
++            <div className="grid gap-3">
++              {facts.length ? (
++                facts.map((fact) => (
++                  <button
++                    key={fact.id}
++                    className={clsx(
++                      'blueprint-fact-chip text-left',
++                      store.progress.facts[fact.id]?.fresh && 'fresh',
++                    )}
++                    type="button"
++                    onClick={() => store.selectFact(fact.id)}
++                  >
++                    <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
++                    <span className="font-semibold">{fact.text}</span>
++                    <span className="mt-1 block text-xs italic text-[#6b6259]">«{fact.quote}»</span>
++                    <span className="mt-2 block text-[10px] uppercase tracking-[0.12em] text-[#6b6259]">
++                      {fact.category} · dag {store.progress.facts[fact.id]?.day}
++                    </span>
++                  </button>
++                ))
++              ) : (
++                <p className="text-sm text-[#a49a8c]">ingenting ennå</p>
++              )}
++            </div>
++          </div>
++        ))}
++      </div>
++    </section>
++  );
++});
++
++const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: BlueprintStore }) {
++  if (!store.visibleQuestions.length) {
++    return (
++      <section className="grid min-h-[520px] place-items-center text-center text-xl font-semibold text-[#6b6259]">
++        Spørsmålene kommer av fakta. Les dokumentene på pulten.
++      </section>
++    );
++  }
++
++  return (
++    <section>
++      <FrameTitle title="Åpne spørsmål" meta="Arbeidshypoteser er foreløpige · ikke fasit" />
++      <div className="grid gap-5">
++        {store.visibleQuestions.map(({ id, question }) => {
++          const facts = store.factsForQuestion(id);
++          const stateLabel = store.questionStateLabel(id);
++          const chosenId = store.progress.questions[id]?.hypothesisId;
++          const chosen = question.hypotheses.find((hypothesis) => hypothesis.id === chosenId);
++
++          return (
++            <article key={id} className="blueprint-frame border-l-4 border-l-[#2a2520] p-4">
++              <div className="flex flex-wrap items-start justify-between gap-2">
++                <h2 className="text-xl font-black">{question.title}</h2>
++                <span className="blueprint-pill gold">{stateLabel}</span>
++              </div>
++              <div className="mt-3 flex flex-wrap gap-2">
++                {facts.map((fact) => (
++                  <button
++                    key={fact.id}
++                    className="blueprint-mini-fact"
++                    type="button"
++                    onClick={() => store.selectFact(fact.id)}
++                  >
++                    <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
++                    {fact.text}
++                  </button>
++                ))}
++                {facts.length < 2 ? (
++                  <span className="blueprint-mini-fact missing">… saken mangler grunnlag</span>
++                ) : null}
++              </div>
++              <div className="mt-4 grid gap-2">
++                {question.hypotheses.map((hypothesis) => {
++                  const available = store.hypothesisAvailable(id, hypothesis.id);
++                  const selected = chosenId === hypothesis.id;
++                  return (
++                    <button
++                      key={hypothesis.id}
++                      className={clsx(
++                        'blueprint-hypothesis text-left',
++                        selected && 'chosen',
++                        !available && 'blocked',
++                      )}
++                      type="button"
++                      disabled={!available}
++                      onClick={() => store.selectHypothesis(id, hypothesis.id)}
++                    >
++                      <span className="font-black">{selected ? '☒' : '☐'}</span>
++                      <span>
++                        {available ? (
++                          hypothesis.label
++                        ) : (
++                          <>
++                            <span className="blueprint-redact">{hypothesis.label}</span>
++                            <span className="ml-2 text-xs uppercase tracking-[0.1em] text-[#c86244]">
++                              uleselig · mangler faktum
++                            </span>
++                          </>
++                        )}
++                      </span>
++                    </button>
++                  );
++                })}
++              </div>
++              {chosen ? (
++                <div className="mt-4 rounded border-2 border-[#2a2520] bg-[#ece7d8] p-3">
++                  <div className="text-xs font-bold uppercase tracking-[0.16em] text-[#c86244]">
++                    Arbeidshypotese · foreløpig
++                  </div>
++                  <p className="mt-1 text-sm leading-relaxed">{chosen.note}</p>
++                  {chosen.opens.length ? (
++                    <p className="mt-2 text-xs uppercase tracking-[0.12em] text-[#7a6420]">
++                      Gir grunnlag for:{' '}
++                      {chosen.opens.map((tiltakId) => blueprintTiltak[tiltakId].title).join(' · ')}
++                    </p>
++                  ) : null}
++                </div>
++              ) : null}
++            </article>
++          );
++        })}
++      </div>
++    </section>
++  );
++});
++
++const VedtakBoard = observer(function VedtakBoard({ store }: { store: BlueprintStore }) {
++  const slots: BlueprintTiltakSlot[] = ['s1', 's2', 's3', 'press'];
++  return (
++    <section className="grid gap-5 xl:grid-cols-[1.45fr_0.75fr]">
++      <div>
++        <FrameTitle
++          title={`Vedtak ${store.progress.vedtakCount + 1} · utkast`}
++          meta="Tre slots pluss presskort"
++        />
++        {slots.map((slot) => (
++          <div key={slot} className="mb-5">
++            <h3 className="mb-2 border-b border-[#a49a8c] pb-1 text-xs font-black uppercase tracking-[0.16em] text-[#6b6259]">
++              {blueprintSlotLabels[slot]}
++            </h3>
++            <div className="grid gap-2">
++              {Object.values(blueprintTiltak)
++                .filter((tiltak) => tiltak.slot === slot)
++                .map((tiltak) => {
++                  const availability = store.tiltakAvailability(tiltak.id);
++                  const active = store.progress.enactedTiltakIds.includes(tiltak.id);
++                  const drafted = store.progress.draftTiltakIds.includes(tiltak.id);
++                  return (
++                    <button
++                      key={tiltak.id}
++                      className={clsx(
++                        'blueprint-tiltak-card text-left',
++                        active && 'active-now',
++                        drafted && 'chosen',
++                        !active && !availability.ok && 'blocked',
++                      )}
++                      type="button"
++                      disabled={active || !availability.ok}
++                      onClick={() => store.toggleDraftTiltak(tiltak.id)}
++                    >
++                      <span className="text-lg font-black">{active || drafted ? '☒' : '☐'}</span>
++                      <span className="min-w-0 flex-1">
++                        <span className="font-bold">{tiltak.title}</span>
++                        {active ? (
++                          <span className="blueprint-pill green ml-2">iverksatt</span>
++                        ) : null}
++                        {tiltak.early && !store.progress.sim.doorOpened ? (
++                          <span className="blueprint-pill warn ml-2">for tidlig?</span>
++                        ) : null}
++                        <span className="mt-1 block text-sm leading-relaxed text-[#6b6259]">
++                          {tiltak.description}
++                        </span>
++                        {!availability.ok && !active ? (
++                          <span className="mt-1 block text-xs uppercase tracking-[0.1em] text-[#c86244]">
++                            {availability.why}
++                          </span>
++                        ) : null}
++                      </span>
++                      <span className="ml-auto whitespace-nowrap text-xs uppercase tracking-[0.12em] text-[#6b6259]">
++                        {tiltak.cost ? `${tiltak.cost} mynt` : '—'}
++                      </span>
++                    </button>
++                  );
++                })}
++            </div>
++          </div>
++        ))}
++        <div className="mt-6 flex flex-wrap items-center gap-4">
++          <button
++            className="blueprint-button primary"
++            type="button"
++            disabled={!store.progress.draftTiltakIds.length}
++            onClick={store.enactTiltak}
++          >
++            <ClipboardList size={16} />
++            Fatt vedtak ({store.progress.draftTiltakIds.length})
++          </button>
++          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[#6b6259]">
++            <Coins size={16} />
++            Ramme: {store.spentCost + store.draftCost}/6 mynter
++          </div>
++        </div>
++      </div>
++      <ClockPanel store={store} />
++    </section>
++  );
++});
++
++function ClockPanel({ store }: { store: BlueprintStore }) {
++  const greteStages = [
++    'Grete bærer alt',
++    'Grete blir sliten',
++    'Grete avlyser',
++    'Grete er innlagt',
++    'Grete er død',
++  ];
++  return (
++    <aside className="blueprint-frame h-fit bg-[#ece7d8] p-4">
++      <FrameTitle title="Klokker" meta="Fylles · går ikke tilbake" compact />
++      <ClockRow
++        name="Grete tilgjengelig"
++        question={
++          store.progress.greteStage <= 2
++            ? 'Hvor lenge bærer hun?'
++            : `${greteStages[store.progress.greteStage - 1]}.`
++        }
++        value={store.progress.greteStage}
++        size={5}
++      />
++      {store.progress.enactedTiltakIds.includes('t_bostotte') ? (
++        <ClockPair
++          name="Bostøtte sak"
++          question="Kan kommunen skape et lovlig grunnlag for husleien?"
++          goodLabel="Søknad komplett"
++          good={store.progress.clocks.ck_bostotte.good}
++          goodSize={4}
++          badLabel="Frist glipper"
++          bad={store.progress.clocks.ck_bostotte.bad}
++          badSize={4}
++        />
++      ) : null}
++      {store.progress.documents.doc_frank_tlf ? (
++        <ClockPair
++          name="Gretes arbeid overføres"
++          question="Er funksjonene hun bar identifisert og flyttet?"
++          goodLabel="Funksjoner overført"
++          good={store.progress.clocks.ck_overfort.good}
++          goodSize={6}
++          badLabel="Alt går via Grete"
++          bad={store.progress.clocks.ck_overfort.bad}
++          badSize={6}
++        />
++      ) : null}
++      {store.progress.enactedTiltakIds.some((id) => blueprintTiltak[id]?.slot === 's3') ? (
++        <ClockPair
++          name="Skjør rutine"
++          question="Tåler én rutine å bli båret av Elling?"
++          goodLabel="Rutine tåler støtte"
++          good={store.progress.clocks.ck_rutine.good}
++          goodSize={4}
++          badLabel="Presset for hardt"
++          bad={store.progress.clocks.ck_rutine.bad}
++          badSize={4}
++        />
++      ) : null}
++      {store.progress.documents.doc_huseier ? (
++        <ClockPair
++          name="Husleierestanse"
++          question="Blir leieproblemet aktiv sak før støtte er på plass?"
++          badLabel="Restanse bygges"
++          bad={store.progress.clocks.ck_restanse.bad}
++          badSize={6}
++        />
++      ) : null}
++    </aside>
++  );
++}
++
++function ClockPair({
++  name,
++  question,
++  goodLabel,
++  good = 0,
++  goodSize = 0,
++  badLabel,
++  bad = 0,
++  badSize = 0,
++}: {
++  name: string;
++  question: string;
++  goodLabel?: string;
++  good?: number;
++  goodSize?: number;
++  badLabel?: string;
++  bad?: number;
++  badSize?: number;
++}) {
++  return (
++    <div className="mb-4">
++      <div className="font-bold">{name}</div>
++      <p className="mb-2 text-sm text-[#6b6259]">{question}</p>
++      {goodLabel ? <SegRow label={goodLabel} value={good} size={goodSize} tone="good" /> : null}
++      {badLabel ? <SegRow label={badLabel} value={bad} size={badSize} tone="bad" /> : null}
++    </div>
++  );
++}
++
++function ClockRow({
++  name,
++  question,
++  value,
++  size,
++}: {
++  name: string;
++  question: string;
++  value: number;
++  size: number;
++}) {
++  return (
++    <div className="mb-4">
++      <div className="font-bold">{name}</div>
++      <p className="mb-2 text-sm text-[#6b6259]">{question}</p>
++      <SegRow label="scenario" value={value} size={size} tone="neutral" />
++    </div>
++  );
++}
++
++function SegRow({
++  label,
++  value,
++  size,
++  tone,
++}: {
++  label: string;
++  value: number;
++  size: number;
++  tone: 'good' | 'bad' | 'neutral';
++}) {
++  return (
++    <div className="mb-1 flex items-center justify-between gap-3">
++      <span className="text-[10px] uppercase tracking-[0.12em] text-[#6b6259]">{label}</span>
++      <span className="flex gap-1">
++        {Array.from({ length: size }, (_, index) => (
++          <span key={index} className={clsx('blueprint-seg', index < value && `fill-${tone}`)} />
++        ))}
++      </span>
++    </div>
++  );
++}
++
++const FrankBoard = observer(function FrankBoard({ store }: { store: BlueprintStore }) {
++  return (
++    <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
++      <div className="blueprint-frame p-4">
++        <FrameTitle
++          title="Send Frank"
++          meta={`1 handling per oppdrag · ${store.progress.actions} igjen i dag`}
++          compact
++        />
++        {store.availableDispatches.length ? (
++          <div className="grid gap-3">
++            {store.availableDispatches.map((dispatch) => (
++              <article
++                key={dispatch.id}
++                className="rounded border-2 border-[#2a2520] bg-[#f5f1e8] p-3"
++              >
++                <h3 className="font-bold">{dispatch.title}</h3>
++                <p className="mt-1 text-sm leading-relaxed text-[#6b6259]">
++                  {dispatch.description}
++                </p>
++                <button
++                  className="blueprint-button mt-3"
++                  type="button"
++                  aria-label={dispatch.title}
++                  data-testid={`blueprint-dispatch-${dispatch.id}`}
++                  disabled={store.progress.actions < 1}
++                  onClick={() => store.runDispatch(dispatch.id)}
++                >
++                  <Send size={16} />
++                  Send · {dispatch.title}
++                </button>
++              </article>
++            ))}
++          </div>
++        ) : (
++          <p className="py-10 text-lg font-semibold text-[#6b6259]">
++            Ingen oppdrag akkurat nå. Saken må gi Frank noe å gjøre.
++          </p>
++        )}
++      </div>
++      <div className="blueprint-frame p-4">
++        <FrameTitle title="Samtale med Frank" meta="Han siterer det han så" compact />
++        <div className="mb-4 grid max-h-[420px] gap-3 overflow-y-auto pr-1">
++          {store.progress.chatLog.length ? (
++            store.progress.chatLog.map((message, index) => (
++              <div
++                key={index}
++                className={clsx('max-w-[88%]', message.who === 'Deg' && 'ml-auto text-right')}
++              >
++                <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6b6259]">
++                  {message.who}
++                </div>
++                <div className="rounded-md border-2 border-[#2a2520] bg-[#f5f1e8] p-3 text-left text-lg leading-snug">
++                  <RunText runs={message.runs} store={store} />
++                </div>
++              </div>
++            ))
++          ) : (
++            <p className="text-[#a49a8c]">Spørsmålene låses opp av sakens fakta.</p>
++          )}
++        </div>
++        <div className="grid gap-2">
++          {store.askableFrankPrompts.map((prompt) => (
++            <button
++              key={prompt.id}
++              className="blueprint-button justify-start text-left normal-case"
++              type="button"
++              onClick={() => store.askFrank(prompt.id)}
++            >
++              <MessageSquare size={16} />
++              {prompt.question}
++            </button>
++          ))}
++        </div>
++      </div>
++    </section>
++  );
++});
++
++const ApartmentBoard = observer(function ApartmentBoard({ store }: { store: BlueprintStore }) {
++  const sim = store.progress.sim;
++  if (sim.visitLevel === 0) {
++    return (
++      <section className="grid min-h-[520px] place-items-center text-center">
++        <div className="blueprint-frame max-w-xl p-8">
++          <Home className="mx-auto mb-4" size={32} />
++          <p className="text-2xl font-semibold">Kommunen har ikke innsyn i leiligheten ennå.</p>
++          <p className="mt-3 text-sm leading-relaxed text-[#6b6259]">
++            Et hjemmebesøk er den eneste veien inn. Det avtales gjennom Grete, foreløpig.
++          </p>
++        </div>
++      </section>
++    );
++  }
++
++  return (
++    <section className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
++      <div className="grid content-start gap-4">
++        <div className="blueprint-frame p-4">
++          <FrameTitle
++            title="Elling · anslag"
++            meta={
++              sim.visitLevel === 2 ? 'Løpende · Frank har kanal inn' : 'Sist observert ved besøk'
++            }
++            compact
++          />
++          <NeedBar label="Mat" value={sim.needs.hunger} />
++          <NeedBar label="Krefter" value={sim.needs.energy} />
++          <NeedBar label="Kontakt" value={sim.needs.social} />
++          <NeedBar label="Trygghet" value={sim.needs.security} />
++        </div>
++        <div className="blueprint-frame p-4">
++          <FrameTitle title="Leiligheten" meta="Gabels gate 14 · 4. etasje" compact />
++          <AptObject
++            label="Postbunken på skoskapet"
++            value={`${sim.mail} brev`}
++            warn={sim.mail > 11}
++          />
++          <AptObject
++            label="Middagsbokser i kjøleskapet"
++            value={Math.max(0, sim.foodBoxes)}
++            warn={sim.foodBoxes <= 1}
++          />
++          <AptObject label="Ubesvarte anrop" value={sim.unanswered} warn={sim.unanswered > 4} />
++          <AptObject label="Døren" value={sim.doorOpened ? 'går opp for Frank' : 'lukket'} />
++          <AptObject label="Gretes stol" value="pleddet brettet" />
++        </div>
++      </div>
++      <div className="blueprint-frame reg-notat p-4">
++        <FrameTitle
++          title="Logg · det kommunen vet"
++          meta={sim.visitLevel === 2 ? 'Daglig' : 'Fragmentarisk'}
++          compact
++        />
++        <div className="grid gap-3 text-xl leading-relaxed">
++          {sim.log.length ? (
++            Object.entries(
++              sim.log.reduce<Record<string, typeof sim.log>>((groups, entry) => {
++                (groups[entry.day] ??= []).push(entry);
++                return groups;
++              }, {}),
++            ).map(([day, entries]) => (
++              <div key={day}>
++                <div className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[#c86244]">
++                  Dag {day} · {blueprintDayName(Number(day)).split('.')[0]}
++                </div>
++                {entries.map((entry, index) => (
++                  <p
++                    key={`${entry.text}-${index}`}
++                    className={entry.kind === 'tiltak' ? 'text-[#7a6420]' : undefined}
++                  >
++                    {entry.factId ? (
++                      <RunText runs={[{ text: entry.text, factId: entry.factId }]} store={store} />
++                    ) : (
++                      entry.text
++                    )}
++                  </p>
++                ))}
++              </div>
++            ))
++          ) : (
++            <p>Ingen observasjoner ennå.</p>
++          )}
++        </div>
++      </div>
++    </section>
++  );
++});
++
++function NeedBar({ label, value }: { label: string; value: number }) {
++  return (
++    <div className="mb-3 grid grid-cols-[72px_1fr_36px] items-center gap-2">
++      <span className="text-xs font-bold uppercase tracking-[0.12em] text-[#6b6259]">{label}</span>
++      <span className="h-4 overflow-hidden rounded border-2 border-[#2a2520] bg-[#f5f1e8]">
++        <span
++          className={clsx(
++            'block h-full border-r-2 border-[#2a2520]',
++            value < 25 ? 'bg-[#c86244]' : value < 45 ? 'bg-[#c89a2e]' : 'bg-[#7aa66f]',
++          )}
++          style={{ width: `${value}%` }}
++        />
++      </span>
++      <span className="text-right text-xs text-[#6b6259]">~{Math.round(value)}</span>
++    </div>
++  );
++}
++
++function AptObject({ label, value, warn }: { label: string; value: ReactNode; warn?: boolean }) {
++  return (
++    <div className="flex justify-between gap-3 border-b border-dashed border-[#a49a8c] py-2 text-sm">
++      <span>{label}</span>
++      <span className={clsx('text-lg font-black', warn && 'text-[#c86244]')}>{value}</span>
++    </div>
++  );
++}
++
++const FactDialog = observer(function FactDialog({ store }: { store: BlueprintStore }) {
++  const fact = store.selectedFact;
++  if (!fact) return null;
++  const source = store.documentEntries.find(({ document }) =>
++    document.blocks.some((block) => block.runs.some((run) => run.factId === fact.id)),
++  );
++
++  return (
++    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1510]/50 p-4">
++      <article className="blueprint-reader w-full max-w-lg p-5">
++        <div className="text-xs font-bold uppercase tracking-[0.14em] text-[#6b6259]">
++          <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
++          {fact.domain} · {fact.category} · dag {store.progress.facts[fact.id]?.day}
++        </div>
++        <h2 className="mt-2 text-2xl font-semibold leading-tight">{fact.text}</h2>
++        <p className="mt-2 text-sm italic text-[#6b6259]">«{fact.quote}»</p>
++        <FactRelation title="Henger sammen med">
++          {fact.supports
++            .filter((questionId) => store.progress.questions[questionId])
++            .map((questionId) => (
++              <button
++                key={questionId}
++                className="block border-b border-dashed border-[#a49a8c] py-1 text-left"
++                type="button"
++                onClick={() => {
++                  store.closeFact();
++                  store.showSurface('sporsmal');
++                }}
++              >
++                ? {blueprintQuestions[questionId].title}
++              </button>
++            ))}
++        </FactRelation>
++        <FactRelation title="Kan drøftes med">
++          {fact.discuss.map((person) =>
++            person === 'Frank' ? (
++              <button
++                key={person}
++                className="block border-b border-dashed border-[#a49a8c] py-1 text-left"
++                type="button"
++                onClick={() => {
++                  store.closeFact();
++                  store.showSurface('frank');
++                }}
++              >
++                ☎ Frank
++              </button>
++            ) : (
++              <span key={person} className="block py-1 text-[#a49a8c]">
++                {store.progress.greteStage >= 5 ? '✝' : '○'} Grete
++                {store.progress.greteStage >= 5 ? ' — ikke lenger mulig' : ' — senere'}
++              </span>
++            ),
++          )}
++        </FactRelation>
++        {source ? (
++          <FactRelation title="Kilde">
++            <button
++              className="block border-b border-dashed border-[#a49a8c] py-1 text-left"
++              type="button"
++              onClick={() => {
++                store.closeFact();
++                store.openDocument(source.id);
++              }}
++            >
++              ▤ {source.document.title}
++            </button>
++          </FactRelation>
++        ) : null}
++        <div className="mt-5 text-right">
++          <button className="blueprint-button quiet" type="button" onClick={store.closeFact}>
++            Lukk
++          </button>
++        </div>
++      </article>
++    </div>
++  );
++});
++
++function FactRelation({ title, children }: { title: string; children: ReactNode }) {
++  return (
++    <div className="mt-4">
++      <h3 className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[#6b6259]">{title}</h3>
++      <div className="text-sm">{children}</div>
++    </div>
++  );
++}
++
++const Notices = observer(function Notices({ store }: { store: BlueprintStore }) {
++  if (!store.notices.length) return null;
++  return (
++    <div className="fixed bottom-4 right-4 z-50 grid max-w-sm gap-2">
++      {store.notices.map((notice) => (
++        <button
++          key={notice.id}
++          className={clsx(
++            'blueprint-toast text-left',
++            notice.kind === 'hypothesis' && 'hypo',
++            notice.kind === 'day' && 'day',
++          )}
++          type="button"
++          onClick={() => store.dismissNotice(notice.id)}
++        >
++          <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6259]">
++            {notice.tag}
++          </span>
++          <span className="block text-lg font-semibold leading-snug">{notice.text}</span>
++        </button>
++      ))}
++    </div>
++  );
++});
++
++const Reflection = observer(function Reflection({ store }: { store: BlueprintStore }) {
++  const end = store.progress.endText;
++  if (!end) return null;
++  return (
++    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#382f26] p-4">
++      <section className="blueprint-story-card w-full max-w-2xl p-7">
++        <div className="mb-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#6b6259]">
++          Dag 8 · saken fortsetter
++        </div>
++        <div className="grid gap-3 text-base leading-relaxed">
++          <p>{end.para1}</p>
++          <p>{end.para2}</p>
++        </div>
++        <div className="my-5 grid gap-1">
++          <SegRow
++            label="søknad komplett"
++            value={store.progress.clocks.ck_bostotte.good}
++            size={4}
++            tone="good"
++          />
++          <SegRow
++            label="frist glipper"
++            value={store.progress.clocks.ck_bostotte.bad}
++            size={4}
++            tone="bad"
++          />
++          <SegRow
++            label="funksjoner overført"
++            value={store.progress.clocks.ck_overfort.good}
++            size={6}
++            tone="good"
++          />
++          <SegRow
++            label="alt gikk via Grete"
++            value={store.progress.clocks.ck_overfort.bad}
++            size={6}
++            tone="bad"
++          />
++          <SegRow
++            label="rutine tåler støtte"
++            value={store.progress.clocks.ck_rutine.good}
++            size={4}
++            tone="good"
++          />
++          <SegRow
++            label="presset for hardt"
++            value={store.progress.clocks.ck_rutine.bad}
++            size={4}
++            tone="bad"
++          />
++          <SegRow
++            label="restanse bygges"
++            value={store.progress.clocks.ck_restanse.bad}
++            size={6}
++            tone="bad"
++          />
++        </div>
++        <p className="text-2xl font-semibold leading-snug">{end.closing}</p>
++        <div className="mt-6 flex justify-end gap-2">
++          <button className="blueprint-button quiet" type="button" onClick={store.closeReflection}>
++            Se på saken
++          </button>
++          <button className="blueprint-button primary" type="button" onClick={store.resetBlueprint}>
++            <RotateCcw size={16} />
++            Start på nytt
++          </button>
++        </div>
++      </section>
++    </div>
++  );
++});
++
++function FrameTitle({ title, meta, compact }: { title: string; meta: string; compact?: boolean }) {
++  return (
++    <div
++      className={clsx(
++        'mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-[#2a2520] pb-2',
++        compact && 'mb-3',
++      )}
++    >
++      <h2 className="text-sm font-black uppercase tracking-[0.14em]">{title}</h2>
++      <span className="text-[10px] uppercase tracking-[0.14em] text-[#6b6259]">{meta}</span>
++    </div>
++  );
++}
+diff --git a/src/content/blueprint/index.ts b/src/content/blueprint/index.ts
+new file mode 100644
+index 0000000..ea9a6a5
+--- /dev/null
++++ b/src/content/blueprint/index.ts
+@@ -0,0 +1,1042 @@
++import type {
++  BlueprintChatPrompt,
++  BlueprintDispatch,
++  BlueprintDocument,
++  BlueprintDomain,
++  BlueprintFact,
++  BlueprintQuestion,
++  BlueprintStoryBeat,
++  BlueprintTextRun,
++  BlueprintTiltak,
++  BlueprintTiltakSlot,
++} from '../../domain/blueprint';
++
++function runs(...items: Array<string | BlueprintTextRun>): BlueprintTextRun[] {
++  return items.map((item) => (typeof item === 'string' ? { text: item } : item));
++}
++
++export const blueprintPrologue: BlueprintStoryBeat[] = [
++  { cap: 'LEGESENTERET · TIRSDAG I FEBRUAR 1999' },
++  { who: 'DR. HAUG', say: 'Prøvesvarene er kommet. Det er som vi trodde.' },
++  { who: 'GRETE', say: 'Ja.' },
++  { dir: 'Det er stille en stund. Noen ler av noe i naborommet.' },
++  { who: 'DR. HAUG', say: 'Har du noen rundt deg? Fremover, mener jeg.' },
++  { who: 'GRETE', say: 'Jeg har Elling.' },
++  { who: 'DR. HAUG', say: 'Grete. Det var Elling jeg ville snakke om.' },
++  { who: 'GRETE', say: 'Han klarer seg. Han har alltid klart seg.' },
++  { who: 'DR. HAUG', say: 'Med deg.' },
++  { dir: 'Grete tar på seg hanskene. Én finger om gangen.' },
++  { who: 'GRETE', say: 'Dere får gjøre det dere må.' },
++  {
++    dir: 'Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet «alvorlig». Sender.',
++  },
++  { stamp: 'MOTTATT · SOSIALKONTORET', end: 'Meldingen ligger på pulten din.' },
++];
++
++export const blueprintDomains: BlueprintDomain[] = [
++  'Økonomi/bolig',
++  'Hverdag/rutine',
++  'Helse/risiko',
++  'Nettverk/sosialt',
++  'Ressurser',
++];
++
++export const blueprintFacts: Record<string, BlueprintFact> = {
++  f_grete_syk: {
++    id: 'f_grete_syk',
++    domain: 'Helse/risiko',
++    category: 'Dokument',
++    text: 'Grete er alvorlig syk. Forventet forløp er kort.',
++    quote: 'sykdom med kort forventet forløp',
++    supports: ['q_hverdag'],
++    discuss: ['Frank'],
++  },
++  f_aldri_alene: {
++    id: 'f_aldri_alene',
++    domain: 'Hverdag/rutine',
++    category: 'Dokument',
++    text: 'Elling (35) har aldri bodd alene.',
++    quote: 'har etter det opplyste aldri bodd alene',
++    supports: ['q_hverdag', 'q_selv'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_grete_baerer: {
++    id: 'f_grete_baerer',
++    domain: 'Hverdag/rutine',
++    category: 'Dokument',
++    text: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
++    quote: 'mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt',
++    supports: ['q_hverdag', 'q_okonomi'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_saarbar: {
++    id: 'f_saarbar',
++    domain: 'Helse/risiko',
++    category: 'Risiko',
++    text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
++    quote: 'sårbar ved bortfall av pårørende',
++    supports: ['q_hverdag', 'q_selv'],
++    discuss: ['Frank'],
++  },
++  f_ingen_tjenester: {
++    id: 'f_ingen_tjenester',
++    domain: 'Nettverk/sosialt',
++    category: 'Dokument',
++    text: 'Elling har ingen kontakt med øvrige tjenester.',
++    quote: 'ikke i kontakt med øvrige tjenester',
++    supports: ['q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_klarer_seg: {
++    id: 'f_klarer_seg',
++    domain: 'Nettverk/sosialt',
++    category: 'Samtale',
++    text: 'Grete avviser bekymringen. Gjentar formuleringen.',
++    quote: 'Han klarer seg. Han har alltid klart seg.',
++    supports: ['q_hverdag', 'q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_ingen_plan: {
++    id: 'f_ingen_plan',
++    domain: 'Helse/risiko',
++    category: 'Samtale',
++    text: 'Det finnes ingen plan for hvem som overtar etter Grete.',
++    quote: 'hvem som overtar hvis hun blir innlagt. det ble stille.',
++    supports: ['q_hverdag', 'q_bolig'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_elling_tlf: {
++    id: 'f_elling_tlf',
++    domain: 'Nettverk/sosialt',
++    category: 'Samtale',
++    text: 'Elling tar ikke telefonen. Grete normaliserer det.',
++    quote: 'han liker bare ikke apparatet',
++    supports: ['q_kontakt'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_grete_redd: {
++    id: 'f_grete_redd',
++    domain: 'Nettverk/sosialt',
++    category: 'Samtale',
++    text: 'Grete frykter at kommunen vil ta leiligheten, eller Elling.',
++    quote: 'ta ham fra leiligheten',
++    supports: ['q_bolig'],
++    discuss: ['Frank'],
++  },
++  f_post: {
++    id: 'f_post',
++    domain: 'Hverdag/rutine',
++    category: 'Observasjon',
++    text: 'Uåpnet post samler seg. Grete håndterer den og skjuler den.',
++    quote: 'en bunke uåpnet post på skoskapet',
++    supports: ['q_hverdag', 'q_okonomi', 'q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_kalender: {
++    id: 'f_kalender',
++    domain: 'Hverdag/rutine',
++    category: 'Observasjon',
++    text: 'Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem.',
++    quote: 'alle avtaler ført med samme håndskrift',
++    supports: ['q_hverdag'],
++    discuss: ['Frank'],
++  },
++  f_matbokser: {
++    id: 'f_matbokser',
++    domain: 'Hverdag/rutine',
++    category: 'Observasjon',
++    text: 'Maten er preppet av Grete, merket med ukedager. Elling varmer.',
++    quote: 'middagsbokser merket med ukedager',
++    supports: ['q_hverdag', 'q_selv', 'q_kollaps'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_bok: {
++    id: 'f_bok',
++    domain: 'Ressurser',
++    category: 'Ressurs',
++    text: 'Elling leser krevende stoff og noterer systematisk.',
++    quote: 'en bok om polarekspedisjoner. han noterte i margen',
++    supports: ['q_selv', 'q_okonomi'],
++    discuss: ['Frank'],
++  },
++  f_utklipp: {
++    id: 'f_utklipp',
++    domain: 'Ressurser',
++    category: 'Ressurs',
++    text: 'Elling samler og systematiserer Gro- og Arbeiderpartiet-utklipp.',
++    quote: 'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai',
++    supports: ['q_selv'],
++    discuss: ['Frank'],
++  },
++  f_avstand: {
++    id: 'f_avstand',
++    domain: 'Nettverk/sosialt',
++    category: 'Observasjon',
++    text: 'Elling holder avstand til fremmede. Alltid et møbel mellom.',
++    quote: 'alltid et møbel mellom oss',
++    supports: ['q_kontakt', 'q_selv'],
++    discuss: ['Frank'],
++  },
++  f_smart_gutt: {
++    id: 'f_smart_gutt',
++    domain: 'Nettverk/sosialt',
++    category: 'Samtale',
++    text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
++    quote: 'han er en smart gutt',
++    supports: ['q_hverdag', 'q_selv'],
++    discuss: ['Frank'],
++  },
++  f_trygd: {
++    id: 'f_trygd',
++    domain: 'Økonomi/bolig',
++    category: 'Økonomi',
++    text: 'Ellings uføretrygd: to mynter i måneden.',
++    quote: 'trygden hans — to mynter i måneden',
++    supports: ['q_okonomi', 'q_bolig'],
++    discuss: ['Frank'],
++  },
++  f_husleie: {
++    id: 'f_husleie',
++    domain: 'Økonomi/bolig',
++    category: 'Økonomi',
++    text: 'Husleien er tre mynter og betales av Grete.',
++    quote: 'husleien — tre mynter. den betales kontant til huseieren',
++    supports: ['q_okonomi', 'q_bolig'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_alt_via_grete: {
++    id: 'f_alt_via_grete',
++    domain: 'Økonomi/bolig',
++    category: 'Økonomi',
++    text: 'Alle betalinger og avtaler går gjennom Grete.',
++    quote: 'alle betalinger går gjennom Grete. alle avtaler står i hennes navn',
++    supports: ['q_okonomi'],
++    discuss: ['Frank', 'Grete'],
++  },
++  f_gap: {
++    id: 'f_gap',
++    domain: 'Økonomi/bolig',
++    category: 'Økonomi',
++    text: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
++    quote: 'uten henne mangler det to mynter. hver måned',
++    supports: ['q_okonomi', 'q_bolig', 'q_kollaps'],
++    discuss: ['Frank'],
++  },
++  f_ingen_matkjop: {
++    id: 'f_ingen_matkjop',
++    domain: 'Hverdag/rutine',
++    category: 'Økonomi',
++    text: 'Elling har aldri betalt for mat selv.',
++    quote: 'ikke ett kjøp som var hans',
++    supports: ['q_hverdag'],
++    discuss: ['Frank'],
++  },
++  f_innlagt: {
++    id: 'f_innlagt',
++    domain: 'Helse/risiko',
++    category: 'Dokument',
++    text: 'Grete er akutt innlagt på Ullevål.',
++    quote: 'innlagt akutt 14.02',
++    supports: ['q_hverdag', 'q_bolig'],
++    discuss: ['Frank'],
++  },
++  f_elling_uvarslet: {
++    id: 'f_elling_uvarslet',
++    domain: 'Helse/risiko',
++    category: 'Dokument',
++    text: 'Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.',
++    quote: 'sønnen ikke er varslet. ber om at kommunen ser til ham',
++    supports: ['q_kontakt', 'q_kollaps'],
++    discuss: ['Frank'],
++  },
++  f_dod: {
++    id: 'f_dod',
++    domain: 'Helse/risiko',
++    category: 'Dokument',
++    text: 'Grete Olsen døde 15.02 kl. 04:12.',
++    quote: 'dødsfall konstatert 15.02 kl. 04:12',
++    supports: ['q_kollaps'],
++    discuss: ['Frank'],
++  },
++  f_brevsprekken: {
++    id: 'f_brevsprekken',
++    domain: 'Nettverk/sosialt',
++    category: 'Dokument',
++    text: 'Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.',
++    quote: 'beskjeden ble gitt gjennom brevsprekken',
++    supports: ['q_kontakt', 'q_kollaps'],
++    discuss: ['Frank'],
++  },
++  f_leie_stoppet: {
++    id: 'f_leie_stoppet',
++    domain: 'Økonomi/bolig',
++    category: 'Risiko',
++    text: 'Husleien har stoppet. Betalingskjeden døde med Grete.',
++    quote: 'leien for mars er ikke kommet',
++    supports: ['q_bolig', 'q_kollaps'],
++    discuss: ['Frank'],
++  },
++  f_huseier_kommer: {
++    id: 'f_huseier_kommer',
++    domain: 'Økonomi/bolig',
++    category: 'Risiko',
++    text: 'Huseieren varsler at han kommer innom torsdag.',
++    quote: 'jeg kommer innom på torsdag',
++    supports: ['q_bolig', 'q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_leie_privat: {
++    id: 'f_leie_privat',
++    domain: 'Økonomi/bolig',
++    category: 'Dokument',
++    text: 'Leieforholdet er privat og muntlig innarbeidet siden 1971.',
++    quote: 'siden -71 uten papirer',
++    supports: ['q_bolig'],
++    discuss: ['Frank'],
++  },
++  f_ubesvart: {
++    id: 'f_ubesvart',
++    domain: 'Nettverk/sosialt',
++    category: 'Observasjon',
++    text: 'Elling tar ikke telefonen, heller ikke når den ringer i hans egen stue.',
++    quote: 'åtte ring. fasttelefonen står to meter fra stolen hans',
++    supports: ['q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_dor_glott: {
++    id: 'f_dor_glott',
++    domain: 'Nettverk/sosialt',
++    category: 'Samtale',
++    text: 'Døren er på gløtt: kontakt er mulig i Ellings tempo, med én fast person.',
++    quote: 'det er en dør på gløtt',
++    supports: ['q_kontakt', 'q_selv'],
++    discuss: ['Frank'],
++  },
++  f_tirade: {
++    id: 'f_tirade',
++    domain: 'Ressurser',
++    category: 'Observasjon',
++    text: 'Press utløser foredrag, ikke mestring. Tempoet må være hans.',
++    quote: 'et kvarter langt foredrag om apparatets historie',
++    supports: ['q_selv', 'q_kontakt'],
++    discuss: ['Frank'],
++  },
++  f_egen_mappe: {
++    id: 'f_egen_mappe',
++    domain: 'Ressurser',
++    category: 'Observasjon',
++    text: 'Elling lager egne systemer når ingen krever det av ham.',
++    quote: 'en mappe han hadde laget selv. den var merket. små bokstaver',
++    supports: ['q_selv'],
++    discuss: ['Frank'],
++  },
++};
++
++export const blueprintDocuments: Record<string, BlueprintDocument> = {
++  doc_bekymring: {
++    id: 'doc_bekymring',
++    kind: 'BEKYMRINGSMELDING',
++    title: 'Legesenteret · Dr. J. Haug',
++    register: 'klinisk',
++    peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
++    meta: 'LEGESENTERET · 11.02.1999',
++    blocks: [
++      { id: 'b1', runs: runs('Gjelder: Olsen, Elling · f. 14.03.1964.') },
++      {
++        id: 'b2',
++        runs: runs(
++          'Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for ',
++          { text: 'sykdom med kort forventet forløp', factId: 'f_grete_syk' },
++          '. Hun er informert om at meldingen sendes.',
++        ),
++      },
++      {
++        id: 'b3',
++        runs: runs(
++          'Mor og sønn bor sammen i en treroms blokkleilighet. ',
++          { text: 'Sønnen har aldri bodd alene', factId: 'f_aldri_alene' },
++          '. Han er uføretrygdet og ',
++          { text: 'ikke i kontakt med øvrige tjenester', factId: 'f_ingen_tjenester' },
++          '.',
++        ),
++      },
++      {
++        id: 'b4',
++        runs: runs({
++          text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
++          factId: 'f_grete_baerer',
++        }),
++      },
++      {
++        id: 'b5',
++        runs: runs(
++          { text: 'Pasienten fremstår sårbar ved bortfall av pårørende', factId: 'f_saarbar' },
++          '. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.',
++        ),
++      },
++    ],
++  },
++  doc_frank_tlf: {
++    id: 'doc_frank_tlf',
++    kind: 'FELTNOTAT',
++    title: 'Frank · telefonsamtale med Grete',
++    register: 'notat',
++    peek: '«Hun tok den på andre forsøk.»',
++    meta: 'TLF. G. OLSEN · 4012 F. SOLBERG',
++    blocks: [
++      { id: 't1', runs: runs('Ringte Grete 11:40. Hun tok den på andre forsøk.') },
++      {
++        id: 't2',
++        runs: runs({
++          text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
++          factId: 'f_klarer_seg',
++        }),
++      },
++      {
++        id: 't3',
++        runs: runs({
++          text: 'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille.',
++          factId: 'f_ingen_plan',
++        }),
++      },
++      {
++        id: 't4',
++        runs: runs({
++          text: 'Jeg ba om å få hilse på Elling. Hun sa han ikke tar telefonen. «Han liker bare ikke apparatet.»',
++          factId: 'f_elling_tlf',
++        }),
++      },
++      {
++        id: 't5',
++        runs: runs(
++          'Mot slutten ',
++          {
++            text: 'spurte hun om dette betydde at noen kom til å ta ham fra leiligheten',
++            factId: 'f_grete_redd',
++          },
++          '. Jeg sa nei. Jeg håper det var sant.',
++        ),
++      },
++    ],
++  },
++  doc_frank_visit: {
++    id: 'doc_frank_visit',
++    kind: 'RAPPORT',
++    title: 'Frank · hjemmebesøk Gabels gate 14',
++    register: 'notat',
++    peek: '«Hun hadde dekket på med tre kopper.»',
++    meta: 'BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN',
++    blocks: [
++      {
++        id: 'v1',
++        runs: runs('Grete åpnet før jeg fikk ringt på. Tre kopper. Elling brukte ikke sin.'),
++      },
++      {
++        id: 'v2',
++        runs: runs('I gangen: ', {
++          text: 'en bunke uåpnet post på skoskapet',
++          factId: 'f_post',
++        }),
++      },
++      {
++        id: 'v3',
++        runs: runs('På kjøkkenveggen: ', {
++          text: 'kalender. Alle avtaler ført med samme håndskrift.',
++          factId: 'f_kalender',
++        }),
++      },
++      {
++        id: 'v4',
++        runs: runs('I kjøleskapet: ', {
++          text: 'middagsbokser merket med ukedager, mandag til søndag',
++          factId: 'f_matbokser',
++        }),
++      },
++      {
++        id: 'v5',
++        runs: runs('Elling satt i stuen med ', {
++          text: 'en bok om polarekspedisjoner. Han noterte i margen.',
++          factId: 'f_bok',
++        }),
++      },
++      {
++        id: 'v6',
++        runs: runs('Over skrivebordet hans: ', {
++          text: 'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog.',
++          factId: 'f_utklipp',
++        }),
++      },
++      {
++        id: 'v7',
++        runs: runs({
++          text: 'Han flyttet seg slik at det alltid var et møbel mellom oss.',
++          factId: 'f_avstand',
++        }),
++      },
++      {
++        id: 'v8',
++        runs: runs('Grete fulgte meg ut. I trappen sa hun: ', {
++          text: '«Du så hvordan han er. Han er en smart gutt.»',
++          factId: 'f_smart_gutt',
++        }),
++      },
++    ],
++  },
++  doc_konto: {
++    id: 'doc_konto',
++    kind: 'ØKONOMISK OVERSIKT',
++    title: 'Frank · husholdets økonomi',
++    register: 'notat',
++    peek: '«Regnestykket går opp — med henne.»',
++    meta: 'GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
++    blocks: [
++      { id: 'k1', runs: runs('Grete fant frem alt. Postgiroene ligger i en skoeske.') },
++      {
++        id: 'k2',
++        runs: runs('Inn: ', {
++          text: 'trygden hans — to mynter i måneden',
++          factId: 'f_trygd',
++        }),
++      },
++      {
++        id: 'k3',
++        runs: runs('Ut: ', {
++          text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete',
++          factId: 'f_husleie',
++        }),
++      },
++      {
++        id: 'k4',
++        runs: runs({
++          text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
++          factId: 'f_alt_via_grete',
++        }),
++      },
++      {
++        id: 'k5',
++        runs: runs({
++          text: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
++          factId: 'f_ingen_matkjop',
++        }),
++      },
++      {
++        id: 'k6',
++        runs: runs({
++          text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
++          factId: 'f_gap',
++        }),
++      },
++    ],
++  },
++  doc_papirer: {
++    id: 'doc_papirer',
++    kind: 'ØKONOMISK OVERSIKT',
++    title: 'Frank · papirene i leiligheten',
++    register: 'notat',
++    peek: '«Skoesken sto der hun forlot den.»',
++    meta: 'ETTER DØDSFALLET · MED ELLING I ROMMET',
++    blocks: [
++      {
++        id: 'p1',
++        runs: runs('Skoesken sto der hun forlot den. Den øverste postgiroen gjelder mars.'),
++      },
++      { id: 'p2', runs: runs({ text: 'trygden hans — to mynter i måneden', factId: 'f_trygd' }) },
++      {
++        id: 'p3',
++        runs: runs({
++          text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete',
++          factId: 'f_husleie',
++        }),
++      },
++      {
++        id: 'p4',
++        runs: runs({ text: 'Alle avtaler står i Gretes navn.', factId: 'f_alt_via_grete' }),
++      },
++      {
++        id: 'p5',
++        runs: runs({
++          text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
++          factId: 'f_gap',
++        }),
++      },
++    ],
++  },
++  doc_innleggelse: {
++    id: 'doc_innleggelse',
++    kind: 'MELDING',
++    title: 'OUS Ullevål · innleggelse',
++    register: 'klinisk',
++    peek: '«…ber om at kommunen ser til ham.»',
++    meta: 'TIL SOSIALKONTORET · 14.02.1999',
++    blocks: [
++      {
++        id: 'i1',
++        runs: runs('Grete Olsen ble ', {
++          text: 'innlagt akutt 14.02',
++          factId: 'f_innlagt',
++        }),
++      },
++      {
++        id: 'i2',
++        runs: runs({
++          text: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
++          factId: 'f_elling_uvarslet',
++        }),
++      },
++    ],
++  },
++  doc_dodsfall: {
++    id: 'doc_dodsfall',
++    kind: 'MELDING',
++    title: 'OUS Ullevål · dødsfall',
++    register: 'klinisk',
++    peek: '—',
++    meta: 'TIL SOSIALKONTORET · 15.02.1999',
++    blocks: [
++      {
++        id: 'd1',
++        runs: runs('Grete Olsen, f. 21.09.1927. ', {
++          text: 'Dødsfall konstatert 15.02 kl. 04:12.',
++          factId: 'f_dod',
++        }),
++      },
++      {
++        id: 'd2',
++        runs: runs('Varsling ble forsøkt per telefon uten svar. ', {
++          text: 'Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
++          factId: 'f_brevsprekken',
++        }),
++      },
++    ],
++  },
++  doc_huseier: {
++    id: 'doc_huseier',
++    kind: 'BREV',
++    title: 'Brev fra huseieren · T. Bakkerud',
++    register: 'formell',
++    peek: '«Jeg hører at din mor er gått bort.»',
++    meta: 'HÅNDSKREVET · LEVERT I POSTKASSEN',
++    blocks: [
++      { id: 'h1', runs: runs('Til Elling Olsen.') },
++      {
++        id: 'h2',
++        runs: runs(
++          'Jeg hører at din mor er gått bort. Kondolerer. Jeg må likevel skrive om det praktiske. ',
++          { text: 'Leien for mars er ikke kommet.', factId: 'f_leie_stoppet' },
++        ),
++      },
++      {
++        id: 'h3',
++        runs: runs({
++          text: 'Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.',
++          factId: 'f_leie_privat',
++        }),
++      },
++      {
++        id: 'h4',
++        runs: runs('Jeg vil ikke lage vanskeligheter. Men ', {
++          text: 'jeg kommer innom på torsdag, så får vi snakke om veien videre',
++          factId: 'f_huseier_kommer',
++        }),
++      },
++    ],
++  },
++};
++
++export const blueprintQuestions: Record<string, BlueprintQuestion> = {
++  q_okonomi: {
++    id: 'q_okonomi',
++    title: 'Hvem holder økonomien i gang?',
++    appearsOn: ['f_grete_baerer', 'f_trygd', 'f_husleie'],
++    hypotheses: [
++      {
++        id: 'h_ok_grete',
++        label: 'Grete bærer betalingskjeden.',
++        needs: ['f_husleie', 'f_alt_via_grete'],
++        opens: ['t_forvaltning'],
++        note: 'Husleie og faste betalinger fungerer gjennom Gretes system: skoesken, postgiroene, kontantene den første.',
++      },
++      {
++        id: 'h_ok_unngaar',
++        label: 'Elling forstår økonomien, men unngår post.',
++        needs: ['f_post', 'f_bok'],
++        opens: ['t_dokgjennomgang'],
++        note: 'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem til en vurdering.',
++      },
++      {
++        id: 'h_ok_gap',
++        label: 'Trygden dekker ikke boligen uten Gretes pensjon.',
++        needs: ['f_gap'],
++        opens: ['t_bostotte'],
++        note: 'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres av Gretes pensjon.',
++      },
++    ],
++  },
++  q_bolig: {
++    id: 'q_bolig',
++    title: 'Kan Elling bli boende når Grete ikke lenger bærer hverdagen?',
++    appearsOn: ['f_gap', 'f_leie_stoppet', 'f_husleie', 'f_ingen_plan'],
++    hypotheses: [
++      {
++        id: 'h_b_sikres',
++        label: 'Boligen kan sikres med bostøtte og ordnet betalingskjede.',
++        needs: ['f_gap', 'f_trygd'],
++        opens: ['t_bostotte', 't_forvaltning'],
++        note: 'Leieforholdet kan videreføres hvis saken ordner betaling før restansen blir en egen sak.',
++      },
++      {
++        id: 'h_b_flytte',
++        label: 'Boligen kan ikke holdes. Flytting bør forberedes nå.',
++        needs: ['f_gap', 'f_leie_privat'],
++        opens: ['t_huseier'],
++        note: 'Leieforholdet er privat, muntlig og uten kontrakt å lene seg på.',
++      },
++      {
++        id: 'h_b_uavklart',
++        label: 'Uavklart: økonomien må kartlegges først.',
++        needs: [],
++        opens: [],
++        note: 'Saken mangler økonomisk grunnlag for en boligvurdering.',
++      },
++    ],
++  },
++  q_hverdag: {
++    id: 'q_hverdag',
++    title: 'Hva bærer Grete i hverdagen, og hva skjer når hun ikke kan?',
++    appearsOn: ['f_grete_baerer', 'f_klarer_seg', 'f_grete_syk'],
++    hypotheses: [
++      {
++        id: 'h_h_infra',
++        label: 'Grete er usynlig infrastruktur: mat, kalender, post, kontakt.',
++        needs: ['f_kalender', 'f_matbokser'],
++        opens: ['t_hjemmehjelp', 't_matlevering'],
++        note: 'Husholdets funksjoner er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.',
++      },
++      {
++        id: 'h_h_kanmer',
++        label: 'Elling klarer mer enn det ser ut. Grete har alltid gjort det først.',
++        needs: ['f_bok', 'f_utklipp'],
++        opens: ['t_brev'],
++        note: 'Observert kapasitet tilsier at funksjoner er trenbare, men bare i lavt tempo.',
++      },
++      {
++        id: 'h_h_system',
++        label: 'Husholdet fungerer bare som system med to.',
++        needs: ['f_matbokser', 'f_ingen_matkjop'],
++        opens: ['t_hjemmehjelp'],
++        note: 'Husholdet er bygget som ett system med to roller. Den ene rollen faller bort.',
++      },
++    ],
++  },
++  q_selv: {
++    id: 'q_selv',
++    title: 'Hva kan Elling lære seg, med riktig stillas?',
++    appearsOn: ['f_bok', 'f_utklipp', 'f_matbokser', 'f_aldri_alene'],
++    hypotheses: [
++      {
++        id: 'h_s_trenbar',
++        label: 'Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen.',
++        needs: ['f_bok'],
++        opens: ['t_brev', 't_regning'],
++        note: 'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte.',
++      },
++      {
++        id: 'h_s_formell',
++        label: 'Ferdighetene er der ikke. Formell støtte må bære alt.',
++        needs: ['f_saarbar'],
++        opens: ['t_institusjon'],
++        note: 'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må kompensere fullt.',
++      },
++      {
++        id: 'h_s_ukjent',
++        label: 'Vet ikke, før noe er prøvd med støtte.',
++        needs: [],
++        opens: ['t_brev'],
++        note: 'Kommunen har ingen observasjon av Elling i en mestringssituasjon.',
++      },
++    ],
++  },
++  q_kontakt: {
++    id: 'q_kontakt',
++    title: 'Hvordan når kommunen Elling uten Grete?',
++    appearsOn: ['f_elling_tlf', 'f_avstand', 'f_ingen_tjenester'],
++    hypotheses: [
++      {
++        id: 'h_k_oppmote',
++        label: 'Telefonen er stengt kanal. Fast person og oppmøte kan virke.',
++        needs: ['f_elling_tlf', 'f_avstand'],
++        opens: ['t_hjemmehjelp'],
++        note: 'Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte.',
++      },
++      {
++        id: 'h_k_skriftlig',
++        label: 'All kontakt må gå skriftlig.',
++        needs: ['f_post'],
++        opens: ['t_dokgjennomgang'],
++        note: 'Skriftlig kanal forutsetter at post åpnes. I dag er den like stengt som telefonen.',
++      },
++      {
++        id: 'h_k_via_grete',
++        label: 'Kontakt må gå via Grete så lenge hun lever.',
++        needs: ['f_klarer_seg'],
++        opens: [],
++        note: 'Grete er eneste fungerende kanal inn, men den kanalen har kort forventet varighet.',
++      },
++    ],
++  },
++  q_kollaps: {
++    id: 'q_kollaps',
++    title: 'Hva kollapser først nå?',
++    appearsOn: ['f_dod'],
++    hypotheses: [
++      {
++        id: 'h_c_penger',
++        label: 'Økonomien. Husleien stopper denne måneden.',
++        needs: ['f_gap'],
++        opens: ['t_forvaltning', 't_huseier'],
++        note: 'Betalingskjeden lå i Gretes skoeske og hukommelse. Den opphørte 15.02.',
++      },
++      {
++        id: 'h_c_mat',
++        label: 'Maten. Boksene i kjøleskapet tar slutt om dager.',
++        needs: ['f_matbokser'],
++        opens: ['t_matlevering'],
++        note: 'Matforsyningen var preppet uke for uke. Det finnes ingen neste.',
++      },
++      {
++        id: 'h_c_kontakt',
++        label: 'Kontakten. Uten kanal inn er alt annet teori.',
++        needs: ['f_brevsprekken'],
++        opens: ['t_hjemmehjelp'],
++        note: 'Kommunen har per i dag ingen bekreftet kanal til Elling.',
++      },
++    ],
++  },
++};
++
++export const blueprintTiltak: Record<string, BlueprintTiltak> = {
++  t_bostotte: {
++    id: 't_bostotte',
++    slot: 's1',
++    title: 'Søk bostøtte',
++    cost: 0,
++    needs: ['f_trygd', 'f_husleie'],
++    needsHypothesis: ['h_ok_gap', 'h_b_sikres'],
++    description: 'Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid.',
++    sim: 'bostotte',
++  },
++  t_forvaltning: {
++    id: 't_forvaltning',
++    slot: 's1',
++    title: 'Frivillig forvaltning av faste betalinger',
++    cost: 1,
++    needs: ['f_alt_via_grete'],
++    needsHypothesis: ['h_ok_grete', 'h_b_sikres', 'h_c_penger'],
++    description: 'Kommunen overtar skoesken. Trygt. Bygger ingenting.',
++    sim: 'forvaltning',
++  },
++  t_huseier: {
++    id: 't_huseier',
++    slot: 's1',
++    title: 'Snakk med huseieren',
++    cost: 0,
++    needs: ['f_huseier_kommer'],
++    needsHypothesis: ['h_b_sikres', 'h_b_flytte', 'h_c_penger'],
++    description: 'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank.',
++    sim: 'garanti',
++  },
++  t_hjemmehjelp: {
++    id: 't_hjemmehjelp',
++    slot: 's2',
++    title: 'Hjemmehjelp 2x uke — Frank',
++    cost: 2,
++    needs: ['f_grete_baerer'],
++    needsHypothesis: ['h_h_infra', 'h_h_system', 'h_k_oppmote', 'h_c_kontakt'],
++    description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
++    sim: 'hjemmehjelp',
++  },
++  t_matlevering: {
++    id: 't_matlevering',
++    slot: 's2',
++    title: 'Matombringing',
++    cost: 1,
++    needs: ['f_matbokser'],
++    needsHypothesis: ['h_h_infra', 'h_c_mat'],
++    description: 'Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.',
++    sim: 'mat',
++  },
++  t_dokgjennomgang: {
++    id: 't_dokgjennomgang',
++    slot: 's2',
++    title: 'Fast dokumentgjennomgang',
++    cost: 1,
++    needs: ['f_post'],
++    needsHypothesis: ['h_ok_unngaar', 'h_k_skriftlig', 'h_h_infra'],
++    description: 'Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.',
++    sim: 'dok',
++  },
++  t_brev: {
++    id: 't_brev',
++    slot: 's3',
++    title: 'Åpne ett brev sammen med Frank',
++    cost: 0,
++    needs: ['f_post'],
++    needsHypothesis: ['h_h_kanmer', 'h_s_trenbar', 'h_s_ukjent'],
++    needsVisit: true,
++    description: 'Ett brev. Ikke bunken. Frank legger det på bordet og venter.',
++    sim: 'brev',
++  },
++  t_regning: {
++    id: 't_regning',
++    slot: 's3',
++    title: 'Betal én regning med støtte',
++    cost: 0,
++    needs: ['f_gap'],
++    needsHypothesis: ['h_s_trenbar'],
++    needsVisit: true,
++    description: 'Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.',
++    sim: 'regning',
++  },
++  t_telefon: {
++    id: 't_telefon',
++    slot: 's3',
++    title: 'Telefontrening med manus',
++    cost: 0,
++    needs: ['f_elling_tlf'],
++    early: true,
++    description: 'Manus ved apparatet i stuen. Krever trygghet som kanskje ikke finnes ennå.',
++    sim: 'telefon',
++  },
++  t_institusjon: {
++    id: 't_institusjon',
++    slot: 'press',
++    title: 'Institusjonsvurdering / omsorgsbolig',
++    cost: 0,
++    needs: ['f_saarbar'],
++    description: 'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir et avsluttet kapittel.',
++    sim: 'institusjon',
++  },
++};
++
++export const blueprintSlotLabels: Record<BlueprintTiltakSlot, string> = {
++  s1: 'Bolig/økonomi-sikring',
++  s2: 'Erstatt Gretes usynlige arbeid',
++  s3: 'Skjør selvstendig rutine',
++  press: 'Press: alltid tilgjengelig, aldri automatisk riktig',
++};
++
++export const blueprintDispatches: Record<string, BlueprintDispatch> = {
++  d_ring_grete: {
++    id: 'd_ring_grete',
++    title: 'Ring Grete',
++    description: 'Førstekontakt. Hun vet hvorfor du ringer.',
++  },
++  d_konto: {
++    id: 'd_konto',
++    title: 'Be om økonomisk oversikt',
++    description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
++  },
++  d_besok: {
++    id: 'd_besok',
++    title: 'Avtal hjemmebesøk',
++    description: 'Gjennom Grete. Rapport i morgen tidlig.',
++  },
++  d_ring_elling: {
++    id: 'd_ring_elling',
++    title: 'Ring leiligheten',
++    description: 'Grete tar den ikke lenger. Spørsmålet er om noen gjør det.',
++  },
++  d_papirer: {
++    id: 'd_papirer',
++    title: 'Gå gjennom papirene i leiligheten',
++    description: 'Skoesken står der fortsatt. Noen må åpne den.',
++  },
++  d_besok_alene: {
++    id: 'd_besok_alene',
++    title: 'Hjemmebesøk uten avtale',
++    description: 'Ingen Grete å avtale med lenger. Frank stiller på døren.',
++  },
++  d_bostotte_f: {
++    id: 'd_bostotte_f',
++    title: 'Følg opp bostøttesøknaden',
++    description: 'Purr Husbanken. Sjekk at dokumentene er komplette.',
++  },
++};
++
++export const blueprintChat: BlueprintChatPrompt[] = [
++  {
++    id: 'c_post',
++    needs: 'f_post',
++    question: 'Posten i gangen — likegyldighet?',
++    answer: runs(
++      'Nei. Han vet nøyaktig hva som ligger der. Det er ikke likegyldighet. Det ligner mer på frykt for hva papiret krever av svar.',
++    ),
++  },
++  {
++    id: 'c_klarer',
++    needs: 'f_klarer_seg',
++    question: 'Tror du på «han klarer seg»?',
++    answer: runs(
++      'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
++    ),
++  },
++  {
++    id: 'c_bok',
++    needs: 'f_bok',
++    question: 'Boken og notatene — hva sier det deg?',
++    answer: runs(
++      'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet.',
++    ),
++  },
++  {
++    id: 'c_avstand',
++    needs: 'f_avstand',
++    question: 'Møbelet mellom dere — hvor lang vei er det inn?',
++    answer: runs(
++      'Lang. Men ',
++      {
++        text: 'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
++        factId: 'f_dor_glott',
++      },
++      ' Den lukkes hvis vi river i den.',
++    ),
++  },
++  {
++    id: 'c_brevsprekk',
++    needs: 'f_brevsprekken',
++    question: 'Brevsprekken. Hørte han det, tror du?',
++    answer: runs(
++      'Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.',
++    ),
++  },
++  {
++    id: 'c_videre',
++    needs: 'f_dod',
++    question: 'Hva gjør vi nå, Frank?',
++    answer: runs(
++      'Det vi burde gjort for ti år siden, bare fortere. Penger først. Så én kanal inn. Så én rutine. I den rekkefølgen.',
++    ),
++  },
++];
++
++export const blueprintFlavor = [
++  '21:10 — teleskopet ved vinduet. 40 min. Himmelen var overskyet.',
++  'Kryssordet fra lørdagsavisen. Tre ord fylt inn, alle riktige.',
++  'Boken om Maud-ekspedisjonen. Margnotater, små bokstaver.',
++  'Utklippsboken: nytt utklipp limt inn under «1994». Limstift, linjal, årstall i hjørnet.',
++  'Han brettet pleddet på Gretes stol. La det tilbake nøyaktig slik det lå.',
++];
++
++export function blueprintDayName(day: number): string {
++  const names: Record<number, string> = {
++    1: 'Torsdag. Meldingen ligger der.',
++    2: 'Fredag.',
++    3: 'Lørdag. Posten kom likevel.',
++    4: 'Søndag.',
++    5: 'Mandag.',
++    6: 'Tirsdag.',
++    7: 'Onsdag.',
++    8: 'Torsdag. En uke.',
++  };
++  return names[day] ?? `Dag ${day}.`;
++}
+diff --git a/src/domain/blueprint.ts b/src/domain/blueprint.ts
+new file mode 100644
+index 0000000..c726963
+--- /dev/null
++++ b/src/domain/blueprint.ts
+@@ -0,0 +1,217 @@
++export type BlueprintSurface = 'pulten' | 'fakta' | 'sporsmal' | 'vedtak' | 'frank' | 'leiligheten';
++
++export type BlueprintPhase = 'prologue' | 'play' | 'ended';
++
++export type BlueprintDomain =
++  | 'Økonomi/bolig'
++  | 'Hverdag/rutine'
++  | 'Helse/risiko'
++  | 'Nettverk/sosialt'
++  | 'Ressurser';
++
++export type BlueprintDocumentRegister = 'klinisk' | 'notat' | 'formell' | 'vedtak';
++
++export type BlueprintFactId = string;
++export type BlueprintDocumentId = string;
++export type BlueprintQuestionId = string;
++export type BlueprintHypothesisId = string;
++export type BlueprintTiltakId = string;
++export type BlueprintDispatchId = string;
++export type BlueprintChatId = string;
++export type BlueprintClockId =
++  | 'ck_bostotte'
++  | 'ck_overfort'
++  | 'ck_rutine'
++  | 'ck_restanse'
++  | 'ck_grete';
++
++export type BlueprintTiltakSlot = 's1' | 's2' | 's3' | 'press';
++
++export interface BlueprintStoryBeat {
++  cap?: string;
++  who?: string;
++  say?: string;
++  dir?: string;
++  stamp?: string;
++  end?: string;
++}
++
++export interface BlueprintTextRun {
++  text: string;
++  factId?: BlueprintFactId;
++}
++
++export interface BlueprintDocumentBlock {
++  id: string;
++  runs: BlueprintTextRun[];
++}
++
++export interface BlueprintDocument {
++  id: BlueprintDocumentId;
++  kind: string;
++  title: string;
++  register: BlueprintDocumentRegister;
++  peek: string;
++  meta: string;
++  blocks: BlueprintDocumentBlock[];
++}
++
++export interface BlueprintFact {
++  id: BlueprintFactId;
++  domain: BlueprintDomain;
++  category: string;
++  text: string;
++  quote: string;
++  supports: BlueprintQuestionId[];
++  discuss: Array<'Frank' | 'Grete'>;
++}
++
++export interface BlueprintHypothesis {
++  id: BlueprintHypothesisId;
++  label: string;
++  needs: BlueprintFactId[];
++  opens: BlueprintTiltakId[];
++  note: string;
++}
++
++export interface BlueprintQuestion {
++  id: BlueprintQuestionId;
++  title: string;
++  appearsOn: BlueprintFactId[];
++  hypotheses: BlueprintHypothesis[];
++}
++
++export interface BlueprintTiltak {
++  id: BlueprintTiltakId;
++  slot: BlueprintTiltakSlot;
++  title: string;
++  cost: number;
++  needs: BlueprintFactId[];
++  needsHypothesis?: BlueprintHypothesisId[];
++  needsVisit?: boolean;
++  early?: boolean;
++  description: string;
++  sim: string;
++}
++
++export interface BlueprintDispatch {
++  id: BlueprintDispatchId;
++  title: string;
++  description: string;
++}
++
++export interface BlueprintChatPrompt {
++  id: BlueprintChatId;
++  needs: BlueprintFactId;
++  question: string;
++  answer: BlueprintTextRun[];
++}
++
++export interface BlueprintDocState {
++  day: number;
++  read: boolean;
++  isNew: boolean;
++}
++
++export interface BlueprintFactState {
++  day: number;
++  fresh: boolean;
++}
++
++export interface BlueprintQuestionState {
++  visible: true;
++  hypothesisId: BlueprintHypothesisId | null;
++}
++
++export interface BlueprintPendingDocument {
++  day: number;
++  documentId: BlueprintDocumentId;
++}
++
++export interface BlueprintChatMessage {
++  who: 'Deg' | 'Frank';
++  runs: BlueprintTextRun[];
++}
++
++export interface BlueprintClockTrack {
++  good: number;
++  bad: number;
++  done?: boolean;
++  failed?: boolean;
++}
++
++export interface BlueprintSimLogEntry {
++  day: number;
++  text: string;
++  kind: 'obs' | 'tiltak' | 'frank' | 'day';
++  factId?: BlueprintFactId;
++}
++
++export interface BlueprintSimState {
++  needs: {
++    hunger: number;
++    energy: number;
++    social: number;
++    security: number;
++  };
++  foodBoxes: number;
++  mail: number;
++  unanswered: number;
++  doorOpened: boolean;
++  visitLevel: 0 | 1 | 2;
++  log: BlueprintSimLogEntry[];
++  flavorIndex: number;
++  tiradeLogged: boolean;
++  forvaltningLogged: boolean;
++  institutionLogged: boolean;
++}
++
++export interface BlueprintEndText {
++  para1: string;
++  para2: string;
++  closing: string;
++}
++
++export interface BlueprintProgress {
++  day: number;
++  actions: number;
++  phase: BlueprintPhase;
++  greteStage: number;
++  documents: Record<BlueprintDocumentId, BlueprintDocState>;
++  pending: BlueprintPendingDocument[];
++  facts: Record<BlueprintFactId, BlueprintFactState>;
++  unreadFacts: number;
++  questions: Record<BlueprintQuestionId, BlueprintQuestionState>;
++  chatLog: BlueprintChatMessage[];
++  askedChatIds: BlueprintChatId[];
++  dispatchedIds: BlueprintDispatchId[];
++  draftTiltakIds: BlueprintTiltakId[];
++  enactedTiltakIds: BlueprintTiltakId[];
++  vedtakCount: number;
++  clocks: {
++    ck_bostotte: BlueprintClockTrack;
++    ck_overfort: BlueprintClockTrack;
++    ck_rutine: BlueprintClockTrack;
++    ck_restanse: BlueprintClockTrack;
++  };
++  sim: BlueprintSimState;
++  endText?: BlueprintEndText;
++}
++
++export interface BlueprintFactLiftResult {
++  fact: BlueprintFact;
++  newQuestionIds: BlueprintQuestionId[];
++}
++
++export interface BlueprintAvailability {
++  ok: boolean;
++  why?: string;
++}
++
++export interface BlueprintDispatchOutcome {
++  toasts: Array<{
++    tag: string;
++    text: string;
++    kind?: 'fact' | 'hypothesis' | 'day';
++  }>;
++}
+diff --git a/src/engine/blueprint/blueprintEngine.test.ts b/src/engine/blueprint/blueprintEngine.test.ts
+new file mode 100644
+index 0000000..f439652
+--- /dev/null
++++ b/src/engine/blueprint/blueprintEngine.test.ts
+@@ -0,0 +1,183 @@
++import { describe, expect, it } from 'vitest';
++import { blueprintDocuments } from '../../content/blueprint';
++import { BlueprintStore } from '../../stores/BlueprintStore';
++import {
++  createBlueprintProgress,
++  dispatchAvailable,
++  liftBlueprintFact,
++  questionStateLabel,
++  receiveBlueprintDocument,
++  runBlueprintDispatch,
++  tiltakAvailability,
++} from './blueprintEngine';
++
++describe('Blueprint v1 caseworker loop', () => {
++  it('starts on the desk with the frozen prototype represented as typed authored document runs', () => {
++    const store = new BlueprintStore();
++    expect(store.progress.phase).toBe('prologue');
++
++    store.startCase();
++
++    expect(store.progress.phase).toBe('play');
++    expect(store.progress.documents.doc_bekymring).toBeDefined();
++    expect(
++      blueprintDocuments.doc_bekymring.blocks.some((block) => block.runs.some((run) => run.factId)),
++    ).toBe(true);
++  });
++
++  it('lifts facts into Sakens fakta and opens authored questions', () => {
++    const progress = createBlueprintProgress();
++    receiveBlueprintDocument(progress, 'doc_bekymring');
++
++    const first = liftBlueprintFact(progress, 'f_grete_baerer');
++    expect(first?.fact.text).toContain('Grete bistår');
++    expect(progress.facts.f_grete_baerer).toBeDefined();
++    expect(progress.unreadFacts).toBe(1);
++    expect(first?.newQuestionIds).toEqual(expect.arrayContaining(['q_hverdag', 'q_okonomi']));
++    expect(questionStateLabel(progress, 'q_hverdag')).toBe('Åpent');
++  });
++
++  it('gates hypothesis selection until required facts are lifted, then makes tiltak available', () => {
++    const store = new BlueprintStore();
++    store.startCase();
++    store.liftFact('f_trygd');
++    store.liftFact('f_husleie');
++    store.liftFact('f_gap');
++
++    expect(store.progress.questions.q_okonomi).toBeDefined();
++    expect(store.hypothesisAvailable('q_okonomi', 'h_ok_gap')).toBe(true);
++    expect(store.progress.questions.q_okonomi.hypothesisId).toBeNull();
++    expect(store.tiltakAvailability('t_bostotte').ok).toBe(false);
++
++    store.selectHypothesis('q_okonomi', 'h_ok_gap');
++
++    expect(store.progress.questions.q_okonomi.hypothesisId).toBe('h_ok_gap');
++    expect(store.tiltakAvailability('t_bostotte').ok).toBe(true);
++  });
++
++  it('keeps tiltak locked when facts, visit, or arbeidshypotese are missing', () => {
++    const progress = createBlueprintProgress();
++    liftBlueprintFact(progress, 'f_post');
++
++    const availability = tiltakAvailability(progress, 't_brev');
++
++    expect(availability.ok).toBe(false);
++    expect(availability.why).toContain('hjemmebesøk');
++  });
++
++  it('gates Frank dispatch and delivers pending documents on day advancement', () => {
++    const progress = createBlueprintProgress();
++    progress.phase = 'play';
++    receiveBlueprintDocument(progress, 'doc_bekymring');
++
++    expect(dispatchAvailable(progress, 'd_besok')).toBe(false);
++
++    const phone = runBlueprintDispatch(progress, 'd_ring_grete');
++
++    expect(phone?.toasts[0].text).toContain('telefonsamtale');
++    expect(progress.documents.doc_frank_tlf).toBeDefined();
++    expect(dispatchAvailable(progress, 'd_besok')).toBe(true);
++
++    const visit = runBlueprintDispatch(progress, 'd_besok');
++    expect(visit?.toasts[0].text).toContain('Besøksrapport');
++    expect(progress.pending).toEqual([{ day: 2, documentId: 'doc_frank_visit' }]);
++
++    const store = new BlueprintStore();
++    store.progress = progress;
++    store.advanceDay();
++
++    expect(store.progress.day).toBe(2);
++    expect(store.progress.documents.doc_frank_visit).toBeDefined();
++    expect(store.progress.sim.visitLevel).toBe(1);
++  });
++
++  it('gates Frank chat by lifted facts and can lift facts from Frank answers', () => {
++    const store = new BlueprintStore();
++    store.startCase();
++
++    expect(store.askableFrankPrompts.some((prompt) => prompt.id === 'c_avstand')).toBe(false);
++
++    store.liftFact('f_avstand');
++
++    expect(store.askableFrankPrompts.some((prompt) => prompt.id === 'c_avstand')).toBe(true);
++    store.askFrank('c_avstand');
++    expect(store.progress.chatLog.at(-1)?.who).toBe('Frank');
++
++    store.liftFact('f_dor_glott');
++    expect(store.progress.facts.f_dor_glott).toBeDefined();
++    expect(store.progress.questions.q_kontakt).toBeDefined();
++  });
++
++  it('advances through the scripted Grete unavailable and death beats', () => {
++    const store = new BlueprintStore();
++    store.startCase();
++
++    store.advanceDay();
++    store.advanceDay();
++    store.advanceDay();
++
++    expect(store.progress.day).toBe(4);
++    expect(store.progress.greteStage).toBe(4);
++    expect(store.progress.documents.doc_innleggelse).toBeDefined();
++    expect(store.notices.some((notice) => notice.text === 'Grete er innlagt.')).toBe(true);
++
++    store.advanceDay();
++
++    expect(store.progress.day).toBe(5);
++    expect(store.progress.greteStage).toBe(5);
++    expect(store.progress.documents.doc_dodsfall).toBeDefined();
++    expect(store.progress.questions.q_kollaps).toBeDefined();
++    expect(store.notices.some((notice) => notice.text === 'Grete Olsen er død.')).toBe(true);
++  });
++
++  it('can draft and enact a three-slot package, then reach final reflection/status', () => {
++    const store = new BlueprintStore();
++    store.startCase();
++    for (const factId of [
++      'f_grete_baerer',
++      'f_kalender',
++      'f_matbokser',
++      'f_post',
++      'f_bok',
++      'f_trygd',
++      'f_husleie',
++      'f_gap',
++      'f_alt_via_grete',
++      'f_avstand',
++      'f_elling_tlf',
++      'f_saarbar',
++    ]) {
++      store.liftFact(factId);
++    }
++    receiveBlueprintDocument(store.progress, 'doc_frank_visit');
++    store.progress.sim.visitLevel = 1;
++
++    store.selectHypothesis('q_okonomi', 'h_ok_grete');
++    store.selectHypothesis('q_bolig', 'h_b_sikres');
++    store.selectHypothesis('q_hverdag', 'h_h_infra');
++    store.selectHypothesis('q_selv', 'h_s_trenbar');
++    store.selectHypothesis('q_kontakt', 'h_k_oppmote');
++
++    store.toggleDraftTiltak('t_forvaltning');
++    store.toggleDraftTiltak('t_hjemmehjelp');
++    store.toggleDraftTiltak('t_brev');
++    store.toggleDraftTiltak('t_institusjon');
++    store.enactTiltak();
++
++    expect(store.progress.enactedTiltakIds).toEqual([
++      't_forvaltning',
++      't_hjemmehjelp',
++      't_brev',
++      't_institusjon',
++    ]);
++    expect(store.activeSurface).toBe('leiligheten');
++
++    while (store.progress.phase !== 'ended') {
++      store.advanceDay();
++    }
++
++    expect(store.progress.documents.doc_status).toBeDefined();
++    expect(store.progress.endText?.closing).toBeTruthy();
++    expect(store.reflectionVisible).toBe(true);
++  });
++});
+diff --git a/src/engine/blueprint/blueprintEngine.ts b/src/engine/blueprint/blueprintEngine.ts
+new file mode 100644
+index 0000000..1776071
+--- /dev/null
++++ b/src/engine/blueprint/blueprintEngine.ts
+@@ -0,0 +1,727 @@
++import {
++  blueprintChat,
++  blueprintDayName,
++  blueprintDispatches,
++  blueprintDocuments,
++  blueprintFacts,
++  blueprintFlavor,
++  blueprintQuestions,
++  blueprintTiltak,
++} from '../../content/blueprint';
++import type {
++  BlueprintAvailability,
++  BlueprintChatId,
++  BlueprintDispatchId,
++  BlueprintDispatchOutcome,
++  BlueprintDocumentId,
++  BlueprintEndText,
++  BlueprintFactId,
++  BlueprintFactLiftResult,
++  BlueprintHypothesis,
++  BlueprintHypothesisId,
++  BlueprintProgress,
++  BlueprintQuestionId,
++  BlueprintTiltakId,
++} from '../../domain/blueprint';
++
++export function createBlueprintProgress(): BlueprintProgress {
++  return {
++    day: 1,
++    actions: 2,
++    phase: 'prologue',
++    greteStage: 1,
++    documents: {},
++    pending: [],
++    facts: {},
++    unreadFacts: 0,
++    questions: {},
++    chatLog: [],
++    askedChatIds: [],
++    dispatchedIds: [],
++    draftTiltakIds: [],
++    enactedTiltakIds: [],
++    vedtakCount: 0,
++    clocks: {
++      ck_bostotte: { good: 0, bad: 0, done: false, failed: false },
++      ck_overfort: { good: 0, bad: 0 },
++      ck_rutine: { good: 0, bad: 0 },
++      ck_restanse: { good: 0, bad: 0 },
++    },
++    sim: {
++      needs: { hunger: 72, energy: 64, social: 30, security: 55 },
++      foodBoxes: 7,
++      mail: 9,
++      unanswered: 2,
++      doorOpened: false,
++      visitLevel: 0,
++      log: [],
++      flavorIndex: 0,
++      tiradeLogged: false,
++      forvaltningLogged: false,
++      institutionLogged: false,
++    },
++  };
++}
++
++export function receiveBlueprintDocument(
++  progress: BlueprintProgress,
++  documentId: BlueprintDocumentId,
++): boolean {
++  if (progress.documents[documentId]) return false;
++  progress.documents[documentId] = { day: progress.day, read: false, isNew: true };
++  return true;
++}
++
++export function liftBlueprintFact(
++  progress: BlueprintProgress,
++  factId: BlueprintFactId,
++): BlueprintFactLiftResult | null {
++  const fact = blueprintFacts[factId];
++  if (!fact || progress.facts[factId]) return null;
++
++  progress.facts[factId] = { day: progress.day, fresh: true };
++  progress.unreadFacts += 1;
++  const newQuestionIds: BlueprintQuestionId[] = [];
++
++  for (const [questionId, question] of Object.entries(blueprintQuestions)) {
++    if (!progress.questions[questionId] && question.appearsOn.includes(factId)) {
++      progress.questions[questionId] = { visible: true, hypothesisId: null };
++      newQuestionIds.push(questionId);
++    }
++  }
++
++  return { fact, newQuestionIds };
++}
++
++export function factsForQuestion(
++  progress: BlueprintProgress,
++  questionId: BlueprintQuestionId,
++): BlueprintFactId[] {
++  return Object.keys(progress.facts).filter((factId) =>
++    blueprintFacts[factId]?.supports.includes(questionId),
++  );
++}
++
++export function questionStateLabel(
++  progress: BlueprintProgress,
++  questionId: BlueprintQuestionId,
++): string {
++  const question = progress.questions[questionId];
++  if (!question) return 'Skjult';
++  if (question.hypothesisId) return 'Foreløpig arbeidssvar';
++  return factsForQuestion(progress, questionId).length >= 2 ? 'Delvis belyst' : 'Åpent';
++}
++
++export function hypothesisAvailable(
++  progress: BlueprintProgress,
++  hypothesis: BlueprintHypothesis,
++): boolean {
++  return hypothesis.needs.every((factId) => Boolean(progress.facts[factId]));
++}
++
++export function chooseBlueprintHypothesis(
++  progress: BlueprintProgress,
++  questionId: BlueprintQuestionId,
++  hypothesisId: BlueprintHypothesisId,
++): boolean {
++  const question = blueprintQuestions[questionId];
++  const questionState = progress.questions[questionId];
++  const hypothesis = question?.hypotheses.find((item) => item.id === hypothesisId);
++  if (!question || !questionState || !hypothesis || !hypothesisAvailable(progress, hypothesis)) {
++    return false;
++  }
++
++  questionState.hypothesisId = questionState.hypothesisId === hypothesisId ? null : hypothesisId;
++  return true;
++}
++
++export function chosenHypotheses(progress: BlueprintProgress): BlueprintHypothesis[] {
++  return Object.entries(progress.questions)
++    .map(([questionId, questionState]) => {
++      if (!questionState.hypothesisId) return undefined;
++      return blueprintQuestions[questionId]?.hypotheses.find(
++        (hypothesis) => hypothesis.id === questionState.hypothesisId,
++      );
++    })
++    .filter((hypothesis): hypothesis is BlueprintHypothesis => Boolean(hypothesis));
++}
++
++export function hypothesisChosen(
++  progress: BlueprintProgress,
++  hypothesisId: BlueprintHypothesisId,
++): boolean {
++  return chosenHypotheses(progress).some((hypothesis) => hypothesis.id === hypothesisId);
++}
++
++export function spentCost(progress: BlueprintProgress): number {
++  return progress.enactedTiltakIds.reduce(
++    (sum, tiltakId) => sum + (blueprintTiltak[tiltakId]?.cost ?? 0),
++    0,
++  );
++}
++
++export function draftCost(progress: BlueprintProgress): number {
++  return progress.draftTiltakIds.reduce(
++    (sum, tiltakId) => sum + (blueprintTiltak[tiltakId]?.cost ?? 0),
++    0,
++  );
++}
++
++export function tiltakAvailability(
++  progress: BlueprintProgress,
++  tiltakId: BlueprintTiltakId,
++): BlueprintAvailability {
++  const tiltak = blueprintTiltak[tiltakId];
++  if (!tiltak) return { ok: false, why: 'ukjent tiltak' };
++  if (progress.enactedTiltakIds.includes(tiltakId)) return { ok: false, why: 'iverksatt' };
++  if (!tiltak.needs.every((factId) => progress.facts[factId])) {
++    return { ok: false, why: 'mangler grunnlag i sakens fakta' };
++  }
++  if (tiltak.needsVisit && !progress.documents.doc_frank_visit) {
++    return { ok: false, why: 'krever gjennomført hjemmebesøk' };
++  }
++  if (
++    tiltak.needsHypothesis &&
++    !tiltak.needsHypothesis.some((hypothesisId) => hypothesisChosen(progress, hypothesisId))
++  ) {
++    const questionTitle = Object.values(blueprintQuestions).find((question) =>
++      question.hypotheses.some((hypothesis) => tiltak.needsHypothesis?.includes(hypothesis.id)),
++    )?.title;
++    return {
++      ok: false,
++      why: `krever arbeidshypotese${questionTitle ? ` under «${questionTitle}»` : ''}`,
++    };
++  }
++  return { ok: true };
++}
++
++export function toggleBlueprintDraft(
++  progress: BlueprintProgress,
++  tiltakId: BlueprintTiltakId,
++): boolean {
++  const existing = progress.draftTiltakIds.indexOf(tiltakId);
++  if (existing >= 0) {
++    progress.draftTiltakIds.splice(existing, 1);
++    return true;
++  }
++
++  const availability = tiltakAvailability(progress, tiltakId);
++  if (!availability.ok) return false;
++  const nextCost =
++    spentCost(progress) + draftCost(progress) + (blueprintTiltak[tiltakId]?.cost ?? 0);
++  if (nextCost > 6) return false;
++  progress.draftTiltakIds.push(tiltakId);
++  return true;
++}
++
++export function enactBlueprintTiltak(progress: BlueprintProgress): BlueprintTiltakId[] {
++  if (!progress.draftTiltakIds.length || progress.phase !== 'play') return [];
++  const chosen = [...progress.draftTiltakIds];
++  progress.enactedTiltakIds.push(...chosen);
++  progress.draftTiltakIds = [];
++  progress.vedtakCount += 1;
++
++  for (const tiltakId of chosen) {
++    const tiltak = blueprintTiltak[tiltakId];
++    if (!tiltak) continue;
++    if (tiltakId === 't_bostotte') {
++      progress.clocks.ck_bostotte.good += progress.documents.doc_konto ? 2 : 1;
++    }
++    if (tiltak.slot === 's2') {
++      progress.clocks.ck_overfort.good += tiltakId === 't_hjemmehjelp' ? 2 : 1;
++    }
++    if (
++      tiltakId === 't_telefon' &&
++      progress.clocks.ck_rutine.good === 0 &&
++      !progress.sim.doorOpened
++    ) {
++      progress.clocks.ck_rutine.bad += 2;
++    }
++  }
++
++  progress.sim.log.push({
++    day: progress.day,
++    text: `Vedtak fattet: ${chosen.map((tiltakId) => blueprintTiltak[tiltakId].title).join(', ')}.`,
++    kind: 'tiltak',
++  });
++
++  return chosen;
++}
++
++export function availableDispatchIds(progress: BlueprintProgress): BlueprintDispatchId[] {
++  return Object.keys(blueprintDispatches).filter((dispatchId) =>
++    dispatchAvailable(progress, dispatchId),
++  );
++}
++
++export function dispatchAvailable(
++  progress: BlueprintProgress,
++  dispatchId: BlueprintDispatchId,
++): boolean {
++  switch (dispatchId) {
++    case 'd_ring_grete':
++      return !progress.documents.doc_frank_tlf && progress.greteStage < 4;
++    case 'd_konto':
++      return (
++        !progress.documents.doc_konto &&
++        !progress.pending.some((item) => item.documentId === 'doc_konto') &&
++        progress.greteStage < 4
++      );
++    case 'd_besok':
++      return (
++        Boolean(progress.documents.doc_frank_tlf) &&
++        !progress.documents.doc_frank_visit &&
++        !progress.pending.some((item) => item.documentId === 'doc_frank_visit') &&
++        progress.greteStage < 4
++      );
++    case 'd_ring_elling':
++      return !progress.facts.f_ubesvart && progress.greteStage >= 4;
++    case 'd_papirer':
++      return (
++        progress.greteStage >= 5 &&
++        !progress.documents.doc_konto &&
++        !progress.documents.doc_papirer &&
++        (progress.sim.doorOpened || progress.enactedTiltakIds.includes('t_hjemmehjelp'))
++      );
++    case 'd_besok_alene':
++      return progress.greteStage >= 5;
++    case 'd_bostotte_f':
++      return (
++        progress.enactedTiltakIds.includes('t_bostotte') &&
++        !progress.clocks.ck_bostotte.done &&
++        !progress.clocks.ck_bostotte.failed
++      );
++    default:
++      return false;
++  }
++}
++
++export function runBlueprintDispatch(
++  progress: BlueprintProgress,
++  dispatchId: BlueprintDispatchId,
++): BlueprintDispatchOutcome | null {
++  if (
++    progress.phase !== 'play' ||
++    progress.actions < 1 ||
++    !dispatchAvailable(progress, dispatchId)
++  ) {
++    return null;
++  }
++
++  progress.actions -= 1;
++  progress.dispatchedIds.push(dispatchId);
++  const outcome: BlueprintDispatchOutcome = { toasts: [] };
++
++  if (['d_ring_grete', 'd_konto', 'd_besok'].includes(dispatchId)) {
++    progress.clocks.ck_overfort.bad += 1;
++  }
++
++  if (dispatchId === 'd_ring_grete') {
++    receiveBlueprintDocument(progress, 'doc_frank_tlf');
++    outcome.toasts.push({
++      tag: 'NYTT DOKUMENT PÅ PULTEN',
++      text: blueprintDocuments.doc_frank_tlf.title,
++    });
++  }
++
++  if (dispatchId === 'd_konto') {
++    progress.pending.push({ day: progress.day + 1, documentId: 'doc_konto' });
++    outcome.toasts.push({ tag: 'FRANK ER I GANG', text: 'Svar ventes i morgen.' });
++  }
++
++  if (dispatchId === 'd_besok') {
++    progress.pending.push({ day: progress.day + 1, documentId: 'doc_frank_visit' });
++    outcome.toasts.push({ tag: 'FRANK ER I GANG', text: 'Besøksrapport ventes i morgen.' });
++  }
++
++  if (dispatchId === 'd_ring_elling') {
++    const lifted = liftBlueprintFact(progress, 'f_ubesvart');
++    progress.sim.unanswered += 1;
++    progress.sim.log.push({
++      day: progress.day,
++      text: 'Frank ringte leiligheten. Åtte ring. Fasttelefonen står to meter fra stolen hans.',
++      kind: 'frank',
++    });
++    if (lifted) {
++      outcome.toasts.push({
++        tag: `FAKTUM LAGT TIL · ${lifted.fact.domain}`,
++        text: lifted.fact.text,
++        kind: 'fact',
++      });
++    }
++  }
++
++  if (dispatchId === 'd_papirer') {
++    receiveBlueprintDocument(progress, 'doc_papirer');
++    outcome.toasts.push({
++      tag: 'NYTT DOKUMENT PÅ PULTEN',
++      text: blueprintDocuments.doc_papirer.title,
++    });
++  }
++
++  if (dispatchId === 'd_besok_alene') {
++    const opened =
++      progress.enactedTiltakIds.includes('t_hjemmehjelp') || progress.clocks.ck_rutine.good > 0;
++    if (opened) {
++      progress.sim.doorOpened = true;
++      progress.sim.visitLevel = 2;
++      progress.sim.needs.social = Math.min(100, progress.sim.needs.social + 8);
++      progress.sim.log.push({
++        day: progress.day,
++        text: 'Frank ringte på. Det tok fire minutter. Så gikk låsen.',
++        kind: 'frank',
++      });
++      progress.sim.log.push({
++        day: progress.day,
++        text: 'De sa ingenting om Grete. Frank satte over kaffe. E. ble i rommet.',
++        kind: 'frank',
++      });
++      outcome.toasts.push({ tag: 'FELTNOTAT', text: 'Døren gikk opp. Fire minutter.' });
++    } else {
++      progress.clocks.ck_rutine.bad = Math.min(4, progress.clocks.ck_rutine.bad + 1);
++      progress.sim.log.push({
++        day: progress.day,
++        text: 'Frank ringte på. Ingen lyd. Han la et håndskrevet kort i brevsprekken.',
++        kind: 'frank',
++      });
++      outcome.toasts.push({ tag: 'FELTNOTAT', text: 'Ingen åpnet. Frank la igjen et kort.' });
++    }
++  }
++
++  if (dispatchId === 'd_bostotte_f') {
++    progress.clocks.ck_bostotte.good += 1;
++    outcome.toasts.push({ tag: 'BOSTØTTE SAK', text: 'Søknaden rykker frem.' });
++  }
++
++  return outcome;
++}
++
++export function askBlueprintFrank(progress: BlueprintProgress, chatId: BlueprintChatId): boolean {
++  const prompt = blueprintChat.find((item) => item.id === chatId);
++  if (!prompt || progress.askedChatIds.includes(chatId) || !progress.facts[prompt.needs]) {
++    return false;
++  }
++  progress.askedChatIds.push(chatId);
++  progress.chatLog.push({ who: 'Deg', runs: [{ text: prompt.question }] });
++  progress.chatLog.push({ who: 'Frank', runs: prompt.answer });
++  return true;
++}
++
++export function advanceBlueprintDay(progress: BlueprintProgress): BlueprintDispatchOutcome {
++  if (progress.phase !== 'play') return { toasts: [] };
++
++  progress.day += 1;
++  progress.actions = 2;
++  const outcome: BlueprintDispatchOutcome = {
++    toasts: [{ tag: `DAG ${progress.day}`, text: blueprintDayName(progress.day), kind: 'day' }],
++  };
++
++  progress.pending = progress.pending.filter((pending) => {
++    if (pending.day <= progress.day) {
++      receiveBlueprintDocument(progress, pending.documentId);
++      if (pending.documentId === 'doc_frank_visit') {
++        progress.sim.visitLevel = Math.max(progress.sim.visitLevel, 1) as 0 | 1 | 2;
++      }
++      outcome.toasts.push({
++        tag: 'NY POST PÅ PULTEN',
++        text: blueprintDocuments[pending.documentId].title,
++        kind: 'day',
++      });
++      return false;
++    }
++    return true;
++  });
++
++  updateBostotteClock(progress, outcome);
++  applyScriptedDay(progress, outcome);
++  simTick(progress);
++
++  if (progress.day >= 8 && progress.phase === 'play') {
++    endBlueprint(progress);
++  }
++
++  return outcome;
++}
++
++export function clearFreshFacts(progress: BlueprintProgress): void {
++  progress.unreadFacts = 0;
++  for (const state of Object.values(progress.facts)) {
++    state.fresh = false;
++  }
++}
++
++export function statusDocumentBlocks(endText?: BlueprintEndText): string[] {
++  if (!endText) return ['Statusrapporten er ikke skrevet ennå.'];
++  return [endText.para1, endText.para2, endText.closing];
++}
++
++function updateBostotteClock(progress: BlueprintProgress, outcome: BlueprintDispatchOutcome): void {
++  const clock = progress.clocks.ck_bostotte;
++  if (!progress.enactedTiltakIds.includes('t_bostotte') || clock.done || clock.failed) return;
++  if (clock.good >= 4) {
++    clock.done = true;
++    outcome.toasts.push({
++      tag: 'BOSTØTTE SAK',
++      text: 'Søknad komplett. Under behandling.',
++      kind: 'day',
++    });
++  } else if (progress.greteStage >= 4) {
++    clock.bad += 1;
++    if (clock.bad >= 4) {
++      clock.failed = true;
++      outcome.toasts.push({
++        tag: 'BOSTØTTE SAK',
++        text: 'Fristen glapp. Søknaden må fremmes på nytt.',
++        kind: 'day',
++      });
++    }
++  }
++}
++
++function applyScriptedDay(progress: BlueprintProgress, outcome: BlueprintDispatchOutcome): void {
++  if (progress.day === 2) {
++    progress.greteStage = 2;
++  }
++  if (progress.day === 3) {
++    progress.greteStage = 3;
++    outcome.toasts.push({
++      tag: 'BESKJED FRA FRANK',
++      text: 'Grete skulle ringe tilbake om papirene. Hun ringte ikke.',
++      kind: 'day',
++    });
++  }
++  if (progress.day === 4) {
++    receiveBlueprintDocument(progress, 'doc_innleggelse');
++    progress.greteStage = 4;
++    outcome.toasts.push({ tag: 'MELDING FRA ULLEVÅL', text: 'Grete er innlagt.', kind: 'day' });
++  }
++  if (progress.day === 5) {
++    receiveBlueprintDocument(progress, 'doc_dodsfall');
++    progress.greteStage = 5;
++    if (!progress.questions.q_kollaps) {
++      progress.questions.q_kollaps = { visible: true, hypothesisId: null };
++    }
++    outcome.toasts.push({
++      tag: 'MELDING FRA ULLEVÅL',
++      text: 'Grete Olsen er død.',
++      kind: 'day',
++    });
++  }
++  if (progress.day === 6) {
++    receiveBlueprintDocument(progress, 'doc_huseier');
++    outcome.toasts.push({
++      tag: 'NY POST PÅ PULTEN',
++      text: 'Håndskrevet brev · T. Bakkerud',
++      kind: 'day',
++    });
++  }
++}
++
++function cover(progress: BlueprintProgress) {
++  const enacted = progress.enactedTiltakIds;
++  return {
++    channel:
++      enacted.includes('t_hjemmehjelp') ||
++      progress.clocks.ck_rutine.good > 0 ||
++      progress.sim.doorOpened,
++    money:
++      enacted.includes('t_forvaltning') ||
++      Boolean(progress.clocks.ck_bostotte.done) ||
++      enacted.includes('t_huseier'),
++    food: enacted.includes('t_matlevering'),
++    documents: enacted.includes('t_dokgjennomgang'),
++    routine: enacted.some((tiltakId) => blueprintTiltak[tiltakId]?.slot === 's3'),
++    institution: enacted.includes('t_institusjon'),
++  };
++}
++
++function simTick(progress: BlueprintProgress): void {
++  const sim = progress.sim;
++  const day = progress.day;
++  const coverage = cover(progress);
++  const log = (text: string, kind: 'obs' | 'tiltak' | 'frank' | 'day' = 'obs', factId?: string) =>
++    sim.log.push({ day, text, kind, factId });
++
++  if (progress.greteStage < 4) {
++    sim.needs.security = 55;
++    sim.needs.hunger = Math.max(sim.needs.hunger, 70);
++    if (sim.visitLevel > 0 && day >= 3) log(nextFlavor(progress));
++    if (day === 3 && sim.visitLevel > 0) {
++      log('Grete var på kjøkkenet fra 15:30. Hun fylte fire nye bokser og satte seg ikke ned.');
++    }
++    return;
++  }
++
++  if (progress.greteStage === 4) {
++    sim.needs.security = 38;
++    sim.foodBoxes -= 1;
++    sim.mail += 1;
++    if (sim.visitLevel > 0) {
++      log('Ingen kom kl. 16. E. ved vinduet fra 15:40 til 18:05.');
++      log('Telefonen ringte to ganger (Ullevål). Han sto ved apparatet. Tok den ikke.');
++      sim.unanswered += 2;
++    }
++    return;
++  }
++
++  sim.mail += 1;
++  sim.needs.security = Math.max(12, sim.needs.security - 7);
++  sim.needs.energy = Math.max(20, sim.needs.energy - 4);
++
++  if (coverage.food && coverage.channel) {
++    sim.foodBoxes = Math.max(sim.foodBoxes, 4);
++    sim.needs.hunger = 65;
++    log('Matlevering 11:00. Boksene ble tatt inn i løpet av en time.', 'tiltak');
++  } else if (coverage.food) {
++    sim.foodBoxes -= 1;
++    sim.needs.hunger = Math.max(15, sim.needs.hunger - 12);
++    log('Matlevering 11:00. Kassen ble stående i gangen. Ingen åpnet.', 'tiltak');
++  } else {
++    sim.foodBoxes -= 1;
++    sim.needs.hunger =
++      sim.foodBoxes > 0 ? Math.max(40, sim.needs.hunger - 6) : Math.max(10, sim.needs.hunger - 15);
++    if (sim.foodBoxes === 1) {
++      log('Én boks igjen i kjøleskapet. Merket «søndag», i Gretes håndskrift.');
++    }
++  }
++
++  if (coverage.documents) {
++    sim.mail = Math.max(0, sim.mail - 3);
++    log('Dokumentgjennomgang. Frank åpnet og sorterte. E. ble i rommet.', 'tiltak');
++  } else if (sim.mail > 12) {
++    log('Postbunken har veltet. Øverst: Søgaard Eiendom.');
++  }
++
++  if (coverage.channel && progress.enactedTiltakIds.includes('t_hjemmehjelp')) {
++    log('Frank 14:00, fast tid. Kaffen sto klar da han gikk — én kopp brukt.', 'tiltak');
++    sim.needs.social = Math.min(45, sim.needs.social + 4);
++  } else if (!coverage.channel) {
++    log('Banking på døren. E. frøs. Ingen lyd i fire minutter. Så stillhet.');
++    sim.unanswered += 1;
++  }
++
++  if (coverage.routine && progress.enactedTiltakIds.includes('t_brev') && coverage.channel) {
++    if (progress.clocks.ck_rutine.good < 4) {
++      progress.clocks.ck_rutine.good += 1;
++      const steps = [
++        'Brevrutine: Frank la ett brev på bordet og ventet. E. så på det. Det var nok.',
++        'Brevrutine: E. åpnet konvolutten. Leste avsenderen høyt.',
++        'Brevrutine: E. leste første avsnitt. «De vil ha et svar innen fjorten dager.»',
++        'Brevrutine: E. la brevet i en mappe han hadde laget selv. Den var merket.',
++      ];
++      const step = steps[progress.clocks.ck_rutine.good - 1];
++      log(step, 'tiltak', progress.clocks.ck_rutine.good === 4 ? 'f_egen_mappe' : undefined);
++      if (progress.clocks.ck_rutine.good === 4) {
++        liftBlueprintFact(progress, 'f_egen_mappe');
++      }
++    }
++  } else if (coverage.routine && progress.enactedTiltakIds.includes('t_brev')) {
++    log('Brevrutinen forutsetter at noen kommer inn. Ingen kommer inn.', 'tiltak');
++  }
++
++  if (
++    progress.enactedTiltakIds.includes('t_telefon') &&
++    progress.clocks.ck_rutine.bad >= 2 &&
++    !sim.tiradeLogged
++  ) {
++    sim.tiradeLogged = true;
++    log(
++      'Telefontrening avbrutt. E. holdt et kvarter langt foredrag om apparatet.',
++      'tiltak',
++      'f_tirade',
++    );
++    liftBlueprintFact(progress, 'f_tirade');
++  }
++
++  if (coverage.institution && !sim.institutionLogged) {
++    sim.institutionLogged = true;
++    log('Kartleggingsskjema for omsorgsbolig levert i postkassen.', 'tiltak');
++  }
++
++  if (!coverage.money) {
++    progress.clocks.ck_restanse.bad = Math.min(6, progress.clocks.ck_restanse.bad + 1);
++    if (progress.clocks.ck_restanse.bad === 3) {
++      log(
++        'Ny lapp fra Bakkerud i postkassen. Kortere enn brevet. Bare ett spørsmålstegn til slutt.',
++      );
++    }
++  } else if (progress.enactedTiltakIds.includes('t_forvaltning') && !sim.forvaltningLogged) {
++    sim.forvaltningLogged = true;
++    log(
++      'Forvaltningskontoret har overtatt de faste betalingene. Husleien for mars er sikret.',
++      'tiltak',
++    );
++  }
++
++  log(nextFlavor(progress));
++}
++
++function nextFlavor(progress: BlueprintProgress): string {
++  const value = blueprintFlavor[progress.sim.flavorIndex % blueprintFlavor.length];
++  progress.sim.flavorIndex += 1;
++  return value;
++}
++
++function endBlueprint(progress: BlueprintProgress): void {
++  progress.phase = 'ended';
++  progress.endText = buildEndText(progress);
++  receiveBlueprintDocument(progress, 'doc_status');
++}
++
++function buildEndText(progress: BlueprintProgress): BlueprintEndText {
++  const coverage = cover(progress);
++  const restanse = progress.clocks.ck_restanse.bad;
++  const routine = progress.clocks.ck_rutine;
++
++  if (coverage.institution) {
++    return {
++      para1:
++        'Kartlegging for omsorgsbolig er igangsatt. Saken er bureaukratisk lesbar og kan lukkes administrativt ved tildeling.',
++      para2:
++        'Skjemaet ligger fortsatt uåpnet i posten hans. Leiligheten er i så fall et avsluttet kapittel.',
++      closing: '«Han er en smart gutt,» sa hun i trappen. Det var det siste hun sa til kommunen.',
++    };
++  }
++
++  if (coverage.money && (coverage.channel || routine.good > 0)) {
++    return {
++      para1:
++        'Husleien for mars er sikret. Leieforholdet består, foreløpig, fordi noen tok betalingskjeden før den røk.',
++      para2:
++        routine.good >= 2
++          ? 'Én rutine har begynt å tåle støtte: brevet på bordet. Det høres ikke ut som mye. Det er det første han har båret selv.'
++          : 'En kanal inn finnes. Den er smal og den er ny, og den heter Frank.',
++      closing:
++        'Leiligheten består. Det gjør også stillheten i den. Spørsmålet nå er hva den skal fylles med.',
++    };
++  }
++
++  if (coverage.money) {
++    return {
++      para1:
++        'Husleien er sikret. Det økonomiske grunnlaget for leieforholdet er midlertidig på plass.',
++      para2: `Ingen har vært inne i leiligheten siden dødsfallet. Frank anslår ${Math.max(
++        0,
++        progress.sim.foodBoxes,
++      )} middagsbokser igjen. Telefonen har ${progress.sim.unanswered} ubesvarte anrop.`,
++      closing: 'Vedtaket var riktig utfylt. Det var ikke nok.',
++    };
++  }
++
++  if (coverage.channel || coverage.food || coverage.documents) {
++    return {
++      para1: `Noen bærer deler av hverdagen. ${coverage.food ? 'Mat kommer inn. ' : ''}${
++        coverage.documents ? 'Posten åpnes. ' : ''
++      }${coverage.channel ? 'Døren går opp for én person.' : ''}`,
++      para2: `Ingen betaler den. Restanseklokken står på ${restanse} av 6. Bakkerud har lagt en ny lapp i postkassen.`,
++      closing: 'Hverdagen har fått stillas. Grunnmuren har ingen.',
++    };
++  }
++
++  return {
++    para1: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.',
++    para2:
++      'Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.',
++    closing: 'Bekymringsmeldingen var berettiget. Det er den fortsatt.',
++  };
++}
+diff --git a/src/stores/BlueprintStore.tsx b/src/stores/BlueprintStore.tsx
+new file mode 100644
+index 0000000..f15a629
+--- /dev/null
++++ b/src/stores/BlueprintStore.tsx
+@@ -0,0 +1,319 @@
++import { makeAutoObservable } from 'mobx';
++import {
++  blueprintChat,
++  blueprintDispatches,
++  blueprintDocuments,
++  blueprintDomains,
++  blueprintFacts,
++  blueprintQuestions,
++  blueprintSlotLabels,
++  blueprintTiltak,
++} from '../content/blueprint';
++import type {
++  BlueprintChatPrompt,
++  BlueprintDispatch,
++  BlueprintDocument,
++  BlueprintDocumentId,
++  BlueprintDomain,
++  BlueprintFact,
++  BlueprintFactId,
++  BlueprintHypothesisId,
++  BlueprintProgress,
++  BlueprintQuestion,
++  BlueprintQuestionId,
++  BlueprintSurface,
++  BlueprintTiltak,
++  BlueprintTiltakId,
++} from '../domain/blueprint';
++import {
++  advanceBlueprintDay,
++  askBlueprintFrank,
++  availableDispatchIds,
++  chooseBlueprintHypothesis,
++  clearFreshFacts,
++  createBlueprintProgress,
++  draftCost,
++  enactBlueprintTiltak,
++  factsForQuestion,
++  liftBlueprintFact,
++  questionStateLabel,
++  receiveBlueprintDocument,
++  runBlueprintDispatch,
++  spentCost,
++  statusDocumentBlocks,
++  tiltakAvailability,
++  toggleBlueprintDraft,
++} from '../engine/blueprint/blueprintEngine';
++
++export interface BlueprintNotice {
++  id: string;
++  tag: string;
++  text: string;
++  kind?: 'fact' | 'hypothesis' | 'day';
++}
++
++export class BlueprintStore {
++  progress: BlueprintProgress = createBlueprintProgress();
++  activeSurface: BlueprintSurface = 'pulten';
++  prologueIndex = 1;
++  openDocumentId: BlueprintDocumentId | null = null;
++  selectedFactId: BlueprintFactId | null = null;
++  notices: BlueprintNotice[] = [];
++  reflectionVisible = false;
++
++  constructor() {
++    makeAutoObservable(this, {}, { autoBind: true });
++  }
++
++  resetBlueprint(): void {
++    this.progress = createBlueprintProgress();
++    this.activeSurface = 'pulten';
++    this.prologueIndex = 1;
++    this.openDocumentId = null;
++    this.selectedFactId = null;
++    this.notices = [];
++    this.reflectionVisible = false;
++  }
++
++  advancePrologue(): void {
++    this.prologueIndex += 1;
++  }
++
++  startCase(): void {
++    this.progress.phase = 'play';
++    receiveBlueprintDocument(this.progress, 'doc_bekymring');
++    this.activeSurface = 'pulten';
++    this.openDocumentId = null;
++    this.addNotice('MOTTATT · SOSIALKONTORET', 'Meldingen ligger på pulten din.', 'day');
++  }
++
++  showSurface(surface: BlueprintSurface): void {
++    this.activeSurface = surface;
++    if (surface === 'fakta') clearFreshFacts(this.progress);
++  }
++
++  openDocument(documentId: BlueprintDocumentId): void {
++    if (!this.progress.documents[documentId]) return;
++    this.progress.documents[documentId].read = true;
++    this.progress.documents[documentId].isNew = false;
++    this.openDocumentId = documentId;
++  }
++
++  closeDocument(): void {
++    this.openDocumentId = null;
++  }
++
++  liftFact(factId: BlueprintFactId): void {
++    const result = liftBlueprintFact(this.progress, factId);
++    if (!result) return;
++    this.addNotice(`FAKTUM LAGT TIL · ${result.fact.domain}`, result.fact.text, 'fact');
++    for (const questionId of result.newQuestionIds) {
++      this.addNotice('ÅPENT SPØRSMÅL', blueprintQuestions[questionId].title, 'hypothesis');
++    }
++  }
++
++  selectFact(factId: BlueprintFactId): void {
++    if (this.progress.facts[factId]) this.selectedFactId = factId;
++  }
++
++  closeFact(): void {
++    this.selectedFactId = null;
++  }
++
++  selectHypothesis(questionId: BlueprintQuestionId, hypothesisId: BlueprintHypothesisId): void {
++    const before = this.progress.questions[questionId]?.hypothesisId;
++    const changed = chooseBlueprintHypothesis(this.progress, questionId, hypothesisId);
++    if (!changed) return;
++    const after = this.progress.questions[questionId]?.hypothesisId;
++    if (after && after !== before) {
++      const hypothesis = blueprintQuestions[questionId].hypotheses.find(
++        (item) => item.id === hypothesisId,
++      );
++      if (hypothesis) this.addNotice('ARBEIDSHYPOTESE NOTERT', hypothesis.label, 'hypothesis');
++    }
++  }
++
++  toggleDraftTiltak(tiltakId: BlueprintTiltakId): void {
++    const changed = toggleBlueprintDraft(this.progress, tiltakId);
++    if (!changed) {
++      const availability = tiltakAvailability(this.progress, tiltakId);
++      this.addNotice(
++        'TILTAK LÅST',
++        availability.why ?? 'Tiltaket kan ikke velges nå.',
++        'hypothesis',
++      );
++    }
++  }
++
++  enactTiltak(): void {
++    const chosen = enactBlueprintTiltak(this.progress);
++    if (!chosen.length) return;
++    this.addNotice(
++      'VEDTAK FATTET',
++      `${chosen.length} tiltak iverksettes fra i morgen.`,
++      'hypothesis',
++    );
++    this.activeSurface = 'leiligheten';
++  }
++
++  runDispatch(dispatchId: string): void {
++    const outcome = runBlueprintDispatch(this.progress, dispatchId);
++    if (!outcome) return;
++    for (const toast of outcome.toasts) {
++      this.addNotice(toast.tag, toast.text, toast.kind);
++    }
++  }
++
++  askFrank(chatId: string): void {
++    const asked = askBlueprintFrank(this.progress, chatId);
++    if (!asked) return;
++    const prompt = blueprintChat.find((item) => item.id === chatId);
++    if (prompt) this.addNotice('FRANK SVARER', prompt.question);
++  }
++
++  advanceDay(): void {
++    const outcome = advanceBlueprintDay(this.progress);
++    for (const toast of outcome.toasts) {
++      this.addNotice(toast.tag, toast.text, toast.kind);
++    }
++    if (this.progress.phase === 'ended') {
++      this.reflectionVisible = true;
++      this.activeSurface = 'pulten';
++    }
++  }
++
++  dismissNotice(id: string): void {
++    this.notices = this.notices.filter((notice) => notice.id !== id);
++  }
++
++  closeReflection(): void {
++    this.reflectionVisible = false;
++  }
++
++  get documentEntries(): Array<{
++    id: BlueprintDocumentId;
++    document: BlueprintDocument;
++    state: BlueprintProgress['documents'][string];
++  }> {
++    return Object.entries(this.progress.documents).map(([id, state]) => ({
++      id,
++      document: this.documentById(id),
++      state,
++    }));
++  }
++
++  get currentDocument(): BlueprintDocument | undefined {
++    return this.openDocumentId ? this.documentById(this.openDocumentId) : undefined;
++  }
++
++  get selectedFact(): BlueprintFact | undefined {
++    return this.selectedFactId ? blueprintFacts[this.selectedFactId] : undefined;
++  }
++
++  get factsByDomain(): Array<{ domain: BlueprintDomain; facts: BlueprintFact[] }> {
++    return blueprintDomains.map((domain) => ({
++      domain,
++      facts: Object.keys(this.progress.facts)
++        .map((factId) => blueprintFacts[factId])
++        .filter((fact): fact is BlueprintFact => Boolean(fact) && fact.domain === domain),
++    }));
++  }
++
++  get visibleQuestions(): Array<{ id: string; question: BlueprintQuestion }> {
++    return Object.keys(this.progress.questions)
++      .map((id) => ({ id, question: blueprintQuestions[id] }))
++      .filter((entry): entry is { id: string; question: BlueprintQuestion } =>
++        Boolean(entry.question),
++      );
++  }
++
++  get availableDispatches(): BlueprintDispatch[] {
++    return availableDispatchIds(this.progress).map((id) => blueprintDispatches[id]);
++  }
++
++  get askableFrankPrompts(): BlueprintChatPrompt[] {
++    return blueprintChat.filter(
++      (prompt) =>
++        this.progress.facts[prompt.needs] && !this.progress.askedChatIds.includes(prompt.id),
++    );
++  }
++
++  get spentCost(): number {
++    return spentCost(this.progress);
++  }
++
++  get draftCost(): number {
++    return draftCost(this.progress);
++  }
++
++  get selectedTiltak(): BlueprintTiltak[] {
++    return this.progress.enactedTiltakIds.map((id) => blueprintTiltak[id]).filter(Boolean);
++  }
++
++  documentById(documentId: BlueprintDocumentId): BlueprintDocument {
++    if (documentId === 'doc_status') {
++      return {
++        id: 'doc_status',
++        kind: 'STATUSRAPPORT',
++        title: 'Frank · status dag 8',
++        register: 'notat',
++        peek: 'En uke siden meldingen.',
++        meta: 'DAG 8 · SAKEN FORTSETTER',
++        blocks: statusDocumentBlocks(this.progress.endText).map((text, index) => ({
++          id: `status-${index}`,
++          runs: [{ text }],
++        })),
++      };
++    }
++    return blueprintDocuments[documentId];
++  }
++
++  factsForQuestion(questionId: BlueprintQuestionId): BlueprintFact[] {
++    return factsForQuestion(this.progress, questionId).map((factId) => blueprintFacts[factId]);
++  }
++
++  questionStateLabel(questionId: BlueprintQuestionId): string {
++    return questionStateLabel(this.progress, questionId);
++  }
++
++  hypothesisAvailable(
++    questionId: BlueprintQuestionId,
++    hypothesisId: BlueprintHypothesisId,
++  ): boolean {
++    const hypothesis = blueprintQuestions[questionId]?.hypotheses.find(
++      (item) => item.id === hypothesisId,
++    );
++    if (!hypothesis) return false;
++    return hypothesis.needs.every((factId) => Boolean(this.progress.facts[factId]));
++  }
++
++  tiltakAvailability(tiltakId: BlueprintTiltakId) {
++    return tiltakAvailability(this.progress, tiltakId);
++  }
++
++  evidenceCount(document: BlueprintDocument): { total: number; lifted: number } {
++    const factIds = document.blocks.flatMap((block) =>
++      block.runs.flatMap((run) => (run.factId ? [run.factId] : [])),
++    );
++    return {
++      total: factIds.length,
++      lifted: factIds.filter((factId) => this.progress.facts[factId]).length,
++    };
++  }
++
++  slotLabel(slot: string): string {
++    return blueprintSlotLabels[slot as keyof typeof blueprintSlotLabels] ?? slot;
++  }
++
++  private addNotice(tag: string, text: string, kind?: BlueprintNotice['kind']): void {
++    this.notices = [
++      {
++        id: `${Date.now()}-${this.notices.length}-${tag}`,
++        tag,
++        text,
++        kind,
++      },
++      ...this.notices,
++    ].slice(0, 4);
++  }
++}
+diff --git a/src/styles.css b/src/styles.css
+index dea8ff5..599bc08 100644
+--- a/src/styles.css
++++ b/src/styles.css
+@@ -2,3 +2,465 @@
+ @plugin "daisyui" {
+   themes: dracula, dark, light, coffee;
+ }
++
++.blueprint-root {
++  --paper: #f5f1e8;
++  --paper-shade: #ece7d8;
++  --paper-fold: #dcd5c2;
++  --ink: #2a2520;
++  --ink-dim: #6b6259;
++  --ink-faint: #a49a8c;
++  --desk: #463c31;
++  --desk-dark: #382f26;
++  --hint-gold: #c89a2e;
++  --hint-warn: #c86244;
++  --hint-green: #4f8a5b;
++  --hint-blue: #416da8;
++  --hint-purple: #8a62a5;
++  --mark: #fff8b0;
++  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
++}
++
++.blueprint-sheet,
++.blueprint-frame,
++.blueprint-reader,
++.blueprint-story-card,
++.blueprint-case-head,
++.blueprint-resource {
++  background: var(--paper);
++  border: 2px solid var(--ink);
++  border-radius: 4px 7px 5px 8px;
++  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.28);
++}
++
++.blueprint-sheet {
++  background: var(--paper);
++}
++
++.blueprint-story-card,
++.blueprint-reader {
++  box-shadow: 6px 8px 0 rgba(0, 0, 0, 0.38);
++}
++
++.blueprint-case-head {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: space-between;
++  gap: 14px;
++  border-left: 5px solid var(--hint-gold);
++  background: var(--paper-shade);
++  padding: 12px 16px;
++}
++
++.blueprint-resource {
++  min-width: 92px;
++  display: grid;
++  place-items: center;
++  padding: 8px 14px;
++  background: var(--paper-shade);
++  color: var(--ink);
++  text-transform: uppercase;
++  letter-spacing: 0.08em;
++  font-size: 10px;
++  font-weight: 800;
++}
++
++.blueprint-resource.action {
++  gap: 2px;
++  cursor: pointer;
++  transition:
++    transform 0.08s,
++    box-shadow 0.08s;
++}
++
++.blueprint-resource.action:hover {
++  transform: translate(-1px, -1px);
++  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.32);
++}
++
++.blueprint-tab,
++.blueprint-button {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: 7px;
++  background: var(--paper);
++  color: var(--ink);
++  border: 2px solid var(--ink);
++  border-radius: 4px 6px 5px 7px;
++  padding: 8px 13px;
++  font-size: 12px;
++  font-weight: 800;
++  letter-spacing: 0.08em;
++  text-transform: uppercase;
++  box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.2);
++  transition:
++    transform 0.08s,
++    box-shadow 0.08s,
++    background 0.12s;
++}
++
++.blueprint-button.normal-case {
++  letter-spacing: 0;
++  text-transform: none;
++}
++
++.blueprint-tab {
++  position: relative;
++  border-bottom: 0;
++  background: var(--paper-fold);
++  color: var(--ink-dim);
++  box-shadow: none;
++}
++
++.blueprint-tab.active {
++  background: var(--paper);
++  color: var(--ink);
++}
++
++.blueprint-tab-badge {
++  position: absolute;
++  top: -9px;
++  right: -7px;
++  min-width: 19px;
++  height: 19px;
++  border: 2px solid var(--ink);
++  border-radius: 999px;
++  background: var(--hint-gold);
++  color: #2a2008;
++  font-size: 11px;
++  line-height: 15px;
++}
++
++.blueprint-button:hover,
++.blueprint-tab:hover {
++  transform: translate(-1px, -1px);
++  box-shadow: 2.5px 3px 0 rgba(0, 0, 0, 0.25);
++}
++
++.blueprint-button:disabled,
++.blueprint-tab:disabled {
++  color: #8f8578;
++  border-color: #8f8578;
++  cursor: not-allowed;
++  box-shadow: none;
++  transform: none;
++}
++
++.blueprint-button.primary {
++  border-color: var(--hint-gold);
++  background: rgba(200, 154, 46, 0.15);
++  color: #745815;
++}
++
++.blueprint-button.quiet {
++  border-color: var(--ink-faint);
++  color: var(--ink-dim);
++  box-shadow: none;
++}
++
++.blueprint-desk {
++  background: radial-gradient(
++    ellipse at 40% 20%,
++    #5b4f40 0%,
++    var(--desk) 55%,
++    var(--desk-dark) 100%
++  );
++  border: 2px solid #241e17;
++  box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.28);
++}
++
++.blueprint-desk-doc {
++  position: relative;
++  width: 215px;
++  min-height: 145px;
++  background: var(--paper);
++  border: 2px solid var(--ink);
++  border-radius: 2px 4px 3px 4px;
++  padding: 14px 14px 26px;
++  cursor: pointer;
++  box-shadow: 3px 4px 6px rgba(0, 0, 0, 0.45);
++  transition: transform 0.12s;
++}
++
++.blueprint-desk-doc:hover,
++.blueprint-desk-doc:focus-visible {
++  transform: scale(1.04) rotate(0deg) !important;
++  z-index: 5;
++  outline: 3px solid rgba(200, 154, 46, 0.45);
++  outline-offset: 2px;
++}
++
++.blueprint-desk-doc.read {
++  opacity: 0.9;
++}
++
++.blueprint-stamp {
++  display: inline-block;
++  border: 2.5px solid var(--hint-warn);
++  border-radius: 3px;
++  color: var(--hint-warn);
++  padding: 4px 12px;
++  transform: rotate(-4deg);
++  font-size: 12px;
++  font-weight: 900;
++  letter-spacing: 0.16em;
++  text-transform: uppercase;
++}
++
++.blueprint-stamp.new {
++  position: absolute;
++  top: -12px;
++  right: -8px;
++  background: var(--paper);
++  padding: 2px 8px;
++  transform: rotate(7deg);
++  font-size: 10px;
++}
++
++.blueprint-reader.reg-notat,
++.reg-notat {
++  background: repeating-linear-gradient(transparent 0 25px, #c4cdd6 25px 26px), var(--paper);
++}
++
++.blueprint-reader.reg-formell {
++  background: var(--paper);
++}
++
++.blueprint-reader.reg-klinisk {
++  background: var(--paper);
++}
++
++.blueprint-evidence {
++  display: inline-flex;
++  align-items: baseline;
++  gap: 4px;
++  max-width: 100%;
++  border: 0;
++  border-bottom: 1.5px dotted rgba(42, 37, 32, 0.48);
++  border-radius: 2px;
++  background: transparent;
++  color: inherit;
++  padding: 0 2px;
++  line-height: inherit;
++  cursor: pointer;
++  text-align: left;
++  vertical-align: baseline;
++}
++
++.blueprint-evidence svg {
++  opacity: 0.62;
++  transform: translateY(2px);
++  flex: 0 0 auto;
++}
++
++.blueprint-evidence:hover,
++.blueprint-evidence:focus-visible {
++  background: rgba(65, 109, 168, 0.13);
++  outline: 2px solid rgba(65, 109, 168, 0.42);
++  outline-offset: 2px;
++}
++
++.blueprint-evidence.collected {
++  background: var(--mark);
++  border-bottom-color: transparent;
++  cursor: default;
++}
++
++.blueprint-evidence.collected:hover,
++.blueprint-evidence.collected:focus-visible {
++  background: var(--mark);
++}
++
++.blueprint-fact-chip {
++  border: 1.8px solid var(--ink);
++  border-radius: 3px 6px 4px 6px;
++  background: var(--paper);
++  padding: 10px;
++  box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.15);
++}
++
++.blueprint-fact-chip.fresh {
++  border-color: var(--hint-gold);
++  box-shadow: 2px 3px 0 rgba(200, 154, 46, 0.3);
++}
++
++.blueprint-domain-icon {
++  display: inline-grid;
++  width: 20px;
++  height: 20px;
++  place-items: center;
++  border: 1.5px solid currentColor;
++  border-radius: 999px;
++  margin-right: 5px;
++  font-size: 12px;
++  font-weight: 900;
++  color: var(--hint-blue);
++}
++
++.blueprint-pill {
++  display: inline-flex;
++  align-items: center;
++  border: 1.5px solid var(--ink-faint);
++  border-radius: 999px;
++  padding: 2px 8px;
++  font-size: 10px;
++  font-weight: 900;
++  letter-spacing: 0.1em;
++  text-transform: uppercase;
++}
++
++.blueprint-pill.gold {
++  border-color: var(--hint-gold);
++  color: #745815;
++}
++
++.blueprint-pill.green {
++  border-color: var(--hint-green);
++  color: var(--hint-green);
++}
++
++.blueprint-pill.warn {
++  border-color: var(--hint-warn);
++  color: var(--hint-warn);
++}
++
++.blueprint-mini-fact {
++  border: 1.5px solid var(--ink-faint);
++  border-radius: 3px 5px 4px 5px;
++  background: var(--mark);
++  padding: 4px 8px;
++  font-size: 13px;
++  font-weight: 700;
++}
++
++.blueprint-mini-fact.missing {
++  background: var(--paper-shade);
++  color: var(--ink-faint);
++  border-style: dashed;
++}
++
++.blueprint-hypothesis,
++.blueprint-tiltak-card {
++  display: flex;
++  gap: 10px;
++  align-items: flex-start;
++  border: 1.8px solid var(--ink-faint);
++  border-radius: 4px 6px 5px 6px;
++  background: var(--paper);
++  padding: 10px 12px;
++}
++
++.blueprint-hypothesis:hover,
++.blueprint-tiltak-card:hover {
++  border-color: var(--ink);
++}
++
++.blueprint-hypothesis.chosen,
++.blueprint-tiltak-card.chosen {
++  border-color: var(--hint-gold);
++  background: rgba(200, 154, 46, 0.1);
++}
++
++.blueprint-hypothesis.blocked,
++.blueprint-tiltak-card.blocked {
++  color: #8f8578;
++  border-style: dashed;
++  cursor: not-allowed;
++}
++
++.blueprint-tiltak-card.active-now {
++  border-color: var(--hint-green);
++  background: rgba(79, 138, 91, 0.11);
++}
++
++.blueprint-redact {
++  color: transparent;
++  background: repeating-linear-gradient(90deg, var(--ink-faint) 0 18px, transparent 18px 24px);
++  border-radius: 2px;
++  opacity: 0.55;
++  user-select: none;
++}
++
++.blueprint-seg {
++  width: 15px;
++  height: 15px;
++  border: 1.8px solid var(--ink);
++  border-radius: 2px 3px 2px 3px;
++  background: var(--paper);
++}
++
++.blueprint-seg.fill-good {
++  background: var(--hint-green);
++  border-color: var(--hint-green);
++}
++
++.blueprint-seg.fill-bad {
++  background: var(--hint-warn);
++  border-color: var(--hint-warn);
++}
++
++.blueprint-seg.fill-neutral {
++  background: var(--ink);
++}
++
++.blueprint-toast {
++  border: 2px solid var(--ink);
++  border-left: 5px solid var(--hint-gold);
++  border-radius: 3px 5px 4px 5px;
++  background: var(--paper);
++  padding: 9px 13px;
++  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.35);
++}
++
++.blueprint-toast.hypo {
++  border-left-color: var(--hint-warn);
++}
++
++.blueprint-toast.day {
++  border-left-color: var(--hint-blue);
++}
++
++@media (max-width: 640px) {
++  .blueprint-root {
++    overflow-x: clip;
++  }
++
++  .blueprint-sheet {
++    min-height: 560px;
++  }
++
++  .blueprint-desk {
++    min-height: 520px;
++  }
++
++  .blueprint-desk > .flex {
++    justify-content: center;
++  }
++
++  .blueprint-desk-doc {
++    width: min(100%, 290px);
++    transform: none !important;
++  }
++
++  .blueprint-tab,
++  .blueprint-button {
++    min-height: 40px;
++    padding: 8px 10px;
++    font-size: 11px;
++  }
++
++  .blueprint-resource {
++    min-width: 0;
++  }
++
++  .blueprint-reader {
++    max-width: calc(100vw - 24px);
++  }
++
++  .blueprint-hypothesis,
++  .blueprint-tiltak-card {
++    padding: 9px;
++  }
++}
