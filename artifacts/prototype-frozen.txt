@@ -1,2 +1,2 @@
 $ test -f prototypes/blueprint_v1.html && git diff HEAD --exit-code -- prototypes/blueprint_v1.html
-[exit 0]
+exit_code=0

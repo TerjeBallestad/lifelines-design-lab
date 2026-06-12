@@ -1,13 +1,13 @@
 {
   "ok": true,
-  "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+  "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
   "serverOutput": "Loaded the built Vite app from a file URL to avoid dev-server bind permissions.",
   "flow": [
     {
       "id": "01-blueprint-prologue",
       "title": "Blueprint prologue",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab LEGESENTERET · TIRSDAG I FEBRUAR 1999 DR. HAUG Prøvesvarene er kommet. Det er som vi trodde. HOPP OVER VIDERE",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -18,7 +18,7 @@
       "id": "02-blueprint-desk",
       "title": "Desk with first document",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 1 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA ÅPNE SPØRSMÅL VEDTAK OG TILTAK FRANK LEILIGHETEN NY BEKYMRINGSMELDING · DAG 1 Legesenteret · Dr. J. Haug «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.» 0/5 MERKET Én melding. Én pult. Begynn der. MOTTATT · SOSIALKONTORET Meldingen ligger på pulten din.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -29,7 +29,7 @@
       "id": "03-blueprint-evidence-lifted",
       "title": "Evidence lifted",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 1 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 4 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK LEILIGHETEN BEKYMRINGSMELDING · DAG 1 Legesenteret · Dr. J. Haug «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.» 4/5 MERKET Én melding. Én pult. Begynn der. ÅPENT SPØRSMÅL Hvordan når kommunen Elling uten Grete? FAKTUM LAGT TIL · NETTVERK/SOSIALT Elling har ingen kontakt med øvrige tjenester. ÅPENT SPØRSMÅL Hva kan Elling lære seg, med riktig stillas? FAKTUM LAGT TIL · HVERDAG/RUTINE Elling (35) har aldri bodd alene.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -40,7 +40,7 @@
       "id": "04-blueprint-facts",
       "title": "Sakens fakta",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 1 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK LEILIGHETEN SAKENS FAKTA AUTO-ARKIVERT PÅ DOMENE · KILDE PÅFØRT ØKONOMI/BOLIG — ingenting ennå HVERDAG/RUTINE 2 ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. «mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt» DOKUMENT · DAG 1 ⌂Elling (35) har aldri bodd alene. «har etter det opplyste aldri bodd alene» DOKUMENT · DAG 1 HELSE/RISIKO 1 +Elling vurderes som sårbar ved bortfall av pårørende. «sårbar ved bortfall av pårørende» RISIKO · DAG 1 NETTVERK/SOSIALT 1 ☎Elling har ingen kontakt med øvrige tjenester. «ikke i kontakt med øvrige tjenester» DOKUMENT · DAG 1 RESSURSER — ingenting ennå ÅPENT SPØRSMÅL Hvordan når kommunen Elling uten Grete? FAKTUM LAGT TIL · NETTVERK/SOSIALT Elling har ingen kontakt med øvrige tjenester. ÅPENT SPØRSMÅL Hva kan Elling lære seg, med riktig stillas? FAKTUM LAGT TIL · HVERDAG/RUTINE Elling (35) har aldri bodd alene.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -51,7 +51,7 @@
       "id": "05-blueprint-question",
       "title": "Question and hypothesis",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 1 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA ÅPNE SPØRSMÅL VEDTAK OG TILTAK FRANK LEILIGHETEN ÅPNE SPØRSMÅL ARBEIDSHYPOTESER ER FORELØPIGE · IKKE FASIT Hvem holder økonomien i gang? ÅPENT ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. … saken mangler grunnlag ☐ Grete bærer betalingskjeden.ULESELIG · MANGLER FAKTUM ☐ Elling forstår økonomien, men unngår post.ULESELIG · MANGLER FAKTUM ☐ Trygden dekker ikke boligen uten Gretes pensjon.ULESELIG · MANGLER FAKTUM Hva bærer Grete i hverdagen, og hva skjer når hun ikke kan? DELVIS BELYST ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ☐ Grete er usynlig infrastruktur: mat, kalender, post, kontakt.ULESELIG · MANGLER FAKTUM ☐ Elling klarer mer enn det ser ut. Grete har alltid gjort det først.ULESELIG · MANGLER FAKTUM ☐ Husholdet fungerer bare som system med to.ULESELIG · MANGLER FAKTUM Hva kan Elling lære seg, med riktig stillas? FORELØPIG ARBEIDSSVAR +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ☐ Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen.ULESELIG · MANGLER FAKTUM ☒ Ferdighetene er der ikke. Formell støtte må bære alt. ☐ Vet ikke, før noe er prøvd med støtte. ARBEIDSHYPOTESE · FORELØPIG Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må kompensere fullt. GIR GRUNNLAG FOR: INSTITUSJONSVURDERING / OMSORGSBOLIG Hvordan når kommunen Elling uten Grete? ÅPENT ☎Elling har ingen kontakt med øvrige tjenester. … saken mangler grunnlag ☐ Telefonen er stengt kanal. Fast person og oppmøte kan virke.ULESELIG · MANGLER FAKTUM ☐ All kontakt må gå skriftlig.ULESELIG · MANGLER FAKTUM ☐ Kontakt må gå via Grete så lenge hun lever.ULESELIG · MANGLER FAKTUM ARBEIDSHYPOTESE NOTERT Ferdighetene er der ikke. Formell støtte må bære alt. ÅPENT SPØRSMÅL Hvordan når kommunen Elling uten Grete? FAKTUM LAGT TIL · NETTVERK/SOSIALT Elling har ingen kontakt med øvrige tjenester. ÅPENT SPØRSMÅL Hva kan Elling lære seg, med riktig stillas?",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -62,7 +62,7 @@
       "id": "06-blueprint-frank-dispatch",
       "title": "Frank dispatches",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA ÅPNE SPØRSMÅL VEDTAK OG TILTAK FRANK LEILIGHETEN SEND FRANK 1 HANDLING PER OPPDRAG · 2 IGJEN I DAG Ingen oppdrag akkurat nå. Saken må gi Frank noe å gjøre. SAMTALE MED FRANK HAN SITERER DET HAN SÅ Spørsmålene låses opp av sakens fakta. BESKJED FRA FRANK Grete skulle ringe tilbake om papirene. Hun ringte ikke. NY POST PÅ PULTEN Frank · hjemmebesøk Gabels gate 14 DAG 3 Lørdag. Posten kom likevel. FRANK ER I GANG Besøksrapport ventes i morgen.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -73,7 +73,7 @@
       "id": "07-blueprint-new-documents",
       "title": "New documents and facts",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 4 VEDTAK OG TILTAK FRANK 4 LEILIGHETEN BEKYMRINGSMELDING · DAG 1 Legesenteret · Dr. J. Haug «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.» 4/5 MERKET FELTNOTAT · DAG 1 Frank · telefonsamtale med Grete «Hun tok den på andre forsøk.» 4/4 MERKET ØKONOMISK OVERSIKT · DAG 2 Frank · husholdets økonomi «Regnestykket går opp — med henne.» 5/5 MERKET RAPPORT · DAG 3 Frank · hjemmebesøk Gabels gate 14 «Hun hadde dekket på med tre kopper.» 7/7 MERKET Pulten svarer først når du ber noen gjøre noe. FAKTUM LAGT TIL · NETTVERK/SOSIALT Grete omtaler Elling (35) som «gutt». Rollene er fastlåst. FAKTUM LAGT TIL · NETTVERK/SOSIALT Elling holder avstand til fremmede. Alltid et møbel mellom. FAKTUM LAGT TIL · RESSURSER Elling samler og systematiserer Gro- og Arbeiderpartiet-utklipp. FAKTUM LAGT TIL · RESSURSER Elling leser krevende stoff og noterer systematisk.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -84,7 +84,7 @@
       "id": "08-blueprint-hypotheses",
       "title": "Multiple work hypotheses",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK 4 LEILIGHETEN ÅPNE SPØRSMÅL ARBEIDSHYPOTESER ER FORELØPIGE · IKKE FASIT Hvem holder økonomien i gang? FORELØPIG ARBEIDSSVAR ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. ●Ellings uføretrygd: to mynter i måneden. ●Husleien er tre mynter og betales av Grete. ●Alle betalinger og avtaler går gjennom Grete. ●Uten Gretes pensjon mangler husholdet to mynter hver måned. ⌂Uåpnet post samler seg. Grete håndterer den og skjuler den. ✦Elling leser krevende stoff og noterer systematisk. ☒ Grete bærer betalingskjeden. ☐ Elling forstår økonomien, men unngår post. ☐ Trygden dekker ikke boligen uten Gretes pensjon. ARBEIDSHYPOTESE · FORELØPIG Husleie og faste betalinger fungerer gjennom Gretes system: skoesken, postgiroene, kontantene den første. GIR GRUNNLAG FOR: FRIVILLIG FORVALTNING AV FASTE BETALINGER Hva bærer Grete i hverdagen, og hva skjer når hun ikke kan? FORELØPIG ARBEIDSSVAR ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ☎Grete avviser bekymringen. Gjentar formuleringen. +Det finnes ingen plan for hvem som overtar etter Grete. ⌂Elling har aldri betalt for mat selv. ⌂Uåpnet post samler seg. Grete håndterer den og skjuler den. ⌂Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem. ⌂Maten er preppet av Grete, merket med ukedager. Elling varmer. ☎Grete omtaler Elling (35) som «gutt». Rollene er fastlåst. ☒ Grete er usynlig infrastruktur: mat, kalender, post, kontakt. ☐ Elling klarer mer enn det ser ut. Grete har alltid gjort det først. ☐ Husholdet fungerer bare som system med to. ARBEIDSHYPOTESE · FORELØPIG Husholdets funksjoner er ikke dokumentert noe sted og overlever ikke bortfall uten overføring. GIR GRUNNLAG FOR: HJEMMEHJELP 2X UKE — FRANK · MATOMBRINGING Hva kan Elling lære seg, med riktig stillas? FORELØPIG ARBEIDSSVAR +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ⌂Maten er preppet av Grete, merket med ukedager. Elling varmer. ✦Elling leser krevende stoff og noterer systematisk. ✦Elling samler og systematiserer Gro- og Arbeiderpartiet-utklipp. ☎Elling holder avstand til fremmede. Alltid et møbel mellom. ☎Grete omtaler Elling (35) som «gutt». Rollene er fastlåst. ☒ Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen. ☐ Ferdighetene er der ikke. Formell støtte må bære alt. ☐ Vet ikke, før noe er prøvd med støtte. ARBEIDSHYPOTESE · FORELØPIG Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte. GIR GRUNNLAG FOR: ÅPNE ETT BREV SAMMEN MED FRANK · BETAL ÉN REGNING MED STØTTE Hvordan når kommunen Elling uten Grete? FORELØPIG ARBEIDSSVAR ☎Elling har ingen kontakt med øvrige tjenester. ☎Grete avviser bekymringen. Gjentar formuleringen. ☎Elling tar ikke telefonen. Grete normaliserer det. ⌂Uåpnet post samler seg. Grete håndterer den og skjuler den. ☎Elling holder avstand til fremmede. Alltid et møbel mellom. ☒ Telefonen er stengt kanal. Fast person og oppmøte kan virke. ☐ All kontakt må gå skriftlig. ☐ Kontakt må gå via Grete så lenge hun lever. ARBEIDSHYPOTESE · FORELØPIG Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. GIR GRUNNLAG FOR: HJEMMEHJELP 2X UKE — FRANK Kan Elling bli boende når Grete ikke lenger bærer hverdagen? DELVIS BELYST +Det finnes ingen plan for hvem som overtar etter Grete. ☎Grete frykter at kommunen vil ta leiligheten, eller Elling. ●Ellings uføretrygd: to mynter i måneden. ●Husleien er tre mynter og betales av Grete. ●Uten Gretes pensjon mangler husholdet to mynter hver måned. ☐ Boligen kan sikres med bostøtte og ordnet betalingskjede. ☐ Boligen kan ikke holdes. Flytting bør forberedes nå.ULESELIG · MANGLER FAKTUM ☐ Uavklart: økonomien må kartlegges først. ARBEIDSHYPOTESE NOTERT Telefonen er stengt kanal. Fast person og oppmøte kan virke. ARBEIDSHYPOTESE NOTERT Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen. ARBEIDSHYPOTESE NOTERT Grete er usynlig infrastruktur: mat, kalender, post, kontakt. ARBEIDSHYPOTESE NOTERT Grete bærer betalingskjeden.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -95,7 +95,7 @@
       "id": "09-blueprint-vedtak-draft",
       "title": "Drafted vedtak",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK 4 LEILIGHETEN VEDTAK 1 · UTKAST TRE SLOTS PLUSS PRESSKORT BOLIG/ØKONOMI-SIKRING ☐ Søk bostøtte Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid. KREVER ARBEIDSHYPOTESE UNDER «HVEM HOLDER ØKONOMIEN I GANG?» — ☒ Frivillig forvaltning av faste betalinger Kommunen overtar skoesken. Trygt. Bygger ingenting. 1 MYNT ☐ Snakk med huseieren Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank. MANGLER GRUNNLAG I SAKENS FAKTA — ERSTATT GRETES USYNLIGE ARBEID ☒ Hjemmehjelp 2x uke — Frank Fast person, fast tid. Den eneste kanalen inn som har virket hittil. 2 MYNT ☐ Matombringing Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal. 1 MYNT ☐ Fast dokumentgjennomgang Frank går gjennom posten ukentlig. Papiret når frem til en vurdering. 1 MYNT SKJØR SELVSTENDIG RUTINE ☒ Åpne ett brev sammen med Frank Ett brev. Ikke bunken. Frank legger det på bordet og venter. — ☐ Betal én regning med støtte Én regning, én gang. Målet er at det har skjedd, ikke at det er lært. — ☐ Telefontrening med manusFOR TIDLIG? Manus ved apparatet i stuen. Krever trygghet som kanskje ikke finnes ennå. — PRESS: ALLTID TILGJENGELIG, ALDRI AUTOMATISK RIKTIG ☒ Institusjonsvurdering / omsorgsbolig Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir et avsluttet kapittel. — FATT VEDTAK (4) RAMME: 3/6 MYNTER KLOKKER FYLLES · GÅR IKKE TILBAKE Grete tilgjengelig Grete avlyser. SCENARIO Gretes arbeid overføres Er funksjonene hun bar identifisert og flyttet? FUNKSJONER OVERFØRT ALT GÅR VIA GRETE ARBEIDSHYPOTESE NOTERT Telefonen er stengt kanal. Fast person og oppmøte kan virke. ARBEIDSHYPOTESE NOTERT Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen. ARBEIDSHYPOTESE NOTERT Grete er usynlig infrastruktur: mat, kalender, post, kontakt. ARBEIDSHYPOTESE NOTERT Grete bærer betalingskjeden.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -106,7 +106,7 @@
       "id": "10-blueprint-apartment-log",
       "title": "Apartment log after vedtak",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK 4 LEILIGHETEN ELLING · ANSLAG SIST OBSERVERT VED BESØK MAT ~72 KREFTER ~64 KONTAKT ~30 TRYGGHET ~55 LEILIGHETEN GABELS GATE 14 · 4. ETASJE Postbunken på skoskapet 9 brev Middagsbokser i kjøleskapet 7 Ubesvarte anrop 2 Døren lukket Gretes stol pleddet brettet LOGG · DET KOMMUNEN VET FRAGMENTARISK DAG 3 · LØRDAG 21:10 — teleskopet ved vinduet. 40 min. Himmelen var overskyet. Grete var på kjøkkenet fra 15:30. Hun fylte fire nye bokser og satte seg ikke ned. Vedtak fattet: Frivillig forvaltning av faste betalinger, Hjemmehjelp 2x uke — Frank, Åpne ett brev sammen med Frank, Institusjonsvurdering / omsorgsbolig. VEDTAK FATTET 4 tiltak iverksettes fra i morgen. ARBEIDSHYPOTESE NOTERT Telefonen er stengt kanal. Fast person og oppmøte kan virke. ARBEIDSHYPOTESE NOTERT Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen. ARBEIDSHYPOTESE NOTERT Grete er usynlig infrastruktur: mat, kalender, post, kontakt.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -117,7 +117,7 @@
       "id": "11-blueprint-frank-chat",
       "title": "Frank chat",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 3 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK 3 LEILIGHETEN SEND FRANK 1 HANDLING PER OPPDRAG · 2 IGJEN I DAG Ingen oppdrag akkurat nå. Saken må gi Frank noe å gjøre. SAMTALE MED FRANK HAN SITERER DET HAN SÅ DEG Posten i gangen — likegyldighet? FRANK Nei. Han vet nøyaktig hva som ligger der. Det er ikke likegyldighet. Det ligner mer på frykt for hva papiret krever av svar. Tror du på «han klarer seg»? Boken og notatene — hva sier det deg? Møbelet mellom dere — hvor lang vei er det inn? FRANK SVARER Posten i gangen — likegyldighet? VEDTAK FATTET 4 tiltak iverksettes fra i morgen. ARBEIDSHYPOTESE NOTERT Telefonen er stengt kanal. Fast person og oppmøte kan virke. ARBEIDSHYPOTESE NOTERT Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -128,7 +128,7 @@
       "id": "12-blueprint-grete-unavailable",
       "title": "Grete unavailable",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 4 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 1 VEDTAK OG TILTAK FRANK 3 LEILIGHETEN SEND FRANK 1 HANDLING PER OPPDRAG · 2 IGJEN I DAG Ring leiligheten Grete tar den ikke lenger. Spørsmålet er om noen gjør det. SEND · RING LEILIGHETEN SAMTALE MED FRANK HAN SITERER DET HAN SÅ DEG Posten i gangen — likegyldighet? FRANK Nei. Han vet nøyaktig hva som ligger der. Det er ikke likegyldighet. Det ligner mer på frykt for hva papiret krever av svar. Tror du på «han klarer seg»? Boken og notatene — hva sier det deg? Møbelet mellom dere — hvor lang vei er det inn? MELDING FRA ULLEVÅL Grete er innlagt. DAG 4 Søndag. FRANK SVARER Posten i gangen — likegyldighet? VEDTAK FATTET 4 tiltak iverksettes fra i morgen.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -139,7 +139,7 @@
       "id": "13-blueprint-grete-death",
       "title": "Grete death beat",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 5 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 2 VEDTAK OG TILTAK FRANK 3 LEILIGHETEN SEND FRANK 1 HANDLING PER OPPDRAG · 2 IGJEN I DAG Ring leiligheten Grete tar den ikke lenger. Spørsmålet er om noen gjør det. SEND · RING LEILIGHETEN Hjemmebesøk uten avtale Ingen Grete å avtale med lenger. Frank stiller på døren. SEND · HJEMMEBESØK UTEN AVTALE SAMTALE MED FRANK HAN SITERER DET HAN SÅ DEG Posten i gangen — likegyldighet? FRANK Nei. Han vet nøyaktig hva som ligger der. Det er ikke likegyldighet. Det ligner mer på frykt for hva papiret krever av svar. Tror du på «han klarer seg»? Boken og notatene — hva sier det deg? Møbelet mellom dere — hvor lang vei er det inn? MELDING FRA ULLEVÅL Grete Olsen er død. DAG 5 Mandag. MELDING FRA ULLEVÅL Grete er innlagt. DAG 4 Søndag.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -150,7 +150,7 @@
       "id": "14-blueprint-landlord-document",
       "title": "New document after time",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 6 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 16 ÅPNE SPØRSMÅL 2 VEDTAK OG TILTAK FRANK 3 LEILIGHETEN BEKYMRINGSMELDING · DAG 1 Legesenteret · Dr. J. Haug «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.» 4/5 MERKET FELTNOTAT · DAG 1 Frank · telefonsamtale med Grete «Hun tok den på andre forsøk.» 4/4 MERKET ØKONOMISK OVERSIKT · DAG 2 Frank · husholdets økonomi «Regnestykket går opp — med henne.» 5/5 MERKET RAPPORT · DAG 3 Frank · hjemmebesøk Gabels gate 14 «Hun hadde dekket på med tre kopper.» 7/7 MERKET NY MELDING · DAG 4 OUS Ullevål · innleggelse «…ber om at kommunen ser til ham.» 0/2 MERKET NY MELDING · DAG 5 OUS Ullevål · dødsfall — 0/2 MERKET NY BREV · DAG 6 Brev fra huseieren · T. Bakkerud «Jeg hører at din mor er gått bort.» 0/3 MERKET Mappen er tyngre enn den var. Det er fortsatt bare én sak i den. NY POST PÅ PULTEN Håndskrevet brev · T. Bakkerud DAG 6 Tirsdag. MELDING FRA ULLEVÅL Grete Olsen er død. DAG 5 Mandag.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -161,7 +161,7 @@
       "id": "15-blueprint-reflection",
       "title": "Final status and reflection",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: 3 8 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 17 ÅPNE SPØRSMÅL 2 VEDTAK OG TILTAK FRANK 3 LEILIGHETEN BEKYMRINGSMELDING · DAG 1 Legesenteret · Dr. J. Haug «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.» 4/5 MERKET FELTNOTAT · DAG 1 Frank · telefonsamtale med Grete «Hun tok den på andre forsøk.» 4/4 MERKET ØKONOMISK OVERSIKT · DAG 2 Frank · husholdets økonomi «Regnestykket går opp — med henne.» 5/5 MERKET RAPPORT · DAG 3 Frank · hjemmebesøk Gabels gate 14 «Hun hadde dekket på med tre kopper.» 7/7 MERKET NY MELDING · DAG 4 OUS Ullevål · innleggelse «…ber om at kommunen ser til ham.» 0/2 MERKET NY MELDING · DAG 5 OUS Ullevål · dødsfall — 0/2 MERKET NY BREV · DAG 6 Brev fra huseieren · T. Bakkerud «Jeg hører at din mor er gått bort.» 0/3 MERKET NY STATUSRAPPORT · DAG 8 Frank · status dag 8 En uke siden meldingen. Mappen er tyngre enn den var. Det er fortsatt bare én sak i den. DAG 8 Torsdag. En uke. DAG 7 Onsdag. NY POST PÅ PULTEN Håndskrevet brev · T. Bakkerud DAG 6 Tirsdag. DAG 8 · SAKEN FORTSETTER Kartlegging for omsorgsbolig er igangsatt. Saken er bureaukratisk lesbar og kan lukkes administrativt ved tildeling. Skjemaet ligger fortsatt uåpnet i posten hans. Leiligheten er i så fall et avsluttet kapittel. SØKNAD KOMPLETT FRIST GLIPPER FUNKSJONER OVERFØRT ALT GIKK VIA GRETE RUTINE TÅLER STØTTE PRESSET FOR HARDT RESTANSE BYGGES «Han er en smart gutt,» sa hun i trappen. Det var det siste hun sa til kommunen. SE PÅ SAKEN START PÅ NYTT",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -172,7 +172,7 @@
       "id": "16-phone-practice-reachable",
       "title": "Phone Practice reachable",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab LIFELINES DESIGN LAB / M2 Saken om Elling Les saken, gjør ett sakssteg, se hva det faktisk betyr i rommet. Dag 1 Handlinger 2/2 Ny dag Nullstill Tiltak i stua Case Desk Case Desk Dokumenter, rapporter og notater i saken. Dokument: Bekymringsmelding Pasient: Grete Halvorsen Gjelder: Elling Halvorsen (35 år) Grete oppgir at Elling bor hjemme, hun har 100% omsorg. Hun beskriver ham som “en smart gutt” og ønsker ikke videre tiltak nå. Lege vurderer at familien kan ha behov for oppfølging dersom Gretes helsetilstand forverres. Etablere kontakt med Grete Kartlegge Ellings hverdag og nettverk Vurdere støtte ved endret omsorgssituasjon Dr. Haug Neste sakssteg FØRSTE MÅL Etabler kontakt med Grete. Ring Grete",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 1440,
         "height": 1100
@@ -183,7 +183,7 @@
       "id": "17-mobile-390-playability",
       "title": "390px mobile playability",
       "visibleText": "LIFELINES DESIGN LAB Playable surfaces Blueprint v1 Phone Practice Lab SAK 99/0412 · OLSEN, ELLING OSLO KOMMUNE · SOSIALKONTORET · MELDT AV DR. J. HAUG · FEBRUAR 1999 TILTAKSRAMME: 6 MYNTER/MND DISPONERT: — 2 DAG 2 HANDLINGER NESTE DAG PULTEN SAKENS FAKTA 3 ÅPNE SPØRSMÅL VEDTAK OG TILTAK FRANK LEILIGHETEN ÅPNE SPØRSMÅL ARBEIDSHYPOTESER ER FORELØPIGE · IKKE FASIT Hvem holder økonomien i gang? ÅPENT ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. … saken mangler grunnlag ☐ Grete bærer betalingskjeden.ULESELIG · MANGLER FAKTUM ☐ Elling forstår økonomien, men unngår post.ULESELIG · MANGLER FAKTUM ☐ Trygden dekker ikke boligen uten Gretes pensjon.ULESELIG · MANGLER FAKTUM Hva bærer Grete i hverdagen, og hva skjer når hun ikke kan? DELVIS BELYST ⌂Grete bistår med gjøremål, økonomi og kontakt med tjenester. +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ☐ Grete er usynlig infrastruktur: mat, kalender, post, kontakt.ULESELIG · MANGLER FAKTUM ☐ Elling klarer mer enn det ser ut. Grete har alltid gjort det først.ULESELIG · MANGLER FAKTUM ☐ Husholdet fungerer bare som system med to.ULESELIG · MANGLER FAKTUM Hva kan Elling lære seg, med riktig stillas? FORELØPIG ARBEIDSSVAR +Elling vurderes som sårbar ved bortfall av pårørende. ⌂Elling (35) har aldri bodd alene. ☐ Konsentrasjonen er sterk. Rutiner kan trenes, én om gangen.ULESELIG · MANGLER FAKTUM ☒ Ferdighetene er der ikke. Formell støtte må bære alt. ☐ Vet ikke, før noe er prøvd med støtte. ARBEIDSHYPOTESE · FORELØPIG Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må kompensere fullt. GIR GRUNNLAG FOR: INSTITUSJONSVURDERING / OMSORGSBOLIG DAG 2 Fredag. ARBEIDSHYPOTESE NOTERT Ferdighetene er der ikke. Formell støtte må bære alt.",
-      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017/dist/blueprint-smoke-index.html",
+      "url": "file:///Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019/dist/blueprint-smoke-index.html",
       "viewport": {
         "width": 390,
         "height": 920

@@ -3,11 +3,11 @@
 > vitest run
 
 
- RUN  v4.1.7 /Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-017
+ RUN  v4.1.7 /Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-019
 
 
  Test Files  3 passed (3)
       Tests  30 passed (30)
-   Start at  18:28:10
-   Duration  884ms (transform 193ms, setup 0ms, import 360ms, tests 204ms, environment 483ms)
+   Start at  18:52:38
+   Duration  836ms (transform 202ms, setup 0ms, import 387ms, tests 200ms, environment 448ms)
 
