@@ -256,6 +256,7 @@
 }
 
 .blueprint-evidence:hover,
+.blueprint-evidence:focus,
 .blueprint-evidence:focus-visible {
   background: rgba(65, 109, 168, 0.13);
   outline: 2px solid rgba(65, 109, 168, 0.42);
@@ -269,6 +270,7 @@
 }
 
 .blueprint-evidence.collected:hover,
+.blueprint-evidence.collected:focus,
 .blueprint-evidence.collected:focus-visible {
   background: var(--mark);
 }

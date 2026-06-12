@@ -1,0 +1,101 @@
+{
+  "required": [
+    "prologue",
+    "sakens fakta",
+    "åpne spørsmål",
+    "arbeidshypotese",
+    "tre slots pluss presskort",
+    "ring grete",
+    "grete er innlagt",
+    "grete olsen er død",
+    "dag 8",
+    "phone practice lab",
+    "blueprint-evidence",
+    "blueprintstore",
+    "liftblueprintfact",
+    "runblueprintdispatch"
+  ],
+  "banned": ["domparser", "blueprint_v1.html"],
+  "checks": [
+    {
+      "claim": "Blueprint source contains prologue",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains sakens fakta",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains åpne spørsmål",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains arbeidshypotese",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains tre slots pluss presskort",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains ring grete",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains grete er innlagt",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains grete olsen er død",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains dag 8",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains phone practice lab",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains blueprint-evidence",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains blueprintstore",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains liftblueprintfact",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source contains runblueprintdispatch",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source avoids runtime prototype parsing term domparser",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    },
+    {
+      "claim": "Blueprint source avoids runtime prototype parsing term blueprint_v1.html",
+      "result": "PASS",
+      "evidence": ["artifacts/blueprint-source-check.json"]
+    }
+  ]
+}

@@ -1014,7 +1014,7 @@ const Reflection = observer(function Reflection({ store }: { store: BlueprintSto
   const end = store.progress.endText;
   if (!end) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#382f26] p-4">
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-[#382f26] p-4">
       <section className="blueprint-story-card w-full max-w-2xl p-7">
         <div className="mb-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#6b6259]">
           Dag 8 · saken fortsetter
