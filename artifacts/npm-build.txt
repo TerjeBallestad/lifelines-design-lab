@@ -11,4 +11,6 @@ dist/index.html                   0.42 kB │ gzip:   0.28 kB
 dist/assets/index-Bao3kb4g.css   99.03 kB │ gzip:  18.03 kB
 dist/assets/index-18ALldfH.js   393.97 kB │ gzip: 117.23 kB
 
-✓ built in 289ms
+✓ built in 276ms
+
+exit_code=0
