@@ -8,10 +8,10 @@ This repo uses the generic `/Users/godstemning/dev/agent-harness` package. The p
 /Users/godstemning/dev/agent-harness/bin/harness run "Verify current Slice A through generic harness" --config harness.config.json
 ```
 
-Default mode is deterministic fallback so CI/local smoke runs do not spend agent calls. To let a role use Codex, set:
+Live Codex is the default — a role that cannot complete a real Codex run exits non-zero and the harness records `INFRA_FAIL`. For CI/local plumbing smoke without spending agent calls, use the harness dry-run flag (the only sanctioned way to get scripted role output, and the run is visibly stamped DRY RUN):
 
 ```bash
-HARNESS_CODEX_LIVE=1 /Users/godstemning/dev/agent-harness/bin/harness run "..." --config harness.config.json
+/Users/godstemning/dev/agent-harness/bin/harness run "..." --config harness.config.json --dry-run
 ```
 
 The same three roles are used throughout:

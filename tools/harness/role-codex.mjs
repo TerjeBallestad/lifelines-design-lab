@@ -10,16 +10,23 @@ const input = inputPath ? JSON.parse(readFileSync(inputPath, 'utf8')) : {};
 const phase = input.phase || 'planning';
 
 try {
-  if (process.env.HARNESS_CODEX_LIVE === '1') {
-    const live = runCodexLive({ role, input, runDir });
-    if (live) {
-      console.log(JSON.stringify(live));
-      process.exit(0);
-    }
+  // Live Codex is the default. Scripted role output is only allowed when the
+  // harness explicitly marked the run as a dry run — a green live run must
+  // mean a real agent did the work.
+  if (input.dryRun === true) {
+    const output = fallbackRole({ role, input });
+    console.log(JSON.stringify(output));
+    process.exit(0);
   }
 
-  const output = fallbackRole({ role, input });
-  console.log(JSON.stringify(output));
+  const live = runCodexLive({ role, input, runDir });
+  if (!live) {
+    console.error(
+      `[role-codex] ${role} (${phase}): live Codex run failed and this is not a dry run — refusing to simulate output`,
+    );
+    process.exit(1);
+  }
+  console.log(JSON.stringify(live));
 } catch (error) {
   console.error(error?.stack || String(error));
   process.exit(1);
@@ -261,7 +268,6 @@ function evaluatorReviewMarkdown({ pass, verifiers }) {
 }
 
 function runCodexLive({ role, input, runDir }) {
-  // Opt-in only. The deterministic fallback is the stable CI path; live Codex is for real agent runs.
   const artifactsDir = join(runDir || '.harness', 'artifacts');
   mkdirSync(artifactsDir, { recursive: true });
   const promptPath = join(artifactsDir, `${role}-${phase}-codex-prompt.md`);

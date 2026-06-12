@@ -1,14 +1,32 @@
 {
   "name": "Lifelines Design Lab Harness",
   "contractNegotiation": {
-    "enabled": true,
+    "enabled": false,
     "maxRounds": 2
+  },
+  "maxAttempts": 2,
+  "worktree": {
+    "enabled": true,
+    "setup": "npm ci"
+  },
+  "sdd": {
+    "resolver": "tools/harness/resolve-sdd.sh"
+  },
+  "prompts": {
+    "plannerPacket": "tools/harness/prompts/planner-packet.md"
+  },
+  "reporting": {
+    "slack": {
+      "enabled": true,
+      "channel": "C0B4FSC37SS",
+      "tokenEnv": "SLACK_BOT_TOKEN"
+    }
   },
   "verdicts": ["PASS", "PIVOT", "REJECT", "FORCE_PIVOT", "INFRA_FAIL"],
   "roles": {
-    "planner": "tools/harness/planner-codex.sh",
-    "generator": "tools/harness/generator-codex.sh",
-    "evaluator": "tools/harness/evaluator-codex.sh"
+    "planner": { "agent": "codex", "sandbox": "read-only", "timeoutSec": 1200 },
+    "generator": { "agent": "codex", "timeoutSec": 3600 },
+    "evaluator": { "agent": "codex", "sandbox": "read-only", "timeoutSec": 1800 }
   },
   "verifiers": [
     {
