@@ -1,0 +1,15 @@
+command=npm test
+
+> lifelines-design-lab@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.7 /Users/godstemning/dev/lifelines-design-lab/.harness/worktrees/RUN-021
+
+
+ Test Files  3 passed (3)
+      Tests  30 passed (30)
+   Start at  19:41:54
+   Duration  881ms (transform 212ms, setup 0ms, import 372ms, tests 195ms, environment 489ms)
+
+exit_code=0
