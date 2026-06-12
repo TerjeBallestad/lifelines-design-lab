@@ -37,7 +37,7 @@ til Godot. Samme kilde, to mål — laben forblir skrivestue for innhold.
 Simen er allerede fullt instrumentert: 9 buss-autoloads med rike payloads —
 `ActivityBus.character_started/finished_activity` (engagement MISERABLE→FLOW,
 quality poor→excellent, struggling, duration), `NeedsBus.need_threshold_crossed`,
-`VisitorBus.visitor_entered_room` (m/ threat_class) + `heart_attack_*`,
+`VisitorBus.visitor_entered_room` (m/ threat*class) + `heart_attack*\*`,
 `ConversationBus`, `SkillsBus.mastery_changed`, `SimulationBus.day_started/ended`.
 `DataLogger` beviser allerede at hendelsene rekker til en hel dags-JSON.
 
