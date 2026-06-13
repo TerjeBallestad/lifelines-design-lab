@@ -10,7 +10,10 @@
     "build": "tsc -b && vite build",
     "lint": "tsc -b --noEmit && prettier --check .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "gen:olsen": "node scripts/blueprint/generate-tiny-olsen-case.mjs",
+    "gen:olsen:check": "node scripts/blueprint/generate-tiny-olsen-case.mjs --check",
+    "test:olsen": "vitest run scripts/blueprint/generate-tiny-olsen-case.test.mjs"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +26,8 @@
     "mobx": "^6.15.4",
     "mobx-react-lite": "^4.1.1",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.0",
