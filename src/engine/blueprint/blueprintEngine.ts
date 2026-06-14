@@ -222,12 +222,18 @@ export function enactBlueprintTiltak(progress: BlueprintProgress): BlueprintTilt
   progress.enactedTiltakIds.push(...chosen);
   progress.draftTiltakIds = [];
   progress.vedtakCount += 1;
-  const documentId = `doc_vedtak_${progress.vedtakCount}`;
+  const vedtakNumber = progress.vedtakCount;
+  const documentId = `doc_vedtak_${vedtakNumber}`;
   progress.vedtakRecords.push({
     documentId,
+    number: vedtakNumber,
+    title: `Vedtak ${vedtakNumber} · tiltakspakke`,
+    peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
+    meta: `DAG ${progress.day} · OSLO KOMMUNE`,
     day: progress.day,
     tiltakIds: chosen,
     hypothesisIds: hypotheses.map((hypothesis) => hypothesis.id),
+    stampText: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.',
   });
 
   for (const tiltakId of chosen) {

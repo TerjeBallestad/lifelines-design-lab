@@ -34,6 +34,8 @@ assert.equal(resolver.status, 0, resolver.stderr || resolver.stdout);
 assert.match(resolver.stdout, /id: SDD-010/, 'resolver must resolve SDD IDs to markdown');
 
 const smoke = readFileSync('tools/harness/web-ui-smoke.mjs', 'utf8');
+const roleCodex = readFileSync('tools/harness/role-codex.mjs', 'utf8');
+const plannerPacket = readFileSync('tools/harness/prompts/planner-packet.md', 'utf8');
 assert.match(
   smoke,
   /blueprintTestFiles/,
@@ -48,6 +50,21 @@ assert.match(
   smoke,
   /web-ui-smoke-result\.json/,
   'web-ui-smoke must persist full verifier details as an artifact',
+);
+assert.match(
+  roleCodex,
+  /generator MAY update project-owned verifier files/,
+  'live generator prompt must explicitly allow narrow verifier updates when the contract changes evidence',
+);
+assert.match(
+  roleCodex,
+  /do not weaken unrelated checks/,
+  'live generator prompt must guard against weakening verifier evidence',
+);
+assert.match(
+  plannerPacket,
+  /Treat project verifiers as part of the slice contract/,
+  'planner packet must surface stale-verifier risk during contract formation',
 );
 
 console.log('harness SDD workflow contract checks passed');

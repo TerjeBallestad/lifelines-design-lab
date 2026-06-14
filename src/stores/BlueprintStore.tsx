@@ -149,12 +149,14 @@ export class BlueprintStore {
   enactTiltak(): void {
     const chosen = enactBlueprintTiltak(this.progress);
     if (!chosen.length) return;
+    const vedtakRecord = this.progress.vedtakRecords.at(-1);
     this.addNotice(
       'VEDTAK FATTET',
-      `${chosen.length} tiltak iverksettes fra i morgen.`,
+      vedtakRecord?.title ?? `${chosen.length} tiltak iverksettes fra i morgen.`,
       'hypothesis',
     );
-    this.activeSurface = 'leiligheten';
+    this.activeSurface = 'pulten';
+    this.openDocumentId = null;
   }
 
   runDispatch(dispatchId: string): void {
@@ -255,15 +257,18 @@ export class BlueprintStore {
     if (documentId.startsWith('doc_vedtak_')) {
       const record = this.progress.vedtakRecords.find((item) => item.documentId === documentId);
       if (record) {
-        const number = documentId.replace('doc_vedtak_', '');
         return {
           id: documentId,
           kind: 'VEDTAK',
-          title: `Vedtak ${number} · tiltakspakke`,
+          title: record.title,
           register: 'vedtak',
-          peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
-          meta: `DAG ${record.day} · OSLO KOMMUNE`,
-          blocks: this.vedtakDocumentBlocks(record.tiltakIds, record.hypothesisIds),
+          peek: record.peek,
+          meta: record.meta,
+          blocks: this.vedtakDocumentBlocks(
+            record.tiltakIds,
+            record.hypothesisIds,
+            record.stampText,
+          ),
         };
       }
     }
@@ -287,6 +292,7 @@ export class BlueprintStore {
   private vedtakDocumentBlocks(
     tiltakIds: BlueprintTiltakId[],
     hypothesisIds: BlueprintHypothesisId[],
+    stampText: string,
   ): BlueprintDocumentBlock[] {
     const blocks: BlueprintDocumentBlock[] = [
       {
@@ -325,7 +331,7 @@ export class BlueprintStore {
 
     blocks.push({
       id: 'vedtak-stamp',
-      runs: [{ text: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.' }],
+      runs: [{ text: stampText }],
     });
     return blocks;
   }

@@ -130,9 +130,14 @@ export interface BlueprintPendingDocument {
 
 export interface BlueprintVedtakRecord {
   documentId: BlueprintDocumentId;
+  number: number;
+  title: string;
+  peek: string;
+  meta: string;
   day: number;
   tiltakIds: BlueprintTiltakId[];
   hypothesisIds: BlueprintHypothesisId[];
+  stampText: string;
 }
 
 export interface BlueprintChatMessage {

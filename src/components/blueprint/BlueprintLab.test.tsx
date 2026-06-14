@@ -87,9 +87,11 @@ function startAtDesk() {
   expect(document.body.textContent).toContain('Én melding. Én pult. Begynn der.');
 }
 
-function openDocument(title: string) {
+function openDocument(title: string, expectsEvidenceHint = true) {
   clickButton(title);
-  expect(document.body.textContent).toContain('Gul markering vises først etter');
+  if (expectsEvidenceHint) {
+    expect(document.body.textContent).toContain('Gul markering vises først etter');
+  }
 }
 
 function closeDocument() {
@@ -185,11 +187,16 @@ describe('BlueprintLab rendered interaction trace', () => {
     clickButton('Åpne ett brev');
     clickButton('Institusjonsvurdering');
     clickButton('Fatt vedtak');
-    expect(document.body.textContent).toContain('Logg · det kommunen vet');
-    clickTab('Pulten');
+    expect(document.body.textContent).toContain('Pulten svarer først når du ber noen gjøre noe.');
     expect(document.body.textContent).toContain('Vedtak 1 · tiltakspakke');
-    openDocument('Vedtak 1 · tiltakspakke');
+    openDocument('Vedtak 1 · tiltakspakke', false);
+    expect(document.body.textContent).not.toContain('Gul markering vises først etter');
+    expect(document.body.textContent).toContain('Frivillig forvaltning av faste betalinger');
+    expect(document.body.textContent).toContain('Hjemmehjelp 2x uke');
+    expect(document.body.textContent).toContain('Åpne ett brev sammen med Frank');
+    expect(document.body.textContent).toContain('Institusjonsvurdering / omsorgsbolig');
     expect(document.body.textContent).toContain('Arbeidshypotese lagt til grunn');
+    expect(document.body.textContent).toContain('IVERKSATT');
     closeDocument();
 
     clickTab('Frank');

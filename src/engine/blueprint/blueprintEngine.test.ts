@@ -171,14 +171,23 @@ describe('Blueprint v1 caseworker loop', () => {
       't_institusjon',
     ]);
     expect(store.progress.documents.doc_vedtak_1).toBeDefined();
+    expect(store.progress.vedtakRecords[0]).toMatchObject({
+      documentId: 'doc_vedtak_1',
+      number: 1,
+      title: 'Vedtak 1 · tiltakspakke',
+      peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
+      meta: 'DAG 1 · OSLO KOMMUNE',
+      stampText: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.',
+    });
     const vedtak = store.documentById('doc_vedtak_1');
     const vedtakText = vedtak.blocks
       .map((block) => block.runs.map((run) => run.text).join(' '))
       .join(' ');
-    expect(vedtak.title).toContain('Vedtak 1');
+    expect(vedtak.title).toBe('Vedtak 1 · tiltakspakke');
     expect(vedtakText).toContain('Arbeidshypotese lagt til grunn');
     expect(vedtakText).toContain('Frivillig forvaltning');
-    expect(store.activeSurface).toBe('leiligheten');
+    expect(vedtakText).toContain('IVERKSATT');
+    expect(store.activeSurface).toBe('pulten');
 
     while (store.progress.phase !== 'ended') {
       store.advanceDay();

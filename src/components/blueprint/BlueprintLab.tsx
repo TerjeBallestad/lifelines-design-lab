@@ -270,6 +270,9 @@ const Desk = observer(function Desk({ store }: { store: BlueprintStore }) {
 const DocumentReader = observer(function DocumentReader({ store }: { store: BlueprintStore }) {
   const document = store.currentDocument;
   const [nudged, setNudged] = useState(false);
+  const hasEvidence = Boolean(
+    document?.blocks.some((block) => block.runs.some((run) => Boolean(run.factId))),
+  );
   useEffect(() => {
     setNudged(false);
     if (!document || !store.openDocumentId) return;
@@ -300,10 +303,12 @@ const DocumentReader = observer(function DocumentReader({ store }: { store: Blue
           </div>
           <p className="mt-1 text-xl font-semibold">{document.title}</p>
         </div>
-        <div className="mb-4 rounded border border-[#c89a2e]/60 bg-[#c89a2e]/10 p-3 text-sm leading-relaxed">
-          Tekst med prikket strek kan løftes til Sakens fakta. Gul markering vises først etter at
-          faktum er løftet.
-        </div>
+        {hasEvidence ? (
+          <div className="mb-4 rounded border border-[#c89a2e]/60 bg-[#c89a2e]/10 p-3 text-sm leading-relaxed">
+            Tekst med prikket strek kan løftes til Sakens fakta. Gul markering vises først etter at
+            faktum er løftet.
+          </div>
+        ) : null}
         <div className="grid gap-4 text-base leading-8">
           {document.blocks.map((block) => (
             <p key={block.id}>

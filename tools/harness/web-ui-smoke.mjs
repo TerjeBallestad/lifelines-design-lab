@@ -576,11 +576,25 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await button(/Fatt vedtak/).dispatchEvent('click');
     await expectVisible(
       page,
-      'Logg · det kommunen vet',
+      'Vedtak 1 · tiltakspakke',
       checks,
-      'Enacted vedtak writes to the case log',
+      'Enacted vedtak lands as a re-readable paper on the desk',
     );
-    await capture(page, screenshots, flow, 'bp-08-vedtak', 'Vedtak enacted');
+    await button(/Vedtak 1 · tiltakspakke/).click();
+    await expectVisible(
+      page,
+      'Arbeidshypotese lagt til grunn',
+      checks,
+      'Generated VEDTAK paper records the hypothesis basis',
+    );
+    await expectVisible(
+      page,
+      'IVERKSATT',
+      checks,
+      'Generated VEDTAK paper carries the enacted stamp',
+    );
+    await capture(page, screenshots, flow, 'bp-08-vedtak-paper', 'Generated VEDTAK paper');
+    await button(/Lukk/).click();
 
     await tab('Frank').click();
     await button(/Posten i gangen/).dispatchEvent('click');
