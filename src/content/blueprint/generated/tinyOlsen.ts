@@ -9,34 +9,52 @@ import type {
 export const tinyOlsenDocuments = {
   doc_bekymring: {
     id: 'doc_bekymring',
-    kind: 'letter',
-    title: 'Bekymringsmelding',
+    kind: 'BEKYMRINGSMELDING',
+    title: 'Legesenteret · Dr. J. Haug',
     register: 'klinisk',
-    peek: 'Bekymringsmelding with five generated fact markers for the tiny Olsen schema slice.',
-    meta: 'Oslo kommune · sosialkontoret · meldt av Dr. J. Haug · februar 1999',
+    peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
+    meta: 'LEGESENTERET · 11.02.1999',
     blocks: [
       {
         id: 'doc_bekymring_body',
         runs: [
           {
-            text: 'Grete carries most routines.',
+            text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester.',
+          },
+          {
+            text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
             factId: 'f_grete_baerer',
           },
           {
-            text: 'Mail has stacked up unopened.',
+            text: '. Ved hjemmebesøk er det observert',
+          },
+          {
+            text: 'uåpnet post i gangen',
             factId: 'f_manglende_post',
           },
           {
-            text: 'Several bills are unpaid.',
+            text: ',',
+          },
+          {
+            text: 'flere ubetalte regninger',
             factId: 'f_regninger',
           },
           {
-            text: 'There is little food in the kitchen.',
+            text: ',',
+          },
+          {
+            text: 'lite mat i kjøleskapet',
             factId: 'f_lite_mat',
           },
           {
-            text: 'Phone calls often go unanswered.',
+            text: ', og',
+          },
+          {
+            text: 'telefonhenvendelser som ikke blir besvart',
             factId: 'f_telefon_ubesvart',
+          },
+          {
+            text: '. Pasienten fremstår sårbar ved bortfall av pårørende. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.',
           },
         ],
       },
@@ -49,8 +67,9 @@ export const tinyOlsenFacts = {
     id: 'f_grete_baerer',
     domain: 'Hverdag/rutine',
     category: 'Dokument',
-    text: 'The concern letter points to Grete carrying most daily routines.',
-    quote: 'Grete carries most routines.',
+    text: 'Grete bærer husholdets praktiske funksjoner.',
+    quote:
+      'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
     supports: ['q_hverdag', 'q_okonomi'],
     discuss: ['Frank', 'Grete'],
   },
@@ -58,8 +77,8 @@ export const tinyOlsenFacts = {
     id: 'f_manglende_post',
     domain: 'Hverdag/rutine',
     category: 'Dokument',
-    text: 'Mail has stacked up unopened.',
-    quote: 'Mail has stacked up unopened.',
+    text: 'Post har hopet seg opp uåpnet.',
+    quote: 'uåpnet post i gangen',
     supports: [],
     discuss: ['Frank'],
   },
@@ -67,8 +86,8 @@ export const tinyOlsenFacts = {
     id: 'f_regninger',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Several bills are unpaid.',
-    quote: 'Several bills are unpaid.',
+    text: 'Flere regninger er ubetalt.',
+    quote: 'flere ubetalte regninger',
     supports: ['q_okonomi'],
     discuss: ['Frank'],
   },
@@ -76,8 +95,8 @@ export const tinyOlsenFacts = {
     id: 'f_lite_mat',
     domain: 'Hverdag/rutine',
     category: 'Observasjon',
-    text: 'The kitchen has little food available.',
-    quote: 'There is little food in the kitchen.',
+    text: 'Det er lite mat på kjøkkenet.',
+    quote: 'lite mat i kjøleskapet',
     supports: [],
     discuss: ['Frank'],
   },
@@ -85,8 +104,8 @@ export const tinyOlsenFacts = {
     id: 'f_telefon_ubesvart',
     domain: 'Nettverk/sosialt',
     category: 'Observasjon',
-    text: 'Phone calls often go unanswered.',
-    quote: 'Phone calls often go unanswered.',
+    text: 'Telefonhenvendelser blir ofte ikke besvart.',
+    quote: 'telefonhenvendelser som ikke blir besvart',
     supports: [],
     discuss: ['Frank', 'Grete'],
   },
@@ -95,36 +114,36 @@ export const tinyOlsenFacts = {
 export const tinyOlsenQuestions = {
   q_hverdag: {
     id: 'q_hverdag',
-    title: 'How stable are the daily routines without Grete carrying them?',
+    title: 'Hvor stabil er hverdagen uten Grete?',
     appearsOn: ['f_grete_baerer'],
     hypotheses: [
       {
         id: 'h_omsorgsbyrde',
-        label: 'Care burden is concentrated',
+        label: 'Omsorgsbyrden er konsentrert',
         needs: ['f_grete_baerer', 'f_regninger'],
         opens: ['t_samtale_grete', 't_regningshjelp'],
-        note: 'Grete carries too much of the everyday support load.',
+        note: 'Grete bærer for mye av den daglige støtten alene.',
       },
       {
         id: 'h_isolasjon',
-        label: 'Isolation is increasing',
+        label: 'Isolasjonen øker',
         needs: ['f_lite_mat', 'f_telefon_ubesvart'],
         opens: ['t_samtale_grete'],
-        note: 'Food and phone patterns may indicate social withdrawal.',
+        note: 'Mat- og telefonmønsteret kan peke på sosial tilbaketrekning.',
       },
     ],
   },
   q_okonomi: {
     id: 'q_okonomi',
-    title: 'Are the unpaid bills a temporary slip or an ongoing risk?',
+    title: 'Er regningene et engangsglipp eller en løpende risiko?',
     appearsOn: ['f_grete_baerer'],
     hypotheses: [
       {
         id: 'h_okonomisk_sarbar',
-        label: 'Economic vulnerability',
+        label: 'Økonomien er sårbar',
         needs: ['f_regninger'],
         opens: [],
-        note: 'Unpaid bills point to a practical support gap.',
+        note: 'Ubetalte regninger peker på et praktisk støttebehov.',
       },
     ],
   },
@@ -134,20 +153,20 @@ export const tinyOlsenTiltak = {
   t_samtale_grete: {
     id: 't_samtale_grete',
     slot: 's1',
-    title: 'Plan support talk',
+    title: 'Avklar støtte med Grete',
     cost: 1,
     needs: ['f_grete_baerer'],
-    description: 'Plan a support talk with Grete.',
+    description: 'Planlegg en støttesamtale med Grete.',
     sim: 'case.olsen.tiltak.support_talk',
   },
   t_regningshjelp: {
     id: 't_regningshjelp',
     slot: 's2',
-    title: 'Arrange bill support',
+    title: 'Ordne regningshjelp',
     cost: 1,
     needs: ['f_regninger'],
     needsHypothesis: ['h_omsorgsbyrde'],
-    description: 'Arrange practical support for bills.',
+    description: 'Ordne praktisk hjelp med regninger.',
     sim: 'case.olsen.tiltak.bill_support',
   },
 } satisfies Record<string, BlueprintTiltak>;
@@ -155,13 +174,13 @@ export const tinyOlsenTiltak = {
 export const tinyOlsenDispatches = {
   d_ring_grete: {
     id: 'd_ring_grete',
-    title: 'Call Grete',
-    description: 'Call Grete to test the care burden hypothesis.',
+    title: 'Ring Grete',
+    description: 'Ring Grete for å teste hypotesen om omsorgsbyrde.',
   },
   d_konto: {
     id: 'd_konto',
-    title: 'Request account overview',
-    description: 'Request account overview for next day.',
+    title: 'Be om kontooversikt',
+    description: 'Be om kontooversikt til neste dag.',
   },
 } satisfies Record<string, BlueprintDispatch>;
 
@@ -172,35 +191,65 @@ export const tinyOlsenGodotSource = {
   documents: [
     {
       id: 'doc_bekymring',
-      kind: 'letter',
-      title: 'Bekymringsmelding',
+      kind: 'BEKYMRINGSMELDING',
+      title: 'Legesenteret · Dr. J. Haug',
       body_bbcode:
-        '[url=fact:f_grete_baerer]Grete carries most routines.[/url]\n\n[url=fact:f_manglende_post]Mail has stacked up unopened.[/url]\n\n[url=fact:f_regninger]Several bills are unpaid.[/url]\n\n[url=fact:f_lite_mat]There is little food in the kitchen.[/url]\n\n[url=fact:f_telefon_ubesvart]Phone calls often go unanswered.[/url]',
+        'Gjelder: Olsen, Elling · f. 14.03.1964.\n\nUndertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes.\n\nMor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester.\n\n[url=fact:f_grete_baerer]Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester[/url].\n\nVed hjemmebesøk er det observert [url=fact:f_manglende_post]uåpnet post i gangen[/url], [url=fact:f_regninger]flere ubetalte regninger[/url], [url=fact:f_lite_mat]lite mat i kjøleskapet[/url], og [url=fact:f_telefon_ubesvart]telefonhenvendelser som ikke blir besvart[/url].\n\nPasienten fremstår sårbar ved bortfall av pårørende. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.',
       runs: [
         {
+          id: 'run_text_0',
+          text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester.',
+          fact_id: '',
+        },
+        {
           id: 'run_grete_baerer',
-          text: 'Grete carries most routines.',
+          text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
           fact_id: 'f_grete_baerer',
         },
         {
+          id: 'run_text_1',
+          text: '. Ved hjemmebesøk er det observert',
+          fact_id: '',
+        },
+        {
           id: 'run_manglende_post',
-          text: 'Mail has stacked up unopened.',
+          text: 'uåpnet post i gangen',
           fact_id: 'f_manglende_post',
         },
         {
+          id: 'run_text_2',
+          text: ',',
+          fact_id: '',
+        },
+        {
           id: 'run_regninger',
-          text: 'Several bills are unpaid.',
+          text: 'flere ubetalte regninger',
           fact_id: 'f_regninger',
         },
         {
+          id: 'run_text_3',
+          text: ',',
+          fact_id: '',
+        },
+        {
           id: 'run_lite_mat',
-          text: 'There is little food in the kitchen.',
+          text: 'lite mat i kjøleskapet',
           fact_id: 'f_lite_mat',
         },
         {
+          id: 'run_text_4',
+          text: ', og',
+          fact_id: '',
+        },
+        {
           id: 'run_telefon_ubesvart',
-          text: 'Phone calls often go unanswered.',
+          text: 'telefonhenvendelser som ikke blir besvart',
           fact_id: 'f_telefon_ubesvart',
+        },
+        {
+          id: 'run_text_5',
+          text: '. Pasienten fremstår sårbar ved bortfall av pårørende. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.',
+          fact_id: '',
         },
       ],
     },
@@ -208,8 +257,8 @@ export const tinyOlsenGodotSource = {
   facts: [
     {
       id: 'f_grete_baerer',
-      label: 'Grete carries routines',
-      summary: 'The concern letter points to Grete carrying most daily routines.',
+      label: 'Grete bærer rutiner',
+      summary: 'Grete bærer husholdets praktiske funksjoner.',
       source_document_id: 'doc_bekymring',
       lift_effects: [
         {
@@ -222,29 +271,29 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'f_manglende_post',
-      label: 'Unopened mail',
-      summary: 'Mail has stacked up unopened.',
+      label: 'Uåpnet post',
+      summary: 'Post har hopet seg opp uåpnet.',
       source_document_id: 'doc_bekymring',
       lift_effects: [],
     },
     {
       id: 'f_regninger',
-      label: 'Unpaid bills',
-      summary: 'Several bills are unpaid.',
+      label: 'Ubetalte regninger',
+      summary: 'Flere regninger er ubetalt.',
       source_document_id: 'doc_bekymring',
       lift_effects: [],
     },
     {
       id: 'f_lite_mat',
-      label: 'Little food',
-      summary: 'The kitchen has little food available.',
+      label: 'Lite mat',
+      summary: 'Det er lite mat på kjøkkenet.',
       source_document_id: 'doc_bekymring',
       lift_effects: [],
     },
     {
       id: 'f_telefon_ubesvart',
-      label: 'Unanswered phone',
-      summary: 'Phone calls often go unanswered.',
+      label: 'Telefon ubesvart',
+      summary: 'Telefonhenvendelser blir ofte ikke besvart.',
       source_document_id: 'doc_bekymring',
       lift_effects: [],
     },
@@ -252,7 +301,7 @@ export const tinyOlsenGodotSource = {
   questions: [
     {
       id: 'q_hverdag',
-      prompt: 'How stable are the daily routines without Grete carrying them?',
+      prompt: 'Hvor stabil er hverdagen uten Grete?',
       reveal_when: {
         op: 'fact_lifted',
         args: {
@@ -262,7 +311,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_okonomi',
-      prompt: 'Are the unpaid bills a temporary slip or an ongoing risk?',
+      prompt: 'Er regningene et engangsglipp eller en løpende risiko?',
       reveal_when: {
         op: 'fact_lifted',
         args: {
@@ -274,8 +323,8 @@ export const tinyOlsenGodotSource = {
   hypotheses: [
     {
       id: 'h_omsorgsbyrde',
-      title: 'Care burden is concentrated',
-      summary: 'Grete carries too much of the everyday support load.',
+      title: 'Omsorgsbyrden er konsentrert',
+      summary: 'Grete bærer for mye av den daglige støtten alene.',
       availability: {
         op: 'all',
         children: [
@@ -310,8 +359,8 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_okonomisk_sarbar',
-      title: 'Economic vulnerability',
-      summary: 'Unpaid bills point to a practical support gap.',
+      title: 'Økonomien er sårbar',
+      summary: 'Ubetalte regninger peker på et praktisk støttebehov.',
       availability: {
         op: 'fact_lifted',
         args: {
@@ -329,8 +378,8 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_isolasjon',
-      title: 'Isolation is increasing',
-      summary: 'Food and phone patterns may indicate social withdrawal.',
+      title: 'Isolasjonen øker',
+      summary: 'Mat- og telefonmønsteret kan peke på sosial tilbaketrekning.',
       availability: {
         op: 'all',
         children: [
@@ -361,19 +410,19 @@ export const tinyOlsenGodotSource = {
   tiltak: [
     {
       id: 't_samtale_grete',
-      title: 'Plan support talk',
+      title: 'Avklar støtte med Grete',
       sim_hook_id: 'case.olsen.tiltak.support_talk',
     },
     {
       id: 't_regningshjelp',
-      title: 'Arrange bill support',
+      title: 'Ordne regningshjelp',
       sim_hook_id: 'case.olsen.tiltak.bill_support',
     },
   ],
   dispatches: [
     {
       id: 'd_ring_grete',
-      title: 'Call Grete',
+      title: 'Ring Grete',
       sim_hook_id: 'case.olsen.dispatch.call_grete',
       gate: {
         op: 'all',
@@ -403,7 +452,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'd_konto',
-      title: 'Request account overview',
+      title: 'Be om kontooversikt',
       sim_hook_id: 'case.olsen.dispatch.account_overview',
       gate: {
         op: 'all',
@@ -437,7 +486,7 @@ export const tinyOlsenGodotSource = {
   clocks: [
     {
       id: 'ck_overfort',
-      label: 'Next-day account overview clock',
+      label: 'Kontooversikt til neste dag',
       sim_hook_id: 'case.olsen.clock.account_overview',
     },
   ],

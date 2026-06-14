@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "gen:olsen": "node scripts/blueprint/generate-tiny-olsen-case.mjs",
     "gen:olsen:check": "node scripts/blueprint/generate-tiny-olsen-case.mjs --check",
+    "case:check": "npm run gen:olsen:check && npm run test:olsen",
     "test:olsen": "vitest run scripts/blueprint/generate-tiny-olsen-case.test.mjs",
     "test:harness": "node tools/harness/run-sdd-check.mjs",
     "harness:sdd": "tools/harness/run-sdd.sh"

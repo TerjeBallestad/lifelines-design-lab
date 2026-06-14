@@ -16,7 +16,7 @@ describe('tiny Olsen case generator', () => {
     expect(artifacts.godotSource.id).toBe('case_olsen_tiny');
     expect(artifacts.godotSource.documents).toHaveLength(1);
     expect(artifacts.godotSource.documents[0].id).toBe('doc_bekymring');
-    expect(artifacts.godotSource.documents[0].runs.map((run) => run.fact_id)).toEqual([
+    expect(artifacts.godotSource.documents[0].runs.filter((run) => run.fact_id).map((run) => run.fact_id)).toEqual([
       'f_grete_baerer',
       'f_manglende_post',
       'f_regninger',
@@ -24,6 +24,8 @@ describe('tiny Olsen case generator', () => {
       'f_telefon_ubesvart',
     ]);
     expect(artifacts.godotSource.documents[0].body_bbcode).toContain('[url=fact:f_grete_baerer]');
+    expect(artifacts.godotSource.documents[0].body_bbcode).toContain('Mor opplyser at hun bistår');
+    expect(artifacts.godotSource.documents[0].kind).toBe('BEKYMRINGSMELDING');
     expect(artifacts.godotSource.questions.map((q) => q.id)).toEqual(['q_hverdag', 'q_okonomi']);
     expect(artifacts.godotSource.hypotheses).toHaveLength(3);
     expect(artifacts.godotSource.dispatches.map((d) => d.id)).toEqual(['d_ring_grete', 'd_konto']);
