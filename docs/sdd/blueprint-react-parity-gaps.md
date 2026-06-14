@@ -6,6 +6,7 @@ stage: sdd
 sprintId: null
 comments: []
 ---
+
 # Blueprint v1 React port — parity gaps vs prototype
 
 Date: 2026-06-13
@@ -34,23 +35,23 @@ model, dynamic end/status report (`doc_status` built from `endText`), reset.
 
 ## Gap map
 
-| # | Gap | Type | Severity |
-|---|-----|------|----------|
-| 1 | Generated VEDTAK document never lands on the desk | Behavioral loop | **High** |
-| 2 | Question-board connector lines (Blake Manor SVG) absent | Visual / SDD-005 | **Medium** |
-| 3 | 10 s delayed pencil-nudge on un-lifted hotspots absent | Interaction contract | **Medium** |
-| 4 | Starvation log beat (`foodBoxes <= 0`) missing | Sim content | Medium-low |
-| 5 | Two FLAVOR log lines dropped (7 → 5) | Content parity | Low |
-| 6 | Spyglass cursor on hotspots replaced by inline icon | Feel | Low |
-| 7 | Question-state pill always gold (no blue/neutral) | Visual | Low |
-| 8 | "For tidlig?" badge condition drifted | Logic | Low |
-| 9 | Toasts don't auto-dismiss or deep-link on click | Interaction | Low |
+| #   | Gap                                                     | Type                 | Severity   |
+| --- | ------------------------------------------------------- | -------------------- | ---------- |
+| 1   | Generated VEDTAK document never lands on the desk       | Behavioral loop      | **High**   |
+| 2   | Question-board connector lines (Blake Manor SVG) absent | Visual / SDD-005     | **Medium** |
+| 3   | 10 s delayed pencil-nudge on un-lifted hotspots absent  | Interaction contract | **Medium** |
+| 4   | Starvation log beat (`foodBoxes <= 0`) missing          | Sim content          | Medium-low |
+| 5   | Two FLAVOR log lines dropped (7 → 5)                    | Content parity       | Low        |
+| 6   | Spyglass cursor on hotspots replaced by inline icon     | Feel                 | Low        |
+| 7   | Question-state pill always gold (no blue/neutral)       | Visual               | Low        |
+| 8   | "For tidlig?" badge condition drifted                   | Logic                | Low        |
+| 9   | Toasts don't auto-dismiss or deep-link on click         | Interaction          | Low        |
 
 ---
 
 ### 1 · Generated VEDTAK document — HIGH
 
-The prototype's core loop beat is *the decision becomes a paper on the desk*.
+The prototype's core loop beat is _the decision becomes a paper on the desk_.
 
 - HTML: `enactVedtak()` builds `DOCUMENTS['doc_vedtak_N']` — tiltak rows, one
   "Arbeidshypotese lagt til grunn: …" row per chosen hypothesis, an `IVERKSATT`
@@ -68,8 +69,8 @@ does in `BlueprintStore.documentById`) and `receiveBlueprintDocument` it on enac
 
 ### 2 · Question-board connector lines — MEDIUM
 
-HTML `drawLines()` draws dashed bezier paths in `#q-lines` SVG linking the *same
-fact* used across multiple question cards (`blueprint_v1.html:2183–2209`, redrawn
+HTML `drawLines()` draws dashed bezier paths in `#q-lines` SVG linking the _same
+fact_ used across multiple question cards (`blueprint_v1.html:2183–2209`, redrawn
 on render + resize). The React `QuestionsBoard` has no SVG, no `data-line-fact`
 anchors, no connectors (`BlueprintLab.tsx:384–478`). This is the visible "one fact
 feeds several questions" signal from the SDD-005 contract.
