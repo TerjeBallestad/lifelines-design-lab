@@ -19,35 +19,35 @@ export const tinyOlsenDocuments = {
         id: 'doc_bekymring_body',
         runs: [
           {
-            text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester.',
+            text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester. ',
           },
           {
             text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
             factId: 'f_grete_baerer',
           },
           {
-            text: '. Ved hjemmebesøk er det observert',
+            text: '. Ved hjemmebesøk er det observert ',
           },
           {
             text: 'uåpnet post i gangen',
             factId: 'f_manglende_post',
           },
           {
-            text: ',',
+            text: ', ',
           },
           {
             text: 'flere ubetalte regninger',
             factId: 'f_regninger',
           },
           {
-            text: ',',
+            text: ', ',
           },
           {
             text: 'lite mat i kjøleskapet',
             factId: 'f_lite_mat',
           },
           {
-            text: ', og',
+            text: ', og ',
           },
           {
             text: 'telefonhenvendelser som ikke blir besvart',
@@ -198,7 +198,7 @@ export const tinyOlsenGodotSource = {
       runs: [
         {
           id: 'run_text_0',
-          text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester.',
+          text: 'Gjelder: Olsen, Elling · f. 14.03.1964. Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for sykdom med kort forventet forløp. Hun er informert om at meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet. Sønnen har aldri bodd alene. Han er uføretrygdet og ikke i kontakt med øvrige tjenester. ',
           fact_id: '',
         },
         {
@@ -208,7 +208,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: '. Ved hjemmebesøk er det observert',
+          text: '. Ved hjemmebesøk er det observert ',
           fact_id: '',
         },
         {
@@ -218,7 +218,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_2',
-          text: ',',
+          text: ', ',
           fact_id: '',
         },
         {
@@ -228,7 +228,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_3',
-          text: ',',
+          text: ', ',
           fact_id: '',
         },
         {
@@ -238,7 +238,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_4',
-          text: ', og',
+          text: ', og ',
           fact_id: '',
         },
         {

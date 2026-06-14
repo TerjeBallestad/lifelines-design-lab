@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { constants as fsConstants } from 'node:fs';
+import { access, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
@@ -164,7 +165,7 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
     ),
   };
 
-  validateArtifacts({ godotSource, labContent });
+  validateArtifacts({ source, godotSource, labContent });
   return { godotSource, labContent, source };
 }
 
@@ -196,7 +197,7 @@ export function parseCaseMarkdown(text) {
     case: {
       id: caseMatch[1],
       title: required(caseFields, 'Title', 'case'),
-      scenario_stage: Number(caseFields.get('Scenario stage') ?? 0),
+      scenario_stage: parseIntegerField(caseFields.get('Scenario stage') ?? '0', 'case.Scenario stage'),
     },
     documents,
     facts: parseItems(sectionBody(normalized, 'Facts', 'Questions')).map((item) => ({
@@ -230,7 +231,7 @@ export function parseCaseMarkdown(text) {
       id: item.id,
       title: required(item.fields, 'Title', item.id),
       slot: required(item.fields, 'Slot', item.id),
-      cost: Number(required(item.fields, 'Cost', item.id)),
+      cost: parseIntegerField(required(item.fields, 'Cost', item.id), `${item.id}.Cost`),
       needs: listField(item.fields, 'Needs'),
       needs_hypothesis: listField(item.fields, 'Needs hypothesis'),
       description: required(item.fields, 'Description', item.id),
@@ -297,7 +298,11 @@ function splitFieldsAndBody(text) {
       index += 1;
       break;
     }
-    if (!/^[- A-Za-zæøåÆØÅ]+:/.test(line)) break;
+    if (!/^[- A-Za-zæøåÆØÅ]+:/.test(line)) {
+      throw new Error(
+        `Document metadata must be followed by a blank line before prose; got: ${line}`,
+      );
+    }
     fieldLines.push(line);
   }
   return { fieldsText: fieldLines.join('\n'), bodyText: lines.slice(index).join('\n') };
@@ -320,6 +325,11 @@ function required(fields, key, context) {
   return value;
 }
 
+function parseIntegerField(value, context) {
+  if (!/^-?\d+$/.test(String(value))) throw new Error(`${context} must be an integer, got: ${value}`);
+  return Number(value);
+}
+
 function listField(fields, key) {
   const value = fields.get(key);
   if (!value || value === 'None') return [];
@@ -336,12 +346,12 @@ function parseDocumentRuns(markdown) {
   let cursor = 0;
   let textRunIndex = 0;
   while ((match = re.exec(markdown)) !== null) {
-    const before = collapseWhitespace(markdown.slice(cursor, match.index));
+    const before = normalizeRunText(markdown.slice(cursor, match.index));
     if (before) runs.push({ id: `run_text_${textRunIndex++}`, text: before, fact_id: '' });
-    runs.push({ id: `run_${match[2].replace(/^f_/, '')}`, text: match[1], fact_id: match[2] });
+    runs.push({ id: `run_${match[2].replace(/^f_/, '')}`, text: collapseWhitespace(match[1]), fact_id: match[2] });
     cursor = match.index + match[0].length;
   }
-  const after = collapseWhitespace(markdown.slice(cursor));
+  const after = normalizeRunText(markdown.slice(cursor));
   if (after) runs.push({ id: `run_text_${textRunIndex++}`, text: after, fact_id: '' });
   if (!runs.some((run) => run.fact_id)) throw new Error('No evidence links found in document body');
   return runs;
@@ -355,6 +365,15 @@ function evidenceMarkdownToBbcode(markdown) {
 
 function collapseWhitespace(value) {
   return value.replace(/\s+/g, ' ').trim();
+}
+
+function normalizeRunText(value) {
+  if (!value) return '';
+  const leading = /^\s/.test(value) ? ' ' : '';
+  const trailing = /\s$/.test(value) ? ' ' : '';
+  const core = collapseWhitespace(value);
+  if (!core) return ' ';
+  return `${leading}${core}${trailing}`;
 }
 
 function only(items, label) {
@@ -437,14 +456,57 @@ function collectEffectOps(effects, ops = []) {
   return ops;
 }
 
-function validateArtifacts({ godotSource, labContent }) {
-  const factIds = new Set(godotSource.facts.map((fact) => fact.id));
-  const questionIds = new Set(godotSource.questions.map((question) => question.id));
-  const hypothesisIds = new Set(godotSource.hypotheses.map((hypothesis) => hypothesis.id));
-  const tiltakIds = new Set(godotSource.tiltak.map((tiltak) => tiltak.id));
-  const dispatchIds = new Set(godotSource.dispatches.map((dispatch) => dispatch.id));
+function validateArtifacts({ source, godotSource, labContent }) {
+  const documentIds = uniqueIds(source.documents, 'documents');
+  const factIds = uniqueIds(source.facts, 'facts');
+  const questionIds = uniqueIds(source.questions, 'questions');
+  const hypothesisIds = uniqueIds(source.hypotheses, 'hypotheses');
+  const tiltakIds = uniqueIds(source.tiltak, 'tiltak');
+  const dispatchIds = uniqueIds(source.dispatches, 'dispatches');
+  const clockIds = uniqueIds(source.clocks, 'clocks');
+
+  for (const fact of source.facts) {
+    requireKnown(documentIds, fact.source_document_id, `fact ${fact.id}.Source`);
+    for (const questionId of fact.supports) requireKnown(questionIds, questionId, `fact ${fact.id}.Supports`);
+    for (const questionId of fact.reveals_questions) {
+      requireKnown(questionIds, questionId, `fact ${fact.id}.Reveals questions`);
+      const question = source.questions.find((candidate) => candidate.id === questionId);
+      if (!question.opens_when.includes(fact.id)) {
+        throw new Error(
+          `fact ${fact.id}.Reveals questions references ${questionId}, but question ${questionId}.Opens when does not include ${fact.id}`,
+        );
+      }
+    }
+  }
+  for (const question of source.questions) {
+    for (const factId of question.appears_on) requireKnown(factIds, factId, `question ${question.id}.Appears on`);
+    for (const factId of question.opens_when) {
+      requireKnown(factIds, factId, `question ${question.id}.Opens when`);
+      const fact = source.facts.find((candidate) => candidate.id === factId);
+      if (!fact.reveals_questions.includes(question.id)) {
+        throw new Error(
+          `question ${question.id}.Opens when references ${factId}, but fact ${factId}.Reveals questions does not include ${question.id}`,
+        );
+      }
+    }
+  }
+  for (const hypothesis of source.hypotheses) {
+    requireKnown(questionIds, hypothesis.question_id, `hypothesis ${hypothesis.id}.Question`);
+    for (const factId of hypothesis.needs) requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
+    for (const tiltakId of hypothesis.opens_tiltak) requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
+    for (const dispatchId of hypothesis.unlocks_dispatches) requireKnown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Unlocks dispatches`);
+  }
+  for (const tiltak of source.tiltak) {
+    for (const factId of tiltak.needs) requireKnown(factIds, factId, `tiltak ${tiltak.id}.Needs`);
+    for (const hypothesisId of tiltak.needs_hypothesis) requireKnown(hypothesisIds, hypothesisId, `tiltak ${tiltak.id}.Needs hypothesis`);
+  }
+  for (const dispatch of source.dispatches) {
+    validatePredicateRefs(predicateFromGate(dispatch.gate), { factIds, hypothesisIds }, `dispatch ${dispatch.id}.Gate`);
+    validateEffectRefs(effectsFromLine(dispatch.effects), { dispatchIds, tiltakIds, clockIds }, `dispatch ${dispatch.id}.Effects`);
+  }
 
   for (const doc of godotSource.documents) {
+    requireKnown(documentIds, doc.id, `document ${doc.id}`);
     for (const run of doc.runs) if (run.fact_id) requireKnown(factIds, run.fact_id, `run ${run.id}.fact_id`);
   }
   for (const fact of Object.values(labContent.facts)) {
@@ -459,18 +521,47 @@ function validateArtifacts({ godotSource, labContent }) {
     }
   }
   for (const hypothesis of godotSource.hypotheses) {
+    validatePredicateRefs(hypothesis.availability, { factIds, hypothesisIds }, `hypothesis ${hypothesis.id}.availability`);
+    validateEffectRefs(hypothesis.chosen_effects, { dispatchIds, tiltakIds, clockIds }, `hypothesis ${hypothesis.id}.chosen_effects`);
     for (const op of collectPredicateOps(hypothesis.availability)) assertCaseAgnosticOp(op);
     for (const op of collectEffectOps(hypothesis.chosen_effects)) assertCaseAgnosticOp(op);
   }
   for (const dispatch of godotSource.dispatches) {
     requireKnown(dispatchIds, dispatch.id, `dispatch ${dispatch.id}`);
+    validatePredicateRefs(dispatch.gate, { factIds, hypothesisIds }, `dispatch ${dispatch.id}.gate`);
+    validateEffectRefs(dispatch.effects, { dispatchIds, tiltakIds, clockIds }, `dispatch ${dispatch.id}.effects`);
     for (const op of collectPredicateOps(dispatch.gate)) assertCaseAgnosticOp(op);
     for (const op of collectEffectOps(dispatch.effects)) assertCaseAgnosticOp(op);
   }
 }
 
+function uniqueIds(items, label) {
+  const ids = new Set();
+  for (const item of items) {
+    if (ids.has(item.id)) throw new Error(`${label} contains duplicate id ${item.id}`);
+    ids.add(item.id);
+  }
+  return ids;
+}
+
+function validatePredicateRefs(predicate, { factIds, hypothesisIds }, context) {
+  if (!predicate) return;
+  if (predicate.op === 'fact_lifted') requireKnown(factIds, predicate.args?.fact_id, `${context}.fact_id`);
+  if (predicate.op === 'hypothesis_chosen') requireKnown(hypothesisIds, predicate.args?.hypothesis_id, `${context}.hypothesis_id`);
+  for (const child of predicate.children ?? []) validatePredicateRefs(child, { factIds, hypothesisIds }, context);
+}
+
+function validateEffectRefs(effects, { dispatchIds, tiltakIds, clockIds }, context) {
+  for (const effect of effects ?? []) {
+    for (const dispatchId of effect.args?.dispatch_ids ?? []) requireKnown(dispatchIds, dispatchId, `${context}.dispatch_ids`);
+    for (const tiltakId of effect.args?.tiltak_ids ?? []) requireKnown(tiltakIds, tiltakId, `${context}.tiltak_ids`);
+    if (effect.args?.clock_id) requireKnown(clockIds, effect.args.clock_id, `${context}.clock_id`);
+    validateEffectRefs(effect.children ?? [], { dispatchIds, tiltakIds, clockIds }, context);
+  }
+}
+
 function requireKnown(set, id, label) {
-  if (!set.has(id)) throw new Error(`${label} references unknown id ${id}`);
+  if (!id || !set.has(id)) throw new Error(`${label} references unknown id ${id}`);
 }
 
 function assertCaseAgnosticOp(op) {
@@ -514,10 +605,18 @@ export async function formatGeneratedBlueprintModule(artifacts) {
 export async function writeTinyOlsenArtifacts(paths = defaultPaths()) {
   const artifacts = await buildTinyOlsenArtifacts(paths);
   await mkdir(dirname(paths.generatedModulePath), { recursive: true });
-  await mkdir(dirname(paths.coreSourcePath), { recursive: true });
+  await assertWritableDirectory(dirname(paths.coreSourcePath), 'core-loop generated source directory');
   await writeFile(paths.generatedModulePath, await formatGeneratedBlueprintModule(artifacts), 'utf8');
   await writeFile(paths.coreSourcePath, `${JSON.stringify(artifacts.godotSource, null, 2)}\n`, 'utf8');
   return artifacts;
+}
+
+async function assertWritableDirectory(path, label) {
+  try {
+    await access(path, fsConstants.W_OK);
+  } catch {
+    throw new Error(`${label} is missing or not writable: ${path}`);
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -527,11 +626,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const moduleSource = await formatGeneratedBlueprintModule(artifacts);
   const jsonSource = `${JSON.stringify(artifacts.godotSource, null, 2)}\n`;
   if (check) {
-    const [currentModule, currentJson] = await Promise.all([
-      readFile(paths.generatedModulePath, 'utf8'),
-      readFile(paths.coreSourcePath, 'utf8'),
-    ]);
-    if (currentModule !== moduleSource || currentJson !== jsonSource) {
+    const currentModule = await readFile(paths.generatedModulePath, 'utf8');
+    let currentJson = null;
+    try {
+      currentJson = await readFile(paths.coreSourcePath, 'utf8');
+    } catch {
+      console.warn(`core-loop source JSON not found; skipping cross-repo freshness check: ${paths.coreSourcePath}`);
+    }
+    if (currentModule !== moduleSource || (currentJson != null && currentJson !== jsonSource)) {
       throw new Error('Generated tiny Olsen artifacts are stale. Run npm run gen:olsen.');
     }
     console.log('tiny Olsen artifacts are up to date');
