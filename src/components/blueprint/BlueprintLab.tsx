@@ -50,8 +50,8 @@ const domainIcon: Record<BlueprintDomain, string> = {
   Ressurser: '✦',
 };
 
-export function BlueprintLab() {
-  const [store] = useState(() => new BlueprintStore());
+export function BlueprintLab({ store: providedStore }: { store?: BlueprintStore } = {}) {
+  const [store] = useState(() => providedStore ?? new BlueprintStore());
   return <BlueprintSurface store={store} />;
 }
 
@@ -1109,10 +1109,7 @@ const Notices = observer(function Notices({ store }: { store: BlueprintStore }) 
           )}
           type="button"
           onClick={() => {
-            if (notice.kind === 'fact') store.showSurface('fakta');
-            if (notice.kind === 'hypothesis') store.showSurface('sporsmal');
-            if (notice.kind === 'day') store.showSurface('pulten');
-            store.dismissNotice(notice.id);
+            store.followNotice(notice);
           }}
         >
           <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6259]">

@@ -189,6 +189,17 @@ export class BlueprintStore {
     this.notices = this.notices.filter((notice) => notice.id !== id);
   }
 
+  followNotice(notice: BlueprintNotice): void {
+    if (notice.kind) {
+      this.openDocumentId = null;
+      this.selectedFactId = null;
+    }
+    if (notice.kind === 'fact') this.showSurface('fakta');
+    if (notice.kind === 'hypothesis') this.showSurface('sporsmal');
+    if (notice.kind === 'day') this.showSurface('pulten');
+    this.dismissNotice(notice.id);
+  }
+
   closeReflection(): void {
     this.reflectionVisible = false;
   }
@@ -328,7 +339,7 @@ export class BlueprintStore {
         id: `${Date.now()}-${this.notices.length}-${tag}`,
         tag,
         text,
-        kind,
+        kind: kind ?? (tag.includes('PULTEN') || tag.startsWith('DAG ') ? 'day' : undefined),
       },
       ...this.notices,
     ].slice(0, 4);

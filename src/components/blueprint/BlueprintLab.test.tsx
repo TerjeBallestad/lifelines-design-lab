@@ -3,6 +3,7 @@
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { BlueprintStore } from '../../stores/BlueprintStore';
 import { BlueprintLab } from './BlueprintLab';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
@@ -11,13 +12,13 @@ import { BlueprintLab } from './BlueprintLab';
 let root: Root | undefined;
 let host: HTMLDivElement | undefined;
 
-function renderBlueprint(width = 1024) {
+function renderBlueprint(width = 1024, store?: BlueprintStore) {
   Object.defineProperty(window, 'innerWidth', { configurable: true, value: width });
   host = document.createElement('div');
   document.body.append(host);
   root = createRoot(host);
   act(() => {
-    root!.render(<BlueprintLab />);
+    root!.render(<BlueprintLab store={store} />);
   });
 }
 
@@ -58,6 +59,16 @@ function clickTab(text: string) {
   });
 }
 
+function clickToast(text: string) {
+  const button = Array.from(document.querySelectorAll('button.blueprint-toast')).find((candidate) =>
+    candidate.textContent?.includes(text),
+  );
+  if (!button) throw new Error(`Missing toast containing: ${text}`);
+  act(() => {
+    (button as HTMLButtonElement).click();
+  });
+}
+
 function clickAriaButton(label: string) {
   const button = Array.from(document.querySelectorAll('button')).find(
     (candidate) =>
@@ -85,6 +96,32 @@ function startAtDesk() {
   expect(document.body.textContent).toContain('LEGESENTERET');
   clickButton('Hopp over');
   expect(document.body.textContent).toContain('Én melding. Én pult. Begynn der.');
+}
+
+function getQuestionPill(text: string) {
+  const pill = Array.from(document.querySelectorAll('.blueprint-pill')).find(
+    (candidate) => candidate.textContent === text,
+  );
+  if (!pill) throw new Error(`Missing question pill: ${text}`);
+  return pill;
+}
+
+function getTiltakCard(title: string) {
+  const card = Array.from(document.querySelectorAll('button.blueprint-tiltak-card')).find(
+    (candidate) => candidate.textContent?.includes(title),
+  );
+  if (!card) throw new Error(`Missing tiltak card: ${title}`);
+  return card;
+}
+
+function renderVedtakStore(config: { doorOpened?: boolean; rutineGood?: number } = {}) {
+  const store = new BlueprintStore();
+  store.startCase();
+  store.liftFact('f_elling_tlf');
+  store.progress.sim.doorOpened = config.doorOpened ?? false;
+  store.progress.clocks.ck_rutine.good = config.rutineGood ?? 0;
+  store.showSurface('vedtak');
+  renderBlueprint(1024, store);
 }
 
 function openDocument(title: string, expectsEvidenceHint = true) {
@@ -211,6 +248,87 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(connectors[0]?.tagName.toLowerCase()).toBe('path');
     expect(connectors[0]?.closest('button')).toBeNull();
     expect(connectors[0]?.getAttribute('d')).toMatch(/^M /);
+  });
+
+  it('colors question pills by unresolved, partly lit, and chosen states', () => {
+    const store = new BlueprintStore();
+    store.startCase();
+    store.liftFact('f_grete_baerer');
+    store.showSurface('sporsmal');
+    renderBlueprint(1024, store);
+
+    expect(getQuestionPill('Åpent').className).toContain('neutral');
+
+    act(() => {
+      store.liftFact('f_kalender');
+    });
+
+    expect(getQuestionPill('Delvis belyst').className).toContain('blue');
+
+    act(() => {
+      store.liftFact('f_matbokser');
+      store.selectHypothesis('q_hverdag', 'h_h_infra');
+    });
+
+    expect(getQuestionPill('Foreløpig arbeidssvar').className).toContain('gold');
+  });
+
+  it('shows the For tidlig? badge only on early tiltak before the door opens and routine progress exists', () => {
+    renderVedtakStore();
+    expect(getTiltakCard('Telefontrening med manus').textContent).toContain('for tidlig?');
+    expect(getTiltakCard('Institusjonsvurdering / omsorgsbolig').textContent).not.toContain(
+      'for tidlig?',
+    );
+  });
+
+  it('hides the For tidlig? badge once the door is open', () => {
+    renderVedtakStore({ doorOpened: true });
+    expect(getTiltakCard('Telefontrening med manus').textContent).not.toContain('for tidlig?');
+  });
+
+  it('hides the For tidlig? badge once routine support has progress', () => {
+    renderVedtakStore({ rutineGood: 1 });
+    expect(getTiltakCard('Telefontrening med manus').textContent).not.toContain('for tidlig?');
+  });
+
+  it('auto-dismisses notices after the configured 5.2 second delay', () => {
+    vi.useFakeTimers();
+    startAtDesk();
+
+    expect(document.body.textContent).toContain('MOTTATT · SOSIALKONTORET');
+
+    act(() => {
+      vi.advanceTimersByTime(5_199);
+    });
+
+    expect(document.body.textContent).toContain('MOTTATT · SOSIALKONTORET');
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+
+    expect(document.body.textContent).not.toContain('MOTTATT · SOSIALKONTORET');
+  });
+
+  it('deep-links fact, hypothesis, and day notices to their Blueprint surfaces', () => {
+    startAtDesk();
+    clickTab('Frank');
+    expect(document.body.textContent).toContain('Send Frank');
+    clickToast('MOTTATT · SOSIALKONTORET');
+    expect(document.body.textContent).toContain('Én melding. Én pult. Begynn der.');
+
+    openDocument('Legesenteret');
+    clickEvidence('f_grete_baerer');
+    clickToast('FAKTUM LAGT TIL');
+    expect(document.body.textContent).toContain('Sakens fakta');
+    expect(document.body.textContent).not.toContain('Gul markering vises først etter');
+
+    clickTab('Pulten');
+    openDocument('Legesenteret');
+    clickEvidence('f_saarbar');
+    clickToast('ÅPENT SPØRSMÅL');
+    expect(document.body.textContent).toContain('Åpne spørsmål');
+    expect(document.body.textContent).not.toContain('Gul markering vises først etter');
   });
 
   it('plays the React caseworker loop from prologue through reflection', () => {
