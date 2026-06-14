@@ -26,6 +26,13 @@ describe('tiny Olsen case generator', () => {
     expect(artifacts.godotSource.documents[0].body_bbcode).toContain('[url=fact:f_grete_baerer]');
     expect(artifacts.godotSource.documents[0].body_bbcode).toContain('Mor opplyser at hun bistår');
     expect(artifacts.godotSource.documents[0].kind).toBe('BEKYMRINGSMELDING');
+    expect(
+      artifacts.godotSource.facts.find((fact) => fact.id === 'f_regninger').supports_questions,
+    ).toEqual(['q_okonomi']);
+    expect(
+      artifacts.godotSource.hypotheses.find((hypothesis) => hypothesis.id === 'h_okonomisk_sarbar')
+        .question_id,
+    ).toBe('q_okonomi');
     const visibleText = artifacts.labContent.documents.doc_bekymring.blocks[0].runs
       .map((run) => run.text)
       .join('');

@@ -260,6 +260,7 @@ export const tinyOlsenGodotSource = {
       label: 'Grete bærer rutiner',
       summary: 'Grete bærer husholdets praktiske funksjoner.',
       source_document_id: 'doc_bekymring',
+      supports_questions: ['q_hverdag', 'q_okonomi'],
       lift_effects: [
         {
           op: 'reveal_questions',
@@ -274,6 +275,7 @@ export const tinyOlsenGodotSource = {
       label: 'Uåpnet post',
       summary: 'Post har hopet seg opp uåpnet.',
       source_document_id: 'doc_bekymring',
+      supports_questions: [],
       lift_effects: [],
     },
     {
@@ -281,6 +283,7 @@ export const tinyOlsenGodotSource = {
       label: 'Ubetalte regninger',
       summary: 'Flere regninger er ubetalt.',
       source_document_id: 'doc_bekymring',
+      supports_questions: ['q_okonomi'],
       lift_effects: [],
     },
     {
@@ -288,6 +291,7 @@ export const tinyOlsenGodotSource = {
       label: 'Lite mat',
       summary: 'Det er lite mat på kjøkkenet.',
       source_document_id: 'doc_bekymring',
+      supports_questions: [],
       lift_effects: [],
     },
     {
@@ -295,6 +299,7 @@ export const tinyOlsenGodotSource = {
       label: 'Telefon ubesvart',
       summary: 'Telefonhenvendelser blir ofte ikke besvart.',
       source_document_id: 'doc_bekymring',
+      supports_questions: [],
       lift_effects: [],
     },
   ],
@@ -325,6 +330,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_omsorgsbyrde',
       title: 'Omsorgsbyrden er konsentrert',
       summary: 'Grete bærer for mye av den daglige støtten alene.',
+      question_id: 'q_hverdag',
       availability: {
         op: 'all',
         children: [
@@ -361,6 +367,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_okonomisk_sarbar',
       title: 'Økonomien er sårbar',
       summary: 'Ubetalte regninger peker på et praktisk støttebehov.',
+      question_id: 'q_okonomi',
       availability: {
         op: 'fact_lifted',
         args: {
@@ -380,6 +387,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_isolasjon',
       title: 'Isolasjonen øker',
       summary: 'Mat- og telefonmønsteret kan peke på sosial tilbaketrekning.',
+      question_id: 'q_hverdag',
       availability: {
         op: 'all',
         children: [

@@ -49,6 +49,7 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
       label: fact.label,
       summary: fact.summary,
       source_document_id: fact.source_document_id,
+      supports_questions: fact.supports,
       lift_effects: fact.reveals_questions.length
         ? [
             {
@@ -67,6 +68,7 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
       id: hypothesis.id,
       title: hypothesis.title,
       summary: hypothesis.summary,
+      question_id: hypothesis.question_id,
       availability: predicateFromFactIds(hypothesis.needs),
       chosen_effects: chosenEffectsForHypothesis(hypothesis),
     })),
