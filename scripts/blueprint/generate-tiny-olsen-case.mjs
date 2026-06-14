@@ -70,7 +70,7 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
       summary: hypothesis.summary,
       question_id: hypothesis.question_id,
       availability: predicateFromFactIds(hypothesis.needs),
-      chosen_effects: chosenEffectsForHypothesis(hypothesis),
+      opening_sources: openingSourcesForHypothesis(hypothesis),
     })),
     tiltak: source.tiltak.map((tiltak) => ({
       id: tiltak.id,
@@ -227,7 +227,7 @@ export function parseCaseMarkdown(text) {
       question_id: required(item.fields, 'Question', item.id),
       needs: listField(item.fields, 'Needs'),
       opens_tiltak: listField(item.fields, 'Opens tiltak'),
-      unlocks_dispatches: listField(item.fields, 'Unlocks dispatches'),
+      opens_dispatches: listField(item.fields, 'Opens dispatches'),
     })),
     tiltak: parseItems(sectionBody(normalized, 'Tiltak', 'Dispatches')).map((item) => ({
       id: item.id,
@@ -412,13 +412,13 @@ function combineAll(predicates) {
   return { op: 'all', children: predicates };
 }
 
-function chosenEffectsForHypothesis(hypothesis) {
+function openingSourcesForHypothesis(hypothesis) {
   const effects = [];
   if (hypothesis.opens_tiltak.length) {
-    effects.push({ op: 'unlock_tiltak', args: { tiltak_ids: hypothesis.opens_tiltak } });
+    effects.push({ op: 'open_tiltak', args: { tiltak_ids: hypothesis.opens_tiltak } });
   }
-  if (hypothesis.unlocks_dispatches.length) {
-    effects.push({ op: 'unlock_dispatches', args: { dispatch_ids: hypothesis.unlocks_dispatches } });
+  if (hypothesis.opens_dispatches.length) {
+    effects.push({ op: 'open_dispatches', args: { dispatch_ids: hypothesis.opens_dispatches } });
   }
   return effects;
 }
@@ -496,7 +496,7 @@ function validateArtifacts({ source, godotSource, labContent }) {
     requireKnown(questionIds, hypothesis.question_id, `hypothesis ${hypothesis.id}.Question`);
     for (const factId of hypothesis.needs) requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
     for (const tiltakId of hypothesis.opens_tiltak) requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
-    for (const dispatchId of hypothesis.unlocks_dispatches) requireKnown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Unlocks dispatches`);
+    for (const dispatchId of hypothesis.opens_dispatches) requireKnown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Opens dispatches`);
   }
   for (const tiltak of source.tiltak) {
     for (const factId of tiltak.needs) requireKnown(factIds, factId, `tiltak ${tiltak.id}.Needs`);
@@ -524,9 +524,9 @@ function validateArtifacts({ source, godotSource, labContent }) {
   }
   for (const hypothesis of godotSource.hypotheses) {
     validatePredicateRefs(hypothesis.availability, { factIds, hypothesisIds }, `hypothesis ${hypothesis.id}.availability`);
-    validateEffectRefs(hypothesis.chosen_effects, { dispatchIds, tiltakIds, clockIds }, `hypothesis ${hypothesis.id}.chosen_effects`);
+    validateEffectRefs(hypothesis.opening_sources, { dispatchIds, tiltakIds, clockIds }, `hypothesis ${hypothesis.id}.opening_sources`);
     for (const op of collectPredicateOps(hypothesis.availability)) assertCaseAgnosticOp(op);
-    for (const op of collectEffectOps(hypothesis.chosen_effects)) assertCaseAgnosticOp(op);
+    for (const op of collectEffectOps(hypothesis.opening_sources)) assertCaseAgnosticOp(op);
   }
   for (const dispatch of godotSource.dispatches) {
     requireKnown(dispatchIds, dispatch.id, `dispatch ${dispatch.id}`);

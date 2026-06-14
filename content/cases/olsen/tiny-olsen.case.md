@@ -88,14 +88,14 @@ Summary: Grete bærer for mye av den daglige støtten alene.
 Question: q_hverdag
 Needs: f_grete_baerer, f_regninger
 Opens tiltak: t_samtale_grete, t_regningshjelp
-Unlocks dispatches: d_ring_grete
+Opens dispatches: d_ring_grete
 
 ## h_okonomisk_sarbar
 Title: Økonomien er sårbar
 Summary: Ubetalte regninger peker på et praktisk støttebehov.
 Question: q_okonomi
 Needs: f_regninger
-Unlocks dispatches: d_konto
+Opens dispatches: d_konto
 
 ## h_isolasjon
 Title: Isolasjonen øker

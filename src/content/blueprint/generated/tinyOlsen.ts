@@ -348,15 +348,15 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
-      chosen_effects: [
+      opening_sources: [
         {
-          op: 'unlock_tiltak',
+          op: 'open_tiltak',
           args: {
             tiltak_ids: ['t_samtale_grete', 't_regningshjelp'],
           },
         },
         {
-          op: 'unlock_dispatches',
+          op: 'open_dispatches',
           args: {
             dispatch_ids: ['d_ring_grete'],
           },
@@ -374,9 +374,9 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_regninger',
         },
       },
-      chosen_effects: [
+      opening_sources: [
         {
-          op: 'unlock_dispatches',
+          op: 'open_dispatches',
           args: {
             dispatch_ids: ['d_konto'],
           },
@@ -405,9 +405,9 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
-      chosen_effects: [
+      opening_sources: [
         {
-          op: 'unlock_tiltak',
+          op: 'open_tiltak',
           args: {
             tiltak_ids: ['t_samtale_grete'],
           },

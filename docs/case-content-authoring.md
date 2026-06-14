@@ -103,7 +103,7 @@ Hypotheses:
 ```md
 Needs: f_grete_baerer, f_regninger
 Opens tiltak: t_samtale_grete, t_regningshjelp
-Unlocks dispatches: d_ring_grete
+Opens dispatches: d_ring_grete
 ```
 
 Dispatches:
