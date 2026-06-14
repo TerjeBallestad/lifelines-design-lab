@@ -13,6 +13,7 @@ import type {
   BlueprintChatPrompt,
   BlueprintDispatch,
   BlueprintDocument,
+  BlueprintDocumentBlock,
   BlueprintDocumentId,
   BlueprintDomain,
   BlueprintFact,
@@ -251,6 +252,21 @@ export class BlueprintStore {
   }
 
   documentById(documentId: BlueprintDocumentId): BlueprintDocument {
+    if (documentId.startsWith('doc_vedtak_')) {
+      const record = this.progress.vedtakRecords.find((item) => item.documentId === documentId);
+      if (record) {
+        const number = documentId.replace('doc_vedtak_', '');
+        return {
+          id: documentId,
+          kind: 'VEDTAK',
+          title: `Vedtak ${number} · tiltakspakke`,
+          register: 'vedtak',
+          peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
+          meta: `DAG ${record.day} · OSLO KOMMUNE`,
+          blocks: this.vedtakDocumentBlocks(record.tiltakIds, record.hypothesisIds),
+        };
+      }
+    }
     if (documentId === 'doc_status') {
       return {
         id: 'doc_status',
@@ -266,6 +282,52 @@ export class BlueprintStore {
       };
     }
     return blueprintDocuments[documentId];
+  }
+
+  private vedtakDocumentBlocks(
+    tiltakIds: BlueprintTiltakId[],
+    hypothesisIds: BlueprintHypothesisId[],
+  ): BlueprintDocumentBlock[] {
+    const blocks: BlueprintDocumentBlock[] = [
+      {
+        id: 'vedtak-ingress',
+        runs: [
+          {
+            text: 'Vedtaket er journalført på saken. Dette er ikke en effekt i leiligheten; det er kommunens spor etter hva som ble valgt og hvilket grunnlag valget hvilte på.',
+          },
+        ],
+      },
+    ];
+
+    for (const tiltakId of tiltakIds) {
+      const tiltak = blueprintTiltak[tiltakId];
+      if (!tiltak) continue;
+      blocks.push({
+        id: `vedtak-tiltak-${tiltakId}`,
+        runs: [
+          {
+            text: `IVERKSATT: ${tiltak.title}. ${tiltak.description} Kostnad: ${tiltak.cost || 0} mynt.`,
+          },
+        ],
+      });
+    }
+
+    for (const hypothesisId of hypothesisIds) {
+      const hypothesis = Object.values(blueprintQuestions)
+        .flatMap((question) => question.hypotheses)
+        .find((item) => item.id === hypothesisId);
+      if (!hypothesis) continue;
+      blocks.push({
+        id: `vedtak-hypothesis-${hypothesisId}`,
+        runs: [{ text: `Arbeidshypotese lagt til grunn: ${hypothesis.label}. ${hypothesis.note}` }],
+      });
+    }
+
+    blocks.push({
+      id: 'vedtak-stamp',
+      runs: [{ text: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.' }],
+    });
+    return blocks;
   }
 
   factsForQuestion(questionId: BlueprintQuestionId): BlueprintFact[] {

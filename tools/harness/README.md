@@ -4,9 +4,25 @@ This repo uses the generic `/Users/godstemning/dev/agent-harness` package. The p
 
 ## Run
 
+Use the project wrapper for SDD work. It performs the operator preflight before
+creating a run: Node/harness/pm availability, Slack token, PM health, and SDD
+resolution.
+
 ```bash
-/Users/godstemning/dev/agent-harness/bin/harness run "Verify current Slice A through generic harness" --config harness.config.json
+tools/harness/run-sdd.sh SDD-010
+# or
+npm run harness:sdd -- SDD-010
 ```
+
+The wrapper launches the real SDD loop:
+
+```bash
+harness run-sdd SDD-010 --config harness.config.json --mode deliver
+```
+
+Use `harness run "..."` only for an opaque goal that is not backed by an SDD.
+If the work is framed as `SDD-NNN`, use `run-sdd` so the SDD body enters the
+planner/generator/evaluator contract.
 
 Live Codex is the default — a role that cannot complete a real Codex run exits non-zero and the harness records `INFRA_FAIL`. For CI/local plumbing smoke without spending agent calls, use the harness dry-run flag (the only sanctioned way to get scripted role output, and the run is visibly stamped DRY RUN):
 

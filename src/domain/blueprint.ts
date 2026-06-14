@@ -128,6 +128,13 @@ export interface BlueprintPendingDocument {
   documentId: BlueprintDocumentId;
 }
 
+export interface BlueprintVedtakRecord {
+  documentId: BlueprintDocumentId;
+  day: number;
+  tiltakIds: BlueprintTiltakId[];
+  hypothesisIds: BlueprintHypothesisId[];
+}
+
 export interface BlueprintChatMessage {
   who: 'Deg' | 'Frank';
   runs: BlueprintTextRun[];
@@ -188,6 +195,7 @@ export interface BlueprintProgress {
   draftTiltakIds: BlueprintTiltakId[];
   enactedTiltakIds: BlueprintTiltakId[];
   vedtakCount: number;
+  vedtakRecords: BlueprintVedtakRecord[];
   clocks: {
     ck_bostotte: BlueprintClockTrack;
     ck_overfort: BlueprintClockTrack;

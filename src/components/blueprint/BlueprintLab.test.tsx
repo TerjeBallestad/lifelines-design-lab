@@ -2,7 +2,7 @@
 
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BlueprintLab } from './BlueprintLab';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
@@ -22,6 +22,7 @@ function renderBlueprint(width = 1024) {
 }
 
 afterEach(() => {
+  vi.useRealTimers();
   if (root) {
     act(() => root!.unmount());
   }
@@ -150,6 +151,23 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(document.body.textContent).toContain('FAKTUM LAGT TIL');
   });
 
+  it('adds the delayed pencil nudge to unlifted evidence hotspots', () => {
+    vi.useFakeTimers();
+    startAtDesk();
+    openDocument('Legesenteret');
+
+    const evidence = document.querySelector<HTMLButtonElement>(
+      '[data-testid="blueprint-evidence-f_grete_baerer"]',
+    );
+    expect(evidence?.className).not.toContain('nudged');
+
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+
+    expect(evidence?.className).toContain('nudged');
+  });
+
   it('plays the React caseworker loop from prologue through reflection', () => {
     startAtDesk();
     liftFirstDocumentFacts();
@@ -168,6 +186,11 @@ describe('BlueprintLab rendered interaction trace', () => {
     clickButton('Institusjonsvurdering');
     clickButton('Fatt vedtak');
     expect(document.body.textContent).toContain('Logg · det kommunen vet');
+    clickTab('Pulten');
+    expect(document.body.textContent).toContain('Vedtak 1 · tiltakspakke');
+    openDocument('Vedtak 1 · tiltakspakke');
+    expect(document.body.textContent).toContain('Arbeidshypotese lagt til grunn');
+    closeDocument();
 
     clickTab('Frank');
     clickButton('Posten i gangen');
@@ -211,6 +234,7 @@ describe('BlueprintLab rendered interaction trace', () => {
 
     clickTab('Åpne spørsmål');
     expect(document.body.textContent).toContain('Hva bærer Grete');
+    expect(document.querySelectorAll('[data-line-fact]').length).toBeGreaterThan(0);
     clickButton('Ferdighetene er der ikke');
     expect(document.body.textContent).toContain('Arbeidshypotese');
     clickButton('Neste dag');

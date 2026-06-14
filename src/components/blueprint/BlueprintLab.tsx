@@ -13,7 +13,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import {
   blueprintDayName,
   blueprintDomains,
@@ -269,6 +269,14 @@ const Desk = observer(function Desk({ store }: { store: BlueprintStore }) {
 
 const DocumentReader = observer(function DocumentReader({ store }: { store: BlueprintStore }) {
   const document = store.currentDocument;
+  const [nudged, setNudged] = useState(false);
+  useEffect(() => {
+    setNudged(false);
+    if (!document || !store.openDocumentId) return;
+    const timer = window.setTimeout(() => setNudged(true), 10_000);
+    return () => window.clearTimeout(timer);
+  }, [document, store.openDocumentId]);
+
   if (!document || !store.openDocumentId) return null;
 
   return (
@@ -299,7 +307,7 @@ const DocumentReader = observer(function DocumentReader({ store }: { store: Blue
         <div className="grid gap-4 text-base leading-8">
           {document.blocks.map((block) => (
             <p key={block.id}>
-              <RunText runs={block.runs} store={store} />
+              <RunText runs={block.runs} store={store} nudged={nudged} />
             </p>
           ))}
         </div>
@@ -311,9 +319,11 @@ const DocumentReader = observer(function DocumentReader({ store }: { store: Blue
 const RunText = observer(function RunText({
   runs,
   store,
+  nudged = false,
 }: {
   runs: BlueprintTextRun[];
   store: BlueprintStore;
+  nudged?: boolean;
 }) {
   return (
     <>
@@ -323,7 +333,11 @@ const RunText = observer(function RunText({
         return (
           <button
             key={`${run.factId}-${index}`}
-            className={clsx('blueprint-evidence', lifted && 'collected')}
+            className={clsx(
+              'blueprint-evidence',
+              lifted && 'collected',
+              nudged && !lifted && 'nudged',
+            )}
             type="button"
             data-testid={`blueprint-evidence-${run.factId}`}
             aria-pressed={lifted}
@@ -382,6 +396,67 @@ const FactsBoard = observer(function FactsBoard({ store }: { store: BlueprintSto
 });
 
 const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: BlueprintStore }) {
+  const boardRef = useRef<HTMLElement | null>(null);
+  const [lines, setLines] = useState<Array<{ key: string; d: string }>>([]);
+  const visibleSignature = store.visibleQuestions
+    .map(
+      ({ id }) =>
+        `${id}:${store
+          .factsForQuestion(id)
+          .map((fact) => fact.id)
+          .join(',')}`,
+    )
+    .join('|');
+
+  useLayoutEffect(() => {
+    const board = boardRef.current;
+    if (!board) return;
+
+    const redraw = () => {
+      const bounds = board.getBoundingClientRect();
+      const byFact = new Map<string, HTMLElement[]>();
+      board.querySelectorAll<HTMLElement>('[data-line-fact]').forEach((node) => {
+        const factId = node.dataset.lineFact;
+        if (!factId) return;
+        const nodes = byFact.get(factId) ?? [];
+        nodes.push(node);
+        byFact.set(factId, nodes);
+      });
+
+      const nextLines: Array<{ key: string; d: string }> = [];
+      for (const [factId, nodes] of byFact) {
+        if (nodes.length < 2) continue;
+        const centers = nodes.map((node) => {
+          const rect = node.getBoundingClientRect();
+          return {
+            x: rect.left + rect.width / 2 - bounds.left,
+            y: rect.top + rect.height / 2 - bounds.top,
+          };
+        });
+        for (let index = 0; index < centers.length - 1; index += 1) {
+          const a = centers[index];
+          const b = centers[index + 1];
+          const mid = Math.max(24, Math.abs(b.y - a.y) / 2);
+          nextLines.push({
+            key: `${factId}-${index}`,
+            d: `M ${a.x} ${a.y} C ${a.x} ${a.y + mid}, ${b.x} ${b.y - mid}, ${b.x} ${b.y}`,
+          });
+        }
+      }
+      setLines(nextLines);
+    };
+
+    redraw();
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(redraw) : undefined;
+    resizeObserver?.observe(board);
+    window.addEventListener('resize', redraw);
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', redraw);
+    };
+  }, [visibleSignature]);
+
   if (!store.visibleQuestions.length) {
     return (
       <section className="grid min-h-[520px] place-items-center text-center text-xl font-semibold text-[#6b6259]">
@@ -391,9 +466,14 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
   }
 
   return (
-    <section>
+    <section ref={boardRef} className="blueprint-question-board relative">
       <FrameTitle title="Åpne spørsmål" meta="Arbeidshypoteser er foreløpige · ikke fasit" />
-      <div className="grid gap-5">
+      <svg className="blueprint-question-lines" aria-hidden>
+        {lines.map((line) => (
+          <path key={line.key} d={line.d} />
+        ))}
+      </svg>
+      <div className="relative z-[1] grid gap-5">
         {store.visibleQuestions.map(({ id, question }) => {
           const facts = store.factsForQuestion(id);
           const stateLabel = store.questionStateLabel(id);
@@ -404,7 +484,9 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
             <article key={id} className="blueprint-frame border-l-4 border-l-[#2a2520] p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <h2 className="text-xl font-black">{question.title}</h2>
-                <span className="blueprint-pill gold">{stateLabel}</span>
+                <span className={clsx('blueprint-pill', questionPillTone(stateLabel))}>
+                  {stateLabel}
+                </span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {facts.map((fact) => (
@@ -412,6 +494,7 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
                     key={fact.id}
                     className="blueprint-mini-fact"
                     type="button"
+                    data-line-fact={fact.id}
                     onClick={() => store.selectFact(fact.id)}
                   >
                     <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
@@ -477,6 +560,12 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
   );
 });
 
+function questionPillTone(label: string): 'gold' | 'blue' | 'neutral' {
+  if (label === 'Foreløpig arbeidssvar') return 'gold';
+  if (label === 'Delvis belyst') return 'blue';
+  return 'neutral';
+}
+
 const VedtakBoard = observer(function VedtakBoard({ store }: { store: BlueprintStore }) {
   const slots: BlueprintTiltakSlot[] = ['s1', 's2', 's3', 'press'];
   return (
@@ -517,7 +606,9 @@ const VedtakBoard = observer(function VedtakBoard({ store }: { store: BlueprintS
                         {active ? (
                           <span className="blueprint-pill green ml-2">iverksatt</span>
                         ) : null}
-                        {tiltak.early && !store.progress.sim.doorOpened ? (
+                        {tiltak.early &&
+                        !store.progress.sim.doorOpened &&
+                        store.progress.clocks.ck_rutine.good === 0 ? (
                           <span className="blueprint-pill warn ml-2">for tidlig?</span>
                         ) : null}
                         <span className="mt-1 block text-sm leading-relaxed text-[#6b6259]">
@@ -986,6 +1077,14 @@ function FactRelation({ title, children }: { title: string; children: ReactNode 
 }
 
 const Notices = observer(function Notices({ store }: { store: BlueprintStore }) {
+  useEffect(() => {
+    if (!store.notices.length) return;
+    const timer = window.setTimeout(() => {
+      for (const notice of store.notices) store.dismissNotice(notice.id);
+    }, 5_200);
+    return () => window.clearTimeout(timer);
+  }, [store, store.notices]);
+
   if (!store.notices.length) return null;
   return (
     <div className="fixed bottom-4 right-4 z-50 grid max-w-sm gap-2">
@@ -998,7 +1097,12 @@ const Notices = observer(function Notices({ store }: { store: BlueprintStore }) 
             notice.kind === 'day' && 'day',
           )}
           type="button"
-          onClick={() => store.dismissNotice(notice.id)}
+          onClick={() => {
+            if (notice.kind === 'fact') store.showSurface('fakta');
+            if (notice.kind === 'hypothesis') store.showSurface('sporsmal');
+            if (notice.kind === 'day') store.showSurface('pulten');
+            store.dismissNotice(notice.id);
+          }}
         >
           <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6259]">
             {notice.tag}

@@ -41,6 +41,7 @@ export function createBlueprintProgress(): BlueprintProgress {
     draftTiltakIds: [],
     enactedTiltakIds: [],
     vedtakCount: 0,
+    vedtakRecords: [],
     clocks: {
       ck_bostotte: { good: 0, bad: 0, done: false, failed: false },
       ck_overfort: { good: 0, bad: 0 },
@@ -217,9 +218,17 @@ export function toggleBlueprintDraft(
 export function enactBlueprintTiltak(progress: BlueprintProgress): BlueprintTiltakId[] {
   if (!progress.draftTiltakIds.length || progress.phase !== 'play') return [];
   const chosen = [...progress.draftTiltakIds];
+  const hypotheses = chosenHypotheses(progress);
   progress.enactedTiltakIds.push(...chosen);
   progress.draftTiltakIds = [];
   progress.vedtakCount += 1;
+  const documentId = `doc_vedtak_${progress.vedtakCount}`;
+  progress.vedtakRecords.push({
+    documentId,
+    day: progress.day,
+    tiltakIds: chosen,
+    hypothesisIds: hypotheses.map((hypothesis) => hypothesis.id),
+  });
 
   for (const tiltakId of chosen) {
     const tiltak = blueprintTiltak[tiltakId];
@@ -244,6 +253,7 @@ export function enactBlueprintTiltak(progress: BlueprintProgress): BlueprintTilt
     text: `Vedtak fattet: ${chosen.map((tiltakId) => blueprintTiltak[tiltakId].title).join(', ')}.`,
     kind: 'tiltak',
   });
+  receiveBlueprintDocument(progress, documentId);
 
   return chosen;
 }
@@ -582,6 +592,8 @@ function simTick(progress: BlueprintProgress): void {
       sim.foodBoxes > 0 ? Math.max(40, sim.needs.hunger - 6) : Math.max(10, sim.needs.hunger - 15);
     if (sim.foodBoxes === 1) {
       log('Én boks igjen i kjøleskapet. Merket «søndag», i Gretes håndskrift.');
+    } else if (sim.foodBoxes <= 0) {
+      log('Kjøleskapet: lyset, en halv pakke smør, to glass sennep og knekkebrød stående.');
     }
   }
 

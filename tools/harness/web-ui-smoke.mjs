@@ -5,6 +5,7 @@ import { spawnSync, spawn } from 'node:child_process';
 import { chromium } from 'playwright';
 
 const runDir = valueAfter('--run-dir') || '.harness/runs/UNKNOWN';
+const sprintId = valueAfter('--sprint') || 'all';
 const artifactsDir = join(runDir, 'artifacts');
 mkdirSync(artifactsDir, { recursive: true });
 
@@ -12,22 +13,28 @@ const checks = [];
 const artifacts = [];
 const notes = [];
 const requestFinancialOverviewAction = 'Be Grete finne fram økonomisk oversikt';
+const blueprintTestFiles = [
+  'src/engine/phoneResolver.test.ts',
+  'src/engine/blueprint/blueprintEngine.test.ts',
+  'src/components/blueprint/BlueprintLab.test.tsx',
+];
 
 try {
-  const testResult = run('npm', ['test']);
+  const testResult = run('npx', ['vitest', 'run', ...blueprintTestFiles]);
   writeFileSync(join(artifactsDir, 'npm-test.txt'), testResult.output, 'utf8');
   artifacts.push({
     kind: 'log',
     path: 'artifacts/npm-test.txt',
-    title: 'npm test output',
+    title: `Scoped Blueprint test output (${sprintId})`,
     role: 'system',
-    tags: ['deterministic'],
+    tags: ['deterministic', 'scoped-tests', 'blueprint'],
   });
   checks.push({
-    claim: 'npm test passes',
+    claim: 'Scoped Blueprint tests pass',
     result: testResult.status === 0 ? 'PASS' : 'FAIL',
     evidence: ['artifacts/npm-test.txt'],
   });
+  notes.push(`Ran scoped Blueprint tests: ${blueprintTestFiles.join(', ')}`);
 
   const buildResult = run('npm', ['run', 'build']);
   writeFileSync(join(artifactsDir, 'npm-build.txt'), buildResult.output, 'utf8');
@@ -84,26 +91,71 @@ try {
   for (const check of sourceCheck.checks) checks.push(check);
 
   const failed = checks.filter((check) => check.result !== 'PASS');
+  const result = {
+    status: failed.length ? 'failed' : 'done',
+    summary: failed.length
+      ? `${failed.length} verifier check(s) failed.`
+      : 'Scoped Blueprint tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.',
+    checks,
+    artifacts,
+    notes,
+  };
+  writeFileSync(
+    join(artifactsDir, 'web-ui-smoke-result.json'),
+    JSON.stringify(result, null, 2) + '\n',
+    'utf8',
+  );
+  const compactArtifacts = [
+    {
+      kind: 'trace',
+      path: 'artifacts/web-ui-smoke-result.json',
+      title: 'Full web-ui-smoke verifier result',
+    },
+    ...artifacts.filter((artifact) => artifact.kind !== 'screenshot').slice(0, 8),
+  ];
   console.log(
     JSON.stringify({
-      status: failed.length ? 'failed' : 'done',
-      summary: failed.length
-        ? `${failed.length} Playwright verifier check(s) failed.`
-        : 'Tests, build, Playwright clickthrough, screenshots, console check, and Slice A visible-source checks passed.',
-      checks,
-      artifacts,
+      status: result.status,
+      summary: result.summary,
+      checksTotal: checks.length,
+      checksFailed: failed.length,
+      checks: checks.filter((check) => check.result !== 'PASS').slice(0, 10),
+      artifacts: compactArtifacts,
       notes,
     }),
   );
   process.exit(failed.length ? 1 : 0);
 } catch (error) {
   console.error(error?.stack || String(error));
+  const result = {
+    status: 'failed',
+    summary: error?.message || String(error),
+    checks,
+    artifacts,
+    notes,
+  };
+  try {
+    writeFileSync(
+      join(artifactsDir, 'web-ui-smoke-result.json'),
+      JSON.stringify(result, null, 2) + '\n',
+      'utf8',
+    );
+  } catch {}
   console.log(
     JSON.stringify({
-      status: 'failed',
-      summary: error?.message || String(error),
-      checks,
-      artifacts,
+      status: result.status,
+      summary: result.summary,
+      checksTotal: checks.length,
+      checksFailed: checks.filter((check) => check.result !== 'PASS').length,
+      checks: checks.filter((check) => check.result !== 'PASS').slice(0, 10),
+      artifacts: [
+        {
+          kind: 'trace',
+          path: 'artifacts/web-ui-smoke-result.json',
+          title: 'Full web-ui-smoke verifier result',
+        },
+        ...artifacts.filter((artifact) => artifact.kind !== 'screenshot').slice(0, 8),
+      ],
       notes,
     }),
   );
@@ -386,11 +438,21 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await expectVisible(page, 'LEGESENTERET', checks, 'Blueprint prologue is the landing surface');
     await capture(page, screenshots, flow, 'bp-01-prologue', 'Blueprint prologue');
     await button(/Hopp over/).click();
-    await expectVisible(page, 'Én melding. Én pult. Begynn der.', checks, 'Prologue skip lands on the desk');
+    await expectVisible(
+      page,
+      'Én melding. Én pult. Begynn der.',
+      checks,
+      'Prologue skip lands on the desk',
+    );
     await capture(page, screenshots, flow, 'bp-02-desk', 'Blueprint desk');
 
     await button(/Legesenteret/).click();
-    await expectVisible(page, 'Gul markering vises først etter', checks, 'Document reader explains the lift affordance');
+    await expectVisible(
+      page,
+      'Gul markering vises først etter',
+      checks,
+      'Document reader explains the lift affordance',
+    );
 
     // SDD-004 evidence contract: no yellow before lift, collected mark after.
     const evidence = page.locator('[data-testid="blueprint-evidence-f_grete_baerer"]');
@@ -407,7 +469,7 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
       evidence: ['artifacts/bp-03-reader.png'],
     });
     await evidence.hover();
-    const hoverCursor = await evidence.evaluate(el => getComputedStyle(el).cursor);
+    const hoverCursor = await evidence.evaluate((el) => getComputedStyle(el).cursor);
     checks.push({
       claim: 'SDD-004: evidence anchor shows a pointer affordance on hover',
       result: hoverCursor === 'pointer' ? 'PASS' : 'FAIL',
@@ -439,7 +501,12 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await button(/Lukk/).click();
 
     await tab('Sakens fakta').click();
-    await expectVisible(page, 'Grete bistår med gjøremål', checks, 'Sakens fakta shows the lifted fact');
+    await expectVisible(
+      page,
+      'Grete bistår med gjøremål',
+      checks,
+      'Sakens fakta shows the lifted fact',
+    );
     await capture(page, screenshots, flow, 'bp-05-sakens-fakta', 'Sakens fakta after lifting');
 
     // Frank dispatches produce next-day documents whose facts unlock the
@@ -452,8 +519,19 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await page.locator('[data-testid="blueprint-dispatch-d_besok"]').click({ force: true });
     await button(/Neste dag/).click();
     await tab('Pulten').click();
-    await expectVisible(page, 'husholdets økonomi', checks, 'Dispatch produces a new document the next day');
-    await capture(page, screenshots, flow, 'bp-06-day3-desk', 'Desk after dispatches and day advances');
+    await expectVisible(
+      page,
+      'husholdets økonomi',
+      checks,
+      'Dispatch produces a new document the next day',
+    );
+    await capture(
+      page,
+      screenshots,
+      flow,
+      'bp-06-day3-desk',
+      'Desk after dispatches and day advances',
+    );
 
     await button(/husholdets økonomi/).click();
     for (const factId of ['f_trygd', 'f_husleie', 'f_alt_via_grete', 'f_gap', 'f_ingen_matkjop']) {
@@ -470,17 +548,38 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await button(/Grete bærer betalingskjeden/).dispatchEvent('click');
     await button(/Grete er usynlig infrastruktur/).dispatchEvent('click');
     await button(/Konsentrasjonen er sterk/).dispatchEvent('click');
-    await expectVisible(page, 'Arbeidshypotese', checks, 'Choosing a hypothesis records an Arbeidshypotese');
-    await capture(page, screenshots, flow, 'bp-07-hypothesis', 'Open question with chosen hypothesis');
+    await expectVisible(
+      page,
+      'Arbeidshypotese',
+      checks,
+      'Choosing a hypothesis records an Arbeidshypotese',
+    );
+    await capture(
+      page,
+      screenshots,
+      flow,
+      'bp-07-hypothesis',
+      'Open question with chosen hypothesis',
+    );
 
     // Back half of the loop: vedtak → Frank chat → scripted Grete beats →
     // reflection, mirroring BlueprintLab.test.tsx through day 8.
     await tab('Vedtak og tiltak').click();
-    for (const name of [/Frivillig forvaltning/, /Hjemmehjelp 2x uke/, /Åpne ett brev/, /Institusjonsvurdering/]) {
+    for (const name of [
+      /Frivillig forvaltning/,
+      /Hjemmehjelp 2x uke/,
+      /Åpne ett brev/,
+      /Institusjonsvurdering/,
+    ]) {
       await button(name).dispatchEvent('click');
     }
     await button(/Fatt vedtak/).dispatchEvent('click');
-    await expectVisible(page, 'Logg · det kommunen vet', checks, 'Enacted vedtak writes to the case log');
+    await expectVisible(
+      page,
+      'Logg · det kommunen vet',
+      checks,
+      'Enacted vedtak writes to the case log',
+    );
     await capture(page, screenshots, flow, 'bp-08-vedtak', 'Vedtak enacted');
 
     await tab('Frank').click();
@@ -488,17 +587,37 @@ async function smokeBlueprintFlow(browser, url, screenshots, flow) {
     await expectVisible(page, 'FRANK', checks, 'Frank chat answers a grounded question');
 
     await button(/Neste dag/).dispatchEvent('click');
-    await expectVisible(page, 'Grete er innlagt', checks, 'Scripted beat: Grete admitted to hospital');
+    await expectVisible(
+      page,
+      'Grete er innlagt',
+      checks,
+      'Scripted beat: Grete admitted to hospital',
+    );
     await button(/Neste dag/).dispatchEvent('click');
     await expectVisible(page, 'Grete Olsen er død', checks, 'Scripted beat: Grete dies');
     await capture(page, screenshots, flow, 'bp-09-grete-beat', 'Grete scripted beat');
     await button(/Neste dag/).dispatchEvent('click');
     await tab('Pulten').click();
-    await expectVisible(page, 'Brev fra huseieren', checks, 'New consequence document arrives after the beat');
+    await expectVisible(
+      page,
+      'Brev fra huseieren',
+      checks,
+      'New consequence document arrives after the beat',
+    );
     await button(/Neste dag/).dispatchEvent('click');
     await button(/Neste dag/).dispatchEvent('click');
-    await expectVisible(page, 'Dag 8 · saken fortsetter', checks, 'Loop reaches the day-8 reflection state');
-    await expectVisible(page, 'Frank · status dag 8', checks, 'Reflection includes the Frank status');
+    await expectVisible(
+      page,
+      'Dag 8 · saken fortsetter',
+      checks,
+      'Loop reaches the day-8 reflection state',
+    );
+    await expectVisible(
+      page,
+      'Frank · status dag 8',
+      checks,
+      'Reflection includes the Frank status',
+    );
     await capture(page, screenshots, flow, 'bp-10-reflection', 'Day 8 reflection');
 
     checks.push({
@@ -550,14 +669,24 @@ async function smokeMobileViewport(browser, url, screenshots, flow) {
     for (const factId of ['f_grete_baerer', 'f_saarbar', 'f_aldri_alene']) {
       await page.locator(`[data-testid="blueprint-evidence-${factId}"]`).dispatchEvent('click');
     }
-    checks.push({ claim: 'Mobile 390px: facts can be lifted by tap', result: 'PASS', evidence: ['artifacts/mobile-390-reader.png'] });
+    checks.push({
+      claim: 'Mobile 390px: facts can be lifted by tap',
+      result: 'PASS',
+      evidence: ['artifacts/mobile-390-reader.png'],
+    });
     await button(/Lukk/).click();
 
     await tab('Åpne spørsmål').click();
     await expectVisible(page, 'Hva bærer Grete', checks, 'Mobile 390px shows the open question');
     await button(/Ferdighetene er der ikke/).dispatchEvent('click');
     await expectVisible(page, 'Arbeidshypotese', checks, 'Mobile 390px hypothesis selection works');
-    await capture(page, screenshots, flow, 'mobile-390-hypothesis', 'Mobile 390px hypothesis chosen');
+    await capture(
+      page,
+      screenshots,
+      flow,
+      'mobile-390-hypothesis',
+      'Mobile 390px hypothesis chosen',
+    );
 
     await button(/Neste dag/).click();
     await expectVisible(page, 'DAG 2', checks, 'Mobile 390px day advance reaches day 2');

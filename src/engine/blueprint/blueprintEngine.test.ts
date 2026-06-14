@@ -170,6 +170,14 @@ describe('Blueprint v1 caseworker loop', () => {
       't_brev',
       't_institusjon',
     ]);
+    expect(store.progress.documents.doc_vedtak_1).toBeDefined();
+    const vedtak = store.documentById('doc_vedtak_1');
+    const vedtakText = vedtak.blocks
+      .map((block) => block.runs.map((run) => run.text).join(' '))
+      .join(' ');
+    expect(vedtak.title).toContain('Vedtak 1');
+    expect(vedtakText).toContain('Arbeidshypotese lagt til grunn');
+    expect(vedtakText).toContain('Frivillig forvaltning');
     expect(store.activeSurface).toBe('leiligheten');
 
     while (store.progress.phase !== 'ended') {
@@ -179,5 +187,19 @@ describe('Blueprint v1 caseworker loop', () => {
     expect(store.progress.documents.doc_status).toBeDefined();
     expect(store.progress.endText?.closing).toBeTruthy();
     expect(store.reflectionVisible).toBe(true);
+  });
+
+  it('logs the empty-fridge beat when food boxes run out', () => {
+    const store = new BlueprintStore();
+    store.startCase();
+    store.progress.day = 5;
+    store.progress.greteStage = 5;
+    store.progress.sim.foodBoxes = 1;
+
+    store.advanceDay();
+
+    expect(store.progress.sim.log.some((entry) => entry.text.includes('Kjøleskapet: lyset'))).toBe(
+      true,
+    );
   });
 });

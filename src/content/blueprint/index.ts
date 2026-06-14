@@ -1021,8 +1021,10 @@ export const blueprintChat: BlueprintChatPrompt[] = [
 
 export const blueprintFlavor = [
   '21:10 — teleskopet ved vinduet. 40 min. Himmelen var overskyet.',
+  '10:48 — naboen i vinduet. Gardinet beveget seg først i tredje etasje, så hos ham.',
   'Kryssordet fra lørdagsavisen. Tre ord fylt inn, alle riktige.',
   'Boken om Maud-ekspedisjonen. Margnotater, små bokstaver.',
+  'NRK Kveldsnytt sto på uten lyd. Teksten ble lest helt til værkartet.',
   'Utklippsboken: nytt utklipp limt inn under «1994». Limstift, linjal, årstall i hjørnet.',
   'Han brettet pleddet på Gretes stol. La det tilbake nøyaktig slik det lå.',
 ];
