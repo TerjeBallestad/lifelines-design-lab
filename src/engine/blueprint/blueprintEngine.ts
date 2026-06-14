@@ -13,6 +13,7 @@ import type {
   BlueprintChatId,
   BlueprintDispatchId,
   BlueprintDispatchOutcome,
+  BlueprintDocumentBlock,
   BlueprintDocumentId,
   BlueprintEndText,
   BlueprintFactId,
@@ -22,6 +23,7 @@ import type {
   BlueprintProgress,
   BlueprintQuestionId,
   BlueprintTiltakId,
+  BlueprintVedtakRecord,
 } from '../../domain/blueprint';
 
 export function createBlueprintProgress(): BlueprintProgress {
@@ -471,6 +473,71 @@ export function statusDocumentBlocks(endText?: BlueprintEndText): string[] {
   return [endText.para1, endText.para2, endText.closing];
 }
 
+export function vedtakDocumentBlocks(
+  record: Pick<BlueprintVedtakRecord, 'tiltakIds' | 'hypothesisIds' | 'stampText'>,
+): BlueprintDocumentBlock[] {
+  const blocks: BlueprintDocumentBlock[] = [
+    {
+      id: 'vedtak-ingress',
+      runs: [
+        {
+          text: 'Vedtaket er journalført på saken. Dette er ikke en effekt i leiligheten; det er kommunens spor etter hva som ble valgt og hvilket grunnlag valget hvilte på.',
+        },
+      ],
+    },
+    {
+      id: 'vedtak-tiltak-heading',
+      runs: [{ text: 'Tiltak iverksatt i dette vedtaket:' }],
+    },
+  ];
+
+  for (const tiltakId of record.tiltakIds) {
+    const tiltak = blueprintTiltak[tiltakId];
+    if (!tiltak) continue;
+    blocks.push({
+      id: `vedtak-tiltak-${tiltakId}`,
+      runs: [
+        {
+          text: `IVERKSATT: ${tiltak.title}. ${tiltak.description} Kostnad: ${tiltak.cost || 0} mynt.`,
+        },
+      ],
+    });
+  }
+
+  blocks.push({
+    id: 'vedtak-hypothesis-heading',
+    runs: [{ text: 'Arbeidshypoteser lagt til grunn for tiltakspakken:' }],
+  });
+
+  if (!record.hypothesisIds.length) {
+    blocks.push({
+      id: 'vedtak-hypothesis-none',
+      runs: [
+        {
+          text: 'Arbeidshypotese lagt til grunn: Ingen valgt arbeidshypotese var registrert da vedtaket ble fattet.',
+        },
+      ],
+    });
+  }
+
+  for (const hypothesisId of record.hypothesisIds) {
+    const hypothesis = Object.values(blueprintQuestions)
+      .flatMap((question) => question.hypotheses)
+      .find((item) => item.id === hypothesisId);
+    if (!hypothesis) continue;
+    blocks.push({
+      id: `vedtak-hypothesis-${hypothesisId}`,
+      runs: [{ text: `Arbeidshypotese lagt til grunn: ${hypothesis.label}. ${hypothesis.note}` }],
+    });
+  }
+
+  blocks.push({
+    id: 'vedtak-stamp',
+    runs: [{ text: record.stampText }],
+  });
+  return blocks;
+}
+
 function updateBostotteClock(progress: BlueprintProgress, outcome: BlueprintDispatchOutcome): void {
   const clock = progress.clocks.ck_bostotte;
   if (!progress.enactedTiltakIds.includes('t_bostotte') || clock.done || clock.failed) return;
@@ -599,7 +666,9 @@ function simTick(progress: BlueprintProgress): void {
     if (sim.foodBoxes === 1) {
       log('Én boks igjen i kjøleskapet. Merket «søndag», i Gretes håndskrift.');
     } else if (sim.foodBoxes <= 0) {
-      log('Kjøleskapet: lyset, en halv pakke smør, to glass sennep og knekkebrød stående.');
+      log(
+        'Kjøleskapet: lyset, en halv pakke smør, ingenting annet. Han spiste knekkebrød stående.',
+      );
     }
   }
 

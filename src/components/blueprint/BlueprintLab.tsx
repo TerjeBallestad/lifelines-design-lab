@@ -402,7 +402,7 @@ const FactsBoard = observer(function FactsBoard({ store }: { store: BlueprintSto
 
 const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: BlueprintStore }) {
   const boardRef = useRef<HTMLElement | null>(null);
-  const [lines, setLines] = useState<Array<{ key: string; d: string }>>([]);
+  const [lines, setLines] = useState<Array<{ key: string; factId: string; d: string }>>([]);
   const visibleSignature = store.visibleQuestions
     .map(
       ({ id }) =>
@@ -428,7 +428,7 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
         byFact.set(factId, nodes);
       });
 
-      const nextLines: Array<{ key: string; d: string }> = [];
+      const nextLines: Array<{ key: string; factId: string; d: string }> = [];
       for (const [factId, nodes] of byFact) {
         if (nodes.length < 2) continue;
         const centers = nodes.map((node) => {
@@ -444,6 +444,7 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
           const mid = Math.max(24, Math.abs(b.y - a.y) / 2);
           nextLines.push({
             key: `${factId}-${index}`,
+            factId,
             d: `M ${a.x} ${a.y} C ${a.x} ${a.y + mid}, ${b.x} ${b.y - mid}, ${b.x} ${b.y}`,
           });
         }
@@ -473,9 +474,14 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
   return (
     <section ref={boardRef} className="blueprint-question-board relative">
       <FrameTitle title="Åpne spørsmål" meta="Arbeidshypoteser er foreløpige · ikke fasit" />
-      <svg className="blueprint-question-lines" aria-hidden>
+      <svg className="blueprint-question-lines" aria-hidden data-testid="blueprint-question-lines">
         {lines.map((line) => (
-          <path key={line.key} d={line.d} />
+          <path
+            key={line.key}
+            d={line.d}
+            data-line-connector-fact={line.factId}
+            data-testid={`blueprint-question-connector-${line.factId}`}
+          />
         ))}
       </svg>
       <div className="relative z-[1] grid gap-5">

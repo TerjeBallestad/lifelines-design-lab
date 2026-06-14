@@ -8,7 +8,9 @@ import {
   questionStateLabel,
   receiveBlueprintDocument,
   runBlueprintDispatch,
+  statusDocumentBlocks,
   tiltakAvailability,
+  vedtakDocumentBlocks,
 } from './blueprintEngine';
 
 describe('Blueprint v1 caseworker loop', () => {
@@ -184,6 +186,8 @@ describe('Blueprint v1 caseworker loop', () => {
       .map((block) => block.runs.map((run) => run.text).join(' '))
       .join(' ');
     expect(vedtak.title).toBe('Vedtak 1 · tiltakspakke');
+    expect(vedtakText).toContain('Tiltak iverksatt i dette vedtaket');
+    expect(vedtakText).toContain('Arbeidshypoteser lagt til grunn for tiltakspakken');
     expect(vedtakText).toContain('Arbeidshypotese lagt til grunn');
     expect(vedtakText).toContain('Frivillig forvaltning');
     expect(vedtakText).toContain('IVERKSATT');
@@ -198,6 +202,22 @@ describe('Blueprint v1 caseworker loop', () => {
     expect(store.reflectionVisible).toBe(true);
   });
 
+  it('renders Vedtak paper sections from the engine and keeps the status document fallback', () => {
+    const blocks = vedtakDocumentBlocks({
+      tiltakIds: ['t_forvaltning'],
+      hypothesisIds: ['h_ok_grete'],
+      stampText: 'IVERKSATT',
+    });
+    const text = blocks.map((block) => block.runs.map((run) => run.text).join(' ')).join(' ');
+
+    expect(text).toContain('Tiltak iverksatt i dette vedtaket');
+    expect(text).toContain('Frivillig forvaltning av faste betalinger');
+    expect(text).toContain('Arbeidshypoteser lagt til grunn for tiltakspakken');
+    expect(text).toContain('Arbeidshypotese lagt til grunn: Grete bærer betalingskjeden.');
+    expect(text).toContain('IVERKSATT');
+    expect(statusDocumentBlocks()).toEqual(['Statusrapporten er ikke skrevet ennå.']);
+  });
+
   it('logs the empty-fridge beat when food boxes run out', () => {
     const store = new BlueprintStore();
     store.startCase();
@@ -207,8 +227,10 @@ describe('Blueprint v1 caseworker loop', () => {
 
     store.advanceDay();
 
-    expect(store.progress.sim.log.some((entry) => entry.text.includes('Kjøleskapet: lyset'))).toBe(
-      true,
+    expect(store.progress.sim.log).toContainEqual(
+      expect.objectContaining({
+        text: 'Kjøleskapet: lyset, en halv pakke smør, ingenting annet. Han spiste knekkebrød stående.',
+      }),
     );
   });
 });

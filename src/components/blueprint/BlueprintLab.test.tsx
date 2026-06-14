@@ -164,10 +164,53 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(evidence?.className).not.toContain('nudged');
 
     act(() => {
-      vi.advanceTimersByTime(10_000);
+      vi.advanceTimersByTime(9_999);
+    });
+
+    expect(evidence?.className).not.toContain('nudged');
+
+    act(() => {
+      vi.advanceTimersByTime(1);
     });
 
     expect(evidence?.className).toContain('nudged');
+  });
+
+  it('does not add the delayed pencil nudge to already lifted evidence hotspots', () => {
+    vi.useFakeTimers();
+    startAtDesk();
+    openDocument('Legesenteret');
+    clickEvidence('f_grete_baerer');
+
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+
+    const evidence = document.querySelector<HTMLButtonElement>(
+      '[data-testid="blueprint-evidence-f_grete_baerer"]',
+    );
+    expect(evidence?.className).toContain('collected');
+    expect(evidence?.className).not.toContain('nudged');
+  });
+
+  it('exposes connector-line DOM evidence for facts shared across question cards', () => {
+    startAtDesk();
+    openDocument('Legesenteret');
+    clickEvidence('f_grete_baerer');
+    closeDocument();
+    clickTab('Åpne spørsmål');
+
+    const sharedFactChips = document.querySelectorAll('[data-line-fact="f_grete_baerer"]');
+    expect(sharedFactChips).toHaveLength(2);
+
+    const lineLayer = document.querySelector('[data-testid="blueprint-question-lines"]');
+    expect(lineLayer?.getAttribute('aria-hidden')).toBe('true');
+
+    const connectors = document.querySelectorAll('[data-line-connector-fact="f_grete_baerer"]');
+    expect(connectors).toHaveLength(1);
+    expect(connectors[0]?.tagName.toLowerCase()).toBe('path');
+    expect(connectors[0]?.closest('button')).toBeNull();
+    expect(connectors[0]?.getAttribute('d')).toMatch(/^M /);
   });
 
   it('plays the React caseworker loop from prologue through reflection', () => {
@@ -196,6 +239,12 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(document.body.textContent).toContain('Åpne ett brev sammen med Frank');
     expect(document.body.textContent).toContain('Institusjonsvurdering / omsorgsbolig');
     expect(document.body.textContent).toContain('Arbeidshypotese lagt til grunn');
+    expect(document.body.textContent).toContain('IVERKSATT');
+    closeDocument();
+    openDocument('Vedtak 1 · tiltakspakke', false);
+    expect(document.body.textContent).toContain(
+      'Arbeidshypoteser lagt til grunn for tiltakspakken',
+    );
     expect(document.body.textContent).toContain('IVERKSATT');
     closeDocument();
 

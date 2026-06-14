@@ -13,7 +13,6 @@ import type {
   BlueprintChatPrompt,
   BlueprintDispatch,
   BlueprintDocument,
-  BlueprintDocumentBlock,
   BlueprintDocumentId,
   BlueprintDomain,
   BlueprintFact,
@@ -44,6 +43,7 @@ import {
   statusDocumentBlocks,
   tiltakAvailability,
   toggleBlueprintDraft,
+  vedtakDocumentBlocks,
 } from '../engine/blueprint/blueprintEngine';
 
 export interface BlueprintNotice {
@@ -264,11 +264,7 @@ export class BlueprintStore {
           register: 'vedtak',
           peek: record.peek,
           meta: record.meta,
-          blocks: this.vedtakDocumentBlocks(
-            record.tiltakIds,
-            record.hypothesisIds,
-            record.stampText,
-          ),
+          blocks: vedtakDocumentBlocks(record),
         };
       }
     }
@@ -287,53 +283,6 @@ export class BlueprintStore {
       };
     }
     return blueprintDocuments[documentId];
-  }
-
-  private vedtakDocumentBlocks(
-    tiltakIds: BlueprintTiltakId[],
-    hypothesisIds: BlueprintHypothesisId[],
-    stampText: string,
-  ): BlueprintDocumentBlock[] {
-    const blocks: BlueprintDocumentBlock[] = [
-      {
-        id: 'vedtak-ingress',
-        runs: [
-          {
-            text: 'Vedtaket er journalført på saken. Dette er ikke en effekt i leiligheten; det er kommunens spor etter hva som ble valgt og hvilket grunnlag valget hvilte på.',
-          },
-        ],
-      },
-    ];
-
-    for (const tiltakId of tiltakIds) {
-      const tiltak = blueprintTiltak[tiltakId];
-      if (!tiltak) continue;
-      blocks.push({
-        id: `vedtak-tiltak-${tiltakId}`,
-        runs: [
-          {
-            text: `IVERKSATT: ${tiltak.title}. ${tiltak.description} Kostnad: ${tiltak.cost || 0} mynt.`,
-          },
-        ],
-      });
-    }
-
-    for (const hypothesisId of hypothesisIds) {
-      const hypothesis = Object.values(blueprintQuestions)
-        .flatMap((question) => question.hypotheses)
-        .find((item) => item.id === hypothesisId);
-      if (!hypothesis) continue;
-      blocks.push({
-        id: `vedtak-hypothesis-${hypothesisId}`,
-        runs: [{ text: `Arbeidshypotese lagt til grunn: ${hypothesis.label}. ${hypothesis.note}` }],
-      });
-    }
-
-    blocks.push({
-      id: 'vedtak-stamp',
-      runs: [{ text: stampText }],
-    });
-    return blocks;
   }
 
   factsForQuestion(questionId: BlueprintQuestionId): BlueprintFact[] {

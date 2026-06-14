@@ -72,9 +72,19 @@ assert.match(
   'live evaluator prompt must avoid halting on contract polish that can be verified after implementation',
 );
 assert.match(
+  roleCodex,
+  /low-severity cosmetic polish mandatory/,
+  'live role prompt must keep batchable polish from blocking deliver-mode runs',
+);
+assert.match(
   plannerPacket,
   /Treat project verifiers as part of the slice contract/,
   'planner packet must surface stale-verifier risk during contract formation',
+);
+assert.match(
+  plannerPacket,
+  /Mark such sprints `optional: true`/,
+  'planner packet must mark batchable cosmetic polish optional in deliver mode',
 );
 
 console.log('harness SDD workflow contract checks passed');
