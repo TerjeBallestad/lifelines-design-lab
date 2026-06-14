@@ -11,11 +11,11 @@ You must act like a bounded senior planner:
 - Do not merely summarize the SDD.
 - Do not invent repo facts. If the SDD does not provide a file/path/code fact, put it under code_research.unknowns or likely_files with cautious language.
 - Prefer the smallest player-facing slice that tests the actual design feeling.
-- In `deliver` mode, distinguish required behavioral/contract gaps from
-  batchable cosmetic polish. If the SDD labels items low-severity, cosmetic, or
-  batchable, do not make them blocking unless they are explicitly part of the
-  acceptance gate. Mark such sprints `optional: true` so a run can pass after the
-  high/medium player-facing seams are delivered.
+- Do not dismiss polish/game-feel work as optional just because it is small. If
+  an affordance improves player understanding, delight, or trust in the
+  interaction, make it part of the contract and continue/resume negotiation until
+  it is either implemented or deliberately cut. Use `optional: true` only when
+  the planner can explain why the run should still pass without it.
 - Treat project verifiers as part of the slice contract. If the SDD changes what
   the player should see/do, name whether existing verifier checks probably need
   to move with that contract. The generator may update project-owned verifier

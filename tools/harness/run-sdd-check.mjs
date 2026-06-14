@@ -73,8 +73,8 @@ assert.match(
 );
 assert.match(
   roleCodex,
-  /low-severity cosmetic polish mandatory/,
-  'live role prompt must keep batchable polish from blocking deliver-mode runs',
+  /Do not dismiss polish\/game-feel work as optional/,
+  'live role prompt must protect polish/game-feel work from being dismissed as automatically optional',
 );
 assert.match(
   plannerPacket,
@@ -83,8 +83,8 @@ assert.match(
 );
 assert.match(
   plannerPacket,
-  /Mark such sprints `optional: true`/,
-  'planner packet must mark batchable cosmetic polish optional in deliver mode',
+  /Use `optional: true` only when/,
+  'planner packet must require an explicit reason before making polish optional',
 );
 
 console.log('harness SDD workflow contract checks passed');
