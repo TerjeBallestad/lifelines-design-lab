@@ -2,7 +2,7 @@
   "name": "Lifelines Design Lab Harness",
   "contractNegotiation": {
     "enabled": true,
-    "maxRounds": 2
+    "maxRounds": 3
   },
   "maxAttempts": 2,
   "worktree": {

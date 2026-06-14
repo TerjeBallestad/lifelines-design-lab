@@ -9,7 +9,7 @@ assert.equal(
   true,
   'contract negotiation must be enabled for SDD runs',
 );
-assert.equal(config.contractNegotiation?.maxRounds, 2, 'contract negotiation should stay bounded');
+assert.equal(config.contractNegotiation?.maxRounds, 3, 'contract negotiation should stay bounded');
 
 const wrapper = readFileSync('tools/harness/run-sdd.sh', 'utf8');
 assert.match(
@@ -60,6 +60,16 @@ assert.match(
   roleCodex,
   /do not weaken unrelated checks/,
   'live generator prompt must guard against weakening verifier evidence',
+);
+assert.match(
+  roleCodex,
+  /directly answer every previous evaluator issue/,
+  'live generator prompt must force contract revisions to answer evaluator feedback',
+);
+assert.match(
+  roleCodex,
+  /likely to waste an implementation attempt/,
+  'live evaluator prompt must avoid halting on contract polish that can be verified after implementation',
 );
 assert.match(
   plannerPacket,
