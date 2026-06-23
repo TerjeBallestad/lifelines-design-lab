@@ -22,10 +22,16 @@ export function defaultPaths(cwd = process.cwd()) {
 export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
   const caseText = await readFile(paths.casePath, 'utf8');
   const source = parseCaseMarkdown(caseText);
-  const documentMeta = only(source.documents, 'documents');
-  const runs = parseDocumentRuns(documentMeta.body);
   const factIds = new Set(source.facts.map((fact) => fact.id));
-  for (const run of runs) {
+  const documentsWithRuns = source.documents.map((document) => ({
+    ...document,
+    runs: parseDocumentRuns(document.body),
+  }));
+  const allRuns = documentsWithRuns.flatMap((document) => document.runs);
+  if (!allRuns.some((run) => run.fact_id)) {
+    throw new Error('No evidence links found across any document body');
+  }
+  for (const run of allRuns) {
     if (run.fact_id && !factIds.has(run.fact_id)) {
       throw new Error(`Document evidence link references unknown fact id: ${run.fact_id}`);
     }
@@ -35,20 +41,25 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
     id: source.case.id,
     title: source.case.title,
     scenario_stage: source.case.scenario_stage,
-    documents: [
-      {
-        id: documentMeta.id,
-        kind: documentMeta.kind,
-        title: documentMeta.title,
-        body_bbcode: documentMeta.body_bbcode,
-        runs,
-      },
-    ],
+    documents: documentsWithRuns.map((document) => ({
+      id: document.id,
+      kind: document.kind,
+      title: document.title,
+      register: document.register,
+      peek: document.peek,
+      meta: document.meta,
+      body_bbcode: document.body_bbcode,
+      runs: document.runs,
+    })),
     facts: source.facts.map((fact) => ({
       id: fact.id,
       label: fact.label,
       summary: fact.summary,
       source_document_id: fact.source_document_id,
+      domain: fact.domain,
+      category: fact.category,
+      quote: quoteForFact(allRuns, fact.id),
+      discuss: fact.discuss,
       supports_questions: fact.supports,
       lift_effects: fact.reveals_questions.length
         ? [
@@ -76,11 +87,15 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
       id: tiltak.id,
       title: tiltak.title,
       sim_hook_id: tiltak.sim_hook_id,
+      slot: tiltak.slot,
+      cost: tiltak.cost,
+      description: tiltak.description,
     })),
     dispatches: source.dispatches.map((dispatch) => ({
       id: dispatch.id,
       title: dispatch.title,
       sim_hook_id: dispatch.sim_hook_id,
+      description: dispatch.description,
       gate: predicateFromGate(dispatch.gate),
       effects: effectsFromLine(dispatch.effects),
     })),
@@ -88,25 +103,45 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
       id: clock.id,
       label: clock.label,
       sim_hook_id: clock.sim_hook_id,
+      question: clock.question,
+      good_segment_label: clock.good_segment_label,
+      good_segment_size: clock.good_segment_size,
+      bad_segment_label: clock.bad_segment_label,
+      bad_segment_size: clock.bad_segment_size,
+      ...(clock.visible_when ? { visibility: predicateFromVisibility(clock.visible_when) } : {}),
+    })),
+    event_delta_specs: source.event_delta_specs.map((spec) => ({
+      event_type: spec.event_type,
+      log_text: spec.log_text,
+      clock_id: spec.clock_id,
+      clock_direction: spec.clock_direction,
+      reveal_fact_id: spec.reveal_fact_id,
     })),
     day_script_beats: [],
   };
 
-  const labRuns = runs.map((run) =>
-    run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
-  );
   const labContent = {
-    documents: {
-      [documentMeta.id]: {
-        id: documentMeta.id,
-        kind: documentMeta.kind,
-        title: documentMeta.title,
-        register: documentMeta.register,
-        peek: documentMeta.peek,
-        meta: documentMeta.meta,
-        blocks: [{ id: `${documentMeta.id}_body`, runs: labRuns }],
-      },
-    },
+    documents: Object.fromEntries(
+      documentsWithRuns.map((document) => [
+        document.id,
+        {
+          id: document.id,
+          kind: document.kind,
+          title: document.title,
+          register: document.register,
+          peek: document.peek,
+          meta: document.meta,
+          blocks: [
+            {
+              id: `${document.id}_body`,
+              runs: document.runs.map((run) =>
+                run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
+              ),
+            },
+          ],
+        },
+      ]),
+    ),
     facts: Object.fromEntries(
       source.facts.map((fact) => [
         fact.id,
@@ -115,7 +150,7 @@ export async function buildTinyOlsenArtifacts(paths = defaultPaths()) {
           domain: fact.domain,
           category: fact.category,
           text: fact.summary,
-          quote: quoteForFact(runs, fact.id),
+          quote: quoteForFact(allRuns, fact.id),
           supports: fact.supports,
           discuss: fact.discuss,
         },
@@ -177,23 +212,7 @@ export function parseCaseMarkdown(text) {
   if (!caseMatch) throw new Error('Expected top-level "# Case: <id>" section before document');
   const caseFields = parseFields(caseMatch[2]);
 
-  const documentSection = sectionBetween(normalized, /^# Document:\s*(\S+)\s*$/m, /^# Facts\s*$/m);
-  const documentFieldsAndBody = splitFieldsAndBody(documentSection.body);
-  const documentFields = parseFields(documentFieldsAndBody.fieldsText);
-  const documentBody = documentFieldsAndBody.bodyText.trim();
-
-  const documents = [
-    {
-      id: documentSection.id,
-      kind: required(documentFields, 'Kind', documentSection.id),
-      title: required(documentFields, 'Title', documentSection.id),
-      register: required(documentFields, 'Register', documentSection.id),
-      peek: required(documentFields, 'Peek', documentSection.id),
-      meta: required(documentFields, 'Meta', documentSection.id),
-      body: documentBody,
-      body_bbcode: evidenceMarkdownToBbcode(documentBody),
-    },
-  ];
+  const documents = parseDocuments(normalized);
 
   return {
     case: {
@@ -247,23 +266,78 @@ export function parseCaseMarkdown(text) {
       gate: required(item.fields, 'Gate', item.id),
       effects: required(item.fields, 'Effects', item.id),
     })),
-    clocks: parseItems(sectionBody(normalized, 'Clocks', 'Day script beats')).map((item) => ({
+    clocks: parseItems(sectionBody(normalized, 'Clocks', 'Event deltas')).map((item) => ({
       id: item.id,
       label: required(item.fields, 'Label', item.id),
       sim_hook_id: required(item.fields, 'Sim hook', item.id),
+      question: item.fields.get('Question') ?? '',
+      good_segment_label: item.fields.get('Good segment') ?? '',
+      good_segment_size: item.fields.has('Good size')
+        ? parseIntegerField(item.fields.get('Good size'), `${item.id}.Good size`)
+        : 4,
+      bad_segment_label: item.fields.get('Bad segment') ?? '',
+      bad_segment_size: item.fields.has('Bad size')
+        ? parseIntegerField(item.fields.get('Bad size'), `${item.id}.Bad size`)
+        : 4,
+      visible_when: item.fields.get('Visible when') ?? '',
     })),
+    event_delta_specs: parseItems(sectionBody(normalized, 'Event deltas', 'Day script beats')).map(
+      (item) => {
+        const clock = parseClockDelta(item.fields.get('Clock'), item.id);
+        return {
+          event_type: item.id,
+          log_text: required(item.fields, 'Log', item.id),
+          clock_id: clock.clock_id,
+          clock_direction: clock.clock_direction,
+          reveal_fact_id: item.fields.get('Reveal fact') ?? '',
+        };
+      },
+    ),
   };
 }
 
-function sectionBetween(text, startRe, endRe) {
-  const start = startRe.exec(text);
-  if (!start) throw new Error(`Missing section matching ${startRe}`);
-  const afterStart = start.index + start[0].length;
-  endRe.lastIndex = afterStart;
-  const rest = text.slice(afterStart);
-  const end = endRe.exec(rest);
-  if (!end) throw new Error(`Missing section end matching ${endRe}`);
-  return { id: start[1], body: rest.slice(0, end.index) };
+
+function parseClockDelta(value, context) {
+  if (!value || value === 'None') return { clock_id: '', clock_direction: 0 };
+  const match = value.trim().match(/^(\S+)\s+([+-]?\d+)$/);
+  if (!match) {
+    throw new Error(`${context}.Clock must be "<clock_id> <±N>", got: ${value}`);
+  }
+  return { clock_id: match[1], clock_direction: Number(match[2]) };
+}
+
+
+function parseDocuments(normalized) {
+  const startIndex = normalized.search(/^# Document:/m);
+  if (startIndex === -1) throw new Error('Expected at least one "# Document: <id>" section');
+  const factsMatch = /^# Facts\s*$/m.exec(normalized);
+  if (!factsMatch) throw new Error('Missing # Facts section after documents');
+  const block = normalized.slice(startIndex, factsMatch.index);
+
+  const headerRe = /^# Document:\s*(\S+)\s*$/gm;
+  const headers = [];
+  let match;
+  while ((match = headerRe.exec(block)) !== null) {
+    headers.push({ id: match[1], headerEnd: match.index + match[0].length, headerStart: match.index });
+  }
+
+  return headers.map((header, index) => {
+    const bodyStart = header.headerEnd;
+    const bodyEnd = index + 1 < headers.length ? headers[index + 1].headerStart : block.length;
+    const { fieldsText, bodyText } = splitFieldsAndBody(block.slice(bodyStart, bodyEnd));
+    const fields = parseFields(fieldsText);
+    const body = bodyText.trim();
+    return {
+      id: header.id,
+      kind: required(fields, 'Kind', header.id),
+      title: required(fields, 'Title', header.id),
+      register: required(fields, 'Register', header.id),
+      peek: required(fields, 'Peek', header.id),
+      meta: required(fields, 'Meta', header.id),
+      body,
+      body_bbcode: evidenceMarkdownToBbcode(body),
+    };
+  });
 }
 
 function sectionBody(text, title, nextTitle) {
@@ -355,7 +429,6 @@ function parseDocumentRuns(markdown) {
   }
   const after = normalizeRunText(markdown.slice(cursor));
   if (after) runs.push({ id: `run_text_${textRunIndex++}`, text: after, fact_id: '' });
-  if (!runs.some((run) => run.fact_id)) throw new Error('No evidence links found in document body');
   return runs;
 }
 
@@ -378,13 +451,6 @@ function normalizeRunText(value) {
   return `${leading}${core}${trailing}`;
 }
 
-function only(items, label) {
-  if (!Array.isArray(items) || items.length !== 1) {
-    throw new Error(`${label} must contain exactly one item for the tiny Olsen slice`);
-  }
-  return items[0];
-}
-
 function quoteForFact(runs, factId) {
   return runs.find((run) => run.fact_id === factId)?.text ?? '';
 }
@@ -404,6 +470,12 @@ function predicateFromGate(line) {
     throw new Error(`Unsupported Gate token: ${token}`);
   });
   return combineAll(predicates);
+}
+
+function predicateFromVisibility(line) {
+  // Clock visibility reuses the Gate token grammar (fact / hypothesis, '+' = all).
+  if (!line || line === 'always') return undefined;
+  return predicateFromGate(line);
 }
 
 function combineAll(predicates) {
@@ -505,6 +577,19 @@ function validateArtifacts({ source, godotSource, labContent }) {
   for (const dispatch of source.dispatches) {
     validatePredicateRefs(predicateFromGate(dispatch.gate), { factIds, hypothesisIds }, `dispatch ${dispatch.id}.Gate`);
     validateEffectRefs(effectsFromLine(dispatch.effects), { dispatchIds, tiltakIds, clockIds }, `dispatch ${dispatch.id}.Effects`);
+  }
+  for (const clock of source.clocks) {
+    if (clock.visible_when) {
+      validatePredicateRefs(
+        predicateFromVisibility(clock.visible_when),
+        { factIds, hypothesisIds },
+        `clock ${clock.id}.Visible when`,
+      );
+    }
+  }
+  for (const spec of source.event_delta_specs) {
+    if (spec.clock_id) requireKnown(clockIds, spec.clock_id, `event delta ${spec.event_type}.Clock`);
+    if (spec.reveal_fact_id) requireKnown(factIds, spec.reveal_fact_id, `event delta ${spec.event_type}.Reveal fact`);
   }
 
   for (const doc of godotSource.documents) {

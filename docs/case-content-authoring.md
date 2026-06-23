@@ -61,7 +61,7 @@ Discuss: Frank, Grete
 Reveals questions: q_hverdag, q_okonomi
 ```
 
-Then similar sections for:
+Then similar sections, **in this order**:
 
 ```text
 # Questions
@@ -69,8 +69,51 @@ Then similar sections for:
 # Tiltak
 # Dispatches
 # Clocks
+# Event deltas
 # Day script beats
 ```
+
+Multiple `# Document:` sections are supported — author one block per document
+(metadata lines, a blank line, then prose). Every `[text](fact:id)` link must
+resolve to a fact in `# Facts`.
+
+## Clocks
+
+Beyond `Label` + `Sim hook`, clocks accept optional display fields:
+
+```md
+## ck_bostotte
+Label: Bostøtte sak
+Sim hook: case.olsen.clock.bostotte
+Question: Kan kommunen skape et lovlig grunnlag for at husleien kan betales?
+Good segment: Søknad komplett
+Good size: 4
+Bad segment: Frist glipper
+Bad size: 4
+Visible when: hypothesis h_b_sikres
+```
+
+`Visible when:` reuses the Gate grammar (`fact X` / `hypothesis Y`, `+` = all);
+omit it for an always-visible clock.
+
+## Event deltas
+
+Map a simulation event type to a case-file delta (log line, clock move, fact
+reveal). The `##` id is the event_type the sim emits:
+
+```md
+# Event deltas
+
+## delivery_taken_in
+Log: Elling åpnet selv og tok leveringen inn.
+Clock: ck_selvstendighet +1
+
+## grete_received
+Log: Grete tok imot leveringen ved døren.
+```
+
+`Clock:` is `<clock_id> <±N>` (optional); `Reveal fact: <fact_id>` is also
+optional. These feed `CaseEngineManager.advance_day` through the SDD-091 seam.
 
 ## Evidence links
 
@@ -151,15 +194,15 @@ HOME=/tmp/lifelines-home GODOT_BIN='/Applications/Godot.app/Contents/MacOS/Godot
   ./tests/run_tests.sh -- --filter case_content_schema
 ```
 
-## Current limitation
+## Current scope
 
-This is still a tiny slice:
+`tiny-olsen.case.md` now carries the full casework slice transferred from
+`prototypes/blueprint_v1.html` (blueprint = canon): 8 documents, 28 facts, 6
+questions, 19 hypotheses, 9 tiltak, 2 dispatches, 4 clocks, 3 event deltas. The
+file id stays `case_olsen_tiny` (and the `tiny_olsen_*` generated filenames) to
+avoid churning the cross-repo path contract.
 
-- one document
-- five fact hotspots
-- two questions
-- three hypotheses
-- two dispatches
-- one clock
-
-It proves the humane text format can feed both design-lab and Godot. It is not the final authoring tool yet.
+Deferred (not yet in the DSL/content): the prologue, the Frank chat Q&A, the
+day-by-day script beats, the `ck_grete` scenario-stage clock, and the WS2
+open-conversation / opening-metadata sources. The `t_telefon` tiltak and several
+sim-state-gated dispatches are also deferred — see the filed issues.

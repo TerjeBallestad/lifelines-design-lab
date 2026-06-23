@@ -10,40 +10,78 @@ import {
 const paths = defaultPaths(process.cwd());
 
 describe('tiny Olsen case generator', () => {
-  it('parses markdown evidence spans and builds the tiny Godot source pack', async () => {
+  it('parses markdown evidence spans and builds the multi-document Godot source pack', async () => {
     const artifacts = await buildTinyOlsenArtifacts(paths);
+    const godot = artifacts.godotSource;
 
-    expect(artifacts.godotSource.id).toBe('case_olsen_tiny');
-    expect(artifacts.godotSource.documents).toHaveLength(1);
-    expect(artifacts.godotSource.documents[0].id).toBe('doc_bekymring');
-    expect(artifacts.godotSource.documents[0].runs.filter((run) => run.fact_id).map((run) => run.fact_id)).toEqual([
+    expect(godot.id).toBe('case_olsen_tiny');
+    // Multi-document: the full blueprint slice carries the eight casework documents.
+    expect(godot.documents).toHaveLength(8);
+    const bekymring = godot.documents.find((doc) => doc.id === 'doc_bekymring');
+    expect(bekymring.kind).toBe('BEKYMRINGSMELDING');
+    expect(bekymring.runs.filter((run) => run.fact_id).map((run) => run.fact_id)).toEqual([
+      'f_grete_syk',
+      'f_aldri_alene',
+      'f_ingen_tjenester',
       'f_grete_baerer',
-      'f_manglende_post',
-      'f_regninger',
-      'f_lite_mat',
-      'f_telefon_ubesvart',
+      'f_saarbar',
     ]);
-    expect(artifacts.godotSource.documents[0].body_bbcode).toContain('[url=fact:f_grete_baerer]');
-    expect(artifacts.godotSource.documents[0].body_bbcode).toContain('Mor opplyser at hun bistår');
-    expect(artifacts.godotSource.documents[0].kind).toBe('BEKYMRINGSMELDING');
-    expect(
-      artifacts.godotSource.facts.find((fact) => fact.id === 'f_regninger').supports_questions,
-    ).toEqual(['q_okonomi']);
-    expect(
-      artifacts.godotSource.hypotheses.find((hypothesis) => hypothesis.id === 'h_okonomisk_sarbar')
-        .question_id,
-    ).toBe('q_okonomi');
+    expect(bekymring.body_bbcode).toContain('[url=fact:f_grete_baerer]');
+    expect(bekymring.body_bbcode).toContain('Mor opplyser at hun bistår');
+
+    // Document display fields flow through to the Godot pack.
+    expect(bekymring.register).toBe('klinisk');
+    expect(bekymring.peek.length).toBeGreaterThan(0);
+    expect(bekymring.meta.startsWith('LEGESENTERET')).toBe(true);
+
+    // Fact display fields: category, derived quote, discuss list.
+    const greteSyk = godot.facts.find((fact) => fact.id === 'f_grete_syk');
+    expect(greteSyk.category).toBe('Dokument');
+    expect(greteSyk.quote).toBe('sykdom med kort forventet forløp');
+    expect(greteSyk.discuss).toEqual(['Frank']);
+    expect(godot.facts.find((fact) => fact.id === 'f_gap').supports_questions).toEqual([
+      'q_okonomi',
+      'q_bolig',
+    ]);
+
+    // Hypotheses / tiltak / dispatch wiring on the canonical id-space.
+    expect(godot.hypotheses.find((h) => h.id === 'h_ok_gap').question_id).toBe('q_okonomi');
+    expect(godot.questions.map((q) => q.id)).toEqual([
+      'q_okonomi',
+      'q_bolig',
+      'q_hverdag',
+      'q_selv',
+      'q_kontakt',
+      'q_kollaps',
+    ]);
+    expect(godot.dispatches.map((d) => d.id)).toEqual(['d_ring_grete', 'd_konto']);
+
+    // The wired food-delivery seam survives: sim_hooks runtime hardcodes + event deltas.
+    expect(godot.tiltak.find((t) => t.id === 't_matlevering').sim_hook_id).toBe(
+      'case.olsen.tiltak.food',
+    );
+    expect(godot.tiltak.find((t) => t.id === 't_hjemmehjelp').sim_hook_id).toBe(
+      'case.olsen.tiltak.channel',
+    );
+    expect(godot.event_delta_specs.map((e) => e.event_type)).toEqual([
+      'grete_received',
+      'delivery_taken_in',
+      'delivery_unanswered',
+    ]);
+    expect(godot.event_delta_specs.find((e) => e.event_type === 'delivery_taken_in').clock_id).toBe(
+      'ck_selvstendighet',
+    );
+
+    // Clock visibility predicate: gated clock vs always-visible clock.
+    const bostotte = godot.clocks.find((c) => c.id === 'ck_bostotte');
+    expect(bostotte.visibility.op).toBe('hypothesis_chosen');
+    expect(godot.clocks.find((c) => c.id === 'ck_overfort').visibility).toBeUndefined();
+
     const visibleText = artifacts.labContent.documents.doc_bekymring.blocks[0].runs
       .map((run) => run.text)
       .join('');
-    expect(visibleText).toContain('tjenester. Mor opplyser');
-    expect(visibleText).toContain('observert uåpnet post');
-    expect(visibleText).toContain(', flere ubetalte regninger');
-    expect(visibleText).toContain(', og telefonhenvendelser');
-    expect(artifacts.godotSource.questions.map((q) => q.id)).toEqual(['q_hverdag', 'q_okonomi']);
-    expect(artifacts.godotSource.hypotheses).toHaveLength(3);
-    expect(artifacts.godotSource.dispatches.map((d) => d.id)).toEqual(['d_ring_grete', 'd_konto']);
-    expect(artifacts.godotSource.clocks.map((c) => c.id)).toEqual(['ck_overfort']);
+    expect(visibleText).toContain('Mor opplyser at hun bistår');
+    expect(visibleText).toContain('sårbar ved bortfall');
   });
 
   it('renders typed design-lab content from the same canonical source', async () => {
