@@ -35,10 +35,12 @@ The file has readable sections:
 
 ```md
 # Case: case_olsen_tiny
+
 Title: Olsen tiny schema slice
 Scenario stage: 0
 
 # Document: doc_bekymring
+
 Kind: BEKYMRINGSMELDING
 Title: Legesenteret · Dr. J. Haug
 Register: klinisk
@@ -51,6 +53,7 @@ Document prose goes here. Evidence is marked with normal Markdown links:
 # Facts
 
 ## f_grete_baerer
+
 Label: Grete bærer rutiner
 Summary: Grete bærer husholdets praktiske funksjoner.
 Domain: Hverdag/rutine
@@ -83,6 +86,7 @@ Beyond `Label` + `Sim hook`, clocks accept optional display fields:
 
 ```md
 ## ck_bostotte
+
 Label: Bostøtte sak
 Sim hook: case.olsen.clock.bostotte
 Question: Kan kommunen skape et lovlig grunnlag for at husleien kan betales?
@@ -105,10 +109,12 @@ reveal). The `##` id is the event_type the sim emits:
 # Event deltas
 
 ## delivery_taken_in
+
 Log: Elling åpnet selv og tok leveringen inn.
 Clock: ck_selvstendighet +1
 
 ## grete_received
+
 Log: Grete tok imot leveringen ved døren.
 ```
 

@@ -218,7 +218,10 @@ export function parseCaseMarkdown(text) {
     case: {
       id: caseMatch[1],
       title: required(caseFields, 'Title', 'case'),
-      scenario_stage: parseIntegerField(caseFields.get('Scenario stage') ?? '0', 'case.Scenario stage'),
+      scenario_stage: parseIntegerField(
+        caseFields.get('Scenario stage') ?? '0',
+        'case.Scenario stage',
+      ),
     },
     documents,
     facts: parseItems(sectionBody(normalized, 'Facts', 'Questions')).map((item) => ({
@@ -296,7 +299,6 @@ export function parseCaseMarkdown(text) {
   };
 }
 
-
 function parseClockDelta(value, context) {
   if (!value || value === 'None') return { clock_id: '', clock_direction: 0 };
   const match = value.trim().match(/^(\S+)\s+([+-]?\d+)$/);
@@ -305,7 +307,6 @@ function parseClockDelta(value, context) {
   }
   return { clock_id: match[1], clock_direction: Number(match[2]) };
 }
-
 
 function parseDocuments(normalized) {
   const startIndex = normalized.search(/^# Document:/m);
@@ -318,7 +319,11 @@ function parseDocuments(normalized) {
   const headers = [];
   let match;
   while ((match = headerRe.exec(block)) !== null) {
-    headers.push({ id: match[1], headerEnd: match.index + match[0].length, headerStart: match.index });
+    headers.push({
+      id: match[1],
+      headerEnd: match.index + match[0].length,
+      headerStart: match.index,
+    });
   }
 
   return headers.map((header, index) => {
@@ -341,7 +346,10 @@ function parseDocuments(normalized) {
 }
 
 function sectionBody(text, title, nextTitle) {
-  const re = new RegExp(`^# ${escapeRegExp(title)}\\s*$([\\s\\S]*?)^# ${escapeRegExp(nextTitle)}\\s*$`, 'm');
+  const re = new RegExp(
+    `^# ${escapeRegExp(title)}\\s*$([\\s\\S]*?)^# ${escapeRegExp(nextTitle)}\\s*$`,
+    'm',
+  );
   const match = text.match(re);
   if (!match) throw new Error(`Missing # ${title} section before # ${nextTitle}`);
   return match[1].trim();
@@ -402,7 +410,8 @@ function required(fields, key, context) {
 }
 
 function parseIntegerField(value, context) {
-  if (!/^-?\d+$/.test(String(value))) throw new Error(`${context} must be an integer, got: ${value}`);
+  if (!/^-?\d+$/.test(String(value)))
+    throw new Error(`${context} must be an integer, got: ${value}`);
   return Number(value);
 }
 
@@ -424,7 +433,11 @@ function parseDocumentRuns(markdown) {
   while ((match = re.exec(markdown)) !== null) {
     const before = normalizeRunText(markdown.slice(cursor, match.index));
     if (before) runs.push({ id: `run_text_${textRunIndex++}`, text: before, fact_id: '' });
-    runs.push({ id: `run_${match[2].replace(/^f_/, '')}`, text: collapseWhitespace(match[1]), fact_id: match[2] });
+    runs.push({
+      id: `run_${match[2].replace(/^f_/, '')}`,
+      text: collapseWhitespace(match[1]),
+      fact_id: match[2],
+    });
     cursor = match.index + match[0].length;
   }
   const after = normalizeRunText(markdown.slice(cursor));
@@ -497,7 +510,8 @@ function openingSourcesForHypothesis(hypothesis) {
 
 function effectsFromLine(line) {
   const scenarioStage = line.match(/^scenario_stage\s+(\d+)$/);
-  if (scenarioStage) return [{ op: 'set_scenario_stage', args: { stage: Number(scenarioStage[1]) } }];
+  if (scenarioStage)
+    return [{ op: 'set_scenario_stage', args: { stage: Number(scenarioStage[1]) } }];
 
   const pendingDoc = line.match(/^pending_doc\s+(\S+)\s+after\s+(\d+)\s+day\s+on\s+(\S+)$/);
   if (pendingDoc) {
@@ -541,7 +555,8 @@ function validateArtifacts({ source, godotSource, labContent }) {
 
   for (const fact of source.facts) {
     requireKnown(documentIds, fact.source_document_id, `fact ${fact.id}.Source`);
-    for (const questionId of fact.supports) requireKnown(questionIds, questionId, `fact ${fact.id}.Supports`);
+    for (const questionId of fact.supports)
+      requireKnown(questionIds, questionId, `fact ${fact.id}.Supports`);
     for (const questionId of fact.reveals_questions) {
       requireKnown(questionIds, questionId, `fact ${fact.id}.Reveals questions`);
       const question = source.questions.find((candidate) => candidate.id === questionId);
@@ -553,7 +568,8 @@ function validateArtifacts({ source, godotSource, labContent }) {
     }
   }
   for (const question of source.questions) {
-    for (const factId of question.appears_on) requireKnown(factIds, factId, `question ${question.id}.Appears on`);
+    for (const factId of question.appears_on)
+      requireKnown(factIds, factId, `question ${question.id}.Appears on`);
     for (const factId of question.opens_when) {
       requireKnown(factIds, factId, `question ${question.id}.Opens when`);
       const fact = source.facts.find((candidate) => candidate.id === factId);
@@ -566,17 +582,29 @@ function validateArtifacts({ source, godotSource, labContent }) {
   }
   for (const hypothesis of source.hypotheses) {
     requireKnown(questionIds, hypothesis.question_id, `hypothesis ${hypothesis.id}.Question`);
-    for (const factId of hypothesis.needs) requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
-    for (const tiltakId of hypothesis.opens_tiltak) requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
-    for (const dispatchId of hypothesis.opens_dispatches) requireKnown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Opens dispatches`);
+    for (const factId of hypothesis.needs)
+      requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
+    for (const tiltakId of hypothesis.opens_tiltak)
+      requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
+    for (const dispatchId of hypothesis.opens_dispatches)
+      requireKnown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Opens dispatches`);
   }
   for (const tiltak of source.tiltak) {
     for (const factId of tiltak.needs) requireKnown(factIds, factId, `tiltak ${tiltak.id}.Needs`);
-    for (const hypothesisId of tiltak.needs_hypothesis) requireKnown(hypothesisIds, hypothesisId, `tiltak ${tiltak.id}.Needs hypothesis`);
+    for (const hypothesisId of tiltak.needs_hypothesis)
+      requireKnown(hypothesisIds, hypothesisId, `tiltak ${tiltak.id}.Needs hypothesis`);
   }
   for (const dispatch of source.dispatches) {
-    validatePredicateRefs(predicateFromGate(dispatch.gate), { factIds, hypothesisIds }, `dispatch ${dispatch.id}.Gate`);
-    validateEffectRefs(effectsFromLine(dispatch.effects), { dispatchIds, tiltakIds, clockIds }, `dispatch ${dispatch.id}.Effects`);
+    validatePredicateRefs(
+      predicateFromGate(dispatch.gate),
+      { factIds, hypothesisIds },
+      `dispatch ${dispatch.id}.Gate`,
+    );
+    validateEffectRefs(
+      effectsFromLine(dispatch.effects),
+      { dispatchIds, tiltakIds, clockIds },
+      `dispatch ${dispatch.id}.Effects`,
+    );
   }
   for (const clock of source.clocks) {
     if (clock.visible_when) {
@@ -588,35 +616,58 @@ function validateArtifacts({ source, godotSource, labContent }) {
     }
   }
   for (const spec of source.event_delta_specs) {
-    if (spec.clock_id) requireKnown(clockIds, spec.clock_id, `event delta ${spec.event_type}.Clock`);
-    if (spec.reveal_fact_id) requireKnown(factIds, spec.reveal_fact_id, `event delta ${spec.event_type}.Reveal fact`);
+    if (spec.clock_id)
+      requireKnown(clockIds, spec.clock_id, `event delta ${spec.event_type}.Clock`);
+    if (spec.reveal_fact_id)
+      requireKnown(factIds, spec.reveal_fact_id, `event delta ${spec.event_type}.Reveal fact`);
   }
 
   for (const doc of godotSource.documents) {
     requireKnown(documentIds, doc.id, `document ${doc.id}`);
-    for (const run of doc.runs) if (run.fact_id) requireKnown(factIds, run.fact_id, `run ${run.id}.fact_id`);
+    for (const run of doc.runs)
+      if (run.fact_id) requireKnown(factIds, run.fact_id, `run ${run.id}.fact_id`);
   }
   for (const fact of Object.values(labContent.facts)) {
-    for (const questionId of fact.supports) requireKnown(questionIds, questionId, `fact ${fact.id}.supports`);
+    for (const questionId of fact.supports)
+      requireKnown(questionIds, questionId, `fact ${fact.id}.supports`);
   }
   for (const question of Object.values(labContent.questions)) {
-    for (const factId of question.appearsOn) requireKnown(factIds, factId, `question ${question.id}.appearsOn`);
+    for (const factId of question.appearsOn)
+      requireKnown(factIds, factId, `question ${question.id}.appearsOn`);
     for (const hypothesis of question.hypotheses) {
       requireKnown(hypothesisIds, hypothesis.id, `question ${question.id}.hypotheses`);
-      for (const factId of hypothesis.needs) requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.needs`);
-      for (const tiltakId of hypothesis.opens) requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.opens`);
+      for (const factId of hypothesis.needs)
+        requireKnown(factIds, factId, `hypothesis ${hypothesis.id}.needs`);
+      for (const tiltakId of hypothesis.opens)
+        requireKnown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.opens`);
     }
   }
   for (const hypothesis of godotSource.hypotheses) {
-    validatePredicateRefs(hypothesis.availability, { factIds, hypothesisIds }, `hypothesis ${hypothesis.id}.availability`);
-    validateEffectRefs(hypothesis.opening_sources, { dispatchIds, tiltakIds, clockIds }, `hypothesis ${hypothesis.id}.opening_sources`);
+    validatePredicateRefs(
+      hypothesis.availability,
+      { factIds, hypothesisIds },
+      `hypothesis ${hypothesis.id}.availability`,
+    );
+    validateEffectRefs(
+      hypothesis.opening_sources,
+      { dispatchIds, tiltakIds, clockIds },
+      `hypothesis ${hypothesis.id}.opening_sources`,
+    );
     for (const op of collectPredicateOps(hypothesis.availability)) assertCaseAgnosticOp(op);
     for (const op of collectEffectOps(hypothesis.opening_sources)) assertCaseAgnosticOp(op);
   }
   for (const dispatch of godotSource.dispatches) {
     requireKnown(dispatchIds, dispatch.id, `dispatch ${dispatch.id}`);
-    validatePredicateRefs(dispatch.gate, { factIds, hypothesisIds }, `dispatch ${dispatch.id}.gate`);
-    validateEffectRefs(dispatch.effects, { dispatchIds, tiltakIds, clockIds }, `dispatch ${dispatch.id}.effects`);
+    validatePredicateRefs(
+      dispatch.gate,
+      { factIds, hypothesisIds },
+      `dispatch ${dispatch.id}.gate`,
+    );
+    validateEffectRefs(
+      dispatch.effects,
+      { dispatchIds, tiltakIds, clockIds },
+      `dispatch ${dispatch.id}.effects`,
+    );
     for (const op of collectPredicateOps(dispatch.gate)) assertCaseAgnosticOp(op);
     for (const op of collectEffectOps(dispatch.effects)) assertCaseAgnosticOp(op);
   }
@@ -633,15 +684,20 @@ function uniqueIds(items, label) {
 
 function validatePredicateRefs(predicate, { factIds, hypothesisIds }, context) {
   if (!predicate) return;
-  if (predicate.op === 'fact_lifted') requireKnown(factIds, predicate.args?.fact_id, `${context}.fact_id`);
-  if (predicate.op === 'hypothesis_chosen') requireKnown(hypothesisIds, predicate.args?.hypothesis_id, `${context}.hypothesis_id`);
-  for (const child of predicate.children ?? []) validatePredicateRefs(child, { factIds, hypothesisIds }, context);
+  if (predicate.op === 'fact_lifted')
+    requireKnown(factIds, predicate.args?.fact_id, `${context}.fact_id`);
+  if (predicate.op === 'hypothesis_chosen')
+    requireKnown(hypothesisIds, predicate.args?.hypothesis_id, `${context}.hypothesis_id`);
+  for (const child of predicate.children ?? [])
+    validatePredicateRefs(child, { factIds, hypothesisIds }, context);
 }
 
 function validateEffectRefs(effects, { dispatchIds, tiltakIds, clockIds }, context) {
   for (const effect of effects ?? []) {
-    for (const dispatchId of effect.args?.dispatch_ids ?? []) requireKnown(dispatchIds, dispatchId, `${context}.dispatch_ids`);
-    for (const tiltakId of effect.args?.tiltak_ids ?? []) requireKnown(tiltakIds, tiltakId, `${context}.tiltak_ids`);
+    for (const dispatchId of effect.args?.dispatch_ids ?? [])
+      requireKnown(dispatchIds, dispatchId, `${context}.dispatch_ids`);
+    for (const tiltakId of effect.args?.tiltak_ids ?? [])
+      requireKnown(tiltakIds, tiltakId, `${context}.tiltak_ids`);
     if (effect.args?.clock_id) requireKnown(clockIds, effect.args.clock_id, `${context}.clock_id`);
     validateEffectRefs(effect.children ?? [], { dispatchIds, tiltakIds, clockIds }, context);
   }
@@ -692,9 +748,20 @@ export async function formatGeneratedBlueprintModule(artifacts) {
 export async function writeTinyOlsenArtifacts(paths = defaultPaths()) {
   const artifacts = await buildTinyOlsenArtifacts(paths);
   await mkdir(dirname(paths.generatedModulePath), { recursive: true });
-  await assertWritableDirectory(dirname(paths.coreSourcePath), 'core-loop generated source directory');
-  await writeFile(paths.generatedModulePath, await formatGeneratedBlueprintModule(artifacts), 'utf8');
-  await writeFile(paths.coreSourcePath, `${JSON.stringify(artifacts.godotSource, null, 2)}\n`, 'utf8');
+  await assertWritableDirectory(
+    dirname(paths.coreSourcePath),
+    'core-loop generated source directory',
+  );
+  await writeFile(
+    paths.generatedModulePath,
+    await formatGeneratedBlueprintModule(artifacts),
+    'utf8',
+  );
+  await writeFile(
+    paths.coreSourcePath,
+    `${JSON.stringify(artifacts.godotSource, null, 2)}\n`,
+    'utf8',
+  );
   return artifacts;
 }
 
@@ -718,7 +785,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     try {
       currentJson = await readFile(paths.coreSourcePath, 'utf8');
     } catch {
-      console.warn(`core-loop source JSON not found; skipping cross-repo freshness check: ${paths.coreSourcePath}`);
+      console.warn(
+        `core-loop source JSON not found; skipping cross-repo freshness check: ${paths.coreSourcePath}`,
+      );
     }
     if (currentModule !== moduleSource || (currentJson != null && currentJson !== jsonSource)) {
       throw new Error('Generated tiny Olsen artifacts are stale. Run npm run gen:olsen.');
