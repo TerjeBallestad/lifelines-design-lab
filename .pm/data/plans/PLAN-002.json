@@ -1,0 +1,233 @@
+{
+  "id": "PLAN-002",
+  "title": "SDD-089 — Harden matlevering into visible runtime Tiltak ecology",
+  "sddId": "SDD-089",
+  "stage": "planned",
+  "sprintId": "SPRINT-014",
+  "context": {
+    "setupNotes": "Pipeline-plan iteration-2 from a clean worktree branch off origin/main. Source authority: `pm get SDD-089`, AGENTS.md, current code trace, and iteration-2 research artifacts. Existing SDD-089 PM plans and prior plan workspaces were intentionally not used. SDD-089 is architecture-first but not invisible-systems-first: every slice must produce either owner-level proof or visible in-game evidence. Use `./tests/run_tests.sh --verbose -- --filter <name>` for focused verbose GATH filters, then full `./tests/run_tests.sh`. Tests alone do not satisfy courier/held-crate acceptance; record screenshot/video/shot-runner/playthrough trace path or file an explicit tooling follow-up. Review synthesis applied: doorbell sound/presentation check added; director production wiring and handler registration made explicit; raw-string contract set to explicit invalid-record rejection in the director; private/crisis urgent cases and Grete visible intent evidence added; all new tests require red-green doc comments.",
+    "relevantFiles": [
+      "AGENTS.md",
+      "scripts/simulation/matlevering_sim_tick.gd",
+      "autoloads/delivery_bus.gd",
+      "scripts/simulation/household_object_manager.gd",
+      "scripts/simulation/character_entity.gd",
+      "scripts/simulation/character/decision_engine.gd",
+      "scripts/simulation/character/activity_executor.gd",
+      "scripts/simulation/character/skill_system.gd",
+      "scripts/simulation/character/states/performing_state.gd",
+      "scripts/simulation/visitor_manager.gd",
+      "scripts/simulation/visitor_npc.gd",
+      "autoloads/visitor_bus.gd",
+      "scripts/presentation/visitor_presentation.gd",
+      "scripts/presentation/visitor_visual.gd",
+      "scripts/presentation/character_visual.gd",
+      "scripts/presentation/character/activity_visuals.gd",
+      "resources/activities/answer_door.tres",
+      "resources/activities/get_delivery_from_door.tres",
+      "tests/behavioral/matlevering_scenario_a_test.gd",
+      "tests/behavioral/matlevering_scenarios_b_c_test.gd",
+      "main.tscn",
+      "autoloads/presentation_bus.gd",
+      "resources/scripts/character_profile.gd",
+      "resources/characters/mother_grete.tres",
+      "resources/characters/elling.tres"
+    ],
+    "designDecisions": [
+      "`MatleveringSimTick` is a retiring compatibility façade, not the production owner.",
+      "`TiltakRuntimeDirector` owns only active-record routing and a tiny once/day ledger; it must not know matlevering domain rules.",
+      "Matlevering delivery/doorbell rules live in a narrow delivery handler that emits `DeliveryBus` events and delegates object lifecycle to HOM.",
+      "Character urgent response mechanics live behind a character/FSM-owned urgent-activity seam; delivery code must not inspect `current_state` directly.",
+      "Runtime Tiltak input is enacted records with lineage/day bounds/parameters, not raw strings; string conversion is limited to retiring façade/test fixtures.",
+      "Courier and held crate are acceptance evidence, not polish. Use placeholder visuals if needed, but prove the real visitor path and normal-scene readability."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-005",
+      "title": "Task 1: Prove courier visibility through the real visitor path",
+      "description": "Slice: NPC visibility. Make a lightweight matlevering courier appear in the normal scene using the existing visitor/NPC presentation path, not a delivery-only debug visual. Keep it small: placeholder courier, entrance placement, no Frank dispatch.",
+      "steps": [
+        "Add a focused failing smoke/behavioral test or scene fixture that spawns a courier through `VisitorManager` and observes `VisitorPresentation`/`VisitorVisual` wiring.",
+        "Name the new test/fixture so the planned filter actually matches (for example include `delivery_courier` or `visitor_courier` in the test name).",
+        "Verify whether `main.tscn` has a production `VisitorManager`; if missing, wire the smallest manager node under `SimulationRoot` and ensure normal ticking reaches it.",
+        "Extend `VisitorVisual.setup()` or equivalent to distinguish a courier placeholder from paramedic visuals without building a full NPC skin system.",
+        "Add a helper only if needed, e.g. `spawn_delivery_courier(...)`, but route through `VisitorManager.spawn_visitor()` and `VisitorBus`.",
+        "Run `./tests/run_tests.sh --verbose -- --filter visitor` or a narrower courier-visible filter.",
+        "Temporarily break the visitor bus/presentation hookup to confirm the new test fails red, restore, rerun green, and add `## Verified red-green: YYYY-MM-DD` to the test doc comment.",
+        "Capture a normal-scene screenshot/shot-runner/playthrough trace showing the courier at the entrance, or file an explicit PM follow-up if screenshot tooling is missing."
+      ],
+      "verification": "Focused visitor/courier test passes, and visible evidence proves the courier appears through the real normal-scene visitor path. No debug-only visitor path or Frank dispatch work.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-006",
+      "title": "Task 2: Add a minimal held-crate presentation affordance",
+      "description": "Slice: held object. Add the smallest presentation-only seam that lets Grete visibly carry a crate. This is not inventory, equipment, or a general item-transfer system.",
+      "steps": [
+        "Write a failing focused test/fixture for a character visual receiving held-object start/end and showing/clearing a crate prop.",
+        "Name the new test/fixture so the planned filter actually matches (for example include `held_object` in the test name).",
+        "Add a narrow presentation event on `PresentationBus` or an equivalent character-visual API for held-object start/end.",
+        "Implement `HeldObjectVisuals` or a small `CharacterVisual` helper using the existing `ActivityVisuals` Sprite3D prop pattern.",
+        "Support only the crate prop needed for matlevering, with a clear fallback placeholder.",
+        "Run `./tests/run_tests.sh --verbose -- --filter held_object` or the matching focused filter.",
+        "Temporarily break held-object show/clear to confirm the test fails red, restore, rerun green, and add `## Verified red-green: YYYY-MM-DD` to the test doc comment.",
+        "Capture visual evidence or deterministic trace showing Grete/character with the crate prop, then prop cleared."
+      ],
+      "verification": "Held-object focused test passes; visual evidence/trace shows a readable carried crate; implementation remains presentation-only with no inventory/equipment model.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-007",
+      "title": "Task 3: Add enacted Tiltak records and thin `TiltakRuntimeDirector`",
+      "description": "Slice: runtime architecture. Establish the production input and routing owner before moving matlevering behavior. The director owns only active-day filtering, handler dispatch, and once/day ledger.",
+      "steps": [
+        "Create `tests/behavioral/tiltak_runtime_director_test.gd` with red coverage for record shape, active-day filtering, once/day duplicate suppression, and explicit invalid-record rejection for raw strings.",
+        "Add a small enacted runtime record shape with `id`, `vedtak_id`, `active_from_day`, optional `active_until_day`, and `parameters`.",
+        "Add `scripts/simulation/tiltak/tiltak_runtime_director.gd` with handler registration/dispatch and day ledger keyed by record identity + day.",
+        "Wire/register the director in the smallest production-facing runtime location used by normal simulation ticks, or add a narrowly named adapter if full day-run integration belongs in Task 7.",
+        "Use fake handlers in tests to prove the director passes records through and does not know doorbells, Grete, HOM, or food.",
+        "Keep raw string conversion out of the director; if needed, leave conversion only in `MatleveringSimTick` compatibility/test helper. Director tests expect invalid/raw string records to be rejected with an explicit invalid result, not silently ignored.",
+        "Run `./tests/run_tests.sh --verbose -- --filter tiltak_runtime_director`, mutation-check duplicate suppression/raw-string guard, restore, and rerun green."
+      ],
+      "verification": "Director tests pass with red-green note. Review confirms the director has no matlevering/doorbell/object/character-state rules and consumes records, not raw strings.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-008",
+      "title": "Task 4: Add character-owned urgent activity request seam",
+      "description": "Slice: runtime architecture. Move door-answer interrupt/queue mechanics behind the character/FSM boundary so delivery code asks for urgent `Answer Door` instead of reading state and firing FSM events.",
+      "steps": [
+        "Create `tests/behavioral/urgent_activity_request_test.gd` covering idle available Grete, interruptible performing Grete, non-interruptible/private/crisis blocked cases, and the Elling non-responder policy through caller-side role selection.",
+        "Add a narrow API such as `CharacterEntity.request_urgent_activity(activity, reason, options := {})` or a small character urgent service.",
+        "The seam owns whether to abort, front-queue, kick decision, or reject; outside callers receive accepted/rejected result and reason.",
+        "Keep current queue/FSM primitives (`DecisionEngine.queue_activity`, `ActivityExecutor.trigger`) internal to the seam.",
+        "Run `./tests/run_tests.sh --verbose -- --filter urgent_activity`, mutation-check a blocked case, restore, rerun green."
+      ],
+      "verification": "Urgent activity tests pass; idle Grete can accept door answer; delivery-domain code has no direct `current_state` checks or direct FSM trigger calls for doorbell behavior.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-009",
+      "title": "Task 5: Replace display-name role lookup with stable household identity",
+      "description": "Remove Grete/Elling substring matching from production matlevering selection without doing a whole-game identity refactor.",
+      "steps": [
+        "Add the smallest stable identity field needed, likely `character_id` or `household_role` on `resources/scripts/character_profile.gd`, and set it on `resources/characters/mother_grete.tres` and `resources/characters/elling.tres` plus relevant test fixtures.",
+        "Add tests proving responder/perceiver lookup survives display-name text changes and does not use `.contains(\"grete\")` / `.contains(\"elling\")`.",
+        "Patch matlevering resolver code or the new delivery handler to use stable identity.",
+        "Search production matlevering/delivery code for Grete/Elling substring checks and remove them or quarantine them in tests only.",
+        "Run `./tests/run_tests.sh --verbose -- --filter matlevering` or a narrower role identity filter."
+      ],
+      "verification": "Stable identity test passes; production delivery/matlevering code no longer selects Grete/Elling by display-name substring. Any broader identity cleanup is filed separately.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-010",
+      "title": "Task 6: Guard DD-064 autonomy and preserve outside-delivery retrieval",
+      "description": "Fix the broad `requires_tags + advertised_need` autonomy bypass while preserving `Get Delivery From Door` as a narrow delivery affordance.",
+      "steps": [
+        "Add/update a focused test proving a generic TASK with `requires_tags` and `advertised_need` still fails zero-mastery autonomous selection.",
+        "Add/update a focused test proving `Get Delivery From Door` remains autonomously eligible only when the outside delivery affordance exists.",
+        "Replace the broad `SkillSystem.can_autonomously_select()` bypass with a narrow affordance, preferably data-driven on the activity definition or, if smaller, explicit to `Get Delivery From Door`.",
+        "Run `./tests/run_tests.sh --verbose -- --filter continuous_mastery` plus the focused delivery/autonomy filter.",
+        "Mutation-check by temporarily restoring the broad bypass, confirm red, restore green."
+      ],
+      "verification": "Generic tagged+advertised TASK remains blocked by DD-064; `Get Delivery From Door` still works through the outside-delivery affordance; red-green note records both sides.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-011",
+      "title": "Task 7: Extract `MatleveringDeliveryHandler` and migrate Scenario A/B/C behavior",
+      "description": "Move matlevering attempt rules into a narrow delivery handler, preserving SDD-088 behavior while retiring `MatleveringSimTick` as the production owner.",
+      "steps": [
+        "Create `scripts/simulation/delivery/matlevering_delivery_handler.gd` and focused handler tests for previous outside box blocking, answered delivery, unanswered outside box, and HOM calls.",
+        "Register the handler with `TiltakRuntimeDirector` explicitly and pass dependencies through a narrow constructor/setup method: HOM access, character resolver, activity definitions, visitor/courier spawner, and delivery bus access.",
+        "Wire the director/handler path into the normal production sim tick or day-runtime adapter used by play, not only direct tests.",
+        "Do not add a delivery-only courier visual shortcut during handler extraction; courier visibility remains through Task 1 visitor path and Task 8 integration.",
+        "Route through `TiltakRuntimeDirector` records and the urgent activity seam; do not inspect character FSM state in the handler.",
+        "Use HOM for inside delivered food, outside box, retrieval, replacement, and waste. Handler orchestrates; HOM owns object lifecycle.",
+        "Prefer moving Grete-answer inside-food creation to `Answer Door` completion; if a selection-time shortcut remains, document it and guard it with a test named as the chosen contract.",
+        "Migrate `matlevering_scenario_a_test.gd` and `matlevering_scenarios_b_c_test.gd` toward director/handler path while preserving behavior: idle Grete answers, Elling alone does not, outside retrieval works, replacement/waste works, previous box blocks.",
+        "Keep `MatleveringSimTick` only as a compatibility façade/test adapter if still needed, and quarantine raw-string conversion there.",
+        "Run `./tests/run_tests.sh --verbose -- --filter matlevering` and `./tests/run_tests.sh --verbose -- --filter tiltak_runtime_director`."
+      ],
+      "verification": "Scenario A/B/C behavior passes through director/handler/urgent/HOM boundaries. `MatleveringSimTick` is no longer the production owner, raw strings are quarantined, and food timing is explicit/test-backed.",
+      "blockedBy": [
+        "Task 3: Add enacted Tiltak records and thin `TiltakRuntimeDirector`",
+        "Task 4: Add character-owned urgent activity request seam",
+        "Task 5: Replace display-name role lookup with stable household identity",
+        "Task 6: Guard DD-064 autonomy and preserve outside-delivery retrieval"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-012",
+      "title": "Task 8: Integrate visible matlevering sequence end-to-end",
+      "description": "Connect courier, doorbell, urgent Grete response, held crate, HOM kitchen food, and ordinary eating into one normal-play sequence driven by enacted matlevering records.",
+      "steps": [
+        "Add/update an integrated behavioral/smoke test such as `matlevering_visible_sequence_test.gd` using an enacted matlevering record through the director.",
+        "When handler attempts delivery, spawn the courier through the visitor path, emit/route `doorbell_rang`, and request urgent `Answer Door` from Grete.",
+        "On accepted answer, start held-crate presentation, complete/deposit through HOM, clear crate, and emit the relevant `DeliveryBus` events.",
+        "Verify whether `DeliveryBus.doorbell_rang` has an existing player-facing audio or presentation hook. If not, add the smallest safe hook, or file an explicit PM follow-up while still proving a readable in-game doorbell event in the trace.",
+        "On unanswered path, preserve outside box and retrieval affordance behavior.",
+        "Evidence must show Grete visibly entering/performing the door-answer or carrying intent, not merely that food appears later.",
+        "Ensure ordinary `Eat Meal` can consume the delivered food; no special matlevering hunger shortcut.",
+        "Run focused filters for visible sequence, matlevering, visitor/courier, held-object, urgent activity, and director.",
+        "Capture normal-scene screenshot/video/shot-runner/playthrough trace showing courier and held crate, or file a PM follow-up if tooling blocks capture."
+      ],
+      "verification": "Integrated sequence passes through production record/director path and has visible evidence. It proves courier + doorbell event/sound/presentation hook or explicit follow-up + Grete visible intent switch + held crate + kitchen food + ordinary eating, not only signal logs.",
+      "blockedBy": [
+        "Task 1: Prove courier visibility through the real visitor path",
+        "Task 2: Add a minimal held-crate presentation affordance",
+        "Task 7: Extract `MatleveringDeliveryHandler` and migrate Scenario A/B/C behavior"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-013",
+      "title": "Task 9: Cleanup, docs, full verification, and follow-ups",
+      "description": "Shrink temporary scaffolding before final proof, document the new ownership language, run the full suite, and file follow-ups for any explicit deferrals instead of hiding them in SDD-089.",
+      "steps": [
+        "Shrink or delete `MatleveringSimTick` if safe; otherwise leave it as a tiny compatibility façade with comments naming the production owner.",
+        "Remove dead helper paths and debug-only delivery/visitor code introduced during migration.",
+        "Update `CONTEXT.md` or the appropriate repo doc with enacted Tiltak record, `TiltakRuntimeDirector`, delivery handler, urgent activity seam, held-object affordance, and delivery affordance vocabulary.",
+        "File PM follow-ups for explicit deferrals: full standing-tiltak scheduler, robust identity cleanup, richer courier/NPC presentation, doorbell audio/presentation polish if not completed in Task 8, generalized held-object affordances, screenshot tooling.",
+        "Run `./tests/run_tests.sh --verbose -- --filter matlevering`, `./tests/run_tests.sh --verbose -- --filter tiltak_runtime_director`, and any separate urgent/visitor/held filters.",
+        "Run full `./tests/run_tests.sh`.",
+        "Record command outputs and visual artifact paths in PM progress notes before marking final task done."
+      ],
+      "verification": "Focused filters and full suite pass. Docs name the new boundaries. Follow-ups exist for deferred work. Final report includes exact command output and visible evidence paths.",
+      "blockedBy": [
+        "Task 8: Integrate visible matlevering sequence end-to-end"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-06-15T18:56:22.715Z",
+  "updatedAt": "2026-06-15T18:56:22.715Z"
+}
