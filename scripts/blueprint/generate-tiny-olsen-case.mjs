@@ -74,8 +74,15 @@ export async function formatGeneratedBlueprintModule(artifacts) {
 export async function writeTinyOlsenArtifacts(paths = defaultPaths()) {
   const artifacts = await buildTinyOlsenArtifacts(paths);
   await mkdir(dirname(paths.generatedModulePath), { recursive: true });
-  await assertWritableDirectory(dirname(paths.coreSourcePath), 'core-loop generated source directory');
-  await writeFile(paths.generatedModulePath, await formatGeneratedBlueprintModule(artifacts), 'utf8');
+  await assertWritableDirectory(
+    dirname(paths.coreSourcePath),
+    'core-loop generated source directory',
+  );
+  await writeFile(
+    paths.generatedModulePath,
+    await formatGeneratedBlueprintModule(artifacts),
+    'utf8',
+  );
   await writeFile(paths.coreSourcePath, stableStringify(artifacts.godotSource), 'utf8');
   return artifacts;
 }
@@ -100,7 +107,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     try {
       currentJson = await readFile(paths.coreSourcePath, 'utf8');
     } catch {
-      console.warn(`core-loop source JSON not found; skipping cross-repo freshness check: ${paths.coreSourcePath}`);
+      console.warn(
+        `core-loop source JSON not found; skipping cross-repo freshness check: ${paths.coreSourcePath}`,
+      );
     }
     if (currentModule !== moduleSource || (currentJson != null && currentJson !== jsonSource)) {
       throw new Error('Generated tiny Olsen artifacts are stale. Run npm run gen:olsen.');
