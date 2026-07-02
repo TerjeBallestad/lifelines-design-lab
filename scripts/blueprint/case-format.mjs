@@ -31,7 +31,8 @@ const SECTION_ORDER = [
 export function parseCaseMarkdown(text) {
   const normalized = text.replace(/\r\n/g, '\n').trimEnd();
   const caseMatch = normalized.match(/^# Case:\s*(\S+)\n([\s\S]*?)(?=^# Document:)/m);
-  if (!caseMatch) throw new Error('Expected top-level "# Case: <id>" section before first document');
+  if (!caseMatch)
+    throw new Error('Expected top-level "# Case: <id>" section before first document');
   const caseFields = parseFields(caseMatch[2]);
 
   const documents = parseDocuments(normalized);
@@ -86,7 +87,10 @@ export function parseCaseMarkdown(text) {
     description: required(item.fields, 'Description', item.id),
     sim_hook_id: required(item.fields, 'Sim hook', item.id),
     visit_hour: parseIntegerField(item.fields.get('Visit hour') ?? '14', `${item.id}.Visit hour`),
-    occupies_hours: parseIntegerField(item.fields.get('Occupies hours') ?? '2', `${item.id}.Occupies hours`),
+    occupies_hours: parseIntegerField(
+      item.fields.get('Occupies hours') ?? '2',
+      `${item.id}.Occupies hours`,
+    ),
     gate: required(item.fields, 'Gate', item.id),
     effects: required(item.fields, 'Effects', item.id),
   }));
@@ -97,7 +101,10 @@ export function parseCaseMarkdown(text) {
     sim_hook_id: required(item.fields, 'Sim hook', item.id),
     question: item.fields.get('Question') ?? '',
     good_segment_label: item.fields.get('Good label') ?? '',
-    good_segment_size: parseIntegerField(item.fields.get('Good size') ?? '0', `${item.id}.Good size`),
+    good_segment_size: parseIntegerField(
+      item.fields.get('Good size') ?? '0',
+      `${item.id}.Good size`,
+    ),
     bad_segment_label: item.fields.get('Bad label') ?? '',
     bad_segment_size: parseIntegerField(item.fields.get('Bad size') ?? '0', `${item.id}.Bad size`),
     visibility: item.fields.get('Visibility') ?? null,
@@ -108,7 +115,10 @@ export function parseCaseMarkdown(text) {
       event_type: item.id,
       log_text: item.fields.get('Log') ?? '',
       clock_id: item.fields.get('Clock') ?? '',
-      clock_direction: parseIntegerField(item.fields.get('Direction') ?? '0', `${item.id}.Direction`),
+      clock_direction: parseIntegerField(
+        item.fields.get('Direction') ?? '0',
+        `${item.id}.Direction`,
+      ),
       reveal_fact_id: item.fields.get('Reveals fact') ?? '',
     }),
   );
@@ -117,8 +127,14 @@ export function parseCaseMarkdown(text) {
     case: {
       id: caseMatch[1],
       title: required(caseFields, 'Title', 'case'),
-      scenario_stage: parseIntegerField(caseFields.get('Scenario stage') ?? '0', 'case.Scenario stage'),
-      vurdering_frist_day: parseIntegerField(caseFields.get('Vurdering frist day') ?? '10', 'case.Vurdering frist day'),
+      scenario_stage: parseIntegerField(
+        caseFields.get('Scenario stage') ?? '0',
+        'case.Scenario stage',
+      ),
+      vurdering_frist_day: parseIntegerField(
+        caseFields.get('Vurdering frist day') ?? '10',
+        'case.Vurdering frist day',
+      ),
     },
     documents,
     facts,
@@ -284,7 +300,9 @@ function buildLabContent(source, allRunsByDoc) {
               id: `${doc.id}_body`,
               runs: allRunsByDoc
                 .get(doc.id)
-                .map((run) => (run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text })),
+                .map((run) =>
+                  run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
+                ),
             },
           ],
         },
@@ -454,7 +472,8 @@ export function serializeCase(godot) {
     if (clock.good_segment_size) lines.push(`Good size: ${clock.good_segment_size}`);
     if (clock.bad_segment_label) lines.push(`Bad label: ${clock.bad_segment_label}`);
     if (clock.bad_segment_size) lines.push(`Bad size: ${clock.bad_segment_size}`);
-    if (clock.visibility != null) lines.push(`Visibility: ${gateLineFromPredicate(clock.visibility)}`);
+    if (clock.visibility != null)
+      lines.push(`Visibility: ${gateLineFromPredicate(clock.visibility)}`);
     lines.push('');
   }
 
@@ -530,6 +549,138 @@ function quoteFromDocuments(documents, factId) {
   return '';
 }
 
+// Serialize the PARSED source shape (humane lists + raw gate/effect lines)
+// back to .case.md. This is what the authoring editor round-trips through:
+// parse(serializeSource(parse(md))) must deep-equal parse(md).
+export function serializeSource(source) {
+  const lines = [];
+  lines.push(`# Case: ${source.case.id}`);
+  lines.push(`Title: ${source.case.title}`);
+  lines.push(`Scenario stage: ${source.case.scenario_stage}`);
+  lines.push(`Vurdering frist day: ${source.case.vurdering_frist_day}`);
+  lines.push('');
+
+  for (const doc of source.documents ?? []) {
+    lines.push(`# Document: ${doc.id}`);
+    lines.push(`Kind: ${doc.kind}`);
+    lines.push(`Title: ${doc.title}`);
+    lines.push(`Register: ${doc.register}`);
+    lines.push(`Peek: ${doc.peek}`);
+    lines.push(`Meta: ${doc.meta}`);
+    lines.push('');
+    lines.push(doc.body);
+    lines.push('');
+  }
+
+  lines.push('# Facts');
+  lines.push('');
+  for (const fact of source.facts ?? []) {
+    lines.push(`## ${fact.id}`);
+    lines.push(`Label: ${fact.label}`);
+    lines.push(`Summary: ${fact.summary}`);
+    lines.push(`Domain: ${fact.domain}`);
+    lines.push(`Category: ${fact.category}`);
+    lines.push(`Source: ${fact.source_document_id}`);
+    if (fact.quote_override != null && fact.quote_override !== '')
+      lines.push(`Quote: ${fact.quote_override}`);
+    pushList(lines, 'Supports', fact.supports);
+    pushList(lines, 'Discuss', fact.discuss);
+    pushList(lines, 'Reveals questions', fact.reveals_questions);
+    lines.push('');
+  }
+
+  lines.push('# Questions');
+  lines.push('');
+  for (const question of source.questions ?? []) {
+    lines.push(`## ${question.id}`);
+    lines.push(`Title: ${question.title}`);
+    if (question.prompt !== question.title) lines.push(`Prompt: ${question.prompt}`);
+    if (JSON.stringify(question.appears_on) !== JSON.stringify(question.opens_when)) {
+      pushList(lines, 'Appears on', question.appears_on);
+    }
+    pushList(lines, 'Opens when', question.opens_when);
+    lines.push('');
+  }
+
+  lines.push('# Hypotheses');
+  lines.push('');
+  for (const hypothesis of source.hypotheses ?? []) {
+    lines.push(`## ${hypothesis.id}`);
+    lines.push(`Title: ${hypothesis.title}`);
+    lines.push(`Summary: ${hypothesis.summary}`);
+    lines.push(`Question: ${hypothesis.question_id}`);
+    pushList(lines, 'Needs', hypothesis.needs);
+    pushList(lines, 'Opens tiltak', hypothesis.opens_tiltak);
+    pushList(lines, 'Unlocks dispatches', hypothesis.unlocks_dispatches);
+    lines.push('');
+  }
+
+  lines.push('# Tiltak');
+  lines.push('');
+  for (const tiltak of source.tiltak ?? []) {
+    lines.push(`## ${tiltak.id}`);
+    lines.push(`Title: ${tiltak.title}`);
+    lines.push(`Slot: ${tiltak.slot}`);
+    lines.push(`Cost: ${tiltak.cost}`);
+    pushList(lines, 'Needs', tiltak.needs);
+    pushList(lines, 'Needs hypothesis', tiltak.needs_hypothesis);
+    lines.push(`Description: ${tiltak.description}`);
+    lines.push(`Sim hook: ${tiltak.sim_hook_id}`);
+    lines.push('');
+  }
+
+  lines.push('# Dispatches');
+  lines.push('');
+  for (const dispatch of source.dispatches ?? []) {
+    lines.push(`## ${dispatch.id}`);
+    lines.push(`Title: ${dispatch.title}`);
+    lines.push(`Description: ${dispatch.description}`);
+    lines.push(`Sim hook: ${dispatch.sim_hook_id}`);
+    lines.push(`Visit hour: ${dispatch.visit_hour}`);
+    lines.push(`Occupies hours: ${dispatch.occupies_hours}`);
+    lines.push(`Gate: ${dispatch.gate}`);
+    lines.push(`Effects: ${dispatch.effects}`);
+    lines.push('');
+  }
+
+  lines.push('# Clocks');
+  lines.push('');
+  for (const clock of source.clocks ?? []) {
+    lines.push(`## ${clock.id}`);
+    lines.push(`Label: ${clock.label}`);
+    lines.push(`Sim hook: ${clock.sim_hook_id}`);
+    if (clock.question) lines.push(`Question: ${clock.question}`);
+    if (clock.good_segment_label) lines.push(`Good label: ${clock.good_segment_label}`);
+    if (clock.good_segment_size) lines.push(`Good size: ${clock.good_segment_size}`);
+    if (clock.bad_segment_label) lines.push(`Bad label: ${clock.bad_segment_label}`);
+    if (clock.bad_segment_size) lines.push(`Bad size: ${clock.bad_segment_size}`);
+    if (clock.visibility != null && clock.visibility !== '')
+      lines.push(`Visibility: ${clock.visibility}`);
+    lines.push('');
+  }
+
+  lines.push('# Event deltas');
+  lines.push('');
+  const deltas = source.event_deltas ?? [];
+  if (!deltas.length) {
+    lines.push('None');
+    lines.push('');
+  }
+  for (const delta of deltas) {
+    lines.push(`## ${delta.event_type}`);
+    if (delta.log_text) lines.push(`Log: ${delta.log_text}`);
+    if (delta.clock_id) lines.push(`Clock: ${delta.clock_id}`);
+    if (delta.clock_direction) lines.push(`Direction: ${delta.clock_direction}`);
+    if (delta.reveal_fact_id) lines.push(`Reveals fact: ${delta.reveal_fact_id}`);
+    lines.push('');
+  }
+
+  lines.push('# Day script beats');
+  lines.push('');
+  lines.push('None');
+  return lines.join('\n') + '\n';
+}
+
 // === Shared low-level helpers ====================================================
 
 function sectionBody(text, title, nextTitle) {
@@ -570,7 +721,9 @@ function splitFieldsAndBody(text) {
       break;
     }
     if (!/^[- A-Za-zæøåÆØÅ]+:/.test(line)) {
-      throw new Error(`Document metadata must be followed by a blank line before prose; got: ${line}`);
+      throw new Error(
+        `Document metadata must be followed by a blank line before prose; got: ${line}`,
+      );
     }
     fieldLines.push(line);
   }
@@ -595,7 +748,8 @@ function required(fields, key, context) {
 }
 
 function parseIntegerField(value, context) {
-  if (!/^-?\d+$/.test(String(value))) throw new Error(`${context} must be an integer, got: ${value}`);
+  if (!/^-?\d+$/.test(String(value)))
+    throw new Error(`${context} must be an integer, got: ${value}`);
   return Number(value);
 }
 
@@ -697,7 +851,8 @@ function effectsFromLine(line) {
   return line.split(';').map((part) => {
     const token = part.trim();
     const scenarioStage = token.match(/^scenario_stage\s+(\d+)$/);
-    if (scenarioStage) return { op: 'set_scenario_stage', args: { stage: Number(scenarioStage[1]) } };
+    if (scenarioStage)
+      return { op: 'set_scenario_stage', args: { stage: Number(scenarioStage[1]) } };
     const pendingDoc = token.match(/^pending_doc\s+(\S+)\s+after\s+(\d+)\s+day\s+on\s+(\S+)$/);
     if (pendingDoc) {
       return {
@@ -731,36 +886,47 @@ function validateArtifacts(source, godotSource) {
 
   for (const fact of source.facts) {
     warnUnknown(documentIds, fact.source_document_id, `fact ${fact.id}.Source`);
-    for (const questionId of fact.supports) warnUnknown(questionIds, questionId, `fact ${fact.id}.Supports`);
-    for (const questionId of fact.reveals_questions) warnUnknown(questionIds, questionId, `fact ${fact.id}.Reveals questions`);
+    for (const questionId of fact.supports)
+      warnUnknown(questionIds, questionId, `fact ${fact.id}.Supports`);
+    for (const questionId of fact.reveals_questions)
+      warnUnknown(questionIds, questionId, `fact ${fact.id}.Reveals questions`);
   }
   for (const question of source.questions) {
-    for (const factId of question.opens_when) warnUnknown(factIds, factId, `question ${question.id}.Opens when`);
+    for (const factId of question.opens_when)
+      warnUnknown(factIds, factId, `question ${question.id}.Opens when`);
   }
   for (const hypothesis of source.hypotheses) {
     warnUnknown(questionIds, hypothesis.question_id, `hypothesis ${hypothesis.id}.Question`);
-    for (const factId of hypothesis.needs) warnUnknown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
-    for (const tiltakId of hypothesis.opens_tiltak) warnUnknown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
-    for (const dispatchId of hypothesis.unlocks_dispatches) warnUnknown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Unlocks dispatches`);
+    for (const factId of hypothesis.needs)
+      warnUnknown(factIds, factId, `hypothesis ${hypothesis.id}.Needs`);
+    for (const tiltakId of hypothesis.opens_tiltak)
+      warnUnknown(tiltakIds, tiltakId, `hypothesis ${hypothesis.id}.Opens tiltak`);
+    for (const dispatchId of hypothesis.unlocks_dispatches)
+      warnUnknown(dispatchIds, dispatchId, `hypothesis ${hypothesis.id}.Unlocks dispatches`);
   }
   for (const dispatch of godotSource.dispatches) {
     const walk = (node) => {
       if (!node) return;
-      if (node.op === 'fact_lifted') warnUnknown(factIds, node.args?.fact_id, `dispatch ${dispatch.id}.gate`);
-      if (node.op === 'hypothesis_chosen') warnUnknown(hypothesisIds, node.args?.hypothesis_id, `dispatch ${dispatch.id}.gate`);
+      if (node.op === 'fact_lifted')
+        warnUnknown(factIds, node.args?.fact_id, `dispatch ${dispatch.id}.gate`);
+      if (node.op === 'hypothesis_chosen')
+        warnUnknown(hypothesisIds, node.args?.hypothesis_id, `dispatch ${dispatch.id}.gate`);
       (node.children ?? []).forEach(walk);
     };
     walk(dispatch.gate);
     for (const effect of dispatch.effects ?? []) {
-      if (effect.args?.clock_id) warnUnknown(clockIds, effect.args.clock_id, `dispatch ${dispatch.id}.effects`);
+      if (effect.args?.clock_id)
+        warnUnknown(clockIds, effect.args.clock_id, `dispatch ${dispatch.id}.effects`);
       // NOTE: queued document_ids are NOT checked against authored documents —
       // the Godot engine happily queues/delivers ids without authored content
       // (e.g. pending_konto_overfort; case_engine tests depend on it).
     }
   }
   for (const delta of source.event_deltas) {
-    if (delta.clock_id) warnUnknown(clockIds, delta.clock_id, `event delta ${delta.event_type}.Clock`);
-    if (delta.reveal_fact_id) warnUnknown(factIds, delta.reveal_fact_id, `event delta ${delta.event_type}.Reveals fact`);
+    if (delta.clock_id)
+      warnUnknown(clockIds, delta.clock_id, `event delta ${delta.event_type}.Clock`);
+    if (delta.reveal_fact_id)
+      warnUnknown(factIds, delta.reveal_fact_id, `event delta ${delta.event_type}.Reveals fact`);
   }
   return warnings;
 }

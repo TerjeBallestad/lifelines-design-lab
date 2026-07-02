@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import { BlueprintLab } from './components/blueprint/BlueprintLab';
 import { PhonePracticeLab } from './components/PhonePracticeLab';
+import { CaseAuthoringLab } from './components/authoring/CaseAuthoringLab';
+
+type Surface = 'blueprint' | 'phone' | 'author';
+
+function initialSurface(): Surface {
+  const requested = new URLSearchParams(window.location.search).get('surface');
+  return requested === 'phone' || requested === 'author' ? requested : 'blueprint';
+}
 
 export default function App() {
-  const [surface, setSurface] = useState<'blueprint' | 'phone'>('blueprint');
+  const [surface, setSurface] = useState<Surface>(initialSurface);
 
   return (
     <div className="min-h-screen">
@@ -30,10 +38,23 @@ export default function App() {
             >
               Phone Practice Lab
             </button>
+            <button
+              className={`btn join-item btn-sm ${surface === 'author' ? 'btn-primary' : 'btn-outline'}`}
+              type="button"
+              onClick={() => setSurface('author')}
+            >
+              Case Authoring
+            </button>
           </div>
         </div>
       </div>
-      {surface === 'blueprint' ? <BlueprintLab /> : <PhonePracticeLab />}
+      {surface === 'blueprint' ? (
+        <BlueprintLab />
+      ) : surface === 'phone' ? (
+        <PhonePracticeLab />
+      ) : (
+        <CaseAuthoringLab />
+      )}
     </div>
   );
 }

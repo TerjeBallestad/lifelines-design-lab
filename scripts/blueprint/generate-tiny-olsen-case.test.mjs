@@ -5,7 +5,12 @@ import {
   defaultPaths,
   renderGeneratedBlueprintModule,
 } from './generate-tiny-olsen-case.mjs';
-import { parseCaseMarkdown, buildArtifacts, serializeCase } from './case-format.mjs';
+import {
+  parseCaseMarkdown,
+  buildArtifacts,
+  serializeCase,
+  serializeSource,
+} from './case-format.mjs';
 
 // Content-agnostic pipeline laws (night build 2026-07-02). The old test asserted
 // hardcoded counts from the pre-drift one-document case; that content is gone
@@ -36,6 +41,13 @@ describe('tiny Olsen case pipeline', () => {
     const rebuilt = buildArtifacts(parseCaseMarkdown(markdown));
     expect(rebuilt.warnings).toEqual([]);
     expect(rebuilt.godotSource).toEqual(artifacts.godotSource);
+  });
+
+  it('obeys the editor round-trip law: parse(serializeSource(parse(md))) == parse(md)', async () => {
+    const artifacts = await buildTinyOlsenArtifacts(paths);
+    const reparsed = parseCaseMarkdown(serializeSource(artifacts.source));
+    expect(reparsed).toEqual(artifacts.source);
+    expect(buildArtifacts(reparsed).godotSource).toEqual(artifacts.godotSource);
   });
 
   it('derives every fact quote from a document run or an explicit Quote override', async () => {
