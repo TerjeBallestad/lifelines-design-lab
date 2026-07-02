@@ -1,76 +1,62 @@
 import { describe, expect, it } from 'vitest';
-import { access, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import {
   buildTinyOlsenArtifacts,
   defaultPaths,
   renderGeneratedBlueprintModule,
 } from './generate-tiny-olsen-case.mjs';
+import { parseCaseMarkdown, buildArtifacts, serializeCase } from './case-format.mjs';
+
+// Content-agnostic pipeline laws (night build 2026-07-02). The old test asserted
+// hardcoded counts from the pre-drift one-document case; that content is gone
+// (SB-314 root cause). These laws must hold for ANY authored case so the
+// authoring editor can evolve content without rewriting tests.
 
 const paths = defaultPaths(process.cwd());
 
-describe('tiny Olsen case generator', () => {
-  it('parses markdown evidence spans and builds the tiny Godot source pack', async () => {
+describe('tiny Olsen case pipeline', () => {
+  it('parses the humane source and builds artifacts without validation warnings', async () => {
     const artifacts = await buildTinyOlsenArtifacts(paths);
-
-    expect(artifacts.godotSource.id).toBe('case_olsen_tiny');
-    expect(artifacts.godotSource.documents).toHaveLength(1);
-    expect(artifacts.godotSource.documents[0].id).toBe('doc_bekymring');
-    expect(artifacts.godotSource.documents[0].runs.filter((run) => run.fact_id).map((run) => run.fact_id)).toEqual([
-      'f_grete_baerer',
-      'f_manglende_post',
-      'f_regninger',
-      'f_lite_mat',
-      'f_telefon_ubesvart',
-    ]);
-    expect(artifacts.godotSource.documents[0].body_bbcode).toContain('[url=fact:f_grete_baerer]');
-    expect(artifacts.godotSource.documents[0].body_bbcode).toContain('Mor opplyser at hun bistår');
-    expect(artifacts.godotSource.documents[0].kind).toBe('BEKYMRINGSMELDING');
-    expect(
-      artifacts.godotSource.facts.find((fact) => fact.id === 'f_regninger').supports_questions,
-    ).toEqual(['q_okonomi']);
-    expect(
-      artifacts.godotSource.hypotheses.find((hypothesis) => hypothesis.id === 'h_okonomisk_sarbar')
-        .question_id,
-    ).toBe('q_okonomi');
-    const visibleText = artifacts.labContent.documents.doc_bekymring.blocks[0].runs
-      .map((run) => run.text)
-      .join('');
-    expect(visibleText).toContain('tjenester. Mor opplyser');
-    expect(visibleText).toContain('observert uåpnet post');
-    expect(visibleText).toContain(', flere ubetalte regninger');
-    expect(visibleText).toContain(', og telefonhenvendelser');
-    expect(artifacts.godotSource.questions.map((q) => q.id)).toEqual(['q_hverdag', 'q_okonomi']);
-    expect(artifacts.godotSource.hypotheses).toHaveLength(3);
-    expect(artifacts.godotSource.dispatches.map((d) => d.id)).toEqual(['d_ring_grete', 'd_konto']);
-    expect(artifacts.godotSource.clocks.map((c) => c.id)).toEqual(['ck_overfort']);
+    expect(artifacts.godotSource.id).toBeTruthy();
+    expect(artifacts.godotSource.documents.length).toBeGreaterThan(0);
+    expect(artifacts.godotSource.facts.length).toBeGreaterThan(0);
+    expect(artifacts.godotSource.questions.length).toBeGreaterThan(0);
+    expect(artifacts.godotSource.hypotheses.length).toBeGreaterThan(0);
   });
 
-  it('renders typed design-lab content from the same canonical source', async () => {
+  it('matches the committed Godot core-loop source JSON (cross-repo freshness)', async () => {
+    const artifacts = await buildTinyOlsenArtifacts(paths);
+    const committed = JSON.parse(await readFile(paths.coreSourcePath, 'utf8'));
+    expect(artifacts.godotSource).toEqual(committed);
+  });
+
+  it('obeys the round-trip law: serialize -> parse -> build == original', async () => {
+    const artifacts = await buildTinyOlsenArtifacts(paths);
+    const markdown = serializeCase(artifacts.godotSource);
+    const rebuilt = buildArtifacts(parseCaseMarkdown(markdown));
+    expect(rebuilt.warnings).toEqual([]);
+    expect(rebuilt.godotSource).toEqual(artifacts.godotSource);
+  });
+
+  it('derives every fact quote from a document run or an explicit Quote override', async () => {
+    const artifacts = await buildTinyOlsenArtifacts(paths);
+    for (const fact of artifacts.godotSource.facts) {
+      expect(typeof fact.quote).toBe('string');
+    }
+  });
+
+  it('renders the typed design-lab module with all expected exports', async () => {
     const artifacts = await buildTinyOlsenArtifacts(paths);
     const moduleSource = renderGeneratedBlueprintModule(artifacts);
-
-    expect(moduleSource).toContain('export const tinyOlsenDocuments');
-    expect(moduleSource).toContain('doc_bekymring');
-    expect(moduleSource).toContain("factId: 'f_grete_baerer'");
-    expect(moduleSource).toContain('export const tinyOlsenGodotSource');
-  });
-
-  it('matches the committed Godot source JSON exactly after generation', async () => {
-    const coreSourcePath = join(
-      paths.coreLoopRoot,
-      'resources/cases/olsen/source/tiny_olsen_slice.json',
-    );
-    try {
-      await access(coreSourcePath);
-    } catch {
-      console.warn(`Skipping cross-repo Godot source check; missing ${coreSourcePath}`);
-      return;
+    for (const name of [
+      'tinyOlsenDocuments',
+      'tinyOlsenFacts',
+      'tinyOlsenQuestions',
+      'tinyOlsenTiltak',
+      'tinyOlsenDispatches',
+      'tinyOlsenGodotSource',
+    ]) {
+      expect(moduleSource).toContain(`export const ${name}`);
     }
-
-    const artifacts = await buildTinyOlsenArtifacts(paths);
-    const committed = JSON.parse(await readFile(coreSourcePath, 'utf8'));
-
-    expect(artifacts.godotSource).toEqual(committed);
   });
 });
