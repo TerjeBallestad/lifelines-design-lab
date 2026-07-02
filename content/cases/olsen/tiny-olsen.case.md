@@ -105,7 +105,7 @@ Kind: RAPPORT
 Title: Frank · hjemmebesøk Gabels gate 14
 Register: notat
 Peek: «Hun hadde dekket på med tre kopper.»
-Meta: HJEMMEBESØK · 4012 F. SOLBERG · BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN
+Meta: HJEMMEBESØK · 4012 F. ÅSLI 
 
 Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.
 
@@ -163,7 +163,7 @@ Summary: Grete er alvorlig syk. Forventet forløp er kort.
 Domain: Helse/risiko
 Category: Dokument
 Source: doc_bekymring
-Supports: q_hverdag
+Supports: q_grete_dor
 Discuss: Frank
 
 ## f_aldri_alene
@@ -172,9 +172,8 @@ Summary: Elling (35) har aldri bodd alene.
 Domain: Hverdag/rutine
 Category: Dokument
 Source: doc_bekymring
-Supports: q_hverdag, q_selv
+Supports: q_grete_dor, q_evner
 Discuss: Frank, Grete
-Reveals questions: q_selv
 
 ## f_grete_baerer
 Label: Grete bærer rutiner
@@ -182,9 +181,8 @@ Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
 Domain: Hverdag/rutine
 Category: Dokument
 Source: doc_bekymring
-Supports: q_hverdag, q_okonomi
+Supports: q_grete_dor, q_okonomi
 Discuss: Frank, Grete
-Reveals questions: q_okonomi, q_hverdag
 
 ## f_saarbar
 Label: Sårbar ved bortfall
@@ -192,7 +190,7 @@ Summary: Elling vurderes som sårbar ved bortfall av pårørende.
 Domain: Helse/risiko
 Category: Risiko
 Source: doc_bekymring
-Supports: q_hverdag
+Supports: q_grete_dor
 Discuss: Frank
 
 ## f_ingen_tjenester
@@ -201,9 +199,8 @@ Summary: Elling har ingen kontakt med øvrige tjenester.
 Domain: Nettverk/sosialt
 Category: Dokument
 Source: doc_bekymring
-Supports: q_kontakt
+Supports: q_baering
 Discuss: Frank
-Reveals questions: q_kontakt
 
 ## f_trygd
 Label: Ellings uføretrygd
@@ -213,7 +210,6 @@ Category: Økonomi
 Source: doc_konto
 Supports: q_okonomi, q_bolig
 Discuss: Frank
-Reveals questions: q_okonomi
 
 ## f_alt_via_grete
 Label: Alt går via Grete
@@ -232,7 +228,6 @@ Category: Økonomi
 Source: doc_konto
 Supports: q_okonomi, q_bolig
 Discuss: Frank, Grete
-Reveals questions: q_okonomi, q_bolig
 
 ## f_gap
 Label: To mynter mangler
@@ -242,7 +237,6 @@ Category: Økonomi
 Source: doc_konto
 Supports: q_okonomi, q_bolig
 Discuss: Frank
-Reveals questions: q_bolig
 
 ## f_ingen_matkjop
 Label: Ingen egne matkjøp
@@ -250,7 +244,7 @@ Summary: Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.
 Domain: Hverdag/rutine
 Category: Økonomi
 Source: doc_konto
-Supports: q_hverdag
+Supports: q_grete_dor
 Discuss: Frank
 
 ## f_leie_stoppet
@@ -261,7 +255,6 @@ Category: Risiko
 Source: doc_huseier
 Supports: q_bolig, q_kollaps
 Discuss: Frank
-Reveals questions: q_bolig
 
 ## f_huseier_kommer
 Label: Huseieren kommer torsdag
@@ -269,7 +262,7 @@ Summary: Huseieren varsler at han kommer innom. Torsdag.
 Domain: Økonomi/bolig
 Category: Risiko
 Source: doc_huseier
-Supports: q_bolig, q_kontakt
+Supports: q_bolig, q_baering
 Discuss: Frank
 
 ## f_leie_privat
@@ -287,9 +280,8 @@ Summary: Grete avviser bekymringen. Gjentar formuleringen.
 Domain: Nettverk/sosialt
 Category: Samtale
 Source: doc_frank_tlf
-Supports: q_hverdag
+Supports: q_grete_dor
 Discuss: Frank
-Reveals questions: q_hverdag
 
 ## f_ingen_plan
 Label: Ingen overtakelsesplan
@@ -297,7 +289,7 @@ Summary: Det finnes ingen plan for hvem som overtar etter Grete.
 Domain: Helse/risiko
 Category: Samtale
 Source: doc_frank_tlf
-Supports: q_hverdag, q_bolig
+Supports: q_grete_dor, q_bolig
 Discuss: Frank, Grete
 
 ## f_elling_tlf
@@ -306,9 +298,8 @@ Summary: Elling tar ikke telefonen. Grete normaliserer det.
 Domain: Nettverk/sosialt
 Category: Samtale
 Source: doc_frank_tlf
-Supports: q_kontakt
+Supports: q_baering
 Discuss: Frank, Grete
-Reveals questions: q_kontakt
 
 ## f_grete_redd
 Label: Grete er redd
@@ -325,7 +316,7 @@ Summary: Uåpnet post samler seg. Grete håndterer den — og skjuler den.
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
-Supports: q_hverdag, q_okonomi
+Supports: q_grete_dor, q_okonomi
 Discuss: Frank
 
 ## f_kalender
@@ -334,7 +325,7 @@ Summary: Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører de
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
-Supports: q_hverdag
+Supports: q_grete_dor
 Discuss: Frank
 
 ## f_matbokser
@@ -343,9 +334,8 @@ Summary: Maten er preppet av Grete, merket med ukedager. Elling varmer.
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
-Supports: q_hverdag, q_selv
+Supports: q_grete_dor, q_evner
 Discuss: Frank, Grete
-Reveals questions: q_selv
 
 ## f_bok
 Label: Bok med notater
@@ -353,9 +343,8 @@ Summary: Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er 
 Domain: Ressurser
 Category: Ressurs
 Source: doc_frank_visit
-Supports: q_selv
+Supports: q_evner
 Discuss: Frank
-Reveals questions: q_selv
 
 ## f_utklipp
 Label: Avisutklipp-arkiv
@@ -363,9 +352,8 @@ Summary: Elling samler og systematiserer: utklipp av Gro og Arbeiderpartiet, dat
 Domain: Ressurser
 Category: Ressurs
 Source: doc_frank_visit
-Supports: q_selv
+Supports: q_evner
 Discuss: Frank
-Reveals questions: q_selv
 
 ## f_avstand
 Label: Holder avstand
@@ -373,9 +361,8 @@ Summary: Elling holder avstand til fremmede. Alltid et møbel mellom.
 Domain: Nettverk/sosialt
 Category: Observasjon
 Source: doc_frank_visit
-Supports: q_kontakt, q_selv
+Supports: q_baering, q_evner
 Discuss: Frank
-Reveals questions: q_kontakt
 
 ## f_smart_gutt
 Label: «En smart gutt»
@@ -383,7 +370,7 @@ Summary: Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.
 Domain: Nettverk/sosialt
 Category: Samtale
 Source: doc_frank_visit
-Supports: q_hverdag, q_selv
+Supports: q_grete_dor, q_evner
 Discuss: Frank
 
 ## f_innlagt
@@ -392,7 +379,7 @@ Summary: Grete er akutt innlagt på Ullevål.
 Domain: Helse/risiko
 Category: Dokument
 Source: doc_innleggelse
-Supports: q_hverdag, q_bolig
+Supports: q_grete_dor, q_bolig
 Discuss: Frank
 
 ## f_elling_uvarslet
@@ -401,7 +388,7 @@ Summary: Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.
 Domain: Helse/risiko
 Category: Dokument
 Source: doc_innleggelse
-Supports: q_kontakt, q_kollaps
+Supports: q_baering, q_kollaps
 Discuss: Frank
 
 ## f_dod
@@ -420,167 +407,203 @@ Summary: Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.
 Domain: Nettverk/sosialt
 Category: Dokument
 Source: doc_dodsfall
-Supports: q_kontakt, q_kollaps
+Supports: q_baering, q_kollaps
 Discuss: Frank
 
 # Questions
 
+## q_grete_dor
+Title: Den dagen Grete ikke kommer hjem — hva stopper?
+Opens when: f_grete_syk, f_klarer_seg
+
+## q_evner
+Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
+Opens when: f_bok, f_utklipp, f_aldri_alene
+
 ## q_okonomi
-Title: Hvem holder økonomien i gang?
+Title: Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?
 Opens when: f_grete_baerer, f_trygd, f_husleie
 
 ## q_bolig
-Title: Kan Elling bli boende når Grete ikke lenger bærer hverdagen?
+Title: Kan Elling bli boende — når husleien har stoppet?
 Opens when: f_gap, f_leie_stoppet, f_husleie
 
-## q_hverdag
-Title: Hva bærer Grete i hverdagen — og hva skjer når hun ikke kan?
-Opens when: f_grete_baerer, f_klarer_seg
-
-## q_selv
-Title: Hva kan Elling lære seg, med riktig stillas?
-Opens when: f_bok, f_utklipp, f_matbokser, f_aldri_alene
-
-## q_kontakt
-Title: Hvordan når kommunen Elling uten Grete?
+## q_baering
+Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
 Opens when: f_elling_tlf, f_avstand, f_ingen_tjenester
+
+## q_vekst
+Title: Hva kan læres — og i hvilket tempo, uten å knekke noe?
+Opens when: f_bok, f_matbokser
 
 ## q_kollaps
 Title: Hva kollapser først nå?
 Opens when: f_dod
 
+## q_liv
+Title: Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?
+Opens when: f_dod, f_utklipp
+
 # Hypotheses
 
-## h_ok_grete
-Title: Grete bærer betalingskjeden.
+## h_gd_system
+Title: Husholdet er et system med to. Med én står det stille.
+Summary: Mat, avtaler, post og kontakt går gjennom arbeidsdeling som forsvinner med Grete. Det er systemet som dør, ikke bare et fravær.
+Question: q_grete_dor
+Needs: f_matbokser, f_ingen_matkjop
+Opens tiltak: t_matlevering
+
+## h_gd_infra
+Title: Alt praktisk er usynlig infrastruktur: mat, kalender, post, kontakt.
+Summary: Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.
+Question: q_grete_dor
+Needs: f_kalender, f_matbokser
+Opens tiltak: t_hjemmehjelp, t_matlevering, t_dokgjennomgang
+Unlocks dispatches: d_ring_grete
+
+## h_gd_ukjent
+Title: Ingenting vi vet. Ingen har noen gang sett Elling alene.
+Summary: Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.
+Question: q_grete_dor
+Needs: f_aldri_alene, f_ingen_plan
+Unlocks dispatches: d_ring_grete
+
+## h_ev_kanmer
+Title: Mer enn det ser ut til.
+Summary: Konsentrasjon, arkiv og system er observert.
+Question: q_evner
+Needs: f_bok, f_utklipp
+Opens tiltak: t_brev
+
+## h_ev_unngaar
+Title: Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.
+Summary: Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.
+Question: q_evner
+Needs: f_post, f_bok
+Opens tiltak: t_dokgjennomgang
+
+## h_ev_ukjent
+Title: Vet ikke. Ingen har prøvd. Det er selve funnet.
+Summary: Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.
+Question: q_evner
+Opens tiltak: t_brev, t_regning
+
+## h_ok_kjede
+Title: Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.
 Summary: Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.
 Question: q_okonomi
 Needs: f_husleie, f_alt_via_grete
 Opens tiltak: t_forvaltning
-
-## h_ok_unngaar
-Title: Elling forstår økonomien, men unngår post.
-Summary: Kapasiteten til å forstå er observert. Papiret når likevel aldri frem til en vurdering, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.
-Question: q_okonomi
-Needs: f_post, f_bok
-Opens tiltak: t_dokgjennomgang
+Unlocks dispatches: d_konto
 
 ## h_ok_gap
-Title: Trygden dekker ikke boligen uten Gretes pensjon.
+Title: Trygden dekker ikke boligen. To mynter mangler hver måned.
 Summary: Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 Needs: f_gap
-Opens tiltak: t_bostotte
+Opens tiltak: t_bostotte, t_huseier
 Unlocks dispatches: d_konto
 
 ## h_b_sikres
 Title: Boligen kan sikres — med bostøtte og ordnet betalingskjede.
-Summary: Med bostøtte og en ordnet betalingskjede kan leieforholdet videreføres. Forutsetter at søknaden fremmes før restansen blir en sak.
+Summary: Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.
 Question: q_bolig
 Needs: f_gap, f_trygd
 Opens tiltak: t_bostotte, t_forvaltning
 
 ## h_b_flytte
 Title: Boligen kan ikke holdes. Flytting bør forberedes nå.
-Summary: Leieforholdet er privat, muntlig og uten vern. Vurderingen er at alternativ bolig bør kartlegges før huseieren tvinger frem en akutt løsning.
+Summary: Privat, muntlig leieforhold uten kontrakt tåler ikke dødsfallet. Å vente er å velge kaos senere.
 Question: q_bolig
 Needs: f_gap, f_leie_privat
 Opens tiltak: t_huseier
 
 ## h_b_uavklart
 Title: Uavklart — økonomien må kartlegges først.
-Summary: Saken mangler økonomisk grunnlag for en boligvurdering. Be Frank lage en økonomisk oversikt.
+Summary: Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.
 Question: q_bolig
+Unlocks dispatches: d_konto
 
-## h_h_infra
-Title: Grete er usynlig infrastruktur: mat, kalender, post, kontakt.
-Summary: Husholdets funksjoner — mat, avtaler, post, kontakt med tjenester — utføres i dag av mor. Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.
-Question: q_hverdag
-Needs: f_kalender, f_matbokser
-Opens tiltak: t_hjemmehjelp, t_matlevering
-Unlocks dispatches: d_ring_grete
-
-## h_h_kanmer
-Title: Elling klarer mer enn det ser ut. Grete har bare alltid gjort det først.
-Summary: Observert kapasitet — konsentrasjon, arkiv, system — tilsier at funksjoner er trenbare. Ikke testet. Grete har aldri latt det bli testet.
-Question: q_hverdag
-Needs: f_bok, f_utklipp
-Opens tiltak: t_brev
-
-## h_h_system
-Title: Husholdet fungerer bare som system med to.
-Summary: Husholdet er bygget som ett system med to roller. Den ene rollen faller bort. Systemet er ikke vurdert for én.
-Question: q_hverdag
-Needs: f_matbokser, f_ingen_matkjop
-Opens tiltak: t_hjemmehjelp
-
-## h_s_trenbar
-Title: Konsentrasjonen er sterk. Rutiner kan trenes — én om gangen.
-Summary: Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.
-Question: q_selv
-Needs: f_bok
-Opens tiltak: t_brev, t_regning
-
-## h_s_formell
-Title: Ferdighetene er der ikke. Formell støtte må bære alt.
-Summary: Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.
-Question: q_selv
-Needs: f_saarbar
-Opens tiltak: t_institusjon
-
-## h_s_ukjent
-Title: Vet ikke — før noe er prøvd med støtte.
-Summary: Kommunen har ingen observasjon av Elling i en mestringssituasjon. Vurdering uten utprøving vil være gjetning.
-Question: q_selv
-Opens tiltak: t_brev
-
-## h_k_oppmote
-Title: Telefonen er stengt kanal. Fast person og oppmøte kan virke.
-Summary: Fasttelefonen vurderes som uegnet kanal. Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. Tempoet settes av Elling.
-Question: q_kontakt
+## h_ba_kanal
+Title: Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.
+Summary: Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.
+Question: q_baering
 Needs: f_elling_tlf, f_avstand
 Opens tiltak: t_hjemmehjelp
 
-## h_k_skriftlig
-Title: All kontakt må gå skriftlig.
-Summary: Skriftlig kanal forutsetter at post åpnes. Det er ikke sannsynliggjort. Kanalen kan være riktig på sikt, men er i dag like stengt som telefonen.
-Question: q_kontakt
-Needs: f_post
-Opens tiltak: t_dokgjennomgang
+## h_ba_drift
+Title: Deler av driften: mat og papir kan erstattes uten å erstatte Grete.
+Summary: Matlevering og dokumentgjennomgang dekker de kritiske funksjonene uten å institusjonalisere noe som helst.
+Question: q_baering
+Needs: f_matbokser, f_post
+Opens tiltak: t_matlevering, t_dokgjennomgang
 
-## h_k_via_grete
-Title: Kontakt må gå via Grete så lenge hun lever.
-Summary: Grete er i dag eneste fungerende kanal inn. Vedtaket bør merke seg at denne kanalen har kort forventet varighet.
-Question: q_kontakt
-Needs: f_klarer_seg
+## h_ba_alt
+Title: Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.
+Summary: Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.
+Question: q_baering
+Needs: f_saarbar
+Opens tiltak: t_institusjon
+
+## h_ve_rutine
+Title: Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.
+Summary: Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.
+Question: q_vekst
+Needs: f_bok
+Opens tiltak: t_brev, t_regning
+
+## h_ve_formell
+Title: Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.
+Summary: Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.
+Question: q_vekst
+Needs: f_saarbar
+Opens tiltak: t_hjemmehjelp
+
+## h_ve_interesser
+Title: Vokse i det han alt gjør: arkivet, systemene, interessene.
+Summary: Identitet over progresjon: bygg videre på Gro-arkivet og systemene han allerede driver, ikke på manglene.
+Question: q_vekst
+Needs: f_utklipp
+Opens tiltak: t_brev
 
 ## h_c_penger
 Title: Økonomien. Husleien stopper denne måneden.
-Summary: Betalingskjeden lå i Gretes skoeske og hukommelse. Den opphørte 15.02. Restanse løper fra første forfall.
+Summary: Betalingskjeden døde med Grete. Restansen begynner å løpe nå.
 Question: q_kollaps
 Needs: f_gap
-Opens tiltak: t_forvaltning, t_huseier
+Opens tiltak: t_forvaltning, t_bostotte
 
 ## h_c_mat
 Title: Maten. Boksene i kjøleskapet tar slutt om dager.
-Summary: Matforsyningen var preppet uke for uke. Siste leveranse skjedde før innleggelsen. Det finnes ingen neste.
+Summary: Grete preppet maten uke for uke. Nedtellingen startet 15.02.
 Question: q_kollaps
 Needs: f_matbokser
 Opens tiltak: t_matlevering
 
 ## h_c_kontakt
 Title: Kontakten. Uten kanal inn er alt annet teori.
-Summary: Kommunen har per i dag ingen bekreftet kanal til Elling. Tiltak uten kanal er vedtak på papir.
+Summary: Dødsbudskapet gikk gjennom brevsprekken. Døren er fortsatt lukket.
 Question: q_kollaps
 Needs: f_brevsprekken
 Opens tiltak: t_hjemmehjelp
 
-## h_press_institusjon
-Title: Press: institusjonsvurdering kan alltid utløses.
-Summary: Pseudo-hypotese som gir institusjonsvurderingen et hjem. Pressmiddelet er alltid tilgjengelig — sårbarheten alene er nok til å vurdere det — men det er aldri automatisk riktig.
-Question: q_selv
-Needs: f_saarbar
-Opens tiltak: t_institusjon
+## h_liv_interesser
+Title: Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.
+Summary: Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.
+Question: q_liv
+Needs: f_utklipp, f_bok
+
+## h_liv_trygghet
+Title: Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.
+Summary: Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.
+Question: q_liv
+Needs: f_avstand
+
+## h_liv_sporre
+Title: Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.
+Summary: Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.
+Question: q_liv
+Needs: f_elling_tlf
 
 # Tiltak
 
@@ -655,7 +678,7 @@ Description: Førstekontakt. Hun vet hvorfor du ringer.
 Sim hook: case.olsen.dispatch.call_grete
 Visit hour: 10
 Occupies hours: 1
-Gate: hypothesis h_h_infra + fact f_grete_baerer
+Gate: hypothesis h_gd_infra + fact f_grete_baerer
 Effects: scenario_stage 1
 
 ## d_konto
