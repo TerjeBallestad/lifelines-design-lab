@@ -44,6 +44,7 @@ export function parseCaseMarkdown(text) {
     domain: required(item.fields, 'Domain', item.id),
     category: required(item.fields, 'Category', item.id),
     source_document_id: item.fields.get('Source') ?? documents[0].id,
+    about: item.fields.get('About') ?? null,
     quote_override: item.fields.get('Quote') ?? null,
     supports: listField(item.fields, 'Supports'),
     discuss: listField(item.fields, 'Discuss'),
@@ -58,6 +59,7 @@ export function parseCaseMarkdown(text) {
       ? listField(item.fields, 'Appears on')
       : listField(item.fields, 'Opens when'),
     opens_when: listField(item.fields, 'Opens when'),
+    leads: parseLeads(item.fields.get('Leads')),
   }));
 
   const hypotheses = parseItems(sectionBody(normalized, 'Hypotheses', 'Tiltak')).map((item) => ({
@@ -79,6 +81,10 @@ export function parseCaseMarkdown(text) {
     needs_hypothesis: listField(item.fields, 'Needs hypothesis'),
     description: required(item.fields, 'Description', item.id),
     sim_hook_id: required(item.fields, 'Sim hook', item.id),
+    weight: item.fields.get('Weight') ?? null,
+    grunnlag_min: item.fields.has('Grunnlag min')
+      ? parseIntegerField(item.fields.get('Grunnlag min'), `${item.id}.Grunnlag min`)
+      : null,
   }));
 
   const dispatches = parseItems(sectionBody(normalized, 'Dispatches', 'Clocks')).map((item) => ({
@@ -216,6 +222,7 @@ export function buildArtifacts(source) {
       source_document_id: fact.source_document_id,
       domain: fact.domain,
       category: fact.category,
+      ...(fact.about != null ? { about: fact.about } : {}),
       quote: fact.quote_override ?? quoteForFact(allRunsByDoc, fact.id),
       discuss: fact.discuss,
       supports_questions: fact.supports,
@@ -223,11 +230,15 @@ export function buildArtifacts(source) {
         ? [{ op: 'reveal_questions', args: { question_ids: fact.reveals_questions } }]
         : [],
     })),
-    questions: source.questions.map((question) => ({
-      id: question.id,
-      prompt: question.prompt,
-      reveal_when: predicateFromFactIds(question.opens_when),
-    })),
+    questions: source.questions.map((question) => {
+      const leads = leadsForQuestion(question, source);
+      return {
+        id: question.id,
+        prompt: question.prompt,
+        reveal_when: predicateFromFactIds(question.opens_when),
+        ...(leads.length ? { leads } : {}),
+      };
+    }),
     hypotheses: source.hypotheses.map((hypothesis) => ({
       id: hypothesis.id,
       title: hypothesis.title,
@@ -243,6 +254,8 @@ export function buildArtifacts(source) {
       slot: tiltak.slot,
       cost: tiltak.cost,
       description: tiltak.description,
+      ...(tiltak.weight != null ? { weight: tiltak.weight } : {}),
+      ...(tiltak.grunnlag_min != null ? { dekning_min_override: tiltak.grunnlag_min } : {}),
     })),
     dispatches: source.dispatches.map((dispatch) => ({
       id: dispatch.id,
@@ -396,6 +409,7 @@ export function serializeCase(godot) {
     lines.push(`Domain: ${fact.domain}`);
     lines.push(`Category: ${fact.category}`);
     lines.push(`Source: ${fact.source_document_id}`);
+    if (fact.about != null) lines.push(`About: ${fact.about}`);
     const derived = quoteFromDocuments(godot.documents ?? [], fact.id);
     if ((fact.quote ?? '') !== derived) lines.push(`Quote: ${fact.quote ?? ''}`);
     pushList(lines, 'Supports', fact.supports_questions);
@@ -413,6 +427,8 @@ export function serializeCase(godot) {
     lines.push(`## ${question.id}`);
     lines.push(`Title: ${question.prompt}`);
     pushList(lines, 'Opens when', factIdsFromPredicate(question.reveal_when));
+    if (question.leads && question.leads.length)
+      lines.push(`Leads: ${leadsLineFromGodot(question, godot)}`);
     lines.push('');
   }
 
@@ -442,6 +458,9 @@ export function serializeCase(godot) {
     lines.push(`Title: ${tiltak.title}`);
     lines.push(`Slot: ${tiltak.slot}`);
     lines.push(`Cost: ${tiltak.cost}`);
+    if (tiltak.weight != null) lines.push(`Weight: ${tiltak.weight}`);
+    if (tiltak.dekning_min_override != null)
+      lines.push(`Grunnlag min: ${tiltak.dekning_min_override}`);
     lines.push(`Description: ${tiltak.description}`);
     lines.push(`Sim hook: ${tiltak.sim_hook_id}`);
     lines.push('');
@@ -581,6 +600,7 @@ export function serializeSource(source) {
     lines.push(`Domain: ${fact.domain}`);
     lines.push(`Category: ${fact.category}`);
     lines.push(`Source: ${fact.source_document_id}`);
+    if (fact.about != null) lines.push(`About: ${fact.about}`);
     if (fact.quote_override != null && fact.quote_override !== '')
       lines.push(`Quote: ${fact.quote_override}`);
     pushList(lines, 'Supports', fact.supports);
@@ -599,6 +619,8 @@ export function serializeSource(source) {
       pushList(lines, 'Appears on', question.appears_on);
     }
     pushList(lines, 'Opens when', question.opens_when);
+    if (question.leads && question.leads.length)
+      lines.push(`Leads: ${leadsLineFromSource(question)}`);
     lines.push('');
   }
 
@@ -622,6 +644,8 @@ export function serializeSource(source) {
     lines.push(`Title: ${tiltak.title}`);
     lines.push(`Slot: ${tiltak.slot}`);
     lines.push(`Cost: ${tiltak.cost}`);
+    if (tiltak.weight != null) lines.push(`Weight: ${tiltak.weight}`);
+    if (tiltak.grunnlag_min != null) lines.push(`Grunnlag min: ${tiltak.grunnlag_min}`);
     pushList(lines, 'Needs', tiltak.needs);
     pushList(lines, 'Needs hypothesis', tiltak.needs_hypothesis);
     lines.push(`Description: ${tiltak.description}`);
@@ -760,6 +784,63 @@ function listField(fields, key) {
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+// Question `Leads:` grammar (SDD-101 §4C worry-list + lead-compass). A comma-
+// separated list mixing dispatch/tiltak id-refs (actions) and «guillemet» hints.
+function parseLeads(value) {
+  if (!value || !value.trim()) return [];
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      if (entry.startsWith('«') && entry.endsWith('»')) {
+        return { kind: 'hint', text: entry.slice(1, -1).trim() };
+      }
+      return { kind: 'action', target_id: entry };
+    });
+}
+
+// Build direction: parsed leads -> the Godot BOARD_LEAD_MAP shape (an array
+// mixing {label, dispatch} dicts for dispatch actions and bare Strings for
+// tiltak actions ("Title (id)") and hints).
+function leadsForQuestion(question, source) {
+  const dispatchById = new Map(
+    (source.dispatches ?? []).map((dispatch) => [dispatch.id, dispatch]),
+  );
+  const tiltakById = new Map((source.tiltak ?? []).map((tiltak) => [tiltak.id, tiltak]));
+  return (question.leads ?? []).map((lead) => {
+    if (lead.kind === 'hint') return lead.text;
+    const dispatch = dispatchById.get(lead.target_id);
+    if (dispatch) return { label: dispatch.title, dispatch: lead.target_id };
+    const tiltak = tiltakById.get(lead.target_id);
+    if (tiltak) return `${tiltak.title} (${lead.target_id})`;
+    return lead.target_id;
+  });
+}
+
+// Reverse direction (Godot JSON -> `Leads:` line): dispatch dicts -> bare id,
+// tiltak lead-strings -> bare id, anything else -> «hint».
+function leadsLineFromGodot(question, godot) {
+  const tiltakLeadToId = new Map(
+    (godot.tiltak ?? []).map((tiltak) => [`${tiltak.title} (${tiltak.id})`, tiltak.id]),
+  );
+  return (question.leads ?? [])
+    .map((lead) => {
+      if (lead && typeof lead === 'object') return lead.dispatch;
+      if (tiltakLeadToId.has(lead)) return tiltakLeadToId.get(lead);
+      return `«${lead}»`;
+    })
+    .join(', ');
+}
+
+// Editor round-trip direction (parsed source -> `Leads:` line): the exact
+// authored line — actions as their bare id, hints as «text».
+function leadsLineFromSource(question) {
+  return (question.leads ?? [])
+    .map((lead) => (lead.kind === 'hint' ? `«${lead.text}»` : lead.target_id))
+    .join(', ');
 }
 
 export function parseDocumentRuns(markdown, warnings = [], docId = 'document') {
