@@ -845,7 +845,7 @@ function leadsLineFromSource(question) {
 
 export function parseDocumentRuns(markdown, warnings = [], docId = 'document') {
   const runs = [];
-  const re = /\[([^\]]+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
+  const re = /\[((?:[^\[\]]|\[[^\]]*\])+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
   let match;
   let cursor = 0;
   let textRunIndex = 0;
@@ -869,7 +869,7 @@ export function parseDocumentRuns(markdown, warnings = [], docId = 'document') {
 
 function evidenceMarkdownToBbcode(markdown) {
   return markdown
-    .replace(/\[([^\]]+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g, '[url=fact:$2]$1[/url]')
+    .replace(/\[((?:[^\[\]]|\[[^\]]*\])+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g, '[url=fact:$2]$1[/url]')
     .trim();
 }
 
