@@ -34,15 +34,15 @@ Meta: ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJ
 
 Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.
 
-Inn: [trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.](fact:f_trygd) Pensjonen hennes: tre mynter.
+Inn: [trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.](fact:f_trygd) Pensjonen hennes: 3 [icon=coin].
 
-Ut: [husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.](fact:f_husleie) Strøm, mat og resten: to mynter til sammen.
+Ut: [husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.](fact:f_husleie) Strøm, mat og resten: 2 [icon=coin] til sammen.
 
 [Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.](fact:f_alt_via_grete) Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.
 
 Jeg gikk gjennom kvitteringene. [Jeg fant ikke ett kjøp som var hans. Ikke ett.](fact:f_ingen_matkjop)
 
-[Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.](fact:f_gap)
+[Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.](fact:f_gap)
 
 # Document: doc_papirer
 Kind: ØKONOMISK OVERSIKT
@@ -53,13 +53,13 @@ Meta: PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I R
 
 Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.
 
-Inn: [trygden hans — to mynter i måneden.](fact:f_trygd) Pensjonen hennes er opphørt.
+Inn: [trygden hans — 2 [icon=coin] i måneden.](fact:f_trygd) Pensjonen hennes er opphørt.
 
-Ut: [husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.](fact:f_husleie)
+Ut: [husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.](fact:f_husleie)
 
 [Alle avtaler står i Gretes navn.](fact:f_alt_via_grete) [Ikke ett kjøp i kvitteringene er hans.](fact:f_ingen_matkjop)
 
-[Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.](fact:f_gap)
+[Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.](fact:f_gap)
 
 Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.
 
@@ -163,6 +163,7 @@ Summary: Grete er alvorlig syk. Forventet forløp er kort.
 Domain: Helse/risiko
 Category: Dokument
 Source: doc_bekymring
+About: grete
 Supports: q_grete_dor
 Discuss: Frank
 
@@ -181,6 +182,7 @@ Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
 Domain: Hverdag/rutine
 Category: Dokument
 Source: doc_bekymring
+About: grete
 Supports: q_grete_dor, q_okonomi
 Discuss: Frank, Grete
 
@@ -190,6 +192,7 @@ Summary: Elling vurderes som sårbar ved bortfall av pårørende.
 Domain: Helse/risiko
 Category: Risiko
 Source: doc_bekymring
+About: elling
 Supports: q_grete_dor
 Discuss: Frank
 
@@ -204,7 +207,7 @@ Discuss: Frank
 
 ## f_trygd
 Label: Ellings uføretrygd
-Summary: Ellings uføretrygd: to mynter i måneden.
+Summary: Ellings uføretrygd: 2 [icon=coin] i måneden.
 Domain: Økonomi/bolig
 Category: Økonomi
 Source: doc_konto
@@ -222,19 +225,21 @@ Discuss: Frank, Grete
 
 ## f_husleie
 Label: Husleie betales av Grete
-Summary: Husleien er tre mynter og betales av Grete.
+Summary: Husleien er 3 [icon=coin] og betales av Grete.
 Domain: Økonomi/bolig
 Category: Økonomi
 Source: doc_konto
+About: utleier
 Supports: q_okonomi, q_bolig
 Discuss: Frank, Grete
 
 ## f_gap
-Label: To mynter mangler
-Summary: Uten Gretes pensjon mangler husholdet to mynter hver måned.
+Label: 2 [icon=coin] mangler
+Summary: Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.
 Domain: Økonomi/bolig
 Category: Økonomi
 Source: doc_konto
+About: utleier
 Supports: q_okonomi, q_bolig
 Discuss: Frank
 
@@ -280,6 +285,7 @@ Summary: Grete avviser bekymringen. Gjentar formuleringen.
 Domain: Nettverk/sosialt
 Category: Samtale
 Source: doc_frank_tlf
+About: elling
 Supports: q_grete_dor
 Discuss: Frank
 
@@ -316,6 +322,7 @@ Summary: Uåpnet post samler seg. Grete håndterer den — og skjuler den.
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
+About: elling
 Supports: q_grete_dor, q_okonomi
 Discuss: Frank
 
@@ -325,6 +332,7 @@ Summary: Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører de
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
+About: grete
 Supports: q_grete_dor
 Discuss: Frank
 
@@ -334,6 +342,7 @@ Summary: Maten er preppet av Grete, merket med ukedager. Elling varmer.
 Domain: Hverdag/rutine
 Category: Observasjon
 Source: doc_frank_visit
+About: grete
 Supports: q_grete_dor, q_evner
 Discuss: Frank, Grete
 
@@ -343,6 +352,7 @@ Summary: Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er 
 Domain: Ressurser
 Category: Ressurs
 Source: doc_frank_visit
+About: elling
 Supports: q_evner
 Discuss: Frank
 
@@ -415,18 +425,22 @@ Discuss: Frank
 ## q_grete_dor
 Title: Den dagen Grete ikke kommer hjem — hva stopper?
 Opens when: f_grete_syk, f_klarer_seg
+Leads: d_ring_grete
 
 ## q_evner
 Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
 Opens when: f_bok, f_utklipp, f_aldri_alene
+Leads: «Åpne ett brev sammen med Frank (t_brev)»
 
 ## q_okonomi
 Title: Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?
 Opens when: f_grete_baerer, f_trygd, f_husleie
+Leads: d_konto, «Snakk med huseieren (t_huseier)»
 
 ## q_bolig
 Title: Kan Elling bli boende — når husleien har stoppet?
 Opens when: f_gap, f_leie_stoppet, f_husleie
+Leads: «Snakk med huseieren (t_huseier)»
 
 ## q_baering
 Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
@@ -497,8 +511,8 @@ Opens tiltak: t_forvaltning
 Unlocks dispatches: d_konto
 
 ## h_ok_gap
-Title: Trygden dekker ikke boligen. To mynter mangler hver måned.
-Summary: Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
+Title: Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.
+Summary: Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 Needs: f_gap
 Opens tiltak: t_bostotte, t_huseier
@@ -667,6 +681,7 @@ Sim hook: case.olsen.tiltak.regning
 Title: Institusjonsvurdering / omsorgsbolig
 Slot: press
 Cost: 0
+Weight: heavy
 Description: Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.
 Sim hook: case.olsen.tiltak.institusjon
 
@@ -678,7 +693,7 @@ Description: Førstekontakt. Hun vet hvorfor du ringer.
 Sim hook: case.olsen.dispatch.call_grete
 Visit hour: 10
 Occupies hours: 1
-Gate: hypothesis h_gd_infra + fact f_grete_baerer
+Gate: fact f_kalender + fact f_matbokser + fact f_grete_baerer
 Effects: scenario_stage 1
 
 ## d_konto
@@ -687,7 +702,7 @@ Description: Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en d
 Sim hook: case.olsen.dispatch.account_overview
 Visit hour: 9
 Occupies hours: 3
-Gate: hypothesis h_ok_gap + fact f_gap
+Gate: fact f_gap
 Effects: pending_doc pending_konto_overfort after 1 day on ck_overfort
 
 # Clocks
@@ -726,7 +741,7 @@ Good label: Søknad komplett
 Good size: 4
 Bad label: Frist glipper
 Bad size: 4
-Visibility: hypothesis h_b_sikres
+Visibility: fact f_gap + fact f_trygd
 
 # Event deltas
 

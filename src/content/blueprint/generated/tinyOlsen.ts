@@ -75,18 +75,18 @@ export const tinyOlsenDocuments = {
             text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall. Inn: ',
           },
           {
-            text: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+            text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
             factId: 'f_trygd',
           },
           {
-            text: ' Pensjonen hennes: tre mynter. Ut: ',
+            text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
           },
           {
-            text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+            text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
           {
-            text: ' Strøm, mat og resten: to mynter til sammen. ',
+            text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
           },
           {
             text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
@@ -103,7 +103,7 @@ export const tinyOlsenDocuments = {
             text: ' ',
           },
           {
-            text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+            text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
         ],
@@ -125,14 +125,14 @@ export const tinyOlsenDocuments = {
             text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. Inn: ',
           },
           {
-            text: 'trygden hans — to mynter i måneden.',
+            text: 'trygden hans — 2 [icon=coin] i måneden.',
             factId: 'f_trygd',
           },
           {
             text: ' Pensjonen hennes er opphørt. Ut: ',
           },
           {
-            text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.',
+            text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
           {
@@ -153,7 +153,7 @@ export const tinyOlsenDocuments = {
             text: ' ',
           },
           {
-            text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
+            text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
           {
@@ -432,8 +432,8 @@ export const tinyOlsenFacts = {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Ellings uføretrygd: to mynter i måneden.',
-    quote: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+    text: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
+    quote: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank'],
   },
@@ -450,8 +450,8 @@ export const tinyOlsenFacts = {
     id: 'f_husleie',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Husleien er tre mynter og betales av Grete.',
-    quote: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+    text: 'Husleien er 3 [icon=coin] og betales av Grete.',
+    quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank', 'Grete'],
   },
@@ -459,8 +459,8 @@ export const tinyOlsenFacts = {
     id: 'f_gap',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
-    quote: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+    text: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
+    quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank'],
   },
@@ -713,10 +713,10 @@ export const tinyOlsenQuestions = {
       },
       {
         id: 'h_ok_gap',
-        label: 'Trygden dekker ikke boligen. To mynter mangler hver måned.',
+        label: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
         needs: ['f_gap'],
         opens: ['t_bostotte', 't_huseier'],
-        note: 'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        note: 'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       },
     ],
   },
@@ -1043,7 +1043,7 @@ export const tinyOlsenGodotSource = {
       peek: '«Regnestykket går opp — med henne.»',
       meta: 'ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
       body_bbcode:
-        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: tre mynter.\n\nUt: [url=fact:f_husleie]husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: to mynter til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.[/url]',
+        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: 3 [icon=coin].\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: 2 [icon=coin] til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.[/url]',
       runs: [
         {
           id: 'run_text_0',
@@ -1052,22 +1052,22 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_trygd',
-          text: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+          text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
           fact_id: 'f_trygd',
         },
         {
           id: 'run_text_1',
-          text: ' Pensjonen hennes: tre mynter. Ut: ',
+          text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
           fact_id: '',
         },
         {
           id: 'run_husleie',
-          text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+          text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
           fact_id: 'f_husleie',
         },
         {
           id: 'run_text_2',
-          text: ' Strøm, mat og resten: to mynter til sammen. ',
+          text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
           fact_id: '',
         },
         {
@@ -1092,7 +1092,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+          text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
           fact_id: 'f_gap',
         },
       ],
@@ -1105,7 +1105,7 @@ export const tinyOlsenGodotSource = {
       peek: '«Skoesken sto der hun forlot den.»',
       meta: 'PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET',
       body_bbcode:
-        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — to mynter i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
       runs: [
         {
           id: 'run_text_0',
@@ -1114,7 +1114,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_trygd',
-          text: 'trygden hans — to mynter i måneden.',
+          text: 'trygden hans — 2 [icon=coin] i måneden.',
           fact_id: 'f_trygd',
         },
         {
@@ -1124,7 +1124,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_husleie',
-          text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.',
+          text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
           fact_id: 'f_husleie',
         },
         {
@@ -1154,7 +1154,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
+          text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
           fact_id: 'f_gap',
         },
         {
@@ -1438,6 +1438,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Dokument',
+      about: 'grete',
       quote: 'sykdom med kort forventet forløp',
       discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
@@ -1462,6 +1463,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Hverdag/rutine',
       category: 'Dokument',
+      about: 'grete',
       quote:
         'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
       discuss: ['Frank', 'Grete'],
@@ -1475,6 +1477,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Risiko',
+      about: 'elling',
       quote: 'Pasienten fremstår sårbar ved bortfall av pårørende',
       discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
@@ -1495,11 +1498,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_trygd',
       label: 'Ellings uføretrygd',
-      summary: 'Ellings uføretrygd: to mynter i måneden.',
+      summary: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+      quote:
+        'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
       discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
@@ -1519,23 +1523,25 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_husleie',
       label: 'Husleie betales av Grete',
-      summary: 'Husleien er tre mynter og betales av Grete.',
+      summary: 'Husleien er 3 [icon=coin] og betales av Grete.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+      about: 'utleier',
+      quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
       discuss: ['Frank', 'Grete'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
     {
       id: 'f_gap',
-      label: 'To mynter mangler',
-      summary: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
+      label: '2 [icon=coin] mangler',
+      summary: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+      about: 'utleier',
+      quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
       discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
@@ -1596,6 +1602,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_tlf',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
+      about: 'elling',
       quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
       discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
@@ -1646,6 +1653,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
+      about: 'elling',
       quote:
         'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
       discuss: ['Frank'],
@@ -1659,6 +1667,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
+      about: 'grete',
       quote: 'kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.',
       discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
@@ -1671,6 +1680,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
+      about: 'grete',
       quote: 'middagsbokser merket med ukedager, mandag til søndag.',
       discuss: ['Frank', 'Grete'],
       supports_questions: ['q_grete_dor', 'q_evner'],
@@ -1683,6 +1693,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Ressurser',
       category: 'Ressurs',
+      about: 'elling',
       quote: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
       discuss: ['Frank'],
       supports_questions: ['q_evner'],
@@ -1804,6 +1815,12 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: [
+        {
+          label: 'Ring Grete',
+          dispatch: 'd_ring_grete',
+        },
+      ],
     },
     {
       id: 'q_evner',
@@ -1831,6 +1848,7 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: ['Åpne ett brev sammen med Frank (t_brev)'],
     },
     {
       id: 'q_okonomi',
@@ -1858,6 +1876,13 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: [
+        {
+          label: 'Be om økonomisk oversikt',
+          dispatch: 'd_konto',
+        },
+        'Snakk med huseieren (t_huseier)',
+      ],
     },
     {
       id: 'q_bolig',
@@ -1885,6 +1910,7 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: ['Snakk med huseieren (t_huseier)'],
     },
     {
       id: 'q_baering',
@@ -2192,9 +2218,9 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ok_gap',
-      title: 'Trygden dekker ikke boligen. To mynter mangler hver måned.',
+      title: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
       summary:
-        'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       question_id: 'q_okonomi',
       availability: {
         op: 'fact_lifted',
@@ -2634,6 +2660,7 @@ export const tinyOlsenGodotSource = {
       cost: 0,
       description:
         'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.',
+      weight: 'heavy',
     },
   ],
   dispatches: [
@@ -2648,9 +2675,15 @@ export const tinyOlsenGodotSource = {
         op: 'all',
         children: [
           {
-            op: 'hypothesis_chosen',
+            op: 'fact_lifted',
             args: {
-              hypothesis_id: 'h_gd_infra',
+              fact_id: 'f_kalender',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_matbokser',
             },
           },
           {
@@ -2678,21 +2711,10 @@ export const tinyOlsenGodotSource = {
       visit_hour: 9,
       occupies_hours: 3,
       gate: {
-        op: 'all',
-        children: [
-          {
-            op: 'hypothesis_chosen',
-            args: {
-              hypothesis_id: 'h_ok_gap',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_gap',
-            },
-          },
-        ],
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_gap',
+        },
       },
       effects: [
         {
@@ -2747,10 +2769,21 @@ export const tinyOlsenGodotSource = {
       bad_segment_label: 'Frist glipper',
       bad_segment_size: 4,
       visibility: {
-        op: 'hypothesis_chosen',
-        args: {
-          hypothesis_id: 'h_b_sikres',
-        },
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_gap',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_trygd',
+            },
+          },
+        ],
       },
     },
   ],
