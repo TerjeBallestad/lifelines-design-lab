@@ -5,7 +5,8 @@
 export const kind = 'MELDING';
 
 export const styleCss = `
-.doc--melding .page { padding: 64px 76px 80px; }
+/* Institutional notice stock — pale grey-cream. Base padding, no override. */
+.doc--melding { --paper: #e4e0d3; }
 .doc--melding .notice-head {
   text-align: center; border-top: 3px solid var(--rule-strong);
   border-bottom: 3px solid var(--rule-strong); padding: 16px 0 14px;

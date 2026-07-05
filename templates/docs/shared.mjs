@@ -128,13 +128,17 @@ export function kindSlug(kind) {
     .replace(/(^-|-$)/g, '');
 }
 
+// Paper ground (SDD-108 feel-gate): pages must read as paper under room light,
+// not backlit white — the Godot desk material is unshaded and shows this verbatim.
+// Base is a dusky warm parchment; each kind template nudges --paper slightly for
+// identity at desk-miniature scale (all stay in the #e0–#e9 family).
 const BASE_CSS = `
 :root {
-  --paper: #f4efe3;
+  --paper: #e5decb;
   --ink: #211b13;
   --ink-soft: #4a4034;
   --ink-faint: #8a7d68;
-  --rule: #cabfa6;
+  --rule: #c2b69c;
   --rule-strong: #7d6f52;
 }
 * { box-sizing: border-box; }
@@ -150,10 +154,15 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+/* Document-real margins (SDD-108 feel-gate): the mesh maps the texture
+   edge-to-edge, so this padding IS the printed page's own margin. ~48px on an
+   800px page ≈ a physical A4's ~15mm — content fills the sheet like a real
+   letter, not a photocopy floating in whitespace. Kind templates must NOT
+   override .page padding; per-kind identity lives in letterheads/rules. */
 .page {
   width: ${PAGE_WIDTH_PX}px;
   min-height: ${PAGE_MIN_HEIGHT_PX}px;
-  padding: 64px 72px 80px;
+  padding: 40px 48px 48px;
 }
 .stamp {
   font-family: 'Fraunces', Georgia, serif;

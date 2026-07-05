@@ -5,7 +5,8 @@
 export const kind = 'RAPPORT';
 
 export const styleCss = `
-.doc--rapport .page { padding: 58px 72px 76px; }
+/* Typed saksdokument — warm office cream. Base padding, no override. */
+.doc--rapport { --paper: #e6dfca; }
 .doc--rapport .report-head {
   border-bottom: 2.5px solid var(--rule-strong); padding-bottom: 12px;
 }

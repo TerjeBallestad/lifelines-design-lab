@@ -7,7 +7,8 @@
 export const kind = 'DAGSRAPPORT';
 
 export const styleCss = `
-.doc--dagsrapport .page { padding: 58px 72px 76px; }
+/* Office form stock. Base padding, no override. */
+.doc--dagsrapport { --paper: #e4dcc2; }
 .doc--dagsrapport .day-head {
   display: flex; justify-content: space-between; align-items: flex-end;
   border-bottom: 2.5px solid var(--rule-strong); padding-bottom: 12px;
@@ -24,7 +25,9 @@ export const styleCss = `
 }
 .doc--dagsrapport .day-fields .rule { border-bottom: 1px solid var(--rule); height: 1.4em; }
 .doc--dagsrapport .day-body {
-  margin-top: 22px; height: 640px;
+  /* 21 rule lines x 40px — fills the sheet down to the base bottom margin
+     without pushing past PAGE_MIN_HEIGHT (fullPage bake must stay A4). */
+  margin-top: 22px; height: 840px;
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0, transparent 39px,

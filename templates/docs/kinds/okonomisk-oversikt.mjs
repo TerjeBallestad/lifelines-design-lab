@@ -5,7 +5,8 @@
 export const kind = 'ØKONOMISK OVERSIKT';
 
 export const styleCss = `
-.doc--okonomisk-oversikt .page { padding: 56px 66px 72px; }
+/* Ledger stock — khaki accounting-sheet tint. Base padding, no override. */
+.doc--okonomisk-oversikt { --paper: #e0dbc0; }
 .doc--okonomisk-oversikt .ledger-head {
   display: flex; justify-content: space-between; align-items: flex-end;
   border-bottom: 3px double var(--rule-strong);

@@ -5,10 +5,14 @@
 export const kind = 'BREV';
 
 export const styleCss = `
+/* Personal letter stock — warmest sheet in the family. Page padding comes from
+   the shared base (document-real margins, SDD-108 feel-gate); do not override.
+   The top-sheen highlight is kept faint so the page still reads as paper under
+   room light, not backlit white. */
+.doc--brev { --paper: #e8dfc5; }
 .doc--brev .page {
-  padding: 72px 84px 88px;
   background:
-    radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.35), transparent 60%),
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 250, 235, 0.16), transparent 60%),
     var(--paper);
 }
 .doc--brev .letter-meta {
