@@ -30,7 +30,7 @@ Kind: ØKONOMISK OVERSIKT
 Title: Frank · husholdets økonomi
 Register: notat
 Peek: «Regnestykket går opp — med henne.»
-Meta: ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET
+Meta: ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET
 
 Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.
 
@@ -49,7 +49,7 @@ Kind: ØKONOMISK OVERSIKT
 Title: Frank · papirene i leiligheten
 Register: notat
 Peek: «Skoesken sto der hun forlot den.»
-Meta: PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET
+Meta: PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET
 
 Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.
 
@@ -86,7 +86,7 @@ Kind: FELTNOTAT
 Title: Frank · telefonsamtale med Grete
 Register: notat
 Peek: «Hun tok den på andre forsøk.»
-Meta: FELTNOTAT · 4012 F. SOLBERG · TLF. G. OLSEN
+Meta: FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN
 
 Ringte Grete 11:40. Hun tok den på andre forsøk.
 
@@ -288,6 +288,7 @@ Source: doc_frank_tlf
 About: elling
 Supports: q_grete_dor
 Discuss: Frank
+Reveals event: dispatch:d_ring_grete
 
 ## f_ingen_plan
 Label: Ingen overtakelsesplan
@@ -691,7 +692,6 @@ Sim hook: case.olsen.tiltak.institusjon
 Title: Ring Grete
 Description: Førstekontakt. Hun vet hvorfor du ringer.
 Sim hook: case.olsen.dispatch.call_grete
-Visit hour: 10
 Occupies hours: 1
 Gate: fact f_kalender + fact f_matbokser + fact f_grete_baerer
 Effects: scenario_stage 1
@@ -700,10 +700,15 @@ Effects: scenario_stage 1
 Title: Be om økonomisk oversikt
 Description: Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.
 Sim hook: case.olsen.dispatch.account_overview
-Visit hour: 9
 Occupies hours: 3
 Gate: fact f_gap
 Effects: pending_doc pending_konto_overfort after 1 day on ck_overfort
+
+## hjemmebesok
+Title: Hjemmebesøk
+Description: Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.
+Sim hook: case.olsen.dispatch.hjemmebesok
+Occupies hours: 2
 
 # Clocks
 

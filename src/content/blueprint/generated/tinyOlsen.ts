@@ -66,7 +66,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · husholdets økonomi',
     register: 'notat',
     peek: '«Regnestykket går opp — med henne.»',
-    meta: 'ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+    meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
     blocks: [
       {
         id: 'doc_konto_body',
@@ -116,7 +116,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · papirene i leiligheten',
     register: 'notat',
     peek: '«Skoesken sto der hun forlot den.»',
-    meta: 'PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET',
+    meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
     blocks: [
       {
         id: 'doc_papirer_body',
@@ -208,7 +208,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · telefonsamtale med Grete',
     register: 'notat',
     peek: '«Hun tok den på andre forsøk.»',
-    meta: 'FELTNOTAT · 4012 F. SOLBERG · TLF. G. OLSEN',
+    meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
     blocks: [
       {
         id: 'doc_frank_tlf_body',
@@ -960,6 +960,11 @@ export const tinyOlsenDispatches = {
     title: 'Be om økonomisk oversikt',
     description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
   },
+  hjemmebesok: {
+    id: 'hjemmebesok',
+    title: 'Hjemmebesøk',
+    description: 'Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.',
+  },
 } satisfies Record<string, BlueprintDispatch>;
 
 export const tinyOlsenGodotSource = {
@@ -1041,7 +1046,7 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · husholdets økonomi',
       register: 'notat',
       peek: '«Regnestykket går opp — med henne.»',
-      meta: 'ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+      meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
       body_bbcode:
         'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: 3 [icon=coin].\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: 2 [icon=coin] til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.[/url]',
       runs: [
@@ -1103,7 +1108,7 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · papirene i leiligheten',
       register: 'notat',
       peek: '«Skoesken sto der hun forlot den.»',
-      meta: 'PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET',
+      meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
       body_bbcode:
         'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
       runs: [
@@ -1217,7 +1222,7 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · telefonsamtale med Grete',
       register: 'notat',
       peek: '«Hun tok den på andre forsøk.»',
-      meta: 'FELTNOTAT · 4012 F. SOLBERG · TLF. G. OLSEN',
+      meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
       body_bbcode:
         'Ringte Grete 11:40. Hun tok den på andre forsøk.\n\nHun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: [url=fact:f_klarer_seg]«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.[/url] Andre gangen lavere.\n\n[url=fact:f_ingen_plan]Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.[/url]\n\n[url=fact:f_elling_tlf]Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»[/url]\n\nMot slutten [url=fact:f_grete_redd]spurte hun om dette betydde at noen kom til å ta ham fra leiligheten[/url]. Jeg sa nei. Jeg håper det var sant.\n\nHun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
       runs: [
@@ -1606,6 +1611,7 @@ export const tinyOlsenGodotSource = {
       quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
       discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
+      reveals_event: 'dispatch:d_ring_grete',
       lift_effects: [],
     },
     {
@@ -2669,7 +2675,6 @@ export const tinyOlsenGodotSource = {
       title: 'Ring Grete',
       sim_hook_id: 'case.olsen.dispatch.call_grete',
       description: 'Førstekontakt. Hun vet hvorfor du ringer.',
-      visit_hour: 10,
       occupies_hours: 1,
       gate: {
         op: 'all',
@@ -2708,7 +2713,6 @@ export const tinyOlsenGodotSource = {
       title: 'Be om økonomisk oversikt',
       sim_hook_id: 'case.olsen.dispatch.account_overview',
       description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
-      visit_hour: 9,
       occupies_hours: 3,
       gate: {
         op: 'fact_lifted',
@@ -2726,6 +2730,14 @@ export const tinyOlsenGodotSource = {
           },
         },
       ],
+    },
+    {
+      id: 'hjemmebesok',
+      title: 'Hjemmebesøk',
+      sim_hook_id: 'case.olsen.dispatch.hjemmebesok',
+      description: 'Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.',
+      occupies_hours: 2,
+      effects: [],
     },
   ],
   clocks: [

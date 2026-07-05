@@ -49,6 +49,7 @@ export function parseCaseMarkdown(text) {
     supports: listField(item.fields, 'Supports'),
     discuss: listField(item.fields, 'Discuss'),
     reveals_questions: listField(item.fields, 'Reveals questions'),
+    reveals_event: item.fields.get('Reveals event') ?? null,
   }));
 
   const questions = parseItems(sectionBody(normalized, 'Questions', 'Hypotheses')).map((item) => ({
@@ -92,13 +93,15 @@ export function parseCaseMarkdown(text) {
     title: required(item.fields, 'Title', item.id),
     description: required(item.fields, 'Description', item.id),
     sim_hook_id: required(item.fields, 'Sim hook', item.id),
-    visit_hour: parseIntegerField(item.fields.get('Visit hour') ?? '14', `${item.id}.Visit hour`),
+    visit_hour: item.fields.has('Visit hour')
+      ? parseIntegerField(item.fields.get('Visit hour'), `${item.id}.Visit hour`)
+      : null,
     occupies_hours: parseIntegerField(
       item.fields.get('Occupies hours') ?? '2',
       `${item.id}.Occupies hours`,
     ),
-    gate: required(item.fields, 'Gate', item.id),
-    effects: required(item.fields, 'Effects', item.id),
+    gate: item.fields.get('Gate') ?? '',
+    effects: item.fields.get('Effects') ?? '',
   }));
 
   const clocks = parseItems(sectionBody(normalized, 'Clocks', 'Event deltas')).map((item) => ({
@@ -226,6 +229,7 @@ export function buildArtifacts(source) {
       quote: fact.quote_override ?? quoteForFact(allRunsByDoc, fact.id),
       discuss: fact.discuss,
       supports_questions: fact.supports,
+      ...(fact.reveals_event ? { reveals_event: fact.reveals_event } : {}),
       lift_effects: fact.reveals_questions.length
         ? [{ op: 'reveal_questions', args: { question_ids: fact.reveals_questions } }]
         : [],
@@ -262,9 +266,9 @@ export function buildArtifacts(source) {
       title: dispatch.title,
       sim_hook_id: dispatch.sim_hook_id,
       description: dispatch.description,
-      visit_hour: dispatch.visit_hour,
+      ...(dispatch.visit_hour != null ? { visit_hour: dispatch.visit_hour } : {}),
       occupies_hours: dispatch.occupies_hours,
-      gate: predicateFromGate(dispatch.gate),
+      ...(dispatch.gate ? { gate: predicateFromGate(dispatch.gate) } : {}),
       effects: effectsFromLine(dispatch.effects),
     })),
     clocks: source.clocks.map((clock) => {
@@ -418,6 +422,7 @@ export function serializeCase(godot) {
       .filter((effect) => effect.op === 'reveal_questions')
       .flatMap((effect) => effect.args?.question_ids ?? []);
     pushList(lines, 'Reveals questions', reveals);
+    if (fact.reveals_event) lines.push(`Reveals event: ${fact.reveals_event}`);
     lines.push('');
   }
 
@@ -473,10 +478,11 @@ export function serializeCase(godot) {
     lines.push(`Title: ${dispatch.title}`);
     lines.push(`Description: ${dispatch.description}`);
     lines.push(`Sim hook: ${dispatch.sim_hook_id}`);
-    lines.push(`Visit hour: ${dispatch.visit_hour ?? 14}`);
+    if (dispatch.visit_hour != null) lines.push(`Visit hour: ${dispatch.visit_hour}`);
     lines.push(`Occupies hours: ${dispatch.occupies_hours ?? 2}`);
-    lines.push(`Gate: ${gateLineFromPredicate(dispatch.gate)}`);
-    lines.push(`Effects: ${effectsLineFromEffects(dispatch.effects)}`);
+    if (dispatch.gate) lines.push(`Gate: ${gateLineFromPredicate(dispatch.gate)}`);
+    if (dispatch.effects && dispatch.effects.length)
+      lines.push(`Effects: ${effectsLineFromEffects(dispatch.effects)}`);
     lines.push('');
   }
 
@@ -606,6 +612,7 @@ export function serializeSource(source) {
     pushList(lines, 'Supports', fact.supports);
     pushList(lines, 'Discuss', fact.discuss);
     pushList(lines, 'Reveals questions', fact.reveals_questions);
+    if (fact.reveals_event) lines.push(`Reveals event: ${fact.reveals_event}`);
     lines.push('');
   }
 
@@ -660,10 +667,10 @@ export function serializeSource(source) {
     lines.push(`Title: ${dispatch.title}`);
     lines.push(`Description: ${dispatch.description}`);
     lines.push(`Sim hook: ${dispatch.sim_hook_id}`);
-    lines.push(`Visit hour: ${dispatch.visit_hour}`);
+    if (dispatch.visit_hour != null) lines.push(`Visit hour: ${dispatch.visit_hour}`);
     lines.push(`Occupies hours: ${dispatch.occupies_hours}`);
-    lines.push(`Gate: ${dispatch.gate}`);
-    lines.push(`Effects: ${dispatch.effects}`);
+    if (dispatch.gate) lines.push(`Gate: ${dispatch.gate}`);
+    if (dispatch.effects) lines.push(`Effects: ${dispatch.effects}`);
     lines.push('');
   }
 
@@ -929,6 +936,7 @@ function openingSourcesForHypothesis(hypothesis) {
 }
 
 function effectsFromLine(line) {
+  if (!line || !line.trim()) return [];
   return line.split(';').map((part) => {
     const token = part.trim();
     const scenarioStage = token.match(/^scenario_stage\s+(\d+)$/);
