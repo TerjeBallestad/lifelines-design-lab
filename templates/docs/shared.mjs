@@ -126,8 +126,11 @@ export const KIND_SIZES = Object.freeze({
   BEKYMRINGSMELDING: { width: 800, minHeight: 1131 }, // A4 official form
   RAPPORT: { width: 800, minHeight: 1131 }, // A4 typed report
   DAGSRAPPORT: { width: 800, minHeight: 1131 }, // A4 stationery
-  BREV: { width: 660, minHeight: 880 }, // A5-ish personal letter
-  'ØKONOMISK OVERSIKT': { width: 560, minHeight: 1240 }, // narrow ledger strip
+  // Non-form kinds hug their content (round 2, Terje 2026-07-11: a tall min-height
+  // with short content baked in a huge blank bottom — «not in a good way»). The
+  // strip's identity is its NARROW WIDTH; height comes from the text.
+  BREV: { width: 660, minHeight: 560 }, // A5-ish personal letter
+  'ØKONOMISK OVERSIKT': { width: 560, minHeight: 620 }, // narrow ledger strip
   FELTNOTAT: { width: 640, minHeight: 460 }, // notepad index card
   MELDING: { width: 480, minHeight: 360 }, // phone-message lapp
 });
