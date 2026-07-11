@@ -7,7 +7,7 @@ export const kind = 'BEKYMRINGSMELDING';
 export const styleCss = `
 /* Municipal form stock — dry, slightly yellowed. Page padding comes from the
    shared base (document-real margins, SDD-108 feel-gate); do not override. */
-.doc--bekymringsmelding { --paper: #e3dcc4; }
+.doc--bekymringsmelding { --paper: #ede5cd; }
 .doc--bekymringsmelding .letterhead {
   border: 2.5px solid var(--rule-strong);
   padding: 18px 22px 16px;

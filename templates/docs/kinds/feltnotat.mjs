@@ -6,7 +6,7 @@ export const kind = 'FELTNOTAT';
 
 export const styleCss = `
 /* Notepad stock — a touch cooler than office cream. Base padding, no override. */
-.doc--feltnotat { --paper: #e2dfd0; }
+.doc--feltnotat { --paper: #ece9da; --page-pad: 26px 32px 32px; }
 .doc--feltnotat .note-head {
   border-left: 6px solid var(--rule-strong);
   padding: 2px 0 6px 16px; margin-bottom: 8px;

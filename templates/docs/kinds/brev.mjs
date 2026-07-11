@@ -9,7 +9,7 @@ export const styleCss = `
    the shared base (document-real margins, SDD-108 feel-gate); do not override.
    The top-sheen highlight is kept faint so the page still reads as paper under
    room light, not backlit white. */
-.doc--brev { --paper: #e8dfc5; }
+.doc--brev { --paper: #f4ebd3; --page-pad: 36px 42px 42px; }
 .doc--brev .page {
   background:
     radial-gradient(120% 80% at 50% 0%, rgba(255, 250, 235, 0.16), transparent 60%),

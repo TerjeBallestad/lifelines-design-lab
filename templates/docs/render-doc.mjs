@@ -21,6 +21,7 @@ import {
   renderRuns,
   pageShell,
   overrideForDoc,
+  sizeForKind,
   PAGE_WIDTH_PX,
 } from './shared.mjs';
 
@@ -87,13 +88,16 @@ export function buildStationeryHtml(kind) {
 export async function renderHtmlToPng(html, outPngPath, opts = {}) {
   const deviceScaleFactor = opts.deviceScaleFactor ?? DEFAULT_DEVICE_SCALE_FACTOR;
   const htmlPath = opts.htmlPath ?? outPngPath.replace(/\.png$/i, '.html');
+  // Per-kind sheet format (SB-427): a viewport wider than the kind's CSS page
+  // would leave a white gutter in the fullPage shot, so callers pass the size.
+  const viewport = opts.viewport ?? { width: PAGE_WIDTH_PX, height: 1131 };
   mkdirSync(join(outPngPath, '..'), { recursive: true });
   writeFileSync(htmlPath, html, 'utf8');
 
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({
-      viewport: { width: PAGE_WIDTH_PX, height: 1131 },
+      viewport,
       deviceScaleFactor,
     });
     await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle' });
@@ -107,11 +111,19 @@ export async function renderHtmlToPng(html, outPngPath, opts = {}) {
 }
 
 export async function renderDocToPng(docId, labContent, outPngPath, opts = {}) {
-  return renderHtmlToPng(buildDocHtml(docId, labContent), outPngPath, opts);
+  const size = sizeForKind(labContent?.documents?.[docId]?.kind);
+  return renderHtmlToPng(buildDocHtml(docId, labContent), outPngPath, {
+    viewport: { width: size.width, height: size.minHeight },
+    ...opts,
+  });
 }
 
 export async function renderStationeryToPng(kind, outPngPath, opts = {}) {
-  return renderHtmlToPng(buildStationeryHtml(kind), outPngPath, opts);
+  const size = sizeForKind(kind);
+  return renderHtmlToPng(buildStationeryHtml(kind), outPngPath, {
+    viewport: { width: size.width, height: size.minHeight },
+    ...opts,
+  });
 }
 
 // ---- CLI ------------------------------------------------------------------

@@ -108,13 +108,33 @@ export function overrideForDoc(docId) {
 }
 
 // ---------------------------------------------------------------------------
-// Page shell. Fixed A4 aspect (800px wide × A4 min-height); the bake screenshots
-// fullPage at deviceScaleFactor 2–3 → ~1600×2262. Wraps a kind template's body
-// fragment with the font-faces, shared paper base, the kind CSS, and any per-doc
-// override CSS. body carries doc--<kindSlug> + the override class.
+// Page shell. Per-kind physical formats (SB-427 probe: all-same-size killed paper
+// identity — SB-411 verdict). Sizes are CSS px at the shared 800px-A4 scale, so
+// pixels stay physically comparable across kinds: the core-loop desk maps
+// bake-px → world units with ONE constant (DeskDoc BAKE_A4_WIDTH_PX). The bake
+// screenshots fullPage at deviceScaleFactor 2–3. pageShell wraps a kind
+// template's body fragment with the font-faces, shared paper base, the per-kind
+// size CSS, the kind CSS, and any per-doc override CSS. body carries
+// doc--<kindSlug> + the override class.
 // ---------------------------------------------------------------------------
 export const PAGE_WIDTH_PX = 800;
 export const PAGE_MIN_HEIGHT_PX = 1131; // 800 × √2 ≈ A4 portrait.
+
+// Per-kind sheet formats (SB-427 strong-variation scheme, Terje 2026-07-11).
+// Height is a MINIMUM — a page grows if its content runs longer (fullPage bake).
+export const KIND_SIZES = Object.freeze({
+  BEKYMRINGSMELDING: { width: 800, minHeight: 1131 }, // A4 official form
+  RAPPORT: { width: 800, minHeight: 1131 }, // A4 typed report
+  DAGSRAPPORT: { width: 800, minHeight: 1131 }, // A4 stationery
+  BREV: { width: 660, minHeight: 880 }, // A5-ish personal letter
+  'ØKONOMISK OVERSIKT': { width: 560, minHeight: 1240 }, // narrow ledger strip
+  FELTNOTAT: { width: 640, minHeight: 460 }, // notepad index card
+  MELDING: { width: 480, minHeight: 360 }, // phone-message lapp
+});
+
+export function sizeForKind(kind) {
+  return KIND_SIZES[kind] ?? { width: PAGE_WIDTH_PX, minHeight: PAGE_MIN_HEIGHT_PX };
+}
 
 export function kindSlug(kind) {
   return String(kind)
@@ -128,24 +148,39 @@ export function kindSlug(kind) {
     .replace(/(^-|-$)/g, '');
 }
 
+// Paper grain (SB-427 — sakskart «ALT ER PAPIR» vocabulary, SakskartSkinB
+// grain_texture in core-loop): a tiny deterministic fractal-noise tile drawn ABOVE
+// the ink at low alpha, exactly like the cork-board slips draw their grain wash
+// over the stylebox fill. Inline SVG data URI so the page stays self-contained
+// (file:// bake, no assets). feTurbulence with a fixed seed is deterministic for
+// a given chromium build — the bake --check still holds on one host.
+const GRAIN_SVG = encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">` +
+    `<filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="421" stitchTiles="stitch"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.55 0"/></filter>` +
+    `<rect width="96" height="96" filter="url(#g)"/></svg>`,
+);
+
 // Paper ground (SDD-108 feel-gate): pages must read as paper under room light,
 // not backlit white — the Godot desk material is unshaded and shows this verbatim.
-// Base is a dusky warm parchment; each kind template nudges --paper slightly for
-// identity at desk-miniature scale (all stay in the #e0–#e9 family).
+// Base palette is the sakskart paper family (SakskartSkinB: paper #f2ecdd, ink
+// #2b2620 — the SB-436-passed look); each kind template nudges --paper slightly
+// for identity at desk-miniature scale (all stay in the #ea–#f4 warm family).
+// Page width/min-height come from the per-kind size vars pageShell injects.
 const BASE_CSS = `
 :root {
-  --paper: #e5decb;
-  --ink: #211b13;
+  --paper: #f2ecdd;
+  --ink: #2b2620;
   --ink-soft: #4a4034;
   --ink-faint: #8a7d68;
-  --rule: #c2b69c;
+  --rule: #c9bda1;
   --rule-strong: #7d6f52;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  width: ${PAGE_WIDTH_PX}px;
-  min-height: ${PAGE_MIN_HEIGHT_PX}px;
+  width: var(--page-w);
+  min-height: var(--page-h);
   background: var(--paper);
   color: var(--ink);
   font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -158,11 +193,26 @@ body {
    edge-to-edge, so this padding IS the printed page's own margin. ~48px on an
    800px page ≈ a physical A4's ~15mm — content fills the sheet like a real
    letter, not a photocopy floating in whitespace. Kind templates must NOT
-   override .page padding; per-kind identity lives in letterheads/rules. */
+   override the .page rule itself; a small-format kind (SB-427) sets --page-pad
+   to keep its margins physically proportional to its sheet. */
 .page {
-  width: ${PAGE_WIDTH_PX}px;
-  min-height: ${PAGE_MIN_HEIGHT_PX}px;
-  padding: 40px 48px 48px;
+  width: var(--page-w);
+  min-height: var(--page-h);
+  padding: var(--page-pad, 40px 48px 48px);
+  position: relative;
+}
+/* Sakskart paper wash: grain tile + edge shading ABOVE the ink (the cork-board
+   slips draw their grain over the fill the same way). Kept faint so text stays
+   print-crisp; the vignette pulls the sheet edges down like paper under a lamp,
+   not a backlit scan. pointer-events irrelevant (static bake). */
+.page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(130% 105% at 50% 42%, transparent 62%, rgba(74, 58, 33, 0.10) 100%),
+    url("data:image/svg+xml,${GRAIN_SVG}") repeat;
+  opacity: 0.55;
 }
 .stamp {
   font-family: 'Fraunces', Georgia, serif;
@@ -197,6 +247,8 @@ body {
 export function pageShell({ kind, overrideClass = '', styleCss = '', overrideCss = '', bodyHtml }) {
   const slug = kindSlug(kind);
   const bodyClass = ['doc', `doc--${slug}`, overrideClass].filter(Boolean).join(' ');
+  const size = sizeForKind(kind);
+  const sizeCss = `:root { --page-w: ${size.width}px; --page-h: ${size.minHeight}px; }`;
   return `<!doctype html>
 <html lang="nb">
 <head>
@@ -204,6 +256,7 @@ export function pageShell({ kind, overrideClass = '', styleCss = '', overrideCss
 <title>${escapeHtml(kind)}</title>
 <style>${fontFaceCss()}
 ${BASE_CSS}
+${sizeCss}
 ${styleCss}
 ${overrideCss}</style>
 </head>

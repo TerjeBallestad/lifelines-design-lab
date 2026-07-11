@@ -6,7 +6,7 @@ export const kind = 'RAPPORT';
 
 export const styleCss = `
 /* Typed saksdokument — warm office cream. Base padding, no override. */
-.doc--rapport { --paper: #e6dfca; }
+.doc--rapport { --paper: #f0e8d4; }
 .doc--rapport .report-head {
   border-bottom: 2.5px solid var(--rule-strong); padding-bottom: 12px;
 }

@@ -8,7 +8,7 @@ export const kind = 'DAGSRAPPORT';
 
 export const styleCss = `
 /* Office form stock. Base padding, no override. */
-.doc--dagsrapport { --paper: #e4dcc2; }
+.doc--dagsrapport { --paper: #eee6cc; }
 .doc--dagsrapport .day-head {
   display: flex; justify-content: space-between; align-items: flex-end;
   border-bottom: 2.5px solid var(--rule-strong); padding-bottom: 12px;

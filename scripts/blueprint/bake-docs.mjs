@@ -42,7 +42,7 @@ import { chromium } from 'playwright';
 import { buildTinyOlsenArtifacts } from './generate-tiny-olsen-case.mjs';
 import { stableStringify } from './case-format.mjs';
 import { buildDocHtml, buildStationeryHtml } from '../../templates/docs/render-doc.mjs';
-import { PAGE_WIDTH_PX, PAGE_MIN_HEIGHT_PX } from '../../templates/docs/shared.mjs';
+import { sizeForKind } from '../../templates/docs/shared.mjs';
 
 // The shell renders at this device scale (mirrors render-doc.mjs) — the "@
 // deviceScaleFactor per template shell" the task asks for.
@@ -141,12 +141,15 @@ async function measureFacts(page) {
   return facts;
 }
 
-async function renderPage(browser, { html, docId, texture, outDir, htmlDir }) {
+async function renderPage(browser, { html, docId, texture, outDir, htmlDir, kind }) {
   const htmlPath = join(htmlDir, `${docId}.html`);
   const pngPath = join(outDir, texture);
   await writeFile(htmlPath, html, 'utf8');
+  // Per-kind sheet format (SB-427): the viewport matches the kind's CSS page
+  // size; fullPage still grows the shot if content runs past the min-height.
+  const size = sizeForKind(kind);
   const page = await browser.newPage({
-    viewport: { width: PAGE_WIDTH_PX, height: PAGE_MIN_HEIGHT_PX },
+    viewport: { width: size.width, height: size.minHeight },
     deviceScaleFactor: DEVICE_SCALE_FACTOR,
   });
   try {
@@ -182,6 +185,7 @@ export async function bakeAll(outDir, paths = defaultPaths()) {
         texture: `${docId}.png`,
         outDir,
         htmlDir,
+        kind: labContent.documents[docId].kind,
       });
       docs[docId] = entry;
     }
@@ -193,6 +197,7 @@ export async function bakeAll(outDir, paths = defaultPaths()) {
         texture: `${docId}.png`,
         outDir,
         htmlDir,
+        kind,
       });
       docs[docId] = entry;
     }
