@@ -46,6 +46,24 @@ export function fontFaceCss() {
   font-weight: 400;
   font-style: normal;
   src: url('${fontDataUri('Caveat-400.ttf')}') format('truetype');
+}
+@font-face {
+  font-family: 'Special Elite';
+  font-weight: 400;
+  font-style: normal;
+  src: url('${fontDataUri('SpecialElite-400.ttf')}') format('truetype');
+}
+@font-face {
+  font-family: 'Architects Daughter';
+  font-weight: 400;
+  font-style: normal;
+  src: url('${fontDataUri('ArchitectsDaughter-400.ttf')}') format('truetype');
+}
+@font-face {
+  font-family: 'Kalam';
+  font-weight: 400;
+  font-style: normal;
+  src: url('${fontDataUri('Kalam-400.ttf')}') format('truetype');
 }`;
   return _fontFaceCss;
 }
@@ -172,12 +190,14 @@ const GRAIN_SVG = encodeURIComponent(
 // Page width/min-height come from the per-kind size vars pageShell injects.
 const BASE_CSS = `
 :root {
-  --paper: #f2ecdd;
-  --ink: #2b2620;
-  --ink-soft: #4a4034;
-  --ink-faint: #8a7d68;
+  --paper: #f5f1e8;
+  --ink: #2a2520;
+  --ink-soft: #6b6259;
+  --ink-faint: #a49a8c;
   --rule: #c9bda1;
   --rule-strong: #7d6f52;
+  --warn: #c86244;
+  --gold: #c89a2e;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -203,6 +223,10 @@ body {
   min-height: var(--page-h);
   padding: var(--page-pad, 40px 48px 48px);
   position: relative;
+  /* Chunky ink frame (SB-427 round 3 — the one-desk-world wireframe's paper
+     card grammar: every paper object carries a 2px ink border). Baked into the
+     texture so desk face and reader page both wear it. */
+  border: 2px solid var(--ink);
 }
 /* Sakskart paper wash: grain tile + edge shading ABOVE the ink (the cork-board
    slips draw their grain over the fill the same way). Kept faint so text stays
@@ -217,23 +241,22 @@ body {
     url("data:image/svg+xml,${GRAIN_SVG}") repeat;
   opacity: 0.55;
 }
+/* Wireframe font roles (SB-427 round 3, 20260704_one_desk_world_probe.html):
+   stamps = Architects Daughter letter-spaced, titles = Special Elite typewriter. */
 .stamp {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: 'Architects Daughter', cursive;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   font-size: 12px;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
 }
 .kind-title {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 .subtitle {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 400;
-  font-style: italic;
+  font-family: 'Architects Daughter', cursive;
   color: var(--ink-soft);
 }
 .body-copy { font-weight: 400; }

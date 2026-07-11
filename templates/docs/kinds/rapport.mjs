@@ -5,10 +5,11 @@
 export const kind = 'RAPPORT';
 
 export const styleCss = `
-/* Typed saksdokument — warm office cream. Base padding, no override. */
-.doc--rapport { --paper: #f0e8d4; }
+/* Typed saksdokument — warm office cream, typewriter body (SB-427 round 3:
+   wireframe font roles — Frank's report came off the office machine). */
+.doc--rapport { --paper: #f0ede2; }
 .doc--rapport .report-head {
-  border-bottom: 2.5px solid var(--rule-strong); padding-bottom: 12px;
+  border-bottom: 2.5px solid var(--ink); padding-bottom: 12px;
 }
 .doc--rapport .report-head h1 {
   margin: 0; font-size: 28px; letter-spacing: 0.05em;
@@ -20,7 +21,8 @@ export const styleCss = `
 .doc--rapport .report-strip .stamp { font-size: 11px; }
 .doc--rapport .report-sub { margin: 16px 0 0; font-size: 16px; }
 .doc--rapport .report-body {
-  margin-top: 20px; font-size: 18px; line-height: 1.66; text-align: justify;
+  margin-top: 20px; font-size: 16px; line-height: 1.72;
+  font-family: 'Special Elite', 'Courier New', monospace;
 }
 .doc--rapport .report-sign {
   margin-top: 34px; border-top: 1px solid var(--rule); padding-top: 10px; width: 52%;

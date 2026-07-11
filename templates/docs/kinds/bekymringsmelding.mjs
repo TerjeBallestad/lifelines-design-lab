@@ -5,13 +5,15 @@
 export const kind = 'BEKYMRINGSMELDING';
 
 export const styleCss = `
-/* Municipal form stock — dry, slightly yellowed. Page padding comes from the
+/* Municipal form stock — dry, slightly yellowed; typewriter body + red kind
+   stamp (SB-427 round 3, wireframe font roles). Page padding comes from the
    shared base (document-real margins, SDD-108 feel-gate); do not override. */
 .doc--bekymringsmelding { --paper: #ede5cd; }
 .doc--bekymringsmelding .letterhead {
-  border: 2.5px solid var(--rule-strong);
+  border: 2.5px solid var(--ink);
   padding: 18px 22px 16px;
 }
+.doc--bekymringsmelding .letterhead .org .stamp:last-child { color: var(--warn); }
 .doc--bekymringsmelding .letterhead .org {
   display: flex; justify-content: space-between; align-items: baseline;
   border-bottom: 1px solid var(--rule);
@@ -37,7 +39,8 @@ export const styleCss = `
   border-bottom: 1px solid var(--rule); padding-bottom: 3px;
 }
 .doc--bekymringsmelding .body-copy {
-  margin-top: 26px; font-size: 18px; text-align: justify;
+  margin-top: 26px; font-size: 16px; line-height: 1.72;
+  font-family: 'Special Elite', 'Courier New', monospace;
 }
 .doc--bekymringsmelding .sign {
   margin-top: 40px; border-top: 1px solid var(--rule);

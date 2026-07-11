@@ -5,21 +5,24 @@
 export const kind = 'MELDING';
 
 export const styleCss = `
-/* Institutional notice stock — pale grey-cream. Base padding, no override.
-   SB-427 lapp format (480×360 min): compact spacing so the terse notice fills a
-   small slip instead of floating on A4 air. */
-.doc--melding { --paper: #eee9dc; --page-pad: 22px 26px 26px; }
+/* Hospital notice lapp (SB-427 round 3): wireframe kind-melding stock — dusty
+   rose paper, red warning bar down the left edge, red kind caption, typewriter
+   body. Compact spacing so the terse notice fills a small slip. */
+.doc--melding { --paper: #efe6e0; --page-pad: 22px 26px 26px; }
+.doc--melding .page { border-left: 6px solid var(--warn); }
 .doc--melding .notice-head {
-  text-align: center; border-top: 3px solid var(--rule-strong);
-  border-bottom: 3px solid var(--rule-strong); padding: 10px 0 9px;
+  text-align: center; border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink); padding: 10px 0 9px;
 }
 .doc--melding .notice-head h1 {
   margin: 0; font-size: 21px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--warn);
 }
 .doc--melding .notice-head .stamp { display: block; margin-top: 6px; font-size: 10px; }
 .doc--melding .notice-sub { text-align: center; margin: 8px 0 0; font-size: 14px; }
 .doc--melding .notice-body {
-  margin-top: 16px; font-size: 17px; line-height: 1.62;
+  margin-top: 16px; font-size: 15px; line-height: 1.66;
+  font-family: 'Special Elite', 'Courier New', monospace;
   max-width: 94%; margin-left: auto; margin-right: auto;
 }
 .doc--melding .notice-foot {
