@@ -93,6 +93,10 @@ export function parseCaseMarkdown(text) {
     title: required(item.fields, 'Title', item.id),
     description: required(item.fields, 'Description', item.id),
     sim_hook_id: required(item.fields, 'Sim hook', item.id),
+    activity_title: item.fields.get('Activity title') ?? null,
+    duration_h: item.fields.has('Duration h')
+      ? parseNumberField(item.fields.get('Duration h'), `${item.id}.Duration h`)
+      : null,
     visit_hour: item.fields.has('Visit hour')
       ? parseIntegerField(item.fields.get('Visit hour'), `${item.id}.Visit hour`)
       : null,
@@ -100,6 +104,16 @@ export function parseCaseMarkdown(text) {
       item.fields.get('Occupies hours') ?? '2',
       `${item.id}.Occupies hours`,
     ),
+    channel: item.fields.get('Channel') ?? null,
+    channel_delay_minutes: item.fields.has('Channel delay minutes')
+      ? parseIntegerField(
+          item.fields.get('Channel delay minutes'),
+          `${item.id}.Channel delay minutes`,
+        )
+      : null,
+    reception_modifier: item.fields.has('Reception modifier')
+      ? parseNumberField(item.fields.get('Reception modifier'), `${item.id}.Reception modifier`)
+      : null,
     gate: item.fields.get('Gate') ?? '',
     effects: item.fields.get('Effects') ?? '',
   }));
@@ -116,6 +130,9 @@ export function parseCaseMarkdown(text) {
     ),
     bad_segment_label: item.fields.get('Bad label') ?? '',
     bad_segment_size: parseIntegerField(item.fields.get('Bad size') ?? '0', `${item.id}.Bad size`),
+    max_value: item.fields.has('Max value')
+      ? parseIntegerField(item.fields.get('Max value'), `${item.id}.Max value`)
+      : null,
     visibility: item.fields.get('Visibility') ?? null,
   }));
 
@@ -129,6 +146,15 @@ export function parseCaseMarkdown(text) {
         `${item.id}.Direction`,
       ),
       reveal_fact_id: item.fields.get('Reveals fact') ?? '',
+    }),
+  );
+
+  const day_script_beats = parseItems(lastSectionBody(normalized, 'Day script beats')).map(
+    (item) => ({
+      id: item.id,
+      day: parseIntegerField(required(item.fields, 'Day', item.id), `${item.id}.Day`),
+      text: required(item.fields, 'Text', item.id),
+      effects: item.fields.get('Effects') ?? '',
     }),
   );
 
@@ -153,6 +179,7 @@ export function parseCaseMarkdown(text) {
     dispatches,
     clocks,
     event_deltas,
+    day_script_beats,
   };
 }
 
@@ -200,6 +227,14 @@ export function buildArtifacts(source) {
       if (run.fact_id && !factIds.has(run.fact_id)) {
         warnings.push(`document ${docId}: evidence link references unknown fact id ${run.fact_id}`);
       }
+    }
+    // Plain docs (status reports, meldinger) may carry no evidence links, but a
+    // doc some fact cites as its Source must link at least one fact run.
+    const cited = source.facts.some(
+      (fact) => fact.source_document_id === docId && fact.quote_override == null,
+    );
+    if (cited && !runs.some((run) => run.fact_id)) {
+      warnings.push(`document ${docId}: cited as a fact Source but has no evidence links in body`);
     }
   }
 
@@ -266,8 +301,17 @@ export function buildArtifacts(source) {
       title: dispatch.title,
       sim_hook_id: dispatch.sim_hook_id,
       description: dispatch.description,
+      ...(dispatch.activity_title != null ? { activity_title: dispatch.activity_title } : {}),
+      ...(dispatch.duration_h != null ? { duration_h: dispatch.duration_h } : {}),
       ...(dispatch.visit_hour != null ? { visit_hour: dispatch.visit_hour } : {}),
       occupies_hours: dispatch.occupies_hours,
+      ...(dispatch.channel != null ? { channel: dispatch.channel } : {}),
+      ...(dispatch.channel_delay_minutes != null
+        ? { channel_delay_minutes: dispatch.channel_delay_minutes }
+        : {}),
+      ...(dispatch.reception_modifier != null
+        ? { reception_modifier: dispatch.reception_modifier }
+        : {}),
       ...(dispatch.gate ? { gate: predicateFromGate(dispatch.gate) } : {}),
       effects: effectsFromLine(dispatch.effects),
     })),
@@ -282,6 +326,7 @@ export function buildArtifacts(source) {
         bad_segment_label: clock.bad_segment_label,
         bad_segment_size: clock.bad_segment_size,
       };
+      if (clock.max_value != null) out.max_value = clock.max_value;
       if (clock.visibility != null) out.visibility = predicateFromGate(clock.visibility);
       return out;
     }),
@@ -292,7 +337,12 @@ export function buildArtifacts(source) {
       clock_direction: delta.clock_direction,
       reveal_fact_id: delta.reveal_fact_id,
     })),
-    day_script_beats: [],
+    day_script_beats: (source.day_script_beats ?? []).map((beat) => ({
+      id: beat.id,
+      day: beat.day,
+      text: beat.text,
+      effects: effectsFromLine(beat.effects),
+    })),
   };
 
   const labContent = buildLabContent(source, allRunsByDoc);
@@ -478,8 +528,15 @@ export function serializeCase(godot) {
     lines.push(`Title: ${dispatch.title}`);
     lines.push(`Description: ${dispatch.description}`);
     lines.push(`Sim hook: ${dispatch.sim_hook_id}`);
+    if (dispatch.activity_title != null) lines.push(`Activity title: ${dispatch.activity_title}`);
+    if (dispatch.duration_h != null) lines.push(`Duration h: ${dispatch.duration_h}`);
     if (dispatch.visit_hour != null) lines.push(`Visit hour: ${dispatch.visit_hour}`);
     lines.push(`Occupies hours: ${dispatch.occupies_hours ?? 2}`);
+    if (dispatch.channel != null) lines.push(`Channel: ${dispatch.channel}`);
+    if (dispatch.channel_delay_minutes != null)
+      lines.push(`Channel delay minutes: ${dispatch.channel_delay_minutes}`);
+    if (dispatch.reception_modifier != null)
+      lines.push(`Reception modifier: ${dispatch.reception_modifier}`);
     if (dispatch.gate) lines.push(`Gate: ${gateLineFromPredicate(dispatch.gate)}`);
     if (dispatch.effects && dispatch.effects.length)
       lines.push(`Effects: ${effectsLineFromEffects(dispatch.effects)}`);
@@ -497,6 +554,7 @@ export function serializeCase(godot) {
     if (clock.good_segment_size) lines.push(`Good size: ${clock.good_segment_size}`);
     if (clock.bad_segment_label) lines.push(`Bad label: ${clock.bad_segment_label}`);
     if (clock.bad_segment_size) lines.push(`Bad size: ${clock.bad_segment_size}`);
+    if (clock.max_value != null) lines.push(`Max value: ${clock.max_value}`);
     if (clock.visibility != null)
       lines.push(`Visibility: ${gateLineFromPredicate(clock.visibility)}`);
     lines.push('');
@@ -518,10 +576,29 @@ export function serializeCase(godot) {
     lines.push('');
   }
 
+  pushDayScriptBeats(lines, godot.day_script_beats ?? [], (beat) =>
+    beat.effects && beat.effects.length ? effectsLineFromEffects(beat.effects) : '',
+  );
+  return lines.join('\n') + '\n';
+}
+
+// Shared tail section for both serializers. `effectsLine(beat)` maps a beat to
+// its authored `Effects:` line ('' = omit).
+function pushDayScriptBeats(lines, beats, effectsLine) {
   lines.push('# Day script beats');
   lines.push('');
-  lines.push('None');
-  return lines.join('\n') + '\n';
+  if (!beats.length) {
+    lines.push('None');
+    return;
+  }
+  beats.forEach((beat, index) => {
+    lines.push(`## ${beat.id}`);
+    lines.push(`Day: ${beat.day}`);
+    lines.push(`Text: ${beat.text}`);
+    const effects = effectsLine(beat);
+    if (effects) lines.push(`Effects: ${effects}`);
+    if (index < beats.length - 1) lines.push('');
+  });
 }
 
 function pushList(lines, key, values) {
@@ -667,8 +744,15 @@ export function serializeSource(source) {
     lines.push(`Title: ${dispatch.title}`);
     lines.push(`Description: ${dispatch.description}`);
     lines.push(`Sim hook: ${dispatch.sim_hook_id}`);
+    if (dispatch.activity_title != null) lines.push(`Activity title: ${dispatch.activity_title}`);
+    if (dispatch.duration_h != null) lines.push(`Duration h: ${dispatch.duration_h}`);
     if (dispatch.visit_hour != null) lines.push(`Visit hour: ${dispatch.visit_hour}`);
     lines.push(`Occupies hours: ${dispatch.occupies_hours}`);
+    if (dispatch.channel != null) lines.push(`Channel: ${dispatch.channel}`);
+    if (dispatch.channel_delay_minutes != null)
+      lines.push(`Channel delay minutes: ${dispatch.channel_delay_minutes}`);
+    if (dispatch.reception_modifier != null)
+      lines.push(`Reception modifier: ${dispatch.reception_modifier}`);
     if (dispatch.gate) lines.push(`Gate: ${dispatch.gate}`);
     if (dispatch.effects) lines.push(`Effects: ${dispatch.effects}`);
     lines.push('');
@@ -685,6 +769,7 @@ export function serializeSource(source) {
     if (clock.good_segment_size) lines.push(`Good size: ${clock.good_segment_size}`);
     if (clock.bad_segment_label) lines.push(`Bad label: ${clock.bad_segment_label}`);
     if (clock.bad_segment_size) lines.push(`Bad size: ${clock.bad_segment_size}`);
+    if (clock.max_value != null) lines.push(`Max value: ${clock.max_value}`);
     if (clock.visibility != null && clock.visibility !== '')
       lines.push(`Visibility: ${clock.visibility}`);
     lines.push('');
@@ -706,13 +791,18 @@ export function serializeSource(source) {
     lines.push('');
   }
 
-  lines.push('# Day script beats');
-  lines.push('');
-  lines.push('None');
+  pushDayScriptBeats(lines, source.day_script_beats ?? [], (beat) => beat.effects ?? '');
   return lines.join('\n') + '\n';
 }
 
 // === Shared low-level helpers ====================================================
+
+function lastSectionBody(text, title) {
+  const re = new RegExp(`^# ${escapeRegExp(title)}\\s*$([\\s\\S]*)$`, 'm');
+  const match = text.match(re);
+  if (!match) throw new Error(`Missing # ${title} section`);
+  return match[1].trim();
+}
 
 function sectionBody(text, title, nextTitle) {
   const re = new RegExp(
@@ -784,6 +874,12 @@ function parseIntegerField(value, context) {
   return Number(value);
 }
 
+function parseNumberField(value, context) {
+  if (!/^-?\d+(\.\d+)?$/.test(String(value)))
+    throw new Error(`${context} must be a number, got: ${value}`);
+  return Number(value);
+}
+
 function listField(fields, key) {
   const value = fields.get(key);
   if (!value || value === 'None') return [];
@@ -795,6 +891,8 @@ function listField(fields, key) {
 
 // Question `Leads:` grammar (SDD-101 §4C worry-list + lead-compass). A comma-
 // separated list mixing dispatch/tiltak id-refs (actions) and «guillemet» hints.
+// An action may carry a board-label override: `d_ring_grete = Ring Grete`
+// (the board shows the override instead of the dispatch title).
 function parseLeads(value) {
   if (!value || !value.trim()) return [];
   return value
@@ -804,6 +902,10 @@ function parseLeads(value) {
     .map((entry) => {
       if (entry.startsWith('«') && entry.endsWith('»')) {
         return { kind: 'hint', text: entry.slice(1, -1).trim() };
+      }
+      const override = entry.match(/^(\S+)\s*=\s*(.+)$/);
+      if (override) {
+        return { kind: 'action', target_id: override[1], label: override[2].trim() };
       }
       return { kind: 'action', target_id: entry };
     });
@@ -820,22 +922,30 @@ function leadsForQuestion(question, source) {
   return (question.leads ?? []).map((lead) => {
     if (lead.kind === 'hint') return lead.text;
     const dispatch = dispatchById.get(lead.target_id);
-    if (dispatch) return { label: dispatch.title, dispatch: lead.target_id };
+    if (dispatch) return { label: lead.label ?? dispatch.title, dispatch: lead.target_id };
     const tiltak = tiltakById.get(lead.target_id);
     if (tiltak) return `${tiltak.title} (${lead.target_id})`;
     return lead.target_id;
   });
 }
 
-// Reverse direction (Godot JSON -> `Leads:` line): dispatch dicts -> bare id,
+// Reverse direction (Godot JSON -> `Leads:` line): dispatch dicts -> bare id
+// (or `id = Label` when the board label differs from the dispatch title),
 // tiltak lead-strings -> bare id, anything else -> «hint».
 function leadsLineFromGodot(question, godot) {
   const tiltakLeadToId = new Map(
     (godot.tiltak ?? []).map((tiltak) => [`${tiltak.title} (${tiltak.id})`, tiltak.id]),
   );
+  const dispatchTitleById = new Map(
+    (godot.dispatches ?? []).map((dispatch) => [dispatch.id, dispatch.title]),
+  );
   return (question.leads ?? [])
     .map((lead) => {
-      if (lead && typeof lead === 'object') return lead.dispatch;
+      if (lead && typeof lead === 'object') {
+        return lead.label === dispatchTitleById.get(lead.dispatch)
+          ? lead.dispatch
+          : `${lead.dispatch} = ${lead.label}`;
+      }
       if (tiltakLeadToId.has(lead)) return tiltakLeadToId.get(lead);
       return `«${lead}»`;
     })
@@ -846,7 +956,10 @@ function leadsLineFromGodot(question, godot) {
 // authored line — actions as their bare id, hints as «text».
 function leadsLineFromSource(question) {
   return (question.leads ?? [])
-    .map((lead) => (lead.kind === 'hint' ? `«${lead.text}»` : lead.target_id))
+    .map((lead) => {
+      if (lead.kind === 'hint') return `«${lead.text}»`;
+      return lead.label != null ? `${lead.target_id} = ${lead.label}` : lead.target_id;
+    })
     .join(', ');
 }
 
@@ -868,9 +981,6 @@ export function parseDocumentRuns(markdown, warnings = [], docId = 'document') {
   }
   const after = normalizeRunText(markdown.slice(cursor));
   if (after) runs.push({ id: `run_text_${textRunIndex++}`, text: after, fact_id: '' });
-  if (!runs.some((run) => run.fact_id)) {
-    warnings.push(`document ${docId}: no evidence links in body`);
-  }
   return runs;
 }
 
@@ -1009,6 +1119,12 @@ function validateArtifacts(source, godotSource) {
       // NOTE: queued document_ids are NOT checked against authored documents —
       // the Godot engine happily queues/delivers ids without authored content
       // (e.g. pending_konto_overfort; case_engine tests depend on it).
+    }
+  }
+  for (const beat of godotSource.day_script_beats ?? []) {
+    for (const effect of beat.effects ?? []) {
+      if (effect.args?.clock_id)
+        warnUnknown(clockIds, effect.args.clock_id, `day script beat ${beat.id}.effects`);
     }
   }
   for (const delta of source.event_deltas) {

@@ -121,6 +121,44 @@ Effects: pending_doc pending_konto_overfort after 1 day on ck_overfort
 
 The generator compiles these into the ugly `op/args/children` data. Humans should not have to write that.
 
+## Dispatch planner fields (TASK-1057 / SB-486)
+
+Dispatches carry the Frank-planner metadata as plain fields; all are optional and omitted from the JSON when absent:
+
+```md
+Activity title: RING FASTTELEFONEN
+Duration h: 0.5
+Occupies hours: 1
+Channel: ring
+Channel delay minutes: 30
+Reception modifier: 0
+```
+
+`Duration h` and `Reception modifier` accept decimals. `Channel` is one of the planner channels (`ring`, `scheduled`, `now`, …).
+
+## Lead label overrides
+
+A question's `Leads:` line lists dispatch/tiltak ids and «guillemet» hints. When the board label should differ from the dispatch title, use `id = Label`:
+
+```md
+Leads: d_ring_grete = Ring Grete, «Snakk med naboen»
+```
+
+## Clocks and day script beats
+
+Clocks take an optional `Max value: 6`. Day script beats (authored day-by-day story beats, SB-486) look like:
+
+```md
+# Day script beats
+
+## beat_grete_d4
+Day: 4
+Text: Grete er innlagt.
+Effects: pending_doc doc_innleggelse after 0 day on ck_grete
+```
+
+Documents without evidence links are allowed (status reports, meldinger) — but a document cited as some fact's `Source:` must still contain at least one `fact:` link.
+
 ## Check command
 
 From `lifelines-design-lab`:

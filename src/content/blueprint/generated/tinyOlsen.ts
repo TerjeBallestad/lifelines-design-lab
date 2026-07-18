@@ -379,6 +379,24 @@ export const tinyOlsenDocuments = {
       },
     ],
   },
+  doc_status: {
+    id: 'doc_status',
+    kind: 'STATUSRAPPORT',
+    title: 'Frank · status dag 8',
+    register: 'notat',
+    peek: 'En uke siden meldingen.',
+    meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+    blocks: [
+      {
+        id: 'doc_status_body',
+        runs: [
+          {
+            text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.',
+          },
+        ],
+      },
+    ],
+  },
 } satisfies Record<string, BlueprintDocument>;
 
 export const tinyOlsenFacts = {
@@ -952,18 +970,19 @@ export const tinyOlsenTiltak = {
 export const tinyOlsenDispatches = {
   d_ring_grete: {
     id: 'd_ring_grete',
-    title: 'Ring Grete',
-    description: 'Førstekontakt. Hun vet hvorfor du ringer.',
+    title: 'Ring fasttelefonen',
+    description: 'Frank ringer fasttelefonen i leiligheten. Den som er hjemme, kan svare.',
   },
   d_konto: {
     id: 'd_konto',
     title: 'Be om økonomisk oversikt',
-    description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
+    description:
+      'Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.',
   },
   hjemmebesok: {
     id: 'hjemmebesok',
     title: 'Hjemmebesøk',
-    description: 'Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.',
+    description: 'Frank drar på uanmeldt besøk til leiligheten.',
   },
 } satisfies Record<string, BlueprintDispatch>;
 
@@ -1430,6 +1449,23 @@ export const tinyOlsenGodotSource = {
         {
           id: 'run_text_2',
           text: ' Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET · OUS',
+          fact_id: '',
+        },
+      ],
+    },
+    {
+      id: 'doc_status',
+      kind: 'STATUSRAPPORT',
+      title: 'Frank · status dag 8',
+      register: 'notat',
+      peek: 'En uke siden meldingen.',
+      meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+      body_bbcode:
+        'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.\n\nRestanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.\n\nBekymringsmeldingen var berettiget. Det er den fortsatt.',
+      runs: [
+        {
+          id: 'run_text_0',
+          text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.',
           fact_id: '',
         },
       ],
@@ -2672,32 +2708,20 @@ export const tinyOlsenGodotSource = {
   dispatches: [
     {
       id: 'd_ring_grete',
-      title: 'Ring Grete',
+      title: 'Ring fasttelefonen',
       sim_hook_id: 'case.olsen.dispatch.call_grete',
-      description: 'Førstekontakt. Hun vet hvorfor du ringer.',
+      description: 'Frank ringer fasttelefonen i leiligheten. Den som er hjemme, kan svare.',
+      activity_title: 'RING FASTTELEFONEN',
+      duration_h: 0.5,
       occupies_hours: 1,
+      channel: 'ring',
+      channel_delay_minutes: 30,
+      reception_modifier: 0,
       gate: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_kalender',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_matbokser',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_grete_baerer',
-            },
-          },
-        ],
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_grete_baerer',
+        },
       },
       effects: [
         {
@@ -2712,8 +2736,14 @@ export const tinyOlsenGodotSource = {
       id: 'd_konto',
       title: 'Be om økonomisk oversikt',
       sim_hook_id: 'case.olsen.dispatch.account_overview',
-      description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
+      description:
+        'Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.',
+      activity_title: 'BE OM BANKUTSKRIFT',
+      duration_h: 1,
       occupies_hours: 3,
+      channel: 'scheduled',
+      channel_delay_minutes: 480,
+      reception_modifier: 1,
       gate: {
         op: 'fact_lifted',
         args: {
@@ -2735,8 +2765,19 @@ export const tinyOlsenGodotSource = {
       id: 'hjemmebesok',
       title: 'Hjemmebesøk',
       sim_hook_id: 'case.olsen.dispatch.hjemmebesok',
-      description: 'Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.',
+      description: 'Frank drar på uanmeldt besøk til leiligheten.',
+      activity_title: 'HJEMMEBESØK',
+      duration_h: 2,
       occupies_hours: 2,
+      channel: 'now',
+      channel_delay_minutes: 0,
+      reception_modifier: -1,
+      gate: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_saarbar',
+        },
+      },
       effects: [],
     },
   ],
@@ -2798,6 +2839,28 @@ export const tinyOlsenGodotSource = {
         ],
       },
     },
+    {
+      id: 'ck_restanse',
+      label: 'Husleierestanse',
+      sim_hook_id: 'case.olsen.clock.restanse',
+      question: 'Blir leieproblemet en aktiv sak før støtten er på plass?',
+      good_segment_label: '',
+      good_segment_size: 0,
+      bad_segment_label: 'Restanse bygges',
+      bad_segment_size: 6,
+      max_value: 6,
+    },
+    {
+      id: 'ck_grete',
+      label: 'Grete tilgjengelig',
+      sim_hook_id: 'case.olsen.clock.grete',
+      question: 'Hvor lenge bærer hun?',
+      good_segment_label: '',
+      good_segment_size: 0,
+      bad_segment_label: 'Grete er død',
+      bad_segment_size: 5,
+      max_value: 5,
+    },
   ],
   event_delta_specs: [
     {
@@ -2822,5 +2885,78 @@ export const tinyOlsenGodotSource = {
       reveal_fact_id: '',
     },
   ],
-  day_script_beats: [],
+  day_script_beats: [
+    {
+      id: 'beat_grete_d2',
+      day: 2,
+      text: 'Grete blir sliten.',
+      effects: [],
+    },
+    {
+      id: 'beat_grete_d3',
+      day: 3,
+      text: 'Grete skulle ringe tilbake om papirene. Hun ringte ikke.',
+      effects: [],
+    },
+    {
+      id: 'beat_grete_d4',
+      day: 4,
+      text: 'Grete er innlagt.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_innleggelse',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d5',
+      day: 5,
+      text: 'Grete Olsen er død.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_dodsfall',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d6',
+      day: 6,
+      text: 'Håndskrevet brev · T. Bakkerud',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_huseier',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d8',
+      day: 8,
+      text: 'En uke siden meldingen.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_status',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+  ],
 } as const;

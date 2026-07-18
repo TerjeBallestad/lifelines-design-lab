@@ -105,7 +105,7 @@ Kind: RAPPORT
 Title: Frank · hjemmebesøk Gabels gate 14
 Register: notat
 Peek: «Hun hadde dekket på med tre kopper.»
-Meta: HJEMMEBESØK · 4012 F. ÅSLI 
+Meta: HJEMMEBESØK · 4012 F. ÅSLI
 
 Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.
 
@@ -154,6 +154,19 @@ Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefo
 Saken overføres kommunen for videre oppfølging av gjenlevende.
 
 SOSIALMEDISINSK ENHET · OUS
+
+# Document: doc_status
+Kind: STATUSRAPPORT
+Title: Frank · status dag 8
+Register: notat
+Peek: En uke siden meldingen.
+Meta: STATUSRAPPORT · 4012 F. ÅSLI · DAG 8
+
+Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.
+
+Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.
+
+Bekymringsmeldingen var berettiget. Det er den fortsatt.
 
 # Facts
 
@@ -426,22 +439,22 @@ Discuss: Frank
 ## q_grete_dor
 Title: Den dagen Grete ikke kommer hjem — hva stopper?
 Opens when: f_grete_syk, f_klarer_seg
-Leads: d_ring_grete
+Leads: d_ring_grete = Ring Grete
 
 ## q_evner
 Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
 Opens when: f_bok, f_utklipp, f_aldri_alene
-Leads: «Åpne ett brev sammen med Frank (t_brev)»
+Leads: t_brev
 
 ## q_okonomi
 Title: Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?
 Opens when: f_grete_baerer, f_trygd, f_husleie
-Leads: d_konto, «Snakk med huseieren (t_huseier)»
+Leads: d_konto, t_huseier
 
 ## q_bolig
 Title: Kan Elling bli boende — når husleien har stoppet?
 Opens when: f_gap, f_leie_stoppet, f_husleie
-Leads: «Snakk med huseieren (t_huseier)»
+Leads: t_huseier
 
 ## q_baering
 Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
@@ -689,26 +702,42 @@ Sim hook: case.olsen.tiltak.institusjon
 # Dispatches
 
 ## d_ring_grete
-Title: Ring Grete
-Description: Førstekontakt. Hun vet hvorfor du ringer.
+Title: Ring fasttelefonen
+Description: Frank ringer fasttelefonen i leiligheten. Den som er hjemme, kan svare.
 Sim hook: case.olsen.dispatch.call_grete
+Activity title: RING FASTTELEFONEN
+Duration h: 0.5
 Occupies hours: 1
-Gate: fact f_kalender + fact f_matbokser + fact f_grete_baerer
+Channel: ring
+Channel delay minutes: 30
+Reception modifier: 0
+Gate: fact f_grete_baerer
 Effects: scenario_stage 1
 
 ## d_konto
 Title: Be om økonomisk oversikt
-Description: Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.
+Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.
 Sim hook: case.olsen.dispatch.account_overview
+Activity title: BE OM BANKUTSKRIFT
+Duration h: 1
 Occupies hours: 3
+Channel: scheduled
+Channel delay minutes: 480
+Reception modifier: 1
 Gate: fact f_gap
 Effects: pending_doc pending_konto_overfort after 1 day on ck_overfort
 
 ## hjemmebesok
 Title: Hjemmebesøk
-Description: Frank drar innom uanmeldt. Ingen forutsetning, ingen agenda.
+Description: Frank drar på uanmeldt besøk til leiligheten.
 Sim hook: case.olsen.dispatch.hjemmebesok
+Activity title: HJEMMEBESØK
+Duration h: 2
 Occupies hours: 2
+Channel: now
+Channel delay minutes: 0
+Reception modifier: -1
+Gate: fact f_saarbar
 
 # Clocks
 
@@ -748,6 +777,22 @@ Bad label: Frist glipper
 Bad size: 4
 Visibility: fact f_gap + fact f_trygd
 
+## ck_restanse
+Label: Husleierestanse
+Sim hook: case.olsen.clock.restanse
+Question: Blir leieproblemet en aktiv sak før støtten er på plass?
+Bad label: Restanse bygges
+Bad size: 6
+Max value: 6
+
+## ck_grete
+Label: Grete tilgjengelig
+Sim hook: case.olsen.clock.grete
+Question: Hvor lenge bærer hun?
+Bad label: Grete er død
+Bad size: 5
+Max value: 5
+
 # Event deltas
 
 ## grete_received
@@ -765,4 +810,30 @@ Direction: 1
 
 # Day script beats
 
-None
+## beat_grete_d2
+Day: 2
+Text: Grete blir sliten.
+
+## beat_grete_d3
+Day: 3
+Text: Grete skulle ringe tilbake om papirene. Hun ringte ikke.
+
+## beat_grete_d4
+Day: 4
+Text: Grete er innlagt.
+Effects: pending_doc doc_innleggelse after 0 day on ck_grete
+
+## beat_grete_d5
+Day: 5
+Text: Grete Olsen er død.
+Effects: pending_doc doc_dodsfall after 0 day on ck_grete
+
+## beat_grete_d6
+Day: 6
+Text: Håndskrevet brev · T. Bakkerud
+Effects: pending_doc doc_huseier after 0 day on ck_grete
+
+## beat_grete_d8
+Day: 8
+Text: En uke siden meldingen.
+Effects: pending_doc doc_status after 0 day on ck_grete
