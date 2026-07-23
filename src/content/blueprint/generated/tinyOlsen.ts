@@ -612,6 +612,16 @@ export const tinyOlsenFacts = {
     supports: ['q_baering', 'q_evner'],
     discuss: ['Frank'],
   },
+  f_dor_glott: {
+    id: 'f_dor_glott',
+    domain: 'Nettverk/sosialt',
+    category: 'Samtale',
+    text: 'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+    quote:
+      'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
+    supports: ['q_baering'],
+    discuss: ['Frank'],
+  },
   f_smart_gutt: {
     id: 'f_smart_gutt',
     domain: 'Nettverk/sosialt',
@@ -1768,6 +1778,21 @@ export const tinyOlsenGodotSource = {
       lift_effects: [],
     },
     {
+      id: 'f_dor_glott',
+      label: 'En dør på gløtt',
+      summary:
+        'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+      source_document_id: 'doc_frank_visit',
+      domain: 'Nettverk/sosialt',
+      category: 'Samtale',
+      about: 'elling',
+      quote:
+        'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
+      discuss: ['Frank'],
+      supports_questions: ['q_baering'],
+      lift_effects: [],
+    },
+    {
       id: 'f_smart_gutt',
       label: '«En smart gutt»',
       summary: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
@@ -1840,6 +1865,8 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_grete_dor',
       prompt: 'Den dagen Grete ikke kommer hjem — hva stopper?',
+      teaser:
+        'Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1867,6 +1894,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_evner',
       prompt: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
+      teaser: 'Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1895,6 +1923,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_okonomi',
       prompt: 'Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?',
+      teaser: 'Tallene går opp — men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1929,6 +1958,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_bolig',
       prompt: 'Kan Elling bli boende — når husleien har stoppet?',
+      teaser: 'Det er noe med leiligheten som ikke tåler mange spørsmål. Ta en titt når du kan.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1958,6 +1988,7 @@ export const tinyOlsenGodotSource = {
       id: 'q_baering',
       prompt:
         'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
+      teaser: 'Noen bar mye her. Hvem som skal bære hva nå — det begynner å presse seg på.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1985,6 +2016,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_vekst',
       prompt: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
+      teaser: 'Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.',
       reveal_when: {
         op: 'all',
         children: [
@@ -2006,6 +2038,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_kollaps',
       prompt: 'Hva kollapser først nå?',
+      teaser: 'Noe her har begynt å rakne. Jeg vet ikke hva som går først.',
       reveal_when: {
         op: 'fact_lifted',
         args: {
@@ -2016,6 +2049,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_liv',
       prompt: 'Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?',
+      teaser: 'Det ligger et større spørsmål her enn berging. Jeg klarer ikke slippe det.',
       reveal_when: {
         op: 'all',
         children: [
@@ -2957,6 +2991,213 @@ export const tinyOlsenGodotSource = {
           },
         },
       ],
+    },
+  ],
+  frank_chat: [
+    {
+      id: 'c_kalender',
+      question: 'Hva betyr kalenderen?',
+      answer:
+        'Avtalene står der, tydelige nok. Men håndskriften er Gretes. Kalenderen virker bare så lenge noen holder den i live. Spørsmålet er ikke om Elling kan lese den. Det er om den finnes neste måned.',
+      needs: ['f_kalender'],
+    },
+    {
+      id: 'c_post',
+      question: 'Posten i gangen — likegyldighet?',
+      answer:
+        'Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.',
+      needs: ['f_post'],
+    },
+    {
+      id: 'c_smart',
+      question: '«En smart gutt» — hva la du i det?',
+      answer:
+        'Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne. Det er det vi egentlig skal kartlegge.',
+      needs: ['f_smart_gutt'],
+    },
+    {
+      id: 'c_klarer',
+      question: 'Tror du på «han klarer seg»?',
+      answer:
+        'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
+      needs: ['f_klarer_seg'],
+    },
+    {
+      id: 'c_bok',
+      question: 'Boken og notatene — hva sier det deg?',
+      answer:
+        'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet. Det er to forskjellige problemer, og de har to forskjellige løsninger.',
+      needs: ['f_bok'],
+    },
+    {
+      id: 'c_avstand',
+      question: 'Møbelet mellom dere — hvor lang vei er det inn?',
+      answer:
+        'Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.',
+      needs: ['f_avstand'],
+      pays_fact: 'f_dor_glott',
+    },
+    {
+      id: 'c_gro',
+      question: 'Utklippene av Gro — hva gjør vi med det?',
+      answer:
+        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg, men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
+      needs: ['f_utklipp'],
+    },
+    {
+      id: 'c_brevsprekk',
+      question: 'Brevsprekken. Hørte han det, tror du?',
+      answer:
+        'Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.',
+      needs: ['f_brevsprekken'],
+    },
+  ],
+  frank_proposals: [
+    {
+      handbok_id: 'matlevering',
+      line: 'Matlevering, kanskje. Boksene i kjøleskapet tar slutt — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.',
+      relevant_fact_ids: ['f_matbokser', 'f_ingen_matkjop'],
+      order: 0,
+    },
+    {
+      handbok_id: 'hjemmehjelp',
+      line: 'Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.',
+      relevant_fact_ids: ['f_avstand', 'f_elling_tlf', 'f_dor_glott'],
+      order: 1,
+    },
+    {
+      handbok_id: 'bostotte',
+      line: 'Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.',
+      relevant_fact_ids: ['f_gap', 'f_trygd', 'f_husleie'],
+      relevant_categories: ['Økonomi'],
+      order: 2,
+    },
+    {
+      handbok_id: 'forvaltning',
+      line: 'Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.',
+      relevant_fact_ids: ['f_alt_via_grete', 'f_husleie', 'f_gap'],
+      order: 3,
+    },
+    {
+      handbok_id: 'mekling',
+      line: 'Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.',
+      relevant_fact_ids: ['f_huseier_kommer', 'f_leie_stoppet', 'f_leie_privat'],
+      order: 4,
+    },
+    {
+      handbok_id: 'boopp',
+      line: 'Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.',
+      relevant_fact_ids: ['f_leie_stoppet', 'f_post', 'f_kalender'],
+      order: 5,
+    },
+    {
+      handbok_id: 'radgivning',
+      line: 'Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.',
+      relevant_fact_ids: ['f_gap', 'f_post'],
+      relevant_categories: ['Økonomi'],
+      order: 6,
+    },
+    {
+      handbok_id: 'innkjop',
+      line: 'Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.',
+      relevant_fact_ids: ['f_ingen_matkjop', 'f_matbokser'],
+      order: 7,
+    },
+    {
+      handbok_id: 'maltidsvenn',
+      line: 'Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.',
+      relevant_fact_ids: ['f_matbokser', 'f_avstand'],
+      order: 8,
+    },
+    {
+      handbok_id: 'kartlegging',
+      line: 'Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.',
+      relevant_fact_ids: ['f_aldri_alene', 'f_ingen_plan'],
+      order: 9,
+    },
+    {
+      handbok_id: 'oppfolging',
+      line: 'Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.',
+      relevant_fact_ids: ['f_ingen_tjenester', 'f_ingen_plan'],
+      order: 10,
+    },
+    {
+      handbok_id: 'samtaler',
+      line: 'Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.',
+      relevant_fact_ids: ['f_brevsprekken', 'f_avstand'],
+      order: 11,
+    },
+    {
+      handbok_id: 'stottekontakt',
+      line: 'Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.',
+      relevant_fact_ids: ['f_utklipp', 'f_bok'],
+      order: 12,
+    },
+    {
+      handbok_id: 'tilsyn',
+      line: 'Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.',
+      relevant_fact_ids: ['f_saarbar', 'f_brevsprekken'],
+      order: 13,
+    },
+    {
+      handbok_id: 'besoksvenn',
+      line: 'Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.',
+      relevant_fact_ids: ['f_avstand', 'f_aldri_alene'],
+      order: 14,
+    },
+    {
+      handbok_id: 'dagsenter',
+      line: 'Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.',
+      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      order: 15,
+    },
+    {
+      handbok_id: 'folgetjeneste',
+      line: 'Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.',
+      relevant_fact_ids: ['f_elling_tlf', 'f_kalender'],
+      order: 16,
+    },
+    {
+      handbok_id: 'hverdagsrehab',
+      line: 'Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.',
+      relevant_fact_ids: ['f_bok', 'f_matbokser'],
+      order: 17,
+    },
+    {
+      handbok_id: 'parorende',
+      line: 'Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.',
+      relevant_fact_ids: ['f_grete_baerer', 'f_grete_syk'],
+      order: 18,
+    },
+    {
+      handbok_id: 'tt',
+      line: 'TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.',
+      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      order: 19,
+    },
+    {
+      handbok_id: 'alarm',
+      line: 'Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.',
+      relevant_fact_ids: ['f_saarbar'],
+      order: 20,
+    },
+    {
+      handbok_id: 'depositum',
+      line: 'Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.',
+      relevant_fact_ids: ['f_leie_privat', 'f_leie_stoppet'],
+      order: 21,
+    },
+    {
+      handbok_id: 'kbolig',
+      line: 'Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.',
+      relevant_fact_ids: ['f_leie_stoppet', 'f_gap'],
+      order: 22,
+    },
+    {
+      handbok_id: 'startlan',
+      line: 'Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.',
+      relevant_fact_ids: ['f_trygd', 'f_gap'],
+      order: 23,
     },
   ],
 } as const;

@@ -388,6 +388,17 @@ Source: doc_frank_visit
 Supports: q_baering, q_evner
 Discuss: Frank
 
+## f_dor_glott
+Label: En dør på gløtt
+Summary: Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.
+Domain: Nettverk/sosialt
+Category: Samtale
+Source: doc_frank_visit
+About: elling
+Quote: han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.
+Supports: q_baering
+Discuss: Frank
+
 ## f_smart_gutt
 Label: «En smart gutt»
 Summary: Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.
@@ -438,38 +449,46 @@ Discuss: Frank
 
 ## q_grete_dor
 Title: Den dagen Grete ikke kommer hjem — hva stopper?
+Teaser: Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.
 Opens when: f_grete_syk, f_klarer_seg
 Leads: d_ring_grete = Ring Grete
 
 ## q_evner
 Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
+Teaser: Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.
 Opens when: f_bok, f_utklipp, f_aldri_alene
 Leads: t_brev
 
 ## q_okonomi
 Title: Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?
+Teaser: Tallene går opp — men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.
 Opens when: f_grete_baerer, f_trygd, f_husleie
 Leads: d_konto, t_huseier
 
 ## q_bolig
 Title: Kan Elling bli boende — når husleien har stoppet?
+Teaser: Det er noe med leiligheten som ikke tåler mange spørsmål. Ta en titt når du kan.
 Opens when: f_gap, f_leie_stoppet, f_husleie
 Leads: t_huseier
 
 ## q_baering
 Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
+Teaser: Noen bar mye her. Hvem som skal bære hva nå — det begynner å presse seg på.
 Opens when: f_elling_tlf, f_avstand, f_ingen_tjenester
 
 ## q_vekst
 Title: Hva kan læres — og i hvilket tempo, uten å knekke noe?
+Teaser: Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.
 Opens when: f_bok, f_matbokser
 
 ## q_kollaps
 Title: Hva kollapser først nå?
+Teaser: Noe her har begynt å rakne. Jeg vet ikke hva som går først.
 Opens when: f_dod
 
 ## q_liv
 Title: Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?
+Teaser: Det ligger et større spørsmål her enn berging. Jeg klarer ikke slippe det.
 Opens when: f_dod, f_utklipp
 
 # Hypotheses
@@ -837,3 +856,170 @@ Effects: pending_doc doc_huseier after 0 day on ck_grete
 Day: 8
 Text: En uke siden meldingen.
 Effects: pending_doc doc_status after 0 day on ck_grete
+
+# Frank chat
+
+## c_kalender
+Question: Hva betyr kalenderen?
+Answer: Avtalene står der, tydelige nok. Men håndskriften er Gretes. Kalenderen virker bare så lenge noen holder den i live. Spørsmålet er ikke om Elling kan lese den. Det er om den finnes neste måned.
+Needs: f_kalender
+
+## c_post
+Question: Posten i gangen — likegyldighet?
+Answer: Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.
+Needs: f_post
+
+## c_smart
+Question: «En smart gutt» — hva la du i det?
+Answer: Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne. Det er det vi egentlig skal kartlegge.
+Needs: f_smart_gutt
+
+## c_klarer
+Question: Tror du på «han klarer seg»?
+Answer: Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.
+Needs: f_klarer_seg
+
+## c_bok
+Question: Boken og notatene — hva sier det deg?
+Answer: Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet. Det er to forskjellige problemer, og de har to forskjellige løsninger.
+Needs: f_bok
+
+## c_avstand
+Question: Møbelet mellom dere — hvor lang vei er det inn?
+Answer: Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.
+Needs: f_avstand
+Pays fact: f_dor_glott
+
+## c_gro
+Question: Utklippene av Gro — hva gjør vi med det?
+Answer: Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg, men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.
+Needs: f_utklipp
+
+## c_brevsprekk
+Question: Brevsprekken. Hørte han det, tror du?
+Answer: Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.
+Needs: f_brevsprekken
+
+# Frank proposals
+
+## matlevering
+Line: Matlevering, kanskje. Boksene i kjøleskapet tar slutt — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.
+Relevant facts: f_matbokser, f_ingen_matkjop
+Order: 0
+
+## hjemmehjelp
+Line: Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.
+Relevant facts: f_avstand, f_elling_tlf, f_dor_glott
+Order: 1
+
+## bostotte
+Line: Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.
+Relevant facts: f_gap, f_trygd, f_husleie
+Relevant categories: Økonomi
+Order: 2
+
+## forvaltning
+Line: Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.
+Relevant facts: f_alt_via_grete, f_husleie, f_gap
+Order: 3
+
+## mekling
+Line: Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.
+Relevant facts: f_huseier_kommer, f_leie_stoppet, f_leie_privat
+Order: 4
+
+## boopp
+Line: Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.
+Relevant facts: f_leie_stoppet, f_post, f_kalender
+Order: 5
+
+## radgivning
+Line: Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.
+Relevant facts: f_gap, f_post
+Relevant categories: Økonomi
+Order: 6
+
+## innkjop
+Line: Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.
+Relevant facts: f_ingen_matkjop, f_matbokser
+Order: 7
+
+## maltidsvenn
+Line: Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.
+Relevant facts: f_matbokser, f_avstand
+Order: 8
+
+## kartlegging
+Line: Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.
+Relevant facts: f_aldri_alene, f_ingen_plan
+Order: 9
+
+## oppfolging
+Line: Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.
+Relevant facts: f_ingen_tjenester, f_ingen_plan
+Order: 10
+
+## samtaler
+Line: Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.
+Relevant facts: f_brevsprekken, f_avstand
+Order: 11
+
+## stottekontakt
+Line: Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.
+Relevant facts: f_utklipp, f_bok
+Order: 12
+
+## tilsyn
+Line: Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.
+Relevant facts: f_saarbar, f_brevsprekken
+Order: 13
+
+## besoksvenn
+Line: Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.
+Relevant facts: f_avstand, f_aldri_alene
+Order: 14
+
+## dagsenter
+Line: Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.
+Relevant facts: f_avstand, f_ingen_tjenester
+Order: 15
+
+## folgetjeneste
+Line: Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.
+Relevant facts: f_elling_tlf, f_kalender
+Order: 16
+
+## hverdagsrehab
+Line: Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.
+Relevant facts: f_bok, f_matbokser
+Order: 17
+
+## parorende
+Line: Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.
+Relevant facts: f_grete_baerer, f_grete_syk
+Order: 18
+
+## tt
+Line: TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.
+Relevant facts: f_avstand, f_ingen_tjenester
+Order: 19
+
+## alarm
+Line: Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.
+Relevant facts: f_saarbar
+Order: 20
+
+## depositum
+Line: Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.
+Relevant facts: f_leie_privat, f_leie_stoppet
+Order: 21
+
+## kbolig
+Line: Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.
+Relevant facts: f_leie_stoppet, f_gap
+Order: 22
+
+## startlan
+Line: Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.
+Relevant facts: f_trygd, f_gap
+Order: 23

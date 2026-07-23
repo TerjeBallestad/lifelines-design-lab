@@ -26,6 +26,8 @@ const SECTION_ORDER = [
   'Clocks',
   'Event deltas',
   'Day script beats',
+  'Frank chat',
+  'Frank proposals',
 ];
 
 export function parseCaseMarkdown(text) {
@@ -56,6 +58,7 @@ export function parseCaseMarkdown(text) {
     id: item.id,
     title: required(item.fields, 'Title', item.id),
     prompt: item.fields.get('Prompt') ?? required(item.fields, 'Title', item.id),
+    teaser: item.fields.get('Teaser') ?? null,
     appears_on: item.fields.has('Appears on')
       ? listField(item.fields, 'Appears on')
       : listField(item.fields, 'Opens when'),
@@ -149,14 +152,44 @@ export function parseCaseMarkdown(text) {
     }),
   );
 
-  const day_script_beats = parseItems(lastSectionBody(normalized, 'Day script beats')).map(
-    (item) => ({
-      id: item.id,
-      day: parseIntegerField(required(item.fields, 'Day', item.id), `${item.id}.Day`),
-      text: required(item.fields, 'Text', item.id),
-      effects: item.fields.get('Effects') ?? '',
-    }),
-  );
+  // Frank chat sections (SDD-110 / PLAN-111) are optional as a pair — older
+  // .case.md files without them still parse; when '# Frank chat' is present,
+  // '# Frank proposals' must follow it.
+  const hasFrankChat = /^# Frank chat\s*$/m.test(normalized);
+
+  const day_script_beats = parseItems(
+    hasFrankChat
+      ? sectionBody(normalized, 'Day script beats', 'Frank chat')
+      : lastSectionBody(normalized, 'Day script beats'),
+  ).map((item) => ({
+    id: item.id,
+    day: parseIntegerField(required(item.fields, 'Day', item.id), `${item.id}.Day`),
+    text: required(item.fields, 'Text', item.id),
+    effects: item.fields.get('Effects') ?? '',
+  }));
+
+  const frank_chat = hasFrankChat
+    ? parseItems(sectionBody(normalized, 'Frank chat', 'Frank proposals')).map((item) => ({
+        id: item.id,
+        question: required(item.fields, 'Question', item.id),
+        answer: required(item.fields, 'Answer', item.id),
+        needs: listField(item.fields, 'Needs'),
+        pays_fact: item.fields.get('Pays fact') ?? null,
+        topic: item.fields.get('Topic') ?? null,
+      }))
+    : [];
+
+  // Frank proposals: the item id IS the håndbok entry id (global catalog,
+  // one template per entry — SB-502 content law; core-loop validates ids).
+  const frank_proposals = hasFrankChat
+    ? parseItems(lastSectionBody(normalized, 'Frank proposals')).map((item) => ({
+        handbok_id: item.id,
+        line: required(item.fields, 'Line', item.id),
+        relevant_fact_ids: listField(item.fields, 'Relevant facts'),
+        relevant_categories: listField(item.fields, 'Relevant categories'),
+        order: parseIntegerField(item.fields.get('Order') ?? '0', `${item.id}.Order`),
+      }))
+    : [];
 
   return {
     case: {
@@ -180,6 +213,8 @@ export function parseCaseMarkdown(text) {
     clocks,
     event_deltas,
     day_script_beats,
+    frank_chat,
+    frank_proposals,
   };
 }
 
@@ -274,6 +309,7 @@ export function buildArtifacts(source) {
       return {
         id: question.id,
         prompt: question.prompt,
+        ...(question.teaser != null ? { teaser: question.teaser } : {}),
         reveal_when: predicateFromFactIds(question.opens_when),
         ...(leads.length ? { leads } : {}),
       };
@@ -343,6 +379,33 @@ export function buildArtifacts(source) {
       text: beat.text,
       effects: effectsFromLine(beat.effects),
     })),
+    ...(source.frank_chat?.length
+      ? {
+          frank_chat: source.frank_chat.map((entry) => ({
+            id: entry.id,
+            question: entry.question,
+            answer: entry.answer,
+            ...(entry.needs.length ? { needs: entry.needs } : {}),
+            ...(entry.pays_fact ? { pays_fact: entry.pays_fact } : {}),
+            ...(entry.topic ? { topic: entry.topic } : {}),
+          })),
+        }
+      : {}),
+    ...(source.frank_proposals?.length
+      ? {
+          frank_proposals: source.frank_proposals.map((proposal) => ({
+            handbok_id: proposal.handbok_id,
+            line: proposal.line,
+            ...(proposal.relevant_fact_ids.length
+              ? { relevant_fact_ids: proposal.relevant_fact_ids }
+              : {}),
+            ...(proposal.relevant_categories.length
+              ? { relevant_categories: proposal.relevant_categories }
+              : {}),
+            order: proposal.order,
+          })),
+        }
+      : {}),
   };
 
   const labContent = buildLabContent(source, allRunsByDoc);
@@ -481,6 +544,7 @@ export function serializeCase(godot) {
   for (const question of godot.questions ?? []) {
     lines.push(`## ${question.id}`);
     lines.push(`Title: ${question.prompt}`);
+    if (question.teaser != null) lines.push(`Teaser: ${question.teaser}`);
     pushList(lines, 'Opens when', factIdsFromPredicate(question.reveal_when));
     if (question.leads && question.leads.length)
       lines.push(`Leads: ${leadsLineFromGodot(question, godot)}`);
@@ -579,7 +643,56 @@ export function serializeCase(godot) {
   pushDayScriptBeats(lines, godot.day_script_beats ?? [], (beat) =>
     beat.effects && beat.effects.length ? effectsLineFromEffects(beat.effects) : '',
   );
+  pushFrankSections(
+    lines,
+    (godot.frank_chat ?? []).map((entry) => ({
+      id: entry.id,
+      question: entry.question,
+      answer: entry.answer,
+      needs: entry.needs ?? [],
+      pays_fact: entry.pays_fact ?? null,
+      topic: entry.topic ?? null,
+    })),
+    godot.frank_proposals ?? [],
+  );
   return lines.join('\n') + '\n';
+}
+
+// Shared tail sections for both serializers (SDD-110 / PLAN-111). Emitted as a
+// pair whenever either has content — the parser requires '# Frank proposals'
+// after '# Frank chat'.
+function pushFrankSections(lines, chatEntries, proposals) {
+  if (!chatEntries.length && !proposals.length) return;
+  lines.push('');
+  lines.push('# Frank chat');
+  lines.push('');
+  if (!chatEntries.length) {
+    lines.push('None');
+    lines.push('');
+  }
+  for (const entry of chatEntries) {
+    lines.push(`## ${entry.id}`);
+    lines.push(`Question: ${entry.question}`);
+    lines.push(`Answer: ${entry.answer}`);
+    pushList(lines, 'Needs', entry.needs);
+    if (entry.pays_fact) lines.push(`Pays fact: ${entry.pays_fact}`);
+    if (entry.topic) lines.push(`Topic: ${entry.topic}`);
+    lines.push('');
+  }
+  lines.push('# Frank proposals');
+  lines.push('');
+  if (!proposals.length) {
+    lines.push('None');
+    return;
+  }
+  proposals.forEach((proposal, index) => {
+    lines.push(`## ${proposal.handbok_id}`);
+    lines.push(`Line: ${proposal.line}`);
+    pushList(lines, 'Relevant facts', proposal.relevant_fact_ids ?? []);
+    pushList(lines, 'Relevant categories', proposal.relevant_categories ?? []);
+    lines.push(`Order: ${proposal.order ?? 0}`);
+    if (index < proposals.length - 1) lines.push('');
+  });
 }
 
 // Shared tail section for both serializers. `effectsLine(beat)` maps a beat to
@@ -699,6 +812,7 @@ export function serializeSource(source) {
     lines.push(`## ${question.id}`);
     lines.push(`Title: ${question.title}`);
     if (question.prompt !== question.title) lines.push(`Prompt: ${question.prompt}`);
+    if (question.teaser != null) lines.push(`Teaser: ${question.teaser}`);
     if (JSON.stringify(question.appears_on) !== JSON.stringify(question.opens_when)) {
       pushList(lines, 'Appears on', question.appears_on);
     }
@@ -792,6 +906,7 @@ export function serializeSource(source) {
   }
 
   pushDayScriptBeats(lines, source.day_script_beats ?? [], (beat) => beat.effects ?? '');
+  pushFrankSections(lines, source.frank_chat ?? [], source.frank_proposals ?? []);
   return lines.join('\n') + '\n';
 }
 
@@ -1132,6 +1247,17 @@ function validateArtifacts(source, godotSource) {
       warnUnknown(clockIds, delta.clock_id, `event delta ${delta.event_type}.Clock`);
     if (delta.reveal_fact_id)
       warnUnknown(factIds, delta.reveal_fact_id, `event delta ${delta.event_type}.Reveals fact`);
+  }
+  // Frank chat gates are silent at runtime (a typo'd Needs id locks the entry
+  // forever) — fail loud here. handbok_ids are a core-loop resource namespace;
+  // CasePackValidator checks those on the Godot side.
+  for (const entry of source.frank_chat ?? []) {
+    for (const factId of entry.needs) warnUnknown(factIds, factId, `frank chat ${entry.id}.Needs`);
+    if (entry.pays_fact) warnUnknown(factIds, entry.pays_fact, `frank chat ${entry.id}.Pays fact`);
+  }
+  for (const proposal of source.frank_proposals ?? []) {
+    for (const factId of proposal.relevant_fact_ids)
+      warnUnknown(factIds, factId, `frank proposal ${proposal.handbok_id}.Relevant facts`);
   }
   return warnings;
 }
