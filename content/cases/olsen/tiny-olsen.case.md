@@ -550,6 +550,7 @@ Question: q_okonomi
 Needs: f_gap
 Opens tiltak: t_bostotte, t_huseier
 Unlocks dispatches: d_konto
+Opens conversation: c_frank_okonomi [risk=okonomi, sim=case.olsen.opening.conversation.frank_okonomi]
 
 ## h_b_sikres
 Title: Boligen kan sikres — med bostøtte og ordnet betalingskjede.

@@ -2317,6 +2317,17 @@ export const tinyOlsenGodotSource = {
             dispatch_ids: ['d_konto'],
           },
         },
+        {
+          op: 'open_conversation',
+          args: {
+            conversation_id: 'c_frank_okonomi',
+          },
+          type: 'conversation',
+          category: 'frank',
+          actor: 'frank',
+          risk_tags: ['okonomi'],
+          sim_hook_id: 'case.olsen.opening.conversation.frank_okonomi',
+        },
       ],
     },
     {

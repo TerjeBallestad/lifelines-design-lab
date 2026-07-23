@@ -74,6 +74,7 @@ export function parseCaseMarkdown(text) {
     needs: listField(item.fields, 'Needs'),
     opens_tiltak: listField(item.fields, 'Opens tiltak'),
     unlocks_dispatches: listField(item.fields, 'Unlocks dispatches'),
+    opens_conversation: parseOpensConversation(item.fields.get('Opens conversation'), item.id),
   }));
 
   const tiltak = parseItems(sectionBody(normalized, 'Tiltak', 'Dispatches')).map((item) => ({
@@ -567,6 +568,17 @@ export function serializeCase(godot) {
       .flatMap((sourceSpec) => sourceSpec.args?.dispatch_ids ?? []);
     pushList(lines, 'Opens tiltak', opensTiltak);
     pushList(lines, 'Unlocks dispatches', opensDispatches);
+    const conversationSource = (hypothesis.opening_sources ?? []).find(
+      (sourceSpec) => sourceSpec.op === 'open_conversation',
+    );
+    if (conversationSource)
+      lines.push(
+        `Opens conversation: ${opensConversationLine({
+          conversation_id: conversationSource.args?.conversation_id ?? '',
+          risk_tags: conversationSource.risk_tags ?? [],
+          sim_hook_id: conversationSource.sim_hook_id ?? '',
+        })}`,
+      );
     lines.push('');
   }
 
@@ -832,6 +844,8 @@ export function serializeSource(source) {
     pushList(lines, 'Needs', hypothesis.needs);
     pushList(lines, 'Opens tiltak', hypothesis.opens_tiltak);
     pushList(lines, 'Unlocks dispatches', hypothesis.unlocks_dispatches);
+    if (hypothesis.opens_conversation)
+      lines.push(`Opens conversation: ${opensConversationLine(hypothesis.opens_conversation)}`);
     lines.push('');
   }
 
@@ -1157,7 +1171,58 @@ function openingSourcesForHypothesis(hypothesis) {
   if (hypothesis.unlocks_dispatches.length) {
     sources.push({ op: 'open_dispatches', args: { dispatch_ids: hypothesis.unlocks_dispatches } });
   }
+  if (hypothesis.opens_conversation) {
+    const entry = hypothesis.opens_conversation;
+    const source = { op: 'open_conversation', args: { conversation_id: entry.conversation_id } };
+    // Godot's pack validator treats opening metadata as all-or-nothing: any
+    // field set requires all five. The author writes only risk/sim; the
+    // derivable trio is synthesized from the op (matches the original WS2 data).
+    if (entry.risk_tags.length || entry.sim_hook_id) {
+      source.type = 'conversation';
+      source.category = 'frank';
+      source.actor = 'frank';
+      source.risk_tags = entry.risk_tags;
+      source.sim_hook_id = entry.sim_hook_id;
+    }
+    sources.push(source);
+  }
   return sources;
+}
+
+// 'Opens conversation: <id> [risk=tag1+tag2, sim=<hook_id>]' — the bracket is
+// optional; type/category/actor are NOT authorable here on purpose, the Godot
+// engine derives them from the op (SB-303 restore kept the DSL minimal).
+function parseOpensConversation(value, context) {
+  if (value == null || !value.trim()) return null;
+  const match = value.trim().match(/^(\S+?)(?:\s*\[([^\]]*)\])?$/);
+  if (!match) throw new Error(`Unsupported Opens conversation value in ${context}: ${value}`);
+  const entry = { conversation_id: match[1], risk_tags: [], sim_hook_id: '' };
+  for (const pair of (match[2] ?? '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)) {
+    const eq = pair.indexOf('=');
+    const key = eq === -1 ? pair : pair.slice(0, eq).trim();
+    const raw = eq === -1 ? '' : pair.slice(eq + 1).trim();
+    if (key === 'risk') {
+      entry.risk_tags = raw
+        .split('+')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+    } else if (key === 'sim') {
+      entry.sim_hook_id = raw;
+    } else {
+      throw new Error(`Unsupported Opens conversation metadata key '${key}' in ${context}`);
+    }
+  }
+  return entry;
+}
+
+function opensConversationLine(entry) {
+  const meta = [];
+  if (entry.risk_tags.length) meta.push(`risk=${entry.risk_tags.join('+')}`);
+  if (entry.sim_hook_id) meta.push(`sim=${entry.sim_hook_id}`);
+  return meta.length ? `${entry.conversation_id} [${meta.join(', ')}]` : entry.conversation_id;
 }
 
 function effectsFromLine(line) {
