@@ -11,10 +11,10 @@
     "lint": "tsc -b --noEmit && prettier --check .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gen:olsen": "node scripts/blueprint/generate-tiny-olsen-case.mjs",
-    "gen:olsen:check": "node scripts/blueprint/generate-tiny-olsen-case.mjs --check",
+    "gen:olsen": "node scripts/blueprint/compile-olsen-case.mjs",
+    "gen:olsen:check": "node scripts/blueprint/compile-olsen-case.mjs --check",
     "case:check": "npm run gen:olsen:check && npm run test:olsen",
-    "test:olsen": "vitest run scripts/blueprint/generate-tiny-olsen-case.test.mjs",
+    "test:olsen": "vitest run scripts/blueprint",
     "test:harness": "node tools/harness/run-sdd-check.mjs",
     "harness:sdd": "tools/harness/run-sdd.sh"
   },

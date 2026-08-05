@@ -2148,10 +2148,6 @@ export const tinyOlsenGodotSource = {
       summary:
         'Saken mangler økonomisk grunnlag for en boligvurdering. Be Frank lage en økonomisk oversikt.',
       question_id: 'q_bolig',
-      availability: {
-        op: 'all',
-        children: [],
-      },
       opening_sources: [],
     },
     {
@@ -2304,10 +2300,6 @@ export const tinyOlsenGodotSource = {
       summary:
         'Kommunen har ingen observasjon av Elling i en mestringssituasjon. Vurdering uten utprøving vil være gjetning.',
       question_id: 'q_selv',
-      availability: {
-        op: 'all',
-        children: [],
-      },
       opening_sources: [
         {
           op: 'open_tiltak',

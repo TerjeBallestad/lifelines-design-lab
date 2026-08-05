@@ -1,0 +1,724 @@
+{
+  "_provenance": "Copied verbatim (programmatically) from ../lifelines-core-loop/resources/cases/olsen/source/tiny_olsen_slice.json by TASK-014. Do not hand-edit; the provenance test asserts deep equality with the shipped file when present.",
+  "header": {
+    "id": "case_olsen_tiny",
+    "title": "Olsen — full case slice",
+    "scenario_stage": 0,
+    "vurdering_frist_day": 10
+  },
+  "documents": {
+    "doc_dodsfall": {
+      "id": "doc_dodsfall",
+      "kind": "MELDING",
+      "title": "OUS Ullevål · dødsfall",
+      "register": "klinisk",
+      "peek": "—",
+      "meta": "ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999",
+      "body_bbcode": "MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. [url=fact:f_brevsprekken]Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS",
+      "runs": [
+        {
+          "id": "run_text_0",
+          "text": "MELDING OM DØDSFALL Grete Olsen, f. 21.09.1927. ",
+          "fact_id": ""
+        },
+        {
+          "id": "run_dod",
+          "text": "Dødsfall konstatert 15.02 kl. 04:12.",
+          "fact_id": "f_dod"
+        },
+        {
+          "id": "run_text_1",
+          "text": " Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ",
+          "fact_id": ""
+        },
+        {
+          "id": "run_brevsprekken",
+          "text": "Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.",
+          "fact_id": "f_brevsprekken"
+        },
+        {
+          "id": "run_text_2",
+          "text": " Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET · OUS",
+          "fact_id": ""
+        }
+      ]
+    }
+  },
+  "facts": {
+    "f_dor_glott": {
+      "id": "f_dor_glott",
+      "label": "En dør på gløtt",
+      "summary": "Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.",
+      "source_document_id": "doc_frank_visit",
+      "domain": "Nettverk/sosialt",
+      "category": "Samtale",
+      "about": "elling",
+      "quote": "han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.",
+      "card_line": "Han svarte da jeg spurte om Nansen.",
+      "discuss": ["Frank"],
+      "supports_questions": ["q_baering"],
+      "lift_effects": []
+    },
+    "f_klarer_seg": {
+      "id": "f_klarer_seg",
+      "label": "«Han klarer seg»",
+      "summary": "Grete avviser bekymringen. Gjentar formuleringen.",
+      "source_document_id": "doc_frank_tlf",
+      "domain": "Nettverk/sosialt",
+      "category": "Samtale",
+      "about": "elling",
+      "quote": "«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.",
+      "discuss": ["Frank"],
+      "supports_questions": ["q_grete_dor"],
+      "reveals_event": "call:grete",
+      "lift_effects": []
+    },
+    "f_grete_syk": {
+      "id": "f_grete_syk",
+      "label": "Grete er alvorlig syk",
+      "summary": "Grete er alvorlig syk. Forventet forløp er kort.",
+      "source_document_id": "doc_bekymring",
+      "domain": "Helse/risiko",
+      "category": "Dokument",
+      "about": "grete",
+      "quote": "sykdom med kort forventet forløp",
+      "frank_response": "«Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.",
+      "discuss": ["Frank"],
+      "supports_questions": ["q_grete_dor"],
+      "lift_effects": []
+    },
+    "f_dod": {
+      "id": "f_dod",
+      "label": "Grete er død",
+      "summary": "Grete Olsen døde 15.02 kl. 04:12.",
+      "source_document_id": "doc_dodsfall",
+      "domain": "Helse/risiko",
+      "category": "Dokument",
+      "quote": "Dødsfall konstatert 15.02 kl. 04:12.",
+      "discuss": ["Frank"],
+      "supports_questions": ["q_kollaps"],
+      "lift_effects": [
+        {
+          "op": "reveal_questions",
+          "args": {
+            "question_ids": ["q_kollaps"]
+          }
+        }
+      ]
+    },
+    "f_leie_stoppet": {
+      "id": "f_leie_stoppet",
+      "label": "Husleien har stoppet",
+      "summary": "Husleien har stoppet. Betalingskjeden døde med Grete.",
+      "source_document_id": "doc_huseier",
+      "domain": "Økonomi/bolig",
+      "category": "Risiko",
+      "quote": "Leien for mars er ikke kommet.",
+      "discuss": ["Frank"],
+      "supports_questions": ["q_bolig", "q_kollaps"],
+      "lift_effects": []
+    }
+  },
+  "questions": {
+    "q_vekst": {
+      "id": "q_vekst",
+      "prompt": "Hva kan læres — og i hvilket tempo, uten å knekke noe?",
+      "teaser": "Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.",
+      "card_title": "Hva kan læres?",
+      "card_sub": "— og i hvilket tempo, uten å knekke noe?",
+      "reveal_when": {
+        "op": "all",
+        "children": [
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_bok"
+            }
+          },
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_utklipp"
+            }
+          }
+        ]
+      }
+    },
+    "q_baering": {
+      "id": "q_baering",
+      "prompt": "Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?",
+      "teaser": "",
+      "reveal_when": {
+        "op": "all",
+        "children": [
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_elling_tlf"
+            }
+          },
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_avstand"
+            }
+          },
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_ingen_tjenester"
+            }
+          }
+        ]
+      }
+    },
+    "q_kollaps": {
+      "id": "q_kollaps",
+      "prompt": "Hva kollapser først nå?",
+      "teaser": "Noe her har begynt å rakne. Jeg vet ikke hva som går først.",
+      "reveal_when": {
+        "op": "fact_lifted",
+        "args": {
+          "fact_id": "f_dod"
+        }
+      }
+    }
+  },
+  "hypotheses": {
+    "h_ok_gap": {
+      "id": "h_ok_gap",
+      "title": "Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.",
+      "summary": "Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.",
+      "question_id": "q_okonomi",
+      "availability": {
+        "op": "fact_lifted",
+        "args": {
+          "fact_id": "f_gap"
+        }
+      },
+      "opening_sources": [
+        {
+          "op": "open_tiltak",
+          "args": {
+            "tiltak_ids": ["t_bostotte", "t_huseier"]
+          }
+        },
+        {
+          "op": "open_dispatches",
+          "args": {
+            "dispatch_ids": ["d_konto"]
+          }
+        },
+        {
+          "op": "open_conversation",
+          "args": {
+            "conversation_id": "c_frank_okonomi"
+          },
+          "type": "conversation",
+          "category": "frank",
+          "actor": "frank",
+          "risk_tags": ["okonomi"],
+          "sim_hook_id": "case.olsen.opening.conversation.frank_okonomi"
+        }
+      ]
+    },
+    "h_gd_system": {
+      "id": "h_gd_system",
+      "title": "Husholdet er et system med to. Med én står det stille.",
+      "summary": "Mat, avtaler, post og kontakt går gjennom arbeidsdeling som forsvinner med Grete. Det er systemet som dør, ikke bare et fravær.",
+      "question_id": "q_grete_dor",
+      "availability": {
+        "op": "all",
+        "children": [
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_smart_gutt"
+            }
+          },
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_ingen_matkjop"
+            }
+          }
+        ]
+      },
+      "opening_sources": [
+        {
+          "op": "open_tiltak",
+          "args": {
+            "tiltak_ids": ["t_matlevering"]
+          }
+        }
+      ]
+    }
+  },
+  "tiltak": {
+    "t_institusjon": {
+      "id": "t_institusjon",
+      "title": "Institusjonsvurdering / omsorgsbolig",
+      "sim_hook_id": "case.olsen.tiltak.institusjon",
+      "slot": "press",
+      "cost": 0,
+      "description": "Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.",
+      "weight": "heavy"
+    },
+    "t_bostotte": {
+      "id": "t_bostotte",
+      "title": "Søk bostøtte",
+      "sim_hook_id": "case.olsen.tiltak.bostotte",
+      "slot": "s1",
+      "cost": 0,
+      "description": "Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid."
+    }
+  },
+  "dispatches": {
+    "d_konto": {
+      "id": "d_konto",
+      "title": "Be om økonomisk oversikt",
+      "sim_hook_id": "case.olsen.dispatch.account_overview",
+      "description": "Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.",
+      "activity_title": "BE OM BANKUTSKRIFT",
+      "duration_h": 1,
+      "occupies_hours": 3,
+      "channel": "scheduled",
+      "channel_delay_minutes": 480,
+      "reception_modifier": 1,
+      "gate": {
+        "op": "fact_lifted",
+        "args": {
+          "fact_id": "f_gap"
+        }
+      },
+      "effects": [
+        {
+          "op": "queue_pending_document",
+          "args": {
+            "clock_id": "ck_overfort",
+            "document_id": "pending_konto_overfort",
+            "delay_days": 1
+          }
+        }
+      ]
+    },
+    "hjemmebesok": {
+      "id": "hjemmebesok",
+      "title": "Hjemmebesøk",
+      "sim_hook_id": "case.olsen.dispatch.hjemmebesok",
+      "description": "Frank drar på uanmeldt besøk til leiligheten.",
+      "activity_title": "HJEMMEBESØK",
+      "duration_h": 2,
+      "occupies_hours": 2,
+      "channel": "now",
+      "channel_delay_minutes": 0,
+      "reception_modifier": -1,
+      "gate": {
+        "op": "fact_lifted",
+        "args": {
+          "fact_id": "f_saarbar"
+        }
+      },
+      "effects": []
+    }
+  },
+  "clocks": {
+    "ck_grete": {
+      "id": "ck_grete",
+      "label": "Grete tilgjengelig",
+      "sim_hook_id": "case.olsen.clock.grete",
+      "question": "Hvor lenge bærer hun?",
+      "good_segment_label": "",
+      "good_segment_size": 0,
+      "bad_segment_label": "Grete er død",
+      "bad_segment_size": 5,
+      "max_value": 5
+    },
+    "ck_bostotte": {
+      "id": "ck_bostotte",
+      "label": "Bostøtte sak",
+      "sim_hook_id": "case.olsen.clock.bostotte",
+      "question": "Kan kommunen skape et lovlig grunnlag for at husleien kan betales?",
+      "good_segment_label": "Søknad komplett",
+      "good_segment_size": 4,
+      "bad_segment_label": "Frist glipper",
+      "bad_segment_size": 4,
+      "visibility": {
+        "op": "all",
+        "children": [
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_gap"
+            }
+          },
+          {
+            "op": "fact_lifted",
+            "args": {
+              "fact_id": "f_trygd"
+            }
+          }
+        ]
+      }
+    },
+    "ck_overfort": {
+      "id": "ck_overfort",
+      "label": "Kontooversikt til neste dag",
+      "sim_hook_id": "case.olsen.clock.account_overview",
+      "question": "Er funksjonene hun bar identifisert og flyttet?",
+      "good_segment_label": "Funksjoner overført",
+      "good_segment_size": 6,
+      "bad_segment_label": "Alt går via Grete",
+      "bad_segment_size": 6
+    },
+    "ck_restanse": {
+      "id": "ck_restanse",
+      "label": "Husleierestanse",
+      "sim_hook_id": "case.olsen.clock.restanse",
+      "question": "Blir leieproblemet en aktiv sak før støtten er på plass?",
+      "good_segment_label": "",
+      "good_segment_size": 0,
+      "bad_segment_label": "Restanse bygges",
+      "bad_segment_size": 6,
+      "max_value": 6
+    }
+  },
+  "day_script_beats": {
+    "beat_grete_d2": {
+      "id": "beat_grete_d2",
+      "day": 2,
+      "text": "Grete blir sliten.",
+      "effects": []
+    },
+    "beat_grete_d5": {
+      "id": "beat_grete_d5",
+      "day": 5,
+      "text": "Grete Olsen er død.",
+      "effects": [
+        {
+          "op": "queue_pending_document",
+          "args": {
+            "clock_id": "ck_grete",
+            "document_id": "doc_dodsfall",
+            "delay_days": 0
+          }
+        }
+      ]
+    },
+    "beat_grete_d6": {
+      "id": "beat_grete_d6",
+      "day": 6,
+      "text": "Håndskrevet brev · T. Bakkerud",
+      "effects": [
+        {
+          "op": "queue_pending_document",
+          "args": {
+            "clock_id": "ck_grete",
+            "document_id": "doc_huseier",
+            "delay_days": 0
+          }
+        }
+      ]
+    }
+  },
+  "frank_chat": {
+    "c_post": {
+      "id": "c_post",
+      "question": "Posten i gangen — likegyldighet?",
+      "answer": "Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.",
+      "needs": ["f_post"],
+      "answer_lines": [
+        "Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.",
+        "Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar."
+      ],
+      "followups": [
+        {
+          "label": "Frykt for hva, helt konkret?",
+          "lines": [
+            "For hva svaret koster. Hvert brev er en beskjed om at noen venter på noe han ikke får til.",
+            "Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen."
+          ]
+        },
+        {
+          "label": "Hva gjør vi med bunken?",
+          "lines": [
+            "Ikke ta den fra ham. Da tar du det siste han har kontroll på.",
+            "Åpne ett brev. Sammen. Det ufarligste først — strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer."
+          ]
+        }
+      ]
+    },
+    "c_avstand": {
+      "id": "c_avstand",
+      "question": "Møbelet mellom dere — hvor lang vei er det inn?",
+      "answer": "Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.",
+      "needs": ["f_avstand"],
+      "pays_fact": "f_dor_glott",
+      "answer_lines": [
+        "Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne.",
+        "Det er en dør på gløtt. Den lukkes hvis vi river i den."
+      ],
+      "followups": [
+        {
+          "label": "Hva var det som åpnet den?",
+          "lines": [
+            "At jeg spurte om noe han kunne svare på. Ikke omsorg. Kunnskap.",
+            "Det er kanalen inn: la ham være den som vet. Alle andre i livet hans har vært den som ordner."
+          ]
+        },
+        {
+          "label": "Og hvis vi river i den?",
+          "lines": [
+            "Da lukkes den. Og jeg tror ikke den åpner for den neste som ringer på.",
+            "Vi har én sjanse til å være de som ikke rev."
+          ]
+        }
+      ]
+    },
+    "c_dor_glott": {
+      "id": "c_dor_glott",
+      "question": "Døren på gløtt — hva holder den åpen?",
+      "answer": "",
+      "answer_lines": [
+        "At noen spør ham om noe han kan svare på. Det er hele mekanikken.",
+        "Den tåler ikke omsorg ennå. Den tåler spørsmål."
+      ],
+      "needs": ["f_dor_glott"],
+      "followups": []
+    }
+  },
+  "calls": {
+    "grete": {
+      "contact_id": "grete",
+      "gate": {
+        "op": "fact_lifted",
+        "args": {
+          "fact_id": "f_grete_baerer"
+        }
+      },
+      "opening": [
+        {
+          "text": "Ja, hallo?"
+        },
+        {
+          "who": "du",
+          "text": "Det gjelder Elling. Dr. Haug har meldt bekymring."
+        },
+        {
+          "text": "Han klarer seg. Han har alltid klart seg.",
+          "fact_id": "f_klarer_seg"
+        }
+      ],
+      "soft_reject": "… Jeg vet ikke hva du mener med det.",
+      "exchanges": [
+        {
+          "card_id": "f_grete_baerer",
+          "ask": "Hvem overtar hvis du skulle bli innlagt?",
+          "reply": [
+            {
+              "text": "… (det blir stille i den andre enden)",
+              "fact_id": "f_ingen_plan"
+            }
+          ]
+        },
+        {
+          "card_id": "f_aldri_alene",
+          "ask": "Kan jeg få hilse på Elling?",
+          "reply": [
+            {
+              "text": "Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.",
+              "fact_id": "f_elling_tlf"
+            }
+          ]
+        },
+        {
+          "card_id": "f_saarbar",
+          "ask": "Vi vil gjerne komme på hjemmebesøk.",
+          "reply": [
+            {
+              "text": "Betyr dette at noen kommer til å ta ham fra leiligheten?",
+              "fact_id": "f_grete_redd"
+            },
+            {
+              "text": "… Hvis det må til."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "pair_lines": {
+    "pair_soft_reject_line": "De to? Jeg ser ikke tråden mellom dem. Ennå.",
+    "pair_already_set_line": "Det spørsmålet har vi allerede stående."
+  },
+  "recipes": {
+    "q_vekst": {
+      "question_id": "q_vekst",
+      "pair": ["f_bok", "f_utklipp"],
+      "reading": "Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.",
+      "frank_lines": [
+        "Boken og utklippene. Ja. Jeg har tenkt på dem sammen, men jeg fikk det ikke sagt.",
+        "Han holder krevende stoff i hodet og noterer systematisk. Og han klipper ut, daterer og ordner. Begge deler er hans egne.",
+        "Så spørsmålet er ikke om han kan lære. Det er hva som kan læres — og i hvilket tempo, uten å knekke noe."
+      ]
+    },
+    "q_grete_dor": {
+      "question_id": "q_grete_dor",
+      "pair": ["f_grete_syk", "f_klarer_seg"],
+      "reading": "Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.",
+      "frank_lines": [
+        "Haug skriver kort forventet forløp. Grete sier han klarer seg. Begge kan ikke ha rett.",
+        "Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe — og vi vet ikke hva.",
+        "Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved å være der."
+      ]
+    }
+  },
+  "frank_proposals": [
+    {
+      "handbok_id": "matlevering",
+      "line": "Matlevering, kanskje. Ingen matkjøp står i hans navn — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.",
+      "relevant_fact_ids": ["f_ingen_matkjop", "f_dor_glott"],
+      "order": 0
+    },
+    {
+      "handbok_id": "hjemmehjelp",
+      "line": "Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.",
+      "relevant_fact_ids": ["f_avstand", "f_elling_tlf", "f_dor_glott"],
+      "order": 1
+    },
+    {
+      "handbok_id": "bostotte",
+      "line": "Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.",
+      "relevant_fact_ids": ["f_gap", "f_trygd", "f_husleie"],
+      "relevant_categories": ["Økonomi"],
+      "order": 2
+    },
+    {
+      "handbok_id": "forvaltning",
+      "line": "Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.",
+      "relevant_fact_ids": ["f_alt_via_grete", "f_husleie", "f_gap"],
+      "order": 3
+    },
+    {
+      "handbok_id": "mekling",
+      "line": "Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.",
+      "relevant_fact_ids": ["f_huseier_kommer", "f_leie_stoppet", "f_leie_privat"],
+      "order": 4
+    },
+    {
+      "handbok_id": "boopp",
+      "line": "Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.",
+      "relevant_fact_ids": ["f_leie_stoppet", "f_post"],
+      "order": 5
+    },
+    {
+      "handbok_id": "radgivning",
+      "line": "Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.",
+      "relevant_fact_ids": ["f_gap", "f_post"],
+      "relevant_categories": ["Økonomi"],
+      "order": 6
+    },
+    {
+      "handbok_id": "innkjop",
+      "line": "Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.",
+      "relevant_fact_ids": ["f_ingen_matkjop", "f_alt_via_grete"],
+      "order": 7
+    },
+    {
+      "handbok_id": "maltidsvenn",
+      "line": "Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.",
+      "relevant_fact_ids": ["f_avstand", "f_ingen_matkjop"],
+      "order": 8
+    },
+    {
+      "handbok_id": "kartlegging",
+      "line": "Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.",
+      "relevant_fact_ids": ["f_aldri_alene", "f_ingen_plan"],
+      "order": 9
+    },
+    {
+      "handbok_id": "oppfolging",
+      "line": "Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.",
+      "relevant_fact_ids": ["f_ingen_tjenester", "f_ingen_plan"],
+      "order": 10
+    },
+    {
+      "handbok_id": "samtaler",
+      "line": "Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.",
+      "relevant_fact_ids": ["f_brevsprekken", "f_avstand"],
+      "order": 11
+    },
+    {
+      "handbok_id": "stottekontakt",
+      "line": "Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.",
+      "relevant_fact_ids": ["f_utklipp", "f_bok"],
+      "order": 12
+    },
+    {
+      "handbok_id": "tilsyn",
+      "line": "Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.",
+      "relevant_fact_ids": ["f_saarbar", "f_brevsprekken"],
+      "order": 13
+    },
+    {
+      "handbok_id": "besoksvenn",
+      "line": "Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.",
+      "relevant_fact_ids": ["f_avstand", "f_aldri_alene"],
+      "order": 14
+    },
+    {
+      "handbok_id": "dagsenter",
+      "line": "Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.",
+      "relevant_fact_ids": ["f_avstand", "f_ingen_tjenester"],
+      "order": 15
+    },
+    {
+      "handbok_id": "folgetjeneste",
+      "line": "Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.",
+      "relevant_fact_ids": ["f_elling_tlf", "f_ingen_tjenester"],
+      "order": 16
+    },
+    {
+      "handbok_id": "hverdagsrehab",
+      "line": "Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.",
+      "relevant_fact_ids": ["f_bok", "f_avstand"],
+      "order": 17
+    },
+    {
+      "handbok_id": "parorende",
+      "line": "Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.",
+      "relevant_fact_ids": ["f_grete_baerer", "f_grete_syk"],
+      "order": 18
+    },
+    {
+      "handbok_id": "tt",
+      "line": "TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.",
+      "relevant_fact_ids": ["f_avstand", "f_ingen_tjenester"],
+      "order": 19
+    },
+    {
+      "handbok_id": "alarm",
+      "line": "Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.",
+      "relevant_fact_ids": ["f_saarbar"],
+      "order": 20
+    },
+    {
+      "handbok_id": "depositum",
+      "line": "Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.",
+      "relevant_fact_ids": ["f_leie_privat", "f_leie_stoppet"],
+      "order": 21
+    },
+    {
+      "handbok_id": "kbolig",
+      "line": "Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.",
+      "relevant_fact_ids": ["f_leie_stoppet", "f_gap"],
+      "order": 22
+    },
+    {
+      "handbok_id": "startlan",
+      "line": "Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.",
+      "relevant_fact_ids": ["f_trygd", "f_gap"],
+      "order": 23
+    }
+  ]
+}
