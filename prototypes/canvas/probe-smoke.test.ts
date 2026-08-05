@@ -1,0 +1,104 @@
+// @vitest-environment jsdom
+// Smoke test for the SB-026 canvas probe: derives the graph from the real
+// compiled case, then boots the page in jsdom and clicks through it.
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+
+const ROOT = process.cwd();
+const caseText = readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8');
+
+describe('canvas graph derivation', () => {
+  it('builds the full Olsen graph with no dangling edges', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph } = await import('./graph.ts');
+    const { slice } = compileCase(caseText);
+    const graph = buildGraph(slice);
+
+    const byKind = (kind: string) => graph.nodes.filter((n) => n.kind === kind).length;
+    expect(byKind('document')).toBe(9);
+    expect(byKind('fact')).toBe(27);
+    expect(byKind('question')).toBe(8);
+    expect(byKind('hypothesis')).toBe(23);
+    expect(byKind('tiltak')).toBe(9);
+    expect(byKind('dispatch')).toBe(2);
+    expect(byKind('clock')).toBe(6);
+
+    const ids = new Set(graph.nodes.map((n) => n.id));
+    for (const edge of graph.edges) {
+      expect(ids.has(edge.from)).toBe(true);
+      expect(ids.has(edge.to)).toBe(true);
+    }
+
+    // Every fact hangs off a document; every hypothesis hangs off a question.
+    for (const fact of slice.facts)
+      expect(graph.edges.some((e) => e.to === fact.id && e.label === 'source')).toBe(true);
+    for (const h of slice.hypotheses)
+      expect(graph.edges.some((e) => e.to === h.id && e.from === h.question_id)).toBe(true);
+  });
+
+  it('lays out kind columns left to right with no overlaps inside a column', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph, layoutGraph } = await import('./graph.ts');
+    const graph = buildGraph(compileCase(caseText).slice);
+    const extent = layoutGraph(graph);
+    expect(extent.width).toBeGreaterThan(0);
+    expect(extent.height).toBeGreaterThan(0);
+
+    const xOf = (kind: string) => graph.nodes.find((n) => n.kind === kind)!.x;
+    expect(xOf('document')).toBeLessThan(xOf('fact'));
+    expect(xOf('fact')).toBeLessThan(xOf('question'));
+    expect(xOf('question')).toBeLessThan(xOf('hypothesis'));
+    expect(xOf('hypothesis')).toBeLessThan(xOf('tiltak'));
+    expect(xOf('tiltak')).toBeLessThan(xOf('clock'));
+
+    const columns = new Map<number, number[]>();
+    for (const node of graph.nodes) {
+      if (!columns.has(node.x)) columns.set(node.x, []);
+      columns.get(node.x)!.push(node.y);
+    }
+    for (const ys of columns.values()) {
+      ys.sort((a, b) => a - b);
+      for (let i = 1; i < ys.length; i++) expect(ys[i] - ys[i - 1]).toBeGreaterThanOrEqual(58);
+    }
+  });
+});
+
+describe('canvas probe page', () => {
+  it('boots over the real case and answers "what does this fact open?"', async () => {
+    const html = readFileSync(`${ROOT}/prototypes/canvas/index.html`, 'utf8');
+    const body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
+    document.body.innerHTML = body.replace(/<script[^]*?<\/script>/g, '');
+
+    const probe = await import('./main.ts');
+
+    const statusbar = document.getElementById('statusbar')!;
+    expect(statusbar.textContent).toContain('compiled');
+    expect(statusbar.textContent).toMatch(/\d+ nodes · \d+ edges/);
+
+    expect(document.querySelectorAll('.node').length).toBe(probe.graph.nodes.length);
+
+    // Select a fact that supports questions: neighborhood lights up and the
+    // inspector lists what it opens.
+    const fact = probe.graph.nodes.find(
+      (n) => n.kind === 'fact' && probe.graph.edges.some((e) => e.from === n.id),
+    )!;
+    probe.select(fact.id);
+    expect(document.body.classList.contains('has-selection')).toBe(true);
+    const inspector = document.getElementById('inspector-body')!;
+    expect(inspector.textContent).toContain(fact.id);
+    expect(inspector.textContent).toContain('OPENS / FEEDS');
+    expect(document.querySelectorAll('.node.lit').length).toBeGreaterThan(1);
+
+    probe.select(null);
+    expect(document.body.classList.contains('has-selection')).toBe(false);
+  });
+
+  it('surfaces the §9 quiet-day lint in the status bar when present', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { diagnostics } = compileCase(caseText);
+    const quiet = diagnostics.find((d) => d.code === 'lint-quiet-day');
+    const statusbar = document.getElementById('statusbar')!;
+    if (quiet) expect(statusbar.textContent).toContain('pacing');
+    else expect(statusbar.textContent).not.toContain('pacing');
+  });
+});

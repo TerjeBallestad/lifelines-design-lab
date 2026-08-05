@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kildeverket — canvas probe</title>
+    <style>
+      /* PM Board tokens — same set as prototypes/script-editor */
+      :root {
+        --bg: #0f1014;
+        --bg-side: #121318;
+        --panel: #15161b;
+        --panel-hover: #1b1d24;
+        --input: #191b21;
+        --input-border: #22252f;
+        --border: #1f222b;
+        --border-2: #262933;
+        --text: #e6e7ec;
+        --text-2: #9b9fad;
+        --text-3: #62667a;
+        --text-4: #4a4e5e;
+        --accent: #7b83eb;
+        --blue: #52a9ff;
+        --green: #46c288;
+        --orange: #f0883e;
+        --purple: #c084fc;
+        --yellow: #e2c541;
+        --danger: #e5484d;
+        --gold: #d3b078;
+        --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+        --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        overflow: hidden;
+      }
+      #app {
+        display: grid;
+        grid-template-rows: 44px 1fr 28px;
+        grid-template-columns: 1fr 320px;
+        grid-template-areas:
+          'top top'
+          'canvas inspector'
+          'status status';
+        height: 100vh;
+      }
+
+      /* top bar — same strip as the script probe, Canvas active */
+      #topbar {
+        grid-area: top;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-side);
+      }
+      #topbar .logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background: linear-gradient(135deg, #7b83eb, #4c56c0);
+      }
+      #topbar .name {
+        font: 600 12.5px var(--sans);
+      }
+      #topbar .file {
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+      }
+      #topbar .tabs {
+        display: inline-flex;
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 7px;
+        overflow: hidden;
+        font: 500 11px var(--sans);
+        margin-left: 8px;
+      }
+      #topbar .tabs a,
+      #topbar .tabs span {
+        padding: 4px 12px;
+        color: var(--text-3);
+        text-decoration: none;
+      }
+      #topbar .tabs .active {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #counts {
+        margin-left: auto;
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+      }
+
+      /* canvas viewport */
+      #viewport {
+        grid-area: canvas;
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(circle, #1a1c22 1px, transparent 1px) 0 0 / 26px 26px,
+          var(--bg);
+        cursor: grab;
+      }
+      #viewport.panning {
+        cursor: grabbing;
+      }
+      #world {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 0 0;
+      }
+      #edges {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: visible;
+        pointer-events: none;
+      }
+      #edges path {
+        fill: none;
+        stroke: var(--border-2);
+        stroke-width: 1.2;
+      }
+      #edges path.lit {
+        stroke-width: 1.8;
+      }
+      #edges text {
+        font: 600 9px var(--mono);
+        fill: var(--text-2);
+        paint-order: stroke;
+        stroke: var(--bg);
+        stroke-width: 3;
+      }
+      body.has-selection #edges path:not(.lit) {
+        opacity: 0.18;
+      }
+
+      /* nodes */
+      .node {
+        position: absolute;
+        width: 208px;
+        height: 58px;
+        padding: 8px 10px;
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-left-width: 3px;
+        border-radius: 8px;
+        cursor: pointer;
+        overflow: hidden;
+      }
+      .node:hover {
+        background: var(--panel-hover);
+      }
+      .node .nid {
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.02em;
+      }
+      .node .ntitle {
+        font: 500 11px/1.25 var(--sans);
+        color: var(--text);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .node .nsub {
+        font: 400 9px var(--mono);
+        color: var(--text-3);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      body.has-selection .node:not(.lit) {
+        opacity: 0.22;
+      }
+      .node.selected {
+        border-color: var(--text-2);
+        box-shadow: 0 0 0 1px var(--text-2);
+      }
+
+      /* per-kind color: left border + id */
+      .k-document {
+        border-left-color: var(--blue);
+      }
+      .k-document .nid {
+        color: var(--blue);
+      }
+      .k-fact {
+        border-left-color: var(--accent);
+      }
+      .k-fact .nid {
+        color: var(--accent);
+      }
+      .k-question {
+        border-left-color: var(--yellow);
+      }
+      .k-question .nid {
+        color: var(--yellow);
+      }
+      .k-hypothesis {
+        border-left-color: var(--purple);
+      }
+      .k-hypothesis .nid {
+        color: var(--purple);
+      }
+      .k-tiltak {
+        border-left-color: var(--green);
+      }
+      .k-tiltak .nid {
+        color: var(--green);
+      }
+      .k-dispatch {
+        border-left-color: var(--orange);
+      }
+      .k-dispatch .nid {
+        color: var(--orange);
+      }
+      .k-clock {
+        border-left-color: var(--gold);
+      }
+      .k-clock .nid {
+        color: var(--gold);
+      }
+
+      /* zoom overlay + legend */
+      #zoombar {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        display: flex;
+        gap: 2px;
+        align-items: center;
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-radius: 7px;
+        padding: 2px;
+        font: 500 10.5px var(--mono);
+        z-index: 5;
+      }
+      #zoombar button {
+        all: unset;
+        padding: 3px 9px;
+        border-radius: 5px;
+        color: var(--text-2);
+        cursor: pointer;
+      }
+      #zoombar button:hover {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #zoombar .pct {
+        padding: 0 6px;
+        color: var(--text-3);
+        min-width: 40px;
+        text-align: center;
+      }
+      #legend {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        gap: 10px;
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-radius: 7px;
+        padding: 5px 10px;
+        font: 500 9px var(--mono);
+        color: var(--text-3);
+        z-index: 5;
+      }
+      #legend .dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 4px;
+        vertical-align: 1px;
+      }
+
+      /* inspector rail */
+      #inspector {
+        grid-area: inspector;
+        background: var(--bg-side);
+        border-left: 1px solid var(--border);
+        overflow-y: auto;
+        padding: 14px 16px;
+      }
+      #inspector .head {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text-4);
+        margin-bottom: 10px;
+      }
+      #inspector .empty {
+        font: 400 11.5px var(--sans);
+        color: var(--text-4);
+      }
+      #inspector .kind {
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.08em;
+      }
+      #inspector .iid {
+        font: 600 12px var(--mono);
+        color: var(--text);
+        margin-top: 4px;
+      }
+      #inspector .ititle {
+        font: 500 12.5px var(--sans);
+        color: var(--text);
+        margin-top: 6px;
+      }
+      #inspector .isub {
+        font: 400 11px/1.55 var(--sans);
+        color: var(--text-2);
+        margin-top: 6px;
+      }
+      #inspector .sect {
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text-4);
+        margin: 14px 0 5px;
+      }
+      #inspector .rel {
+        display: flex;
+        gap: 7px;
+        align-items: baseline;
+        padding: 3px 6px;
+        margin: 0 -6px;
+        border-radius: 6px;
+        font: 500 10.5px var(--mono);
+        cursor: pointer;
+      }
+      #inspector .rel:hover {
+        background: var(--panel-hover);
+      }
+      #inspector .rel .via {
+        color: var(--text-4);
+        font-size: 9px;
+        min-width: 52px;
+      }
+      #inspector .rel .rtitle {
+        color: var(--text-2);
+        font: 400 10.5px var(--sans);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* status bar */
+      #statusbar {
+        grid-area: status;
+        background: var(--bg-side);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 14px;
+        font: 500 10px var(--mono);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      #statusbar .ok {
+        color: var(--green);
+      }
+      #statusbar .pacing {
+        color: var(--orange);
+      }
+      #statusbar .warn-c {
+        color: var(--orange);
+      }
+      #statusbar .hint {
+        margin-left: auto;
+        color: var(--text-4);
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="topbar">
+        <span class="logo"></span>
+        <span class="name">Kildeverket</span>
+        <span class="file">tiny-olsen.case.md</span>
+        <span class="tabs">
+          <a href="../script-editor/">Script</a>
+          <span class="active">Canvas</span>
+          <span title="not built — behind the fog">Pacing</span>
+          <span title="not built">Playtest</span>
+        </span>
+        <span id="counts"></span>
+      </div>
+      <div id="viewport">
+        <div id="world">
+          <svg id="edges"></svg>
+          <div id="nodes"></div>
+        </div>
+        <div id="zoombar">
+          <button id="z-out" title="zoom out">−</button>
+          <span class="pct" id="z-pct">100%</span>
+          <button id="z-in" title="zoom in">+</button>
+          <button id="z-fit" title="fit the whole case">fit</button>
+        </div>
+        <div id="legend"></div>
+      </div>
+      <div id="inspector">
+        <div class="head">INSPECTOR</div>
+        <div id="inspector-body">
+          <div class="empty">Click a node. Esc clears the selection.</div>
+        </div>
+      </div>
+      <div id="statusbar"></div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
