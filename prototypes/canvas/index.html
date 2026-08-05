@@ -148,6 +148,42 @@
         opacity: 0.18;
       }
 
+      /* SB-033: edge authoring */
+      #edges path.hit {
+        stroke: transparent;
+        stroke-width: 12;
+        pointer-events: stroke;
+        cursor: pointer;
+        opacity: 1;
+      }
+      #edges path.edge-selected {
+        stroke: var(--danger) !important;
+        stroke-width: 2;
+        opacity: 1 !important;
+      }
+      #edges path.rubber {
+        stroke: var(--accent);
+        stroke-width: 1.6;
+        stroke-dasharray: 4 3;
+        pointer-events: none;
+      }
+      #cursor-tip {
+        position: fixed;
+        z-index: 20;
+        display: none;
+        max-width: 300px;
+        background: var(--panel);
+        border: 1px solid var(--danger);
+        border-radius: 6px;
+        padding: 5px 8px;
+        font: 500 10.5px var(--mono);
+        color: var(--text);
+        pointer-events: none;
+      }
+      #cursor-tip.show {
+        display: block;
+      }
+
       /* nodes */
       .node {
         position: absolute;
@@ -190,6 +226,27 @@
       .node.selected {
         border-color: var(--text-2);
         box-shadow: 0 0 0 1px var(--text-2);
+      }
+      .node .port {
+        position: absolute;
+        right: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--input);
+        border: 1px solid var(--text-3);
+        cursor: crosshair;
+        opacity: 0;
+      }
+      .node:hover .port,
+      .node.selected .port {
+        opacity: 1;
+      }
+      .node .port:hover {
+        border-color: var(--accent);
+        background: var(--panel-hover);
       }
 
       /* per-kind color: left border + id */

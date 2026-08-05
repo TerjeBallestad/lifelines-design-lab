@@ -2,13 +2,17 @@
 // SB-032 — the inspector becomes the edit surface: per-kind forms write
 // markup patches (src/compiler/patch.ts), POST /__save-case, recompile,
 // re-render. The markup stays the store (DD-003).
+// SB-033 — edge authoring: drag from a node's port to a legal target writes
+// the relation to the markup (Supports/Opens/Needs lists, condition terms,
+// the hypothesis Question field); selecting an edge + Delete removes it.
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import { parseCaseText } from '../../src/compiler/parse.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
-import { patchField } from '../../src/compiler/patch.ts';
+import { patchField, listFieldAdd, listFieldRemove } from '../../src/compiler/patch.ts';
+import { parseCondition } from '../../src/compiler/condition.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
 import { buildGraph, layoutGraph, NODE_W, NODE_H } from './graph.ts';
 import type { CaseGraph, GraphNode, GraphEdge, NodeKind } from './graph.ts';
@@ -137,7 +141,17 @@ function renderWorld(): void {
     text.setAttribute('text-anchor', 'middle');
     text.textContent = edge.label;
     text.style.display = 'none';
-    edgesSvg.append(path, text);
+    // Invisible fat twin of the path: the click target for edge selection.
+    const hit = document.createElementNS(SVG_NS, 'path');
+    hit.setAttribute('d', path.getAttribute('d')!);
+    hit.setAttribute('class', 'hit');
+    hit.setAttribute('data-edge', edgeKeyOf(edge));
+    hit.addEventListener('click', (event) => {
+      event.stopPropagation();
+      selectEdge(edgeKeyOf(edge));
+    });
+    if (edgeKeyOf(edge) === selectedEdgeKey) path.classList.add('edge-selected');
+    edgesSvg.append(path, hit, text);
     edgeEls.set(edge, { path, text });
   }
 
@@ -155,6 +169,16 @@ function renderWorld(): void {
       event.stopPropagation();
       select(node.id);
     });
+    // SB-033: the port — drag from here to a legal target to author an edge.
+    const port = document.createElement('div');
+    port.className = 'port';
+    port.title = 'dra fra port for ny kant';
+    port.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      startLink(node.id, event.clientX, event.clientY);
+    });
+    el.append(port);
     nodesHost.append(el);
     nodeEls.set(node.id, el);
   }
@@ -178,6 +202,7 @@ legend.innerHTML = (Object.keys(KIND_LABEL) as NodeKind[])
 export let selectedId: string | null = null;
 
 export function select(id: string | null): void {
+  if (id !== null && selectedEdgeKey !== null) applyEdgeSelection(null);
   selectedId = id;
   document.body.classList.toggle('has-selection', id !== null);
   const lit = new Set<string>();
@@ -204,6 +229,25 @@ export function select(id: string | null): void {
     els.text.style.display = on && edge.label ? '' : 'none';
   }
   renderInspector(id);
+}
+
+// ---- edge selection (SB-033) ---------------------------------------------
+
+export let selectedEdgeKey: string | null = null;
+
+export const edgeKeyOf = (edge: GraphEdge): string => `${edge.from}→${edge.to}·${edge.label}`;
+
+function applyEdgeSelection(key: string | null): void {
+  selectedEdgeKey = key;
+  for (const [edge, els] of edgeEls)
+    els.path.classList.toggle('edge-selected', edgeKeyOf(edge) === key);
+}
+
+/** Select an edge (clears any node selection). Delete/Backspace removes it. */
+export function selectEdge(key: string | null): void {
+  if (key !== null && selectedId !== null) select(null);
+  applyEdgeSelection(key);
+  renderStatus();
 }
 
 function relRow(edge: GraphEdge, otherId: string): string {
@@ -365,6 +409,11 @@ function commitField(blockId: string, key: string, value: string): void {
     return;
   }
   if (patched === caseText) return; // no-op: nothing written, nothing saved
+  commitText(patched);
+}
+
+/** Shared commit tail: buffer → draft → rebuild → save POST. */
+function commitText(patched: string): void {
   caseText = patched;
   localStorage.setItem(DRAFT_KEY, caseText);
   rebuild();
@@ -386,6 +435,252 @@ async function persist(): Promise<void> {
   }
   renderStatus();
 }
+
+// ---- edge authoring (SB-033) ---------------------------------------------
+
+/**
+ * The legality table — the single source for which drags create relations.
+ * `on` names the block that carries the written field: `from` or `to`.
+ *  - list: the other node's id joins a comma list (Supports/Needs/Opens)
+ *  - field: the other node's id becomes the single value (Question)
+ *  - cond: the other node's id joins the condition expression as an and-term
+ *    (the canonical `field` here is documentation; the write resolves the
+ *    block's actual key via COND_KEYS, e.g. `needs:` vs legacy `Needs:`).
+ */
+export interface RelationSpec {
+  mode: 'list' | 'field' | 'cond';
+  field: string;
+  on: 'from' | 'to';
+}
+export const RELATION: Partial<Record<`${NodeKind}→${NodeKind}`, RelationSpec>> = {
+  'fact→question': { mode: 'list', field: 'Supports', on: 'from' },
+  'fact→hypothesis': { mode: 'cond', field: 'needs', on: 'to' },
+  'fact→tiltak': { mode: 'list', field: 'Needs', on: 'to' },
+  'fact→dispatch': { mode: 'cond', field: 'gate', on: 'to' },
+  'fact→clock': { mode: 'cond', field: 'visible when', on: 'to' },
+  'question→hypothesis': { mode: 'field', field: 'Question', on: 'to' },
+  'hypothesis→tiltak': { mode: 'list', field: 'Opens', on: 'from' },
+  'hypothesis→dispatch': { mode: 'list', field: 'Opens', on: 'from' },
+  'hypothesis→clock': { mode: 'cond', field: 'visible when', on: 'to' },
+};
+
+/** Condition field keys per kind, in the compiler's preference order. */
+const COND_KEYS: Partial<Record<NodeKind, string[]>> = {
+  question: ['when', 'Opens when'],
+  hypothesis: ['needs', 'Needs'],
+  dispatch: ['gate', 'Gate'],
+  clock: ['visible when', 'Visible when'],
+};
+
+function condField(ownerId: string): { key: string; value: string } | null {
+  const node = nodeById.get(ownerId);
+  const block = blockById.get(ownerId);
+  const keys = node ? COND_KEYS[node.kind] : undefined;
+  if (!keys || !block) return null;
+  const existing = block.fields.find((f) => keys.includes(f.key));
+  return existing ? { key: existing.key, value: existing.value } : { key: keys[0], value: '' };
+}
+
+const topLevelAndTerms = (expr: string): string[] =>
+  expr
+    .trim()
+    .split(/\s+and\s+/)
+    .map((part) => part.trim())
+    .filter((part) => part !== '');
+
+/**
+ * Append `id` as an and-term. An expression with `or` gets wrapped in parens
+ * first so the new term binds over the whole thing. Returns the current
+ * expression unchanged when the term is already present; null when the
+ * result would not parse (§6 grammar) — the caller refuses instead.
+ */
+export function condAddTerm(expr: string, id: string): string | null {
+  const current = expr.trim();
+  if (topLevelAndTerms(current).includes(id)) return current;
+  const base = current === '' ? '' : /\bor\b/.test(current) ? `(${current})` : current;
+  const next = base === '' ? id : `${base} and ${id}`;
+  return parseCondition(next).error === null ? next : null;
+}
+
+/**
+ * Drop `id` when it stands as a plain top-level and-term, normalizing the
+ * surrounding `and`s. Returns null when the term is absent or nested in
+ * something richer (or/not/n-of) — too risky to rewrite blind.
+ */
+export function condRemoveTerm(expr: string, id: string): string | null {
+  const parts = topLevelAndTerms(expr);
+  const kept = parts.filter((part) => part !== id);
+  if (kept.length === parts.length) return null;
+  const next = kept.join(' and ');
+  return parseCondition(next).error === null ? next : null;
+}
+
+export interface EdgeWriteResult {
+  ok: boolean;
+  reason?: string;
+}
+
+/** Create the relation `fromId → toId` per the legality table and commit it. */
+export function connect(fromId: string, toId: string): EdgeWriteResult {
+  const from = nodeById.get(fromId);
+  const to = nodeById.get(toId);
+  if (!from || !to) return { ok: false, reason: 'ukjent node' };
+  const spec = RELATION[`${from.kind}→${to.kind}`];
+  if (!spec) {
+    return {
+      ok: false,
+      reason: `${KIND_LABEL[from.kind]} → ${KIND_LABEL[to.kind]}: ingen lovlig relasjon — dra fra port for ny kant`,
+    };
+  }
+  const ownerId = spec.on === 'from' ? fromId : toId;
+  const otherId = spec.on === 'from' ? toId : fromId;
+  try {
+    let patched: string;
+    if (spec.mode === 'list') {
+      // Legacy dispatch ids without a d_ prefix only classify in the
+      // dedicated `Opens dispatches:` list, not in plain `Opens:`.
+      const field =
+        spec.field === 'Opens' && to.kind === 'dispatch' && !toId.startsWith('d_')
+          ? 'Opens dispatches'
+          : spec.field;
+      patched = listFieldAdd(caseText, ownerId, field, otherId);
+    } else if (spec.mode === 'field') {
+      patched = patchField(caseText, ownerId, spec.field, otherId);
+    } else {
+      const cond = condField(ownerId);
+      if (!cond) return { ok: false, reason: `${ownerId} har ingen betingelse å utvide` };
+      const next = condAddTerm(cond.value, otherId);
+      if (next === null)
+        return { ok: false, reason: `betingelsen på ${ownerId} lar seg ikke utvide trygt` };
+      patched =
+        next === cond.value.trim() ? caseText : patchField(caseText, ownerId, cond.key, next);
+    }
+    if (patched === caseText) return { ok: true }; // already related — nothing to write
+    commitText(patched);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+/** Remove the authored relation behind an edge; derived edges refuse. */
+export function disconnect(edge: GraphEdge): EdgeWriteResult {
+  const from = nodeById.get(edge.from);
+  const to = nodeById.get(edge.to);
+  if (!from || !to) return { ok: false, reason: 'ukjent kant' };
+  const label = edge.label.split(' ')[0];
+  const condRemove = (ownerId: string, id: string): string | null => {
+    const cond = condField(ownerId);
+    if (!cond) return null;
+    const next = condRemoveTerm(cond.value, id);
+    return next === null ? null : patchField(caseText, ownerId, cond.key, next);
+  };
+  try {
+    let patched: string | null;
+    if (label === 'supports' && from.kind === 'fact') {
+      patched = listFieldRemove(caseText, edge.from, 'Supports', edge.to);
+      if (patched === caseText) patched = null;
+    } else if (label === 'opens' && from.kind === 'hypothesis') {
+      patched = listFieldRemove(caseText, edge.from, 'Opens', edge.to);
+      if (patched === caseText)
+        patched = listFieldRemove(caseText, edge.from, 'Opens dispatches', edge.to);
+      if (patched === caseText) patched = null;
+    } else if (label === 'needs' || label === 'gate') {
+      patched = condRemove(edge.to, edge.from);
+    } else {
+      return {
+        ok: false,
+        reason: `«${edge.label || 'carries'}» er en avledet kant — slettes ikke her`,
+      };
+    }
+    if (patched === null)
+      return {
+        ok: false,
+        reason: `fant ikke ${edge.from} som enkel oppføring/and-term på ${label === 'supports' || label === 'opens' ? edge.from : edge.to}`,
+      };
+    commitText(patched);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+// ---- drag-to-connect UI ---------------------------------------------------
+
+const tip = document.createElement('div');
+tip.id = 'cursor-tip';
+document.body.append(tip);
+let tipTimer: ReturnType<typeof setTimeout> | undefined;
+
+function showTip(text: string, x: number, y: number): void {
+  tip.textContent = text;
+  tip.style.left = `${x + 12}px`;
+  tip.style.top = `${y + 12}px`;
+  tip.classList.add('show');
+  clearTimeout(tipTimer);
+  tipTimer = setTimeout(() => tip.classList.remove('show'), 2600);
+}
+
+let linkDrag: { fromId: string; rubber: SVGPathElement } | null = null;
+
+function toWorldPoint(clientX: number, clientY: number): { x: number; y: number } {
+  const rect = viewport.getBoundingClientRect();
+  return { x: (clientX - rect.left - tx) / zoom, y: (clientY - rect.top - ty) / zoom };
+}
+
+function startLink(fromId: string, clientX: number, clientY: number): void {
+  const rubber = document.createElementNS(SVG_NS, 'path');
+  rubber.setAttribute('class', 'rubber');
+  edgesSvg.append(rubber);
+  linkDrag = { fromId, rubber };
+  updateLink(clientX, clientY);
+}
+
+function updateLink(clientX: number, clientY: number): void {
+  if (!linkDrag) return;
+  const from = nodeById.get(linkDrag.fromId);
+  if (!from) return;
+  const sx = from.x + NODE_W;
+  const sy = from.y + NODE_H / 2;
+  const { x, y } = toWorldPoint(clientX, clientY);
+  const reach = Math.max(Math.abs(x - sx) / 2, 44) * (x >= sx ? 1 : -1);
+  linkDrag.rubber.setAttribute(
+    'd',
+    `M ${sx} ${sy} C ${sx + reach} ${sy}, ${x - reach} ${y}, ${x} ${y}`,
+  );
+}
+
+window.addEventListener('pointermove', (event) => {
+  if (linkDrag) updateLink(event.clientX, event.clientY);
+});
+
+window.addEventListener('pointerup', (event) => {
+  if (!linkDrag) return;
+  const drag = linkDrag;
+  linkDrag = null;
+  drag.rubber.remove();
+  const targetEl =
+    event.target instanceof Element ? event.target.closest<HTMLElement>('.node') : null;
+  const toId = targetEl?.dataset.id;
+  if (!toId || toId === drag.fromId) return;
+  const res = connect(drag.fromId, toId);
+  if (!res.ok && res.reason) showTip(res.reason, event.clientX, event.clientY);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+  if (event.target instanceof HTMLElement && event.target.closest('.fval')) return;
+  if (selectedEdgeKey === null) return;
+  const edge = graph.edges.find((e) => edgeKeyOf(e) === selectedEdgeKey);
+  if (!edge) return;
+  const res = disconnect(edge);
+  if (res.ok) {
+    applyEdgeSelection(null);
+    renderStatus();
+  } else if (res.reason) {
+    showTip(res.reason, viewport.clientWidth / 2, viewport.clientHeight / 2);
+  }
+});
 
 // ---- pan + zoom ----------------------------------------------------------
 
@@ -487,7 +782,8 @@ function renderStatus(): void {
   ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
   ${draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
   ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
-  <span class="hint">click node · edit fields · esc clear · scroll zoom · drag pan · fit</span>`;
+  ${selectedEdgeKey ? '<span class="warn-c">kant valgt — delete fjerner relasjonen</span>' : ''}
+  <span class="hint">click node · edit fields · dra fra port for ny kant · klikk kant + delete · esc clear</span>`;
 }
 
 // ---- boot ----------------------------------------------------------------

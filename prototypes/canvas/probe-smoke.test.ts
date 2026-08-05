@@ -189,3 +189,96 @@ describe('canvas inspector editing (SB-032)', () => {
     localStorage.clear();
   });
 });
+
+// ---- SB-033: edge authoring — drag to connect, delete to disconnect -------
+
+/** Simulate a port drag from one node to another (window-level pointer flow). */
+function dragConnect(fromId: string, toId: string): void {
+  const port = document.querySelector<HTMLElement>(`.node[data-id="${fromId}"] .port`)!;
+  port.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10 }));
+  window.dispatchEvent(new MouseEvent('pointermove', { clientX: 120, clientY: 80 }));
+  const target = document.querySelector<HTMLElement>(`.node[data-id="${toId}"]`)!;
+  target.dispatchEvent(new MouseEvent('pointerup', { bubbles: true, clientX: 200, clientY: 90 }));
+}
+
+describe('canvas edge authoring (SB-033)', () => {
+  it('drag fact→question writes the Supports entry, recompiles, renders the edge', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    expect(probe.getCaseText()).toContain('Supports: q_grete_dor\nDiscuss: Frank');
+    dragConnect('f_grete_syk', 'q_okonomi');
+
+    // The case text gained the Supports entry…
+    expect(probe.getCaseText()).toContain('Supports: q_grete_dor, q_okonomi');
+    // …the recompiled graph carries the edge, and it rendered.
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'f_grete_syk' && e.to === 'q_okonomi' && e.label === 'supports',
+      ),
+    ).toBe(true);
+    expect(document.querySelector('[data-edge="f_grete_syk→q_okonomi·supports"]')).not.toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe('/__save-case');
+    localStorage.clear();
+  });
+
+  it('illegal drag document→tiltak writes nothing and shows the refusal at the cursor', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = probe.getCaseText();
+
+    const doc = probe.graph.nodes.find((n) => n.kind === 'document')!;
+    const tiltak = probe.graph.nodes.find((n) => n.kind === 'tiltak')!;
+    dragConnect(doc.id, tiltak.id);
+
+    expect(probe.getCaseText()).toBe(before); // byte-identical — nothing written
+    expect(fetchMock).not.toHaveBeenCalled();
+    const tipEl = document.getElementById('cursor-tip')!;
+    expect(tipEl.classList.contains('show')).toBe(true);
+    expect(tipEl.textContent).toContain('ingen lovlig relasjon');
+    expect(tipEl.textContent).toContain('dra fra port for ny kant');
+    localStorage.clear();
+  });
+
+  it('condition-term add + edge delete keep the §6 grammar valid (no cond-parse errors)', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const noCondErrors = (text: string) =>
+      compileCase(text).diagnostics.filter((d) => d.code === 'cond-parse-error');
+
+    // fact→hypothesis appends an and-term to the hypothesis's needs:.
+    dragConnect('f_post', 'h_gd_system');
+    expect(probe.getCaseText()).toContain('needs: f_smart_gutt and f_ingen_matkjop and f_post');
+    expect(noCondErrors(probe.getCaseText())).toEqual([]);
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'f_post' && e.to === 'h_gd_system' && e.label === 'needs',
+      ),
+    ).toBe(true);
+
+    // Select the new needs edge and delete it: the term drops, the and-chain
+    // normalizes, and the grammar stays parseable.
+    const hit = document.querySelector<SVGPathElement>('[data-edge="f_post→h_gd_system·needs"]')!;
+    hit.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete', bubbles: true }));
+
+    expect(probe.getCaseText()).toContain('needs: f_smart_gutt and f_ingen_matkjop\n');
+    expect(probe.getCaseText()).not.toContain('and f_post');
+    expect(noCondErrors(probe.getCaseText())).toEqual([]);
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'f_post' && e.to === 'h_gd_system' && e.label === 'needs',
+      ),
+    ).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(2); // one save per commit
+    localStorage.clear();
+  });
+});
