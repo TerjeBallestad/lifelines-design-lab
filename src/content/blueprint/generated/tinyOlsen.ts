@@ -10,51 +10,38 @@ export const tinyOlsenDocuments = {
   doc_bekymring: {
     id: 'doc_bekymring',
     kind: 'BEKYMRINGSMELDING',
-    title: 'Legesenteret · Dr. J. Haug',
+    title: 'Bekymringsmelding',
     register: 'klinisk',
-    peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
-    meta: 'LEGESENTERET · DR. J. HAUG · 11.02.1999',
+    peek: 'Bekymringsmelding Dr. J. Haug',
+    meta: 'LEGESENTERET DR. J. HAUG, 11.02.1999',
     blocks: [
       {
-        id: 'doc_bekymring_body',
+        id: 'doc_bekymring_p1',
         runs: [
           {
-            text: 'GJELDER Olsen, Elling · f. 14.03.1964 Undertegnede er fastlege for Grete Olsen (f. 1927) og hennes sønn Elling Olsen. Mor er under utredning og behandling for ',
+            text: 'Under behandling av pasient Grete Olsen (f. 1927) for en ',
           },
           {
             text: 'sykdom med kort forventet forløp',
             factId: 'f_grete_syk',
           },
           {
-            text: '. Hun er informert om at denne meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet, fjerde etasje. ',
+            text: ' kommer det frem at hun er ',
           },
           {
-            text: 'Sønnen har aldri bodd alene',
-            factId: 'f_aldri_alene',
-          },
-          {
-            text: '. Han er uføretrygdet og er etter det undertegnede kjenner til ',
-          },
-          {
-            text: 'ikke i kontakt med øvrige tjenester',
-            factId: 'f_ingen_tjenester',
-          },
-          {
-            text: '. ',
-          },
-          {
-            text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
-            factId: 'f_grete_baerer',
-          },
-          {
-            text: '. Omfanget er ikke kartlagt. ',
-          },
-          {
-            text: 'Pasienten fremstår sårbar ved bortfall av pårørende',
+            text: 'primær omsorgsperson',
             factId: 'f_saarbar',
           },
           {
-            text: '. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak. Med hilsen Jørgen Haug spes. allmennmedisin',
+            text: ' for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. ',
+          },
+        ],
+      },
+      {
+        id: 'doc_bekymring_p2',
+        runs: [
+          {
+            text: 'Med hilsen\nJørgen Haug\nspes. allmennmedisin',
           },
         ],
       },
@@ -69,39 +56,70 @@ export const tinyOlsenDocuments = {
     meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
     blocks: [
       {
-        id: 'doc_konto_body',
+        id: 'doc_konto_p1',
         runs: [
           {
-            text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall. Inn: ',
+            text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.',
+          },
+        ],
+      },
+      {
+        id: 'doc_konto_p2',
+        runs: [
+          {
+            text: 'Inn: ',
           },
           {
             text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
             factId: 'f_trygd',
           },
           {
-            text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
+            text: ' Pensjonen hennes: 3 [icon=coin].',
+          },
+        ],
+      },
+      {
+        id: 'doc_konto_p3',
+        runs: [
+          {
+            text: 'Ut: ',
           },
           {
             text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
           {
-            text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
+            text: ' Strøm, mat og resten: 2 [icon=coin] til sammen.',
           },
+        ],
+      },
+      {
+        id: 'doc_konto_p4',
+        runs: [
           {
             text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
             factId: 'f_alt_via_grete',
           },
           {
-            text: ' Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort. Jeg gikk gjennom kvitteringene. ',
+            text: ' Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.',
+          },
+        ],
+      },
+      {
+        id: 'doc_konto_p5',
+        runs: [
+          {
+            text: 'Jeg gikk gjennom kvitteringene. ',
           },
           {
             text: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
             factId: 'f_ingen_matkjop',
           },
-          {
-            text: ' ',
-          },
+        ],
+      },
+      {
+        id: 'doc_konto_p6',
+        runs: [
           {
             text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
@@ -119,25 +137,43 @@ export const tinyOlsenDocuments = {
     meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
     blocks: [
       {
-        id: 'doc_papirer_body',
+        id: 'doc_papirer_p1',
         runs: [
           {
-            text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. Inn: ',
+            text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.',
+          },
+        ],
+      },
+      {
+        id: 'doc_papirer_p2',
+        runs: [
+          {
+            text: 'Inn: ',
           },
           {
             text: 'trygden hans — 2 [icon=coin] i måneden.',
             factId: 'f_trygd',
           },
           {
-            text: ' Pensjonen hennes er opphørt. Ut: ',
+            text: ' Pensjonen hennes er opphørt.',
+          },
+        ],
+      },
+      {
+        id: 'doc_papirer_p3',
+        runs: [
+          {
+            text: 'Ut: ',
           },
           {
             text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
-          {
-            text: ' ',
-          },
+        ],
+      },
+      {
+        id: 'doc_papirer_p4',
+        runs: [
           {
             text: 'Alle avtaler står i Gretes navn.',
             factId: 'f_alt_via_grete',
@@ -149,15 +185,22 @@ export const tinyOlsenDocuments = {
             text: 'Ikke ett kjøp i kvitteringene er hans.',
             factId: 'f_ingen_matkjop',
           },
-          {
-            text: ' ',
-          },
+        ],
+      },
+      {
+        id: 'doc_papirer_p5',
+        runs: [
           {
             text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
+        ],
+      },
+      {
+        id: 'doc_papirer_p6',
+        runs: [
           {
-            text: ' Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+            text: 'Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
           },
         ],
       },
@@ -172,10 +215,26 @@ export const tinyOlsenDocuments = {
     meta: 'T. BAKKERUD · HÅNDSKREVET · LEVERT I POSTKASSEN · VIDEREFORMIDLET AV 4012',
     blocks: [
       {
-        id: 'doc_huseier_body',
+        id: 'doc_huseier_p1',
         runs: [
           {
-            text: 'Til Elling Olsen. Jeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen. Jeg må likevel skrive om det praktiske. ',
+            text: 'Til Elling Olsen.',
+          },
+        ],
+      },
+      {
+        id: 'doc_huseier_p2',
+        runs: [
+          {
+            text: 'Jeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen.',
+          },
+        ],
+      },
+      {
+        id: 'doc_huseier_p3',
+        runs: [
+          {
+            text: 'Jeg må likevel skrive om det praktiske. ',
           },
           {
             text: 'Leien for mars er ikke kommet.',
@@ -189,14 +248,27 @@ export const tinyOlsenDocuments = {
             factId: 'f_leie_privat',
           },
           {
-            text: ' Nå vet jeg ikke hvem jeg skal forholde meg til. Jeg vil ikke lage vanskeligheter. Men ',
+            text: ' Nå vet jeg ikke hvem jeg skal forholde meg til.',
+          },
+        ],
+      },
+      {
+        id: 'doc_huseier_p4',
+        runs: [
+          {
+            text: 'Jeg vil ikke lage vanskeligheter. Men ',
           },
           {
             text: 'jeg kommer innom på torsdag, så får vi snakke om veien videre.',
             factId: 'f_huseier_kommer',
           },
+        ],
+      },
+      {
+        id: 'doc_huseier_p5',
+        runs: [
           {
-            text: ' Vennlig hilsen T. Bakkerud',
+            text: 'Vennlig hilsen\nT. Bakkerud',
           },
         ],
       },
@@ -211,38 +283,66 @@ export const tinyOlsenDocuments = {
     meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
     blocks: [
       {
-        id: 'doc_frank_tlf_body',
+        id: 'doc_frank_tlf_p1',
         runs: [
           {
-            text: 'Ringte Grete 11:40. Hun tok den på andre forsøk. Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: ',
+            text: 'Ringte Grete 11:40. Hun tok den på andre forsøk.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_tlf_p2',
+        runs: [
+          {
+            text: 'Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: ',
           },
           {
             text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
             factId: 'f_klarer_seg',
           },
           {
-            text: ' Andre gangen lavere. ',
+            text: ' Andre gangen lavere.',
           },
+        ],
+      },
+      {
+        id: 'doc_frank_tlf_p3',
+        runs: [
           {
             text: 'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
             factId: 'f_ingen_plan',
           },
-          {
-            text: ' ',
-          },
+        ],
+      },
+      {
+        id: 'doc_frank_tlf_p4',
+        runs: [
           {
             text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
             factId: 'f_elling_tlf',
           },
+        ],
+      },
+      {
+        id: 'doc_frank_tlf_p5',
+        runs: [
           {
-            text: ' Mot slutten ',
+            text: 'Mot slutten ',
           },
           {
             text: 'spurte hun om dette betydde at noen kom til å ta ham fra leiligheten',
             factId: 'f_grete_redd',
           },
           {
-            text: '. Jeg sa nei. Jeg håper det var sant. Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
+            text: '. Jeg sa nei. Jeg håper det var sant.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_tlf_p6',
+        runs: [
+          {
+            text: 'Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
           },
         ],
       },
@@ -257,38 +357,75 @@ export const tinyOlsenDocuments = {
     meta: 'HJEMMEBESØK · 4012 F. ÅSLI',
     blocks: [
       {
-        id: 'doc_frank_visit_body',
+        id: 'doc_frank_visit_p1',
         runs: [
           {
-            text: 'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin. I gangen: ',
+            text: 'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_visit_p2',
+        runs: [
+          {
+            text: 'I gangen: ',
           },
           {
             text: 'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
             factId: 'f_post',
           },
           {
-            text: ' Grete flyttet bunken da hun så at jeg så. Elling satt i stuen med ',
+            text: ' Grete flyttet bunken da hun så at jeg så.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_visit_p3',
+        runs: [
+          {
+            text: 'Elling satt i stuen med ',
           },
           {
             text: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
             factId: 'f_bok',
           },
           {
-            text: ' Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg. Over skrivebordet hans: ',
+            text: ' Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_visit_p4',
+        runs: [
+          {
+            text: 'Over skrivebordet hans: ',
           },
           {
             text: 'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.',
             factId: 'f_utklipp',
           },
           {
-            text: ' Det er ikke rot. Det er et arkiv. ',
+            text: ' Det er ikke rot. Det er et arkiv.',
           },
+        ],
+      },
+      {
+        id: 'doc_frank_visit_p5',
+        runs: [
           {
             text: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
             factId: 'f_avstand',
           },
           {
-            text: ' Ikke demonstrativt. Bare slik det ble. Grete fulgte meg ut. I trappen sa hun: ',
+            text: ' Ikke demonstrativt. Bare slik det ble.',
+          },
+        ],
+      },
+      {
+        id: 'doc_frank_visit_p6',
+        runs: [
+          {
+            text: 'Grete fulgte meg ut. I trappen sa hun: ',
           },
           {
             text: '«Du så hvordan han er. Han er en smart gutt.»',
@@ -310,24 +447,45 @@ export const tinyOlsenDocuments = {
     meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 14.02.1999',
     blocks: [
       {
-        id: 'doc_innleggelse_body',
+        id: 'doc_innleggelse_p1',
         runs: [
           {
-            text: 'MELDING OM INNLEGGELSE Grete Olsen (f. 1927) ble ',
+            text: 'MELDING OM INNLEGGELSE',
+          },
+        ],
+      },
+      {
+        id: 'doc_innleggelse_p2',
+        runs: [
+          {
+            text: 'Grete Olsen (f. 1927) ble ',
           },
           {
             text: 'innlagt akutt 14.02',
             factId: 'f_innlagt',
           },
           {
-            text: ', kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen. ',
+            text: ', kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen.',
           },
+        ],
+      },
+      {
+        id: 'doc_innleggelse_p3',
+        runs: [
           {
             text: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
             factId: 'f_elling_uvarslet',
           },
           {
-            text: ' Hun var tydelig på dette før hun ble lagt i behandling. SOSIALMEDISINSK ENHET · OUS',
+            text: ' Hun var tydelig på dette før hun ble lagt i behandling.',
+          },
+        ],
+      },
+      {
+        id: 'doc_innleggelse_p4',
+        runs: [
+          {
+            text: 'SOSIALMEDISINSK ENHET · OUS',
           },
         ],
       },
@@ -342,24 +500,50 @@ export const tinyOlsenDocuments = {
     meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999',
     blocks: [
       {
-        id: 'doc_dodsfall_body',
+        id: 'doc_dodsfall_p1',
         runs: [
           {
-            text: 'MELDING OM DØDSFALL Grete Olsen, f. 21.09.1927. ',
+            text: 'MELDING OM DØDSFALL',
+          },
+        ],
+      },
+      {
+        id: 'doc_dodsfall_p2',
+        runs: [
+          {
+            text: 'Grete Olsen, f. 21.09.1927. ',
           },
           {
             text: 'Dødsfall konstatert 15.02 kl. 04:12.',
             factId: 'f_dod',
           },
+        ],
+      },
+      {
+        id: 'doc_dodsfall_p3',
+        runs: [
           {
-            text: ' Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ',
+            text: 'Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ',
           },
           {
             text: 'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
             factId: 'f_brevsprekken',
           },
+        ],
+      },
+      {
+        id: 'doc_dodsfall_p4',
+        runs: [
           {
-            text: ' Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET · OUS',
+            text: 'Saken overføres kommunen for videre oppfølging av gjenlevende.',
+          },
+        ],
+      },
+      {
+        id: 'doc_dodsfall_p5',
+        runs: [
+          {
+            text: 'SOSIALMEDISINSK ENHET · OUS',
           },
         ],
       },
@@ -374,10 +558,26 @@ export const tinyOlsenDocuments = {
     meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
     blocks: [
       {
-        id: 'doc_status_body',
+        id: 'doc_status_p1',
         runs: [
           {
-            text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.',
+            text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.',
+          },
+        ],
+      },
+      {
+        id: 'doc_status_p2',
+        runs: [
+          {
+            text: 'Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.',
+          },
+        ],
+      },
+      {
+        id: 'doc_status_p3',
+        runs: [
+          {
+            text: 'Bekymringsmeldingen var berettiget. Det er den fortsatt.',
           },
         ],
       },
@@ -400,7 +600,7 @@ export const tinyOlsenFacts = {
     domain: 'Hverdag/rutine',
     category: 'Dokument',
     text: 'Elling (35) har aldri bodd alene.',
-    quote: 'Sønnen har aldri bodd alene',
+    quote: '',
     supports: ['q_grete_dor', 'q_evner'],
     discuss: ['Frank', 'Grete'],
   },
@@ -409,8 +609,7 @@ export const tinyOlsenFacts = {
     domain: 'Hverdag/rutine',
     category: 'Dokument',
     text: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
-    quote:
-      'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
+    quote: '',
     supports: ['q_grete_dor', 'q_okonomi'],
     discuss: ['Frank', 'Grete'],
   },
@@ -419,7 +618,7 @@ export const tinyOlsenFacts = {
     domain: 'Helse/risiko',
     category: 'Risiko',
     text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
-    quote: 'Pasienten fremstår sårbar ved bortfall av pårørende',
+    quote: 'primær omsorgsperson',
     supports: ['q_grete_dor'],
     discuss: ['Frank'],
   },
@@ -428,7 +627,7 @@ export const tinyOlsenFacts = {
     domain: 'Nettverk/sosialt',
     category: 'Dokument',
     text: 'Elling har ingen kontakt med øvrige tjenester.',
-    quote: 'ikke i kontakt med øvrige tjenester',
+    quote: '',
     supports: ['q_baering'],
     discuss: ['Frank'],
   },
@@ -977,16 +1176,16 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_bekymring',
       kind: 'BEKYMRINGSMELDING',
-      title: 'Legesenteret · Dr. J. Haug',
+      title: 'Bekymringsmelding',
       register: 'klinisk',
-      peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
-      meta: 'LEGESENTERET · DR. J. HAUG · 11.02.1999',
+      peek: 'Bekymringsmelding Dr. J. Haug',
+      meta: 'LEGESENTERET DR. J. HAUG, 11.02.1999',
       body_bbcode:
-        'GJELDER\nOlsen, Elling · f. 14.03.1964\n\nUndertegnede er fastlege for Grete Olsen (f. 1927) og hennes sønn Elling Olsen. Mor er under utredning og behandling for [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url]. Hun er informert om at denne meldingen sendes.\n\nMor og sønn bor sammen i en treroms blokkleilighet, fjerde etasje. [url=fact:f_aldri_alene]Sønnen har aldri bodd alene[/url]. Han er uføretrygdet og er etter det undertegnede kjenner til [url=fact:f_ingen_tjenester]ikke i kontakt med øvrige tjenester[/url].\n\n[url=fact:f_grete_baerer]Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester[/url]. Omfanget er ikke kartlagt.\n\n[url=fact:f_saarbar]Pasienten fremstår sårbar ved bortfall av pårørende[/url]. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.\n\nMed hilsen\nJørgen Haug\nspes. allmennmedisin',
+        'Under behandling av pasient Grete Olsen (f. 1927) for en [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url] kommer det frem at hun er [url=fact:f_saarbar]primær omsorgsperson[/url] for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. \n\nMed hilsen\nJørgen Haug\nspes. allmennmedisin',
       runs: [
         {
           id: 'run_text_0',
-          text: 'GJELDER Olsen, Elling · f. 14.03.1964 Undertegnede er fastlege for Grete Olsen (f. 1927) og hennes sønn Elling Olsen. Mor er under utredning og behandling for ',
+          text: 'Under behandling av pasient Grete Olsen (f. 1927) for en ',
           fact_id: '',
         },
         {
@@ -996,47 +1195,17 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: '. Hun er informert om at denne meldingen sendes. Mor og sønn bor sammen i en treroms blokkleilighet, fjerde etasje. ',
-          fact_id: '',
-        },
-        {
-          id: 'run_aldri_alene',
-          text: 'Sønnen har aldri bodd alene',
-          fact_id: 'f_aldri_alene',
-        },
-        {
-          id: 'run_text_2',
-          text: '. Han er uføretrygdet og er etter det undertegnede kjenner til ',
-          fact_id: '',
-        },
-        {
-          id: 'run_ingen_tjenester',
-          text: 'ikke i kontakt med øvrige tjenester',
-          fact_id: 'f_ingen_tjenester',
-        },
-        {
-          id: 'run_text_3',
-          text: '. ',
-          fact_id: '',
-        },
-        {
-          id: 'run_grete_baerer',
-          text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
-          fact_id: 'f_grete_baerer',
-        },
-        {
-          id: 'run_text_4',
-          text: '. Omfanget er ikke kartlagt. ',
+          text: ' kommer det frem at hun er ',
           fact_id: '',
         },
         {
           id: 'run_saarbar',
-          text: 'Pasienten fremstår sårbar ved bortfall av pårørende',
+          text: 'primær omsorgsperson',
           fact_id: 'f_saarbar',
         },
         {
-          id: 'run_text_5',
-          text: '. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak. Med hilsen Jørgen Haug spes. allmennmedisin',
+          id: 'run_text_2',
+          text: ' for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. Med hilsen Jørgen Haug spes. allmennmedisin',
           fact_id: '',
         },
       ],
@@ -1456,7 +1625,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Hverdag/rutine',
       category: 'Dokument',
-      quote: 'Sønnen har aldri bodd alene',
+      quote: '',
       frank_response:
         'Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.',
       discuss: ['Frank', 'Grete'],
@@ -1471,8 +1640,7 @@ export const tinyOlsenGodotSource = {
       domain: 'Hverdag/rutine',
       category: 'Dokument',
       about: 'grete',
-      quote:
-        'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
+      quote: '',
       frank_response:
         '«Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.',
       discuss: ['Frank', 'Grete'],
@@ -1487,7 +1655,7 @@ export const tinyOlsenGodotSource = {
       domain: 'Helse/risiko',
       category: 'Risiko',
       about: 'elling',
-      quote: 'Pasienten fremstår sårbar ved bortfall av pårørende',
+      quote: 'primær omsorgsperson',
       frank_response:
         'Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.',
       discuss: ['Frank'],
@@ -1501,7 +1669,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Nettverk/sosialt',
       category: 'Dokument',
-      quote: 'ikke i kontakt med øvrige tjenester',
+      quote: '',
       frank_response:
         'Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.',
       discuss: ['Frank'],

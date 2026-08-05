@@ -184,11 +184,50 @@ describe('§5 beats', () => {
 });
 
 describe('labContent', () => {
+  it('keeps authored single line breaks inside a paragraph block', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Document: doc_brev',
+      'Kind: BREV · Register: formell',
+      'Title: Brev',
+      '',
+      'Første avsnitt.',
+      '',
+      'Med hilsen',
+      'Jørgen Haug',
+      'spes. allmennmedisin',
+    ].join('\n');
+    const out = compileCase(text);
+    const blocks = out.labContent.documents.doc_brev.blocks;
+    expect(blocks.length).toBe(2);
+    expect(blocks[1].runs[0].text).toBe('Med hilsen\nJørgen Haug\nspes. allmennmedisin');
+    // slice canon stays collapsed
+    const sliceDoc = out.slice.documents.find((d) => d.id === 'doc_brev')!;
+    expect(sliceDoc.runs.every((run) => !run.text.includes('\n'))).toBe(true);
+  });
+
   it('mirrors the design-lab shapes from the same source', () => {
-    expect(result.labContent.documents.doc_dodsfall.blocks[0].runs).toEqual(
-      fragments.documents.doc_dodsfall.runs.map((run) =>
-        run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
-      ),
+    // One block per authored paragraph; flattened content mirrors the slice
+    // runs (modulo the paragraph-boundary whitespace the slice collapses).
+    const blocks = result.labContent.documents.doc_dodsfall.blocks;
+    expect(blocks.length).toBeGreaterThan(1);
+    const flatText = blocks
+      .flatMap((block) => block.runs.map((run) => run.text))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const sliceText = fragments.documents.doc_dodsfall.runs
+      .map((run) => run.text)
+      .join('')
+      .replace(/\s+/g, ' ')
+      .trim();
+    expect(flatText).toBe(sliceText);
+    expect(blocks.flatMap((block) => block.runs.filter((run) => run.factId))).toEqual(
+      fragments.documents.doc_dodsfall.runs
+        .filter((run) => run.fact_id)
+        .map((run) => ({ text: run.text, factId: run.fact_id })),
     );
     expect(result.labContent.facts.f_leie_stoppet).toEqual({
       id: 'f_leie_stoppet',

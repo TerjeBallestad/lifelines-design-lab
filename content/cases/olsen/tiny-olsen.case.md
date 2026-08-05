@@ -9,20 +9,11 @@ Pair already set: «Det spørsmålet har vi allerede stående.»
 # Document: doc_bekymring
 
 Kind: BEKYMRINGSMELDING · Register: klinisk
-Title: Legesenteret · Dr. J. Haug
-Peek: «…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»
-Meta: LEGESENTERET · DR. J. HAUG · 11.02.1999
+Title: Bekymringsmelding
+Peek: Bekymringsmelding Dr. J. Haug
+Meta: LEGESENTERET DR. J. HAUG, 11.02.1999
 
-GJELDER
-Olsen, Elling · f. 14.03.1964
-
-Undertegnede er fastlege for Grete Olsen (f. 1927) og hennes sønn Elling Olsen. Mor er under utredning og behandling for [sykdom med kort forventet forløp](fact:f_grete_syk). Hun er informert om at denne meldingen sendes.
-
-Mor og sønn bor sammen i en treroms blokkleilighet, fjerde etasje. [Sønnen har aldri bodd alene](fact:f_aldri_alene). Han er uføretrygdet og er etter det undertegnede kjenner til [ikke i kontakt med øvrige tjenester](fact:f_ingen_tjenester).
-
-[Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester](fact:f_grete_baerer). Omfanget er ikke kartlagt.
-
-[Pasienten fremstår sårbar ved bortfall av pårørende](fact:f_saarbar). Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.
+Under behandling av pasient Grete Olsen (f. 1927) for en [sykdom med kort forventet forløp](fact:f_grete_syk) kommer det frem at hun er [primær omsorgsperson](fact:f_saarbar) for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. 
 
 Med hilsen
 Jørgen Haug

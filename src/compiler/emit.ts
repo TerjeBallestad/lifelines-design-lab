@@ -312,18 +312,37 @@ function normalizeRunText(value: string): string {
   return `${leading}${core}${trailing}`;
 }
 
+// labContent variant: horizontal whitespace collapses, but single newlines
+// survive (authored line breaks render as <br> in the doc templates).
+function normalizeRunTextKeepBreaks(value: string): string {
+  if (!value) return '';
+  const core = value
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ ?\n ?/g, '\n')
+    .replace(/\n{2,}/g, '\n')
+    .replace(/^\n+|\n+$/g, '')
+    .trim();
+  if (!core) return ' ';
+  const leading = /^\s/.test(value) ? ' ' : '';
+  const trailing = /\s$/.test(value) ? ' ' : '';
+  return `${leading}${core}${trailing}`;
+}
+
 // Anchor text may contain one level of nested brackets — the inline
 // [icon=coin] token (SB-319/320) must survive inside an anchored span.
 const ANCHOR_RE = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
 
-function parseDocumentRuns(markdown: string): DocumentRun[] {
+function parseDocumentRuns(
+  markdown: string,
+  normalize: (value: string) => string = normalizeRunText,
+): DocumentRun[] {
   const runs: DocumentRun[] = [];
   let match: RegExpExecArray | null;
   let cursor = 0;
   let textRunIndex = 0;
   const re = new RegExp(ANCHOR_RE.source, 'g');
   while ((match = re.exec(markdown)) !== null) {
-    const before = normalizeRunText(markdown.slice(cursor, match.index));
+    const before = normalize(markdown.slice(cursor, match.index));
     if (before) runs.push({ id: `run_text_${textRunIndex++}`, text: before, fact_id: '' });
     runs.push({
       id: `run_${match[2].replace(/^f_/, '')}`,
@@ -332,7 +351,7 @@ function parseDocumentRuns(markdown: string): DocumentRun[] {
     });
     cursor = match.index + match[0].length;
   }
-  const after = normalizeRunText(markdown.slice(cursor));
+  const after = normalize(markdown.slice(cursor));
   if (after) runs.push({ id: `run_text_${textRunIndex++}`, text: after, fact_id: '' });
   return runs;
 }
@@ -497,6 +516,9 @@ export function emitCase(
     where: Span;
   }
   const arrivals: DocArrival[] = [];
+  // Paragraphs (blank-line separated) survive only into labContent blocks —
+  // the slice's flat run list is core-loop canon and stays whitespace-collapsed.
+  const documentParagraphs = new Map<string, string[]>();
   const documents: DocumentOut[] = byType('document').map((block) => {
     const fields = new FieldMap(block.fields);
     const arrives = fields.find('arrives');
@@ -525,6 +547,10 @@ export function emitCase(
       .map((prose) => prose.text)
       .join('\n')
       .trim();
+    documentParagraphs.set(
+      block.id,
+      body.split(/\n[ \t]*\n+/).filter((para) => para.trim()),
+    );
     const runs = parseDocumentRuns(body);
     for (const run of runs) {
       if (run.fact_id)
@@ -1416,14 +1442,12 @@ export function emitCase(
           register: document.register,
           peek: document.peek,
           meta: document.meta,
-          blocks: [
-            {
-              id: `${document.id}_body`,
-              runs: document.runs.map((run) =>
-                run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
-              ),
-            },
-          ],
+          blocks: (documentParagraphs.get(document.id) ?? []).map((para, index) => ({
+            id: `${document.id}_p${index + 1}`,
+            runs: parseDocumentRuns(para, normalizeRunTextKeepBreaks).map((run) =>
+              run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
+            ),
+          })),
         },
       ]),
     ),

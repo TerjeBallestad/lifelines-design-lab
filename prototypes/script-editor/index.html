@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kildeverket — script editor probe</title>
+    <style>
+      /* Fonts arrive at runtime: main.ts injects @font-face for the bake TTFs
+         (templates/docs/fonts) so the rail uses the exact in-game families. */
+      /* PM Board tokens (extracted from the handoff design system) */
+      :root {
+        --bg: #0f1014;
+        --bg-side: #121318;
+        --bg-rail: #111218;
+        --panel: #15161b;
+        --panel-hover: #1b1d24;
+        --input: #191b21;
+        --input-border: #22252f;
+        --border: #1f222b;
+        --border-2: #262933;
+        --text: #e6e7ec;
+        --text-2: #9b9fad;
+        --text-3: #62667a;
+        --text-4: #4a4e5e;
+        --text-prose: #c9cbd4;
+        --accent: #7b83eb;
+        --blue: #52a9ff;
+        --green: #46c288;
+        --orange: #f0883e;
+        --purple: #c084fc;
+        --yellow: #e2c541;
+        --danger: #e5484d;
+        --gold: #d3b078;
+        --surface-code: #0d0e12;
+        --tint-accent: rgba(123, 131, 235, 0.1);
+        --tint-orange: rgba(240, 136, 62, 0.09);
+        --tint-danger: rgba(229, 72, 77, 0.12);
+        --tint-yellow: rgba(226, 197, 65, 0.1);
+        /* paper/ink tokens from prototypes/blueprint_v1.html — the game surface */
+        --paper: #f5f1e8;
+        --paper-shade: #ece7d8;
+        --ink: #2a2520;
+        --ink-dim: #6b6259;
+        --ink-faint: #a49a8c;
+        --hint-gold: #c89a2e;
+        --hint-warn: #c86244;
+        --hint-green: #7aa66f;
+        --hint-blue: #5b7fc4;
+        --hint-purple: #a57bc2;
+        --mark: #fff8b0;
+        --hand-1: 'Kalam', cursive;
+        --hand-2: 'Caveat', cursive;
+        --hand-3: 'Architects Daughter', cursive;
+        --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+        --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        overflow: hidden;
+      }
+      #app {
+        display: grid;
+        grid-template-rows: 44px 1fr 28px;
+        grid-template-columns: 220px 1fr 400px;
+        grid-template-areas:
+          'top top top'
+          'outline editor rail'
+          'status status status';
+        height: 100vh;
+      }
+
+      /* top bar */
+      #topbar {
+        grid-area: top;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-side);
+      }
+      #topbar .logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background: linear-gradient(135deg, #7b83eb, #4c56c0);
+      }
+      #topbar .name {
+        font: 600 12.5px var(--sans);
+      }
+      #topbar .file {
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+      }
+      #topbar .tabs {
+        display: inline-flex;
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 7px;
+        overflow: hidden;
+        font: 500 11px var(--sans);
+        margin-left: 8px;
+      }
+      #topbar .tabs span {
+        padding: 4px 12px;
+        color: var(--text-3);
+      }
+      #topbar .tabs .active {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #save-state {
+        margin-left: auto;
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+      }
+      #save-state.dirty {
+        color: var(--orange);
+      }
+
+      /* outline rail */
+      #outline {
+        grid-area: outline;
+        background: var(--bg-side);
+        border-right: 1px solid var(--border);
+        padding: 12px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        overflow-y: auto;
+      }
+      #outline .head {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text-4);
+        padding: 0 6px 6px;
+      }
+      .o-kind {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font: 500 11.5px var(--sans);
+        color: var(--text-2);
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        cursor: pointer;
+      }
+      .o-kind:hover {
+        background: var(--panel-hover);
+      }
+      .o-kind .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .o-kind .count {
+        margin-left: auto;
+        font: 500 9.5px var(--mono);
+        color: var(--text-4);
+      }
+      .o-item {
+        padding: 3px 8px 3px 22px;
+        border-radius: 6px;
+        font: 500 11px var(--sans);
+        color: var(--text-3);
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .o-item:hover {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      .o-item.current {
+        background: var(--panel-hover);
+        color: var(--text);
+        font-weight: 600;
+      }
+      #outline .legend {
+        margin-top: auto;
+        border-top: 1px solid var(--border);
+        padding: 8px 6px 0;
+      }
+      #outline .legend .head {
+        padding: 0 0 5px;
+      }
+      #outline .legend .body {
+        font: 400 10px/1.7 var(--mono);
+        color: var(--text-3);
+      }
+
+      /* editor — CodeMirror host */
+      #editor-pane {
+        grid-area: editor;
+        position: relative;
+        background: var(--surface-code);
+        overflow: hidden;
+        min-width: 0;
+      }
+      #editor-pane .cm-editor {
+        height: 100%;
+      }
+      #editor-pane .cm-editor.cm-focused {
+        outline: none;
+      }
+
+      /* token classes (built by the classifier in main.ts) */
+      .tok-h-doc {
+        color: var(--blue);
+        font-weight: 600;
+      }
+      .tok-h-fact {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .tok-h-question {
+        color: var(--yellow);
+        font-weight: 600;
+      }
+      .tok-h-hypothesis {
+        color: var(--purple);
+        font-weight: 600;
+      }
+      .tok-h-tiltak {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .tok-h-dispatch {
+        color: var(--orange);
+        font-weight: 600;
+      }
+      .tok-h-clock {
+        color: var(--gold);
+        font-weight: 600;
+      }
+      .tok-h-case {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .tok-key {
+        color: var(--text-3);
+      }
+      .tok-key-gate {
+        color: var(--yellow);
+      }
+      .tok-key-needs {
+        color: var(--purple);
+      }
+      .tok-key-opens {
+        color: var(--green);
+      }
+      .tok-id-doc {
+        color: var(--blue);
+      }
+      .tok-id-fact {
+        color: var(--accent);
+      }
+      .tok-id-question {
+        color: var(--yellow);
+      }
+      .tok-id-hypothesis {
+        color: var(--purple);
+      }
+      .tok-id-tiltak {
+        color: var(--green);
+      }
+      .tok-id-dispatch {
+        color: var(--orange);
+      }
+      .tok-id-clock {
+        color: var(--gold);
+      }
+      .tok-anchor-text {
+        background: var(--tint-accent);
+        border-radius: 3px;
+      }
+      .tok-anchor-ref {
+        color: var(--accent);
+      }
+      .tok-quote {
+        color: var(--text-2);
+        font-style: italic;
+      }
+      .tok-comment {
+        color: var(--text-4);
+        font-style: italic;
+      }
+      .tok-effect {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .tok-weave {
+        color: var(--purple);
+        font-weight: 600;
+      }
+      .tok-guard {
+        color: var(--yellow);
+      }
+      .tok-kw {
+        color: var(--text-2);
+        font-weight: 600;
+      }
+      .tok-icon {
+        color: var(--gold);
+      }
+      .tok-todo {
+        background: var(--tint-orange);
+      }
+      .tok-todo,
+      .tok-todo * {
+        color: var(--orange);
+      }
+
+      /* ⌘ held: ids advertise goto-definition */
+      body.goto-mode [class*='tok-id-'] {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+      }
+
+      /* hover tooltips */
+      .kv-tip {
+        max-width: 340px;
+        padding: 8px 11px;
+        font: 400 11px/1.55 var(--sans);
+      }
+      .kv-tip-title {
+        font: 600 10.5px var(--mono);
+        color: var(--text);
+        margin-bottom: 3px;
+      }
+      .kv-tip-body {
+        color: var(--text-2);
+      }
+
+      /* right rail: preview + problems */
+      #rail {
+        grid-area: rail;
+        background: var(--bg-rail);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .rail-head {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: none;
+      }
+      .rail-head .t {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text-4);
+      }
+      .rail-head .sub {
+        margin-left: auto;
+        font: 400 10px var(--mono);
+        color: var(--text-4);
+      }
+      #preview {
+        flex: 1 1 55%;
+        padding: 14px 18px;
+        overflow-y: auto;
+        min-height: 0;
+      }
+      /* real bake template preview — iframe scaled to the rail */
+      #preview .doc-frame-wrap {
+        overflow: hidden;
+        border-radius: 3px;
+        box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.45);
+      }
+
+      #preview .lb-hint {
+        font: 400 9.5px var(--mono);
+        color: var(--text-4);
+        margin-top: 6px;
+      }
+
+      /* readable full-size document view (click the page to open) */
+      #doc-lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 6, 9, 0.72);
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 4vh 4vw;
+        z-index: 90;
+        cursor: zoom-out;
+      }
+      #doc-lightbox.open {
+        display: flex;
+      }
+      #doc-lightbox .lb-inner {
+        max-height: 92vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-radius: 3px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+        cursor: default;
+      }
+      #doc-lightbox .lb-inner iframe {
+        border: 0;
+        display: block;
+        transform-origin: top left;
+      }
+      #preview .doc-frame-wrap iframe {
+        border: 0;
+        display: block;
+        transform-origin: top left;
+        pointer-events: auto;
+      }
+
+      /* FUNN card — the in-game desk fact card (hand_card.tscn grammar) */
+      #preview .funn-card {
+        background: #f2ecdd;
+        border: 2px solid #2a2520;
+        border-radius: 3px;
+        box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.45);
+        padding: 14px 16px 16px;
+        color: #2a2520;
+      }
+      #preview .funn-card .funn-rule {
+        height: 5px;
+        background: #b8442c;
+        margin-bottom: 10px;
+      }
+      #preview .funn-card .funn-stamp {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        color: #b8442c;
+        margin-bottom: 6px;
+      }
+      #preview .funn-card .funn-quote {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 700;
+        font-size: 21px;
+        line-height: 1.28;
+        letter-spacing: -0.01em;
+      }
+      #preview .funn-card .funn-source {
+        font-family: 'Fraunces', Georgia, serif;
+        font-style: italic;
+        font-size: 12.5px;
+        color: #6b6259;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1.5px solid #2a2520;
+      }
+      #preview .funn-meta {
+        margin-top: 12px;
+      }
+      #preview .fc-rel {
+        margin-top: 10px;
+      }
+      #preview .fc-rel h4 {
+        font-family: 'Architects Daughter', cursive;
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin: 0 0 4px;
+      }
+      #preview .fc-link {
+        display: block;
+        font: 400 11.5px/1.5 var(--sans);
+        color: var(--text-2);
+        padding: 3px 0;
+        border-bottom: 1px dashed var(--border-2);
+        cursor: pointer;
+      }
+      #preview .fc-link:hover {
+        color: var(--gold);
+      }
+      #preview .fc-link.dead {
+        color: var(--text-4);
+        cursor: default;
+      }
+      #preview .feeds-head {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--text-4);
+        margin: 12px 0 6px;
+      }
+      #preview .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      #preview .chip {
+        font: 500 10px var(--mono);
+        padding: 2px 7px;
+        border-radius: 5px;
+        border: 1px solid var(--border-2);
+        color: var(--text-2);
+      }
+      #preview .node-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      #preview .node-kind {
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.08em;
+      }
+      #preview .node-id {
+        font: 600 12px var(--mono);
+        color: var(--text);
+        margin-top: 4px;
+      }
+      #preview .node-json {
+        font: 400 10.5px/1.7 var(--mono);
+        color: var(--text-2);
+        margin-top: 10px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      #preview .empty {
+        font: 400 11.5px var(--sans);
+        color: var(--text-4);
+        padding: 20px 4px;
+      }
+      #problems {
+        flex: 1 1 45%;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      #problem-list {
+        overflow-y: auto;
+        padding: 6px 8px;
+        min-height: 0;
+      }
+      .prob {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font: 400 11px var(--mono);
+        color: var(--text-2);
+      }
+      .prob:hover {
+        background: var(--panel-hover);
+      }
+      .prob .sev {
+        flex: none;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        align-self: center;
+      }
+      .prob .line {
+        flex: none;
+        color: var(--text-4);
+        width: 52px;
+      }
+      .prob .msg {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .sev-error {
+        background: var(--danger);
+      }
+      .sev-warning {
+        background: var(--orange);
+      }
+      .sev-info {
+        background: var(--blue);
+      }
+      .sev-advisory {
+        background: var(--text-4);
+      }
+
+      /* status bar */
+      #statusbar {
+        grid-area: status;
+        background: var(--bg-side);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 14px;
+        font: 500 10px var(--mono);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      #statusbar .ok {
+        color: var(--green);
+      }
+      #statusbar .todo-c {
+        color: var(--orange);
+      }
+      #statusbar .stub-c {
+        color: var(--danger);
+      }
+      #statusbar .warn-c {
+        color: var(--orange);
+      }
+      #statusbar .adv-c {
+        color: var(--text-3);
+      }
+      #statusbar .hint {
+        margin-left: auto;
+        color: var(--text-4);
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="topbar">
+        <span class="logo"></span>
+        <span class="name">Kildeverket</span>
+        <span class="file">tiny-olsen.case.md</span>
+        <span class="tabs">
+          <span class="active">Script</span>
+          <span title="not built — this probe answers Script first">Canvas</span>
+          <span title="not built">Pacing</span>
+          <span title="not built">Playtest</span>
+        </span>
+        <span id="save-state">loaded</span>
+      </div>
+      <div id="outline"></div>
+      <div id="editor-pane"></div>
+      <div id="rail">
+        <div class="rail-head">
+          <span class="t" id="preview-title">PREVIEW</span>
+          <span class="sub">follows cursor</span>
+        </div>
+        <div id="preview"><div class="empty">Place the cursor in a section.</div></div>
+        <div id="problems">
+          <div class="rail-head">
+            <span class="t">PROBLEMS</span>
+            <span class="sub" id="problem-count"></span>
+          </div>
+          <div id="problem-list"></div>
+        </div>
+      </div>
+      <div id="statusbar"></div>
+    </div>
+    <div id="doc-lightbox"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
