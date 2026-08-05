@@ -38,6 +38,8 @@ export interface CallOut {
 export interface ChatFollowupOut {
   label: string;
   lines: string[];
+  /** SB-024 extension: `Tanke: «…»` inside a followup — the VURDERING sting. */
+  tanke?: string;
 }
 
 export interface ChatEntryOut {
@@ -64,7 +66,8 @@ export interface WeaveResult {
   spans: Map<string, Span>;
 }
 
-const ANCHOR_RE = /\[([^\]]+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
+// Anchor text may contain one level of nested brackets ([icon=coin] tokens).
+const ANCHOR_RE = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
 
 /** Branch-line bracket payload keys the compiler ratifies ([id=…] [answer=none]). */
 const BRANCH_META_KEYS = new Set(['id', 'answer']);
@@ -671,6 +674,13 @@ function compileChat(
 
     if (isSequenceLine(trimmed, diag, entry?.id ?? ownerId, where)) continue;
     if (sink === null) continue; // under a warned-away construct
+    // SB-024 extension: a `Tanke: «…»` line inside a followup sets the
+    // followup's tanke sting instead of joining its lines.
+    const tanke = followup !== null ? trimmed.match(/^Tanke:\s?(.*)$/) : null;
+    if (tanke && followup !== null) {
+      followup.tanke = stripGuillemets(tanke[1].trim());
+      continue;
+    }
     const lineText = stripLineGuard(trimmed, diag, entry?.id ?? ownerId, where);
     if (lineText) sink.push(lineText);
   }

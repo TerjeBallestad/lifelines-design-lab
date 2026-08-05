@@ -4,3 +4,6 @@ coverage
 .pm
 .harness
 .claude
+# weave indentation is semantic — prettier rewrites * branches into - lists
+content/cases/**/*.case.md
+src/compiler/__tests__/fixtures/*.case.md

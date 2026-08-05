@@ -422,3 +422,36 @@ Line: «Matlevering, kanskje. …»
 6. Diagnostic code lifecycle: `proposal-not-ratified` is RETIRED — nothing
    fires it anymore; the constant stays in `diagnostics.ts` per the
    stable-codes law (never rename or reuse).
+
+### Compiler extensions recorded by SB-024 (content back-port)
+
+The healed `tiny-olsen.case.md` carries four shipped shapes the compiler
+could not author. Each extension is minimal; tests live in
+`src/compiler/__tests__/sb024-extensions.test.ts`.
+
+1. **Fact `Quote: «…»` fallback.** A fact paid outside any document (chat
+   `~ pay`, e.g. `f_dor_glott`) has no run to derive its quote from — an
+   explicit `Quote:` line fills it. An anchored document run always wins
+   over the field.
+2. **Followup `Tanke: «…»` line.** Inside a chat followup, a `Tanke:` line
+   sets the followup's `tanke` sting (the shipped `c_bok` VURDERING) instead
+   of joining its lines.
+3. **Lead target `call:<contact>`.** A `Lead: «…» -> call:grete` resolves
+   without a stub when that call is authored — the same namespaced handle
+   ruling 3 kept for `Reveals: call:grete`. (Shipped "Ring Grete" lead.)
+4. **Nested brackets in anchor text.** `ANCHOR_RE` accepts one level of
+   nested brackets so `[icon=coin]` tokens survive inside anchored spans
+   (26 occurrences in the Olsen documents).
+
+Ruled emit deltas vs the pre-back-port shipped JSON (all
+semantically identical at runtime, recorded on SB-024): leads emit the
+canonical `{label, target}` object (ruling 3 — the string forms die; the
+Godot reader is an untyped passthrough and renders `label`);
+vacuous `availability {all, []}` is omitted (sparse-field law); legacy flat
+chat entries gain `answer_lines`/`followups` (the Godot model treats
+`answer_lines` as primary); the legacy `answer` field derives from joining
+`answer_lines` (the two shipped entries whose hand-written `answer` had
+drifted from their own lines now match the lines).
+
+Also: `.case.md` files are prettier-ignored — §8 weave indentation and `*`
+branch sigils are semantic, and prettier rewrites them into `-` lists.

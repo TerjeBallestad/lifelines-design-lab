@@ -312,7 +312,9 @@ function normalizeRunText(value: string): string {
   return `${leading}${core}${trailing}`;
 }
 
-const ANCHOR_RE = /\[([^\]]+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
+// Anchor text may contain one level of nested brackets — the inline
+// [icon=coin] token (SB-319/320) must survive inside an anchored span.
+const ANCHOR_RE = /\[((?:[^[\]]|\[[^[\]]*\])+)\]\(fact:([a-zA-Z0-9_:-]+)\)/g;
 
 function parseDocumentRuns(markdown: string): DocumentRun[] {
   const runs: DocumentRun[] = [];
@@ -604,6 +606,11 @@ export function emitCase(
     const frank = fields.find('Frank');
     const card = fields.find('Card');
     const reveals = fields.value('Reveals');
+    // SB-024 extension: a fact paid outside any document (chat ~ pay) has no
+    // run to derive its quote from — an explicit Quote: fills it. An anchored
+    // run always wins.
+    const quoteField = fields.find('Quote');
+    const anchorQuote = quoteForFact(block.id);
     const fact: FactOut = {
       id: block.id,
       label: fields.value('Label') ?? '',
@@ -612,7 +619,7 @@ export function emitCase(
       domain: fields.value('Domain') ?? '',
       category: fields.value('Category') ?? '',
       ...(about !== undefined ? { about } : {}),
-      quote: quoteForFact(block.id),
+      quote: anchorQuote || (quoteField ? stripGuillemets(quoteField.value) : ''),
       ...(frank ? { frank_response: stripGuillemets(frank.value) } : {}),
       ...(card ? { card_line: stripGuillemets(card.value) } : {}),
       discuss: listValue(fields.value('Discuss')),
@@ -1330,11 +1337,14 @@ export function emitCase(
     dispatch: new Set(dispatches.map((dispatch) => dispatch.id)),
     clock: new Set(clocks.map((clock) => clock.id)),
   };
+  // SB-024 extension: a lead may target a call surface with the same
+  // namespaced handle facts use (`Reveals: call:grete`, ruling 3).
+  const callIds = new Set(weave.calls.map((call) => `call:${call.contact_id}`));
   const reported = new Set<string>();
   for (const ref of refs) {
     const resolved =
       ref.kind === 'lead-target'
-        ? known.tiltak.has(ref.id) || known.dispatch.has(ref.id)
+        ? known.tiltak.has(ref.id) || known.dispatch.has(ref.id) || callIds.has(ref.id)
         : known[ref.kind].has(ref.id);
     if (resolved) continue;
     const dedupeKey = `${ref.ownerId}→${ref.id}`;

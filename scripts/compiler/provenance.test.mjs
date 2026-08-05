@@ -54,26 +54,32 @@ describe('shipped-fragments.json provenance', () => {
   });
 });
 
-describe('legacy 0.1 tiny-olsen.case.md keeps compiling (fix-its, never fatal)', () => {
-  it('parses the whole 0.1 file without throwing and emits the entity sections', async () => {
+describe('healed 0.2 tiny-olsen.case.md (SB-024 back-port) compiles clean', () => {
+  it('emits the full drifted inventory with zero errors and zero warnings', async () => {
     const text = await readFile(
       resolve(process.cwd(), 'content/cases/olsen/tiny-olsen.case.md'),
       'utf8',
     );
     const out = compileCase(text);
-    expect(out.slice.documents).toHaveLength(8);
-    expect(out.slice.facts.length).toBeGreaterThanOrEqual(28);
-    expect(out.slice.questions).toHaveLength(6);
-    expect(out.slice.hypotheses.length).toBeGreaterThan(0);
+    expect(out.slice.documents).toHaveLength(9);
+    expect(out.slice.facts).toHaveLength(27);
+    expect(out.slice.questions).toHaveLength(8);
+    expect(out.slice.hypotheses).toHaveLength(23);
     expect(out.slice.tiltak).toHaveLength(9);
-    expect(out.slice.dispatches.map((d) => d.id)).toEqual(['d_ring_grete', 'd_konto']);
-    expect(out.slice.clocks).toHaveLength(4);
+    expect(out.slice.dispatches.map((d) => d.id)).toEqual(['d_konto', 'hjemmebesok']);
+    expect(out.slice.clocks).toHaveLength(6);
     expect(out.slice.event_delta_specs.map((e) => e.event_type)).toEqual([
       'grete_received',
       'delivery_taken_in',
       'delivery_unanswered',
     ]);
-    // One-way reveal: no error-severity diagnostics from the dead bidirectional check.
+    expect(out.slice.day_script_beats).toHaveLength(6);
+    expect(out.slice.frank_chat).toHaveLength(8);
+    expect(out.slice.frank_proposals).toHaveLength(24);
+    expect(out.slice.recipes).toHaveLength(2);
+    expect(out.slice.calls?.map((c) => c.contact_id)).toEqual(['grete']);
+    // The healed file is warning-free — only §9 advisory lints remain.
     expect(out.diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === 'warning')).toEqual([]);
   });
 });

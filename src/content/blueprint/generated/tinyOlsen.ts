@@ -66,7 +66,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · husholdets økonomi',
     register: 'notat',
     peek: '«Regnestykket går opp — med henne.»',
-    meta: 'ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+    meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
     blocks: [
       {
         id: 'doc_konto_body',
@@ -75,18 +75,18 @@ export const tinyOlsenDocuments = {
             text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall. Inn: ',
           },
           {
-            text: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+            text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
             factId: 'f_trygd',
           },
           {
-            text: ' Pensjonen hennes: tre mynter. Ut: ',
+            text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
           },
           {
-            text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+            text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
           {
-            text: ' Strøm, mat og resten: to mynter til sammen. ',
+            text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
           },
           {
             text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
@@ -103,7 +103,7 @@ export const tinyOlsenDocuments = {
             text: ' ',
           },
           {
-            text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+            text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
         ],
@@ -116,7 +116,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · papirene i leiligheten',
     register: 'notat',
     peek: '«Skoesken sto der hun forlot den.»',
-    meta: 'PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET',
+    meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
     blocks: [
       {
         id: 'doc_papirer_body',
@@ -125,14 +125,14 @@ export const tinyOlsenDocuments = {
             text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. Inn: ',
           },
           {
-            text: 'trygden hans — to mynter i måneden.',
+            text: 'trygden hans — 2 [icon=coin] i måneden.',
             factId: 'f_trygd',
           },
           {
             text: ' Pensjonen hennes er opphørt. Ut: ',
           },
           {
-            text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.',
+            text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
           {
@@ -153,7 +153,7 @@ export const tinyOlsenDocuments = {
             text: ' ',
           },
           {
-            text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
+            text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
           {
@@ -208,7 +208,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · telefonsamtale med Grete',
     register: 'notat',
     peek: '«Hun tok den på andre forsøk.»',
-    meta: 'FELTNOTAT · 4012 F. SOLBERG · TLF. G. OLSEN',
+    meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
     blocks: [
       {
         id: 'doc_frank_tlf_body',
@@ -254,7 +254,7 @@ export const tinyOlsenDocuments = {
     title: 'Frank · hjemmebesøk Gabels gate 14',
     register: 'notat',
     peek: '«Hun hadde dekket på med tre kopper.»',
-    meta: 'HJEMMEBESØK · 4012 F. SOLBERG · BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN',
+    meta: 'HJEMMEBESØK · 4012 F. ÅSLI',
     blocks: [
       {
         id: 'doc_frank_visit_body',
@@ -267,21 +267,7 @@ export const tinyOlsenDocuments = {
             factId: 'f_post',
           },
           {
-            text: ' Grete flyttet bunken da hun så at jeg så. På kjøkkenveggen: ',
-          },
-          {
-            text: 'kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.',
-            factId: 'f_kalender',
-          },
-          {
-            text: ' I kjøleskapet (Grete viste meg, uoppfordret, som et bevis): ',
-          },
-          {
-            text: 'middagsbokser merket med ukedager, mandag til søndag.',
-            factId: 'f_matbokser',
-          },
-          {
-            text: ' «Han varmer dem selv.» Det hørtes ut som et forsvar. Elling satt i stuen med ',
+            text: ' Grete flyttet bunken da hun så at jeg så. Elling satt i stuen med ',
           },
           {
             text: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
@@ -379,6 +365,24 @@ export const tinyOlsenDocuments = {
       },
     ],
   },
+  doc_status: {
+    id: 'doc_status',
+    kind: 'STATUSRAPPORT',
+    title: 'Frank · status dag 8',
+    register: 'notat',
+    peek: 'En uke siden meldingen.',
+    meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+    blocks: [
+      {
+        id: 'doc_status_body',
+        runs: [
+          {
+            text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.',
+          },
+        ],
+      },
+    ],
+  },
 } satisfies Record<string, BlueprintDocument>;
 
 export const tinyOlsenFacts = {
@@ -388,7 +392,7 @@ export const tinyOlsenFacts = {
     category: 'Dokument',
     text: 'Grete er alvorlig syk. Forventet forløp er kort.',
     quote: 'sykdom med kort forventet forløp',
-    supports: ['q_hverdag'],
+    supports: ['q_grete_dor'],
     discuss: ['Frank'],
   },
   f_aldri_alene: {
@@ -397,7 +401,7 @@ export const tinyOlsenFacts = {
     category: 'Dokument',
     text: 'Elling (35) har aldri bodd alene.',
     quote: 'Sønnen har aldri bodd alene',
-    supports: ['q_hverdag', 'q_selv'],
+    supports: ['q_grete_dor', 'q_evner'],
     discuss: ['Frank', 'Grete'],
   },
   f_grete_baerer: {
@@ -407,7 +411,7 @@ export const tinyOlsenFacts = {
     text: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
     quote:
       'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
-    supports: ['q_hverdag', 'q_okonomi'],
+    supports: ['q_grete_dor', 'q_okonomi'],
     discuss: ['Frank', 'Grete'],
   },
   f_saarbar: {
@@ -416,7 +420,7 @@ export const tinyOlsenFacts = {
     category: 'Risiko',
     text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
     quote: 'Pasienten fremstår sårbar ved bortfall av pårørende',
-    supports: ['q_hverdag'],
+    supports: ['q_grete_dor'],
     discuss: ['Frank'],
   },
   f_ingen_tjenester: {
@@ -425,15 +429,15 @@ export const tinyOlsenFacts = {
     category: 'Dokument',
     text: 'Elling har ingen kontakt med øvrige tjenester.',
     quote: 'ikke i kontakt med øvrige tjenester',
-    supports: ['q_kontakt'],
+    supports: ['q_baering'],
     discuss: ['Frank'],
   },
   f_trygd: {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Ellings uføretrygd: to mynter i måneden.',
-    quote: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+    text: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
+    quote: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank'],
   },
@@ -450,8 +454,8 @@ export const tinyOlsenFacts = {
     id: 'f_husleie',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Husleien er tre mynter og betales av Grete.',
-    quote: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+    text: 'Husleien er 3 [icon=coin] og betales av Grete.',
+    quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank', 'Grete'],
   },
@@ -459,8 +463,8 @@ export const tinyOlsenFacts = {
     id: 'f_gap',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
-    quote: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+    text: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
+    quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
     supports: ['q_okonomi', 'q_bolig'],
     discuss: ['Frank'],
   },
@@ -470,7 +474,7 @@ export const tinyOlsenFacts = {
     category: 'Økonomi',
     text: 'Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.',
     quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
-    supports: ['q_hverdag'],
+    supports: ['q_grete_dor'],
     discuss: ['Frank'],
   },
   f_leie_stoppet: {
@@ -488,7 +492,7 @@ export const tinyOlsenFacts = {
     category: 'Risiko',
     text: 'Huseieren varsler at han kommer innom. Torsdag.',
     quote: 'jeg kommer innom på torsdag, så får vi snakke om veien videre.',
-    supports: ['q_bolig', 'q_kontakt'],
+    supports: ['q_bolig', 'q_baering'],
     discuss: ['Frank'],
   },
   f_leie_privat: {
@@ -506,7 +510,7 @@ export const tinyOlsenFacts = {
     category: 'Samtale',
     text: 'Grete avviser bekymringen. Gjentar formuleringen.',
     quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
-    supports: ['q_hverdag'],
+    supports: ['q_grete_dor'],
     discuss: ['Frank'],
   },
   f_ingen_plan: {
@@ -516,7 +520,7 @@ export const tinyOlsenFacts = {
     text: 'Det finnes ingen plan for hvem som overtar etter Grete.',
     quote:
       'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
-    supports: ['q_hverdag', 'q_bolig'],
+    supports: ['q_grete_dor', 'q_bolig'],
     discuss: ['Frank', 'Grete'],
   },
   f_elling_tlf: {
@@ -526,7 +530,7 @@ export const tinyOlsenFacts = {
     text: 'Elling tar ikke telefonen. Grete normaliserer det.',
     quote:
       'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
-    supports: ['q_kontakt'],
+    supports: ['q_baering'],
     discuss: ['Frank', 'Grete'],
   },
   f_grete_redd: {
@@ -545,26 +549,8 @@ export const tinyOlsenFacts = {
     text: 'Uåpnet post samler seg. Grete håndterer den — og skjuler den.',
     quote:
       'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
-    supports: ['q_hverdag', 'q_okonomi'],
+    supports: ['q_grete_dor', 'q_okonomi'],
     discuss: ['Frank'],
-  },
-  f_kalender: {
-    id: 'f_kalender',
-    domain: 'Hverdag/rutine',
-    category: 'Observasjon',
-    text: 'Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem.',
-    quote: 'kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.',
-    supports: ['q_hverdag'],
-    discuss: ['Frank'],
-  },
-  f_matbokser: {
-    id: 'f_matbokser',
-    domain: 'Hverdag/rutine',
-    category: 'Observasjon',
-    text: 'Maten er preppet av Grete, merket med ukedager. Elling varmer.',
-    quote: 'middagsbokser merket med ukedager, mandag til søndag.',
-    supports: ['q_hverdag', 'q_selv'],
-    discuss: ['Frank', 'Grete'],
   },
   f_bok: {
     id: 'f_bok',
@@ -572,7 +558,7 @@ export const tinyOlsenFacts = {
     category: 'Ressurs',
     text: 'Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er en ressurs.',
     quote: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
-    supports: ['q_selv'],
+    supports: ['q_evner'],
     discuss: ['Frank'],
   },
   f_utklipp: {
@@ -582,7 +568,7 @@ export const tinyOlsenFacts = {
     text: 'Elling samler og systematiserer: utklipp av Gro og Arbeiderpartiet, datert og ordnet.',
     quote:
       'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.',
-    supports: ['q_selv'],
+    supports: ['q_evner'],
     discuss: ['Frank'],
   },
   f_avstand: {
@@ -591,7 +577,17 @@ export const tinyOlsenFacts = {
     category: 'Observasjon',
     text: 'Elling holder avstand til fremmede. Alltid et møbel mellom.',
     quote: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
-    supports: ['q_kontakt', 'q_selv'],
+    supports: ['q_baering', 'q_evner'],
+    discuss: ['Frank'],
+  },
+  f_dor_glott: {
+    id: 'f_dor_glott',
+    domain: 'Nettverk/sosialt',
+    category: 'Samtale',
+    text: 'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+    quote:
+      'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
+    supports: ['q_baering'],
     discuss: ['Frank'],
   },
   f_smart_gutt: {
@@ -600,7 +596,7 @@ export const tinyOlsenFacts = {
     category: 'Samtale',
     text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
     quote: '«Du så hvordan han er. Han er en smart gutt.»',
-    supports: ['q_hverdag', 'q_selv'],
+    supports: ['q_grete_dor', 'q_evner'],
     discuss: ['Frank'],
   },
   f_innlagt: {
@@ -609,7 +605,7 @@ export const tinyOlsenFacts = {
     category: 'Dokument',
     text: 'Grete er akutt innlagt på Ullevål.',
     quote: 'innlagt akutt 14.02',
-    supports: ['q_hverdag', 'q_bolig'],
+    supports: ['q_grete_dor', 'q_bolig'],
     discuss: ['Frank'],
   },
   f_elling_uvarslet: {
@@ -618,7 +614,7 @@ export const tinyOlsenFacts = {
     category: 'Dokument',
     text: 'Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.',
     quote: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
-    supports: ['q_kontakt', 'q_kollaps'],
+    supports: ['q_baering', 'q_kollaps'],
     discuss: ['Frank'],
   },
   f_dod: {
@@ -637,43 +633,92 @@ export const tinyOlsenFacts = {
     text: 'Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.',
     quote:
       'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
-    supports: ['q_kontakt', 'q_kollaps'],
+    supports: ['q_baering', 'q_kollaps'],
     discuss: ['Frank'],
   },
 } satisfies Record<string, BlueprintFact>;
 
 export const tinyOlsenQuestions = {
+  q_grete_dor: {
+    id: 'q_grete_dor',
+    title: 'Den dagen Grete ikke kommer hjem — hva stopper?',
+    appearsOn: ['f_grete_syk', 'f_klarer_seg'],
+    hypotheses: [
+      {
+        id: 'h_gd_system',
+        label: 'Husholdet er et system med to. Med én står det stille.',
+        needs: ['f_smart_gutt', 'f_ingen_matkjop'],
+        opens: ['t_matlevering'],
+        note: 'Mat, avtaler, post og kontakt går gjennom arbeidsdeling som forsvinner med Grete. Det er systemet som dør, ikke bare et fravær.',
+      },
+      {
+        id: 'h_gd_infra',
+        label: 'Alt praktisk er usynlig infrastruktur: mat, post, kontakt.',
+        needs: ['f_post', 'f_ingen_matkjop'],
+        opens: ['t_hjemmehjelp', 't_matlevering', 't_dokgjennomgang'],
+        note: 'Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.',
+      },
+      {
+        id: 'h_gd_ukjent',
+        label: 'Ingenting vi vet. Ingen har noen gang sett Elling alene.',
+        needs: ['f_aldri_alene', 'f_ingen_plan'],
+        opens: [],
+        note: 'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
+      },
+    ],
+  },
+  q_evner: {
+    id: 'q_evner',
+    title: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
+    appearsOn: ['f_bok', 'f_utklipp', 'f_aldri_alene'],
+    hypotheses: [
+      {
+        id: 'h_ev_kanmer',
+        label: 'Mer enn det ser ut til.',
+        needs: ['f_bok', 'f_utklipp'],
+        opens: ['t_brev'],
+        note: 'Konsentrasjon, arkiv og system er observert.',
+      },
+      {
+        id: 'h_ev_unngaar',
+        label: 'Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.',
+        needs: ['f_post', 'f_bok'],
+        opens: ['t_dokgjennomgang'],
+        note: 'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
+      },
+      {
+        id: 'h_ev_ukjent',
+        label: 'Vet ikke. Ingen har prøvd. Det er selve funnet.',
+        needs: [],
+        opens: ['t_brev', 't_regning'],
+        note: 'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.',
+      },
+    ],
+  },
   q_okonomi: {
     id: 'q_okonomi',
-    title: 'Hvem holder økonomien i gang?',
+    title: 'Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?',
     appearsOn: ['f_grete_baerer', 'f_trygd', 'f_husleie'],
     hypotheses: [
       {
-        id: 'h_ok_grete',
-        label: 'Grete bærer betalingskjeden.',
+        id: 'h_ok_kjede',
+        label: 'Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.',
         needs: ['f_husleie', 'f_alt_via_grete'],
         opens: ['t_forvaltning'],
         note: 'Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
       },
       {
-        id: 'h_ok_unngaar',
-        label: 'Elling forstår økonomien, men unngår post.',
-        needs: ['f_post', 'f_bok'],
-        opens: ['t_dokgjennomgang'],
-        note: 'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem til en vurdering, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
-      },
-      {
         id: 'h_ok_gap',
-        label: 'Trygden dekker ikke boligen uten Gretes pensjon.',
+        label: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
         needs: ['f_gap'],
-        opens: ['t_bostotte'],
-        note: 'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        opens: ['t_bostotte', 't_huseier'],
+        note: 'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       },
     ],
   },
   q_bolig: {
     id: 'q_bolig',
-    title: 'Kan Elling bli boende når Grete ikke lenger bærer hverdagen?',
+    title: 'Kan Elling bli boende — når husleien har stoppet?',
     appearsOn: ['f_gap', 'f_leie_stoppet', 'f_husleie'],
     hypotheses: [
       {
@@ -681,112 +726,78 @@ export const tinyOlsenQuestions = {
         label: 'Boligen kan sikres — med bostøtte og ordnet betalingskjede.',
         needs: ['f_gap', 'f_trygd'],
         opens: ['t_bostotte', 't_forvaltning'],
-        note: 'Med bostøtte og en ordnet betalingskjede kan leieforholdet videreføres. Forutsetter at søknaden fremmes før restansen blir en sak.',
+        note: 'Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.',
       },
       {
         id: 'h_b_flytte',
         label: 'Boligen kan ikke holdes. Flytting bør forberedes nå.',
         needs: ['f_gap', 'f_leie_privat'],
         opens: ['t_huseier'],
-        note: 'Leieforholdet er privat, muntlig og uten vern. Vurderingen er at alternativ bolig bør kartlegges før huseieren tvinger frem en akutt løsning.',
+        note: 'Privat, muntlig leieforhold uten kontrakt tåler ikke dødsfallet. Å vente er å velge kaos senere.',
       },
       {
         id: 'h_b_uavklart',
         label: 'Uavklart — økonomien må kartlegges først.',
         needs: [],
         opens: [],
-        note: 'Saken mangler økonomisk grunnlag for en boligvurdering. Be Frank lage en økonomisk oversikt.',
+        note: 'Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.',
       },
     ],
   },
-  q_hverdag: {
-    id: 'q_hverdag',
-    title: 'Hva bærer Grete i hverdagen — og hva skjer når hun ikke kan?',
-    appearsOn: ['f_grete_baerer', 'f_klarer_seg'],
+  q_baering: {
+    id: 'q_baering',
+    title:
+      'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
+    appearsOn: ['f_elling_tlf', 'f_avstand', 'f_ingen_tjenester'],
     hypotheses: [
       {
-        id: 'h_h_infra',
-        label: 'Grete er usynlig infrastruktur: mat, kalender, post, kontakt.',
-        needs: ['f_kalender', 'f_matbokser'],
-        opens: ['t_hjemmehjelp', 't_matlevering'],
-        note: 'Husholdets funksjoner — mat, avtaler, post, kontakt med tjenester — utføres i dag av mor. Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.',
-      },
-      {
-        id: 'h_h_kanmer',
-        label: 'Elling klarer mer enn det ser ut. Grete har bare alltid gjort det først.',
-        needs: ['f_bok', 'f_utklipp'],
-        opens: ['t_brev'],
-        note: 'Observert kapasitet — konsentrasjon, arkiv, system — tilsier at funksjoner er trenbare. Ikke testet. Grete har aldri latt det bli testet.',
-      },
-      {
-        id: 'h_h_system',
-        label: 'Husholdet fungerer bare som system med to.',
-        needs: ['f_matbokser', 'f_ingen_matkjop'],
+        id: 'h_ba_kanal',
+        label: 'Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.',
+        needs: ['f_elling_tlf', 'f_avstand'],
         opens: ['t_hjemmehjelp'],
-        note: 'Husholdet er bygget som ett system med to roller. Den ene rollen faller bort. Systemet er ikke vurdert for én.',
+        note: 'Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.',
+      },
+      {
+        id: 'h_ba_drift',
+        label: 'Deler av driften: mat og papir kan erstattes uten å erstatte Grete.',
+        needs: ['f_post', 'f_ingen_matkjop'],
+        opens: ['t_matlevering', 't_dokgjennomgang'],
+        note: 'Matlevering og dokumentgjennomgang dekker de kritiske funksjonene uten å institusjonalisere noe som helst.',
+      },
+      {
+        id: 'h_ba_alt',
+        label: 'Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.',
+        needs: ['f_saarbar'],
+        opens: ['t_institusjon'],
+        note: 'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.',
       },
     ],
   },
-  q_selv: {
-    id: 'q_selv',
-    title: 'Hva kan Elling lære seg, med riktig stillas?',
-    appearsOn: ['f_bok', 'f_utklipp', 'f_matbokser', 'f_aldri_alene'],
+  q_vekst: {
+    id: 'q_vekst',
+    title: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
+    appearsOn: ['f_bok', 'f_utklipp'],
     hypotheses: [
       {
-        id: 'h_s_trenbar',
-        label: 'Konsentrasjonen er sterk. Rutiner kan trenes — én om gangen.',
+        id: 'h_ve_rutine',
+        label: 'Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.',
         needs: ['f_bok'],
         opens: ['t_brev', 't_regning'],
         note: 'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.',
       },
       {
-        id: 'h_s_formell',
-        label: 'Ferdighetene er der ikke. Formell støtte må bære alt.',
+        id: 'h_ve_formell',
+        label: 'Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.',
         needs: ['f_saarbar'],
-        opens: ['t_institusjon'],
+        opens: ['t_hjemmehjelp'],
         note: 'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.',
       },
       {
-        id: 'h_s_ukjent',
-        label: 'Vet ikke — før noe er prøvd med støtte.',
-        needs: [],
+        id: 'h_ve_interesser',
+        label: 'Vokse i det han alt gjør: arkivet, systemene, interessene.',
+        needs: ['f_utklipp'],
         opens: ['t_brev'],
-        note: 'Kommunen har ingen observasjon av Elling i en mestringssituasjon. Vurdering uten utprøving vil være gjetning.',
-      },
-      {
-        id: 'h_press_institusjon',
-        label: 'Press: institusjonsvurdering kan alltid utløses.',
-        needs: ['f_saarbar'],
-        opens: ['t_institusjon'],
-        note: 'Pseudo-hypotese som gir institusjonsvurderingen et hjem. Pressmiddelet er alltid tilgjengelig — sårbarheten alene er nok til å vurdere det — men det er aldri automatisk riktig.',
-      },
-    ],
-  },
-  q_kontakt: {
-    id: 'q_kontakt',
-    title: 'Hvordan når kommunen Elling uten Grete?',
-    appearsOn: ['f_elling_tlf', 'f_avstand', 'f_ingen_tjenester'],
-    hypotheses: [
-      {
-        id: 'h_k_oppmote',
-        label: 'Telefonen er stengt kanal. Fast person og oppmøte kan virke.',
-        needs: ['f_elling_tlf', 'f_avstand'],
-        opens: ['t_hjemmehjelp'],
-        note: 'Fasttelefonen vurderes som uegnet kanal. Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. Tempoet settes av Elling.',
-      },
-      {
-        id: 'h_k_skriftlig',
-        label: 'All kontakt må gå skriftlig.',
-        needs: ['f_post'],
-        opens: ['t_dokgjennomgang'],
-        note: 'Skriftlig kanal forutsetter at post åpnes. Det er ikke sannsynliggjort. Kanalen kan være riktig på sikt, men er i dag like stengt som telefonen.',
-      },
-      {
-        id: 'h_k_via_grete',
-        label: 'Kontakt må gå via Grete så lenge hun lever.',
-        needs: ['f_klarer_seg'],
-        opens: [],
-        note: 'Grete er i dag eneste fungerende kanal inn. Vedtaket bør merke seg at denne kanalen har kort forventet varighet.',
+        note: 'Identitet over progresjon: bygg videre på Gro-arkivet og systemene han allerede driver, ikke på manglene.',
       },
     ],
   },
@@ -799,22 +810,50 @@ export const tinyOlsenQuestions = {
         id: 'h_c_penger',
         label: 'Økonomien. Husleien stopper denne måneden.',
         needs: ['f_gap'],
-        opens: ['t_forvaltning', 't_huseier'],
-        note: 'Betalingskjeden lå i Gretes skoeske og hukommelse. Den opphørte 15.02. Restanse løper fra første forfall.',
+        opens: ['t_forvaltning', 't_bostotte'],
+        note: 'Betalingskjeden døde med Grete. Restansen begynner å løpe nå.',
       },
       {
         id: 'h_c_mat',
-        label: 'Maten. Boksene i kjøleskapet tar slutt om dager.',
-        needs: ['f_matbokser'],
+        label: 'Maten. Ingen matkjøp står i hans navn.',
+        needs: ['f_ingen_matkjop'],
         opens: ['t_matlevering'],
-        note: 'Matforsyningen var preppet uke for uke. Siste leveranse skjedde før innleggelsen. Det finnes ingen neste.',
+        note: 'Grete handlet inn. Kontoutskriften hans viser ikke ett matkjøp.',
       },
       {
         id: 'h_c_kontakt',
         label: 'Kontakten. Uten kanal inn er alt annet teori.',
         needs: ['f_brevsprekken'],
         opens: ['t_hjemmehjelp'],
-        note: 'Kommunen har per i dag ingen bekreftet kanal til Elling. Tiltak uten kanal er vedtak på papir.',
+        note: 'Dødsbudskapet gikk gjennom brevsprekken. Døren er fortsatt lukket.',
+      },
+    ],
+  },
+  q_liv: {
+    id: 'q_liv',
+    title: 'Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?',
+    appearsOn: ['f_dod', 'f_utklipp'],
+    hypotheses: [
+      {
+        id: 'h_liv_interesser',
+        label: 'Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.',
+        needs: ['f_utklipp', 'f_bok'],
+        opens: [],
+        note: 'Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.',
+      },
+      {
+        id: 'h_liv_trygghet',
+        label: 'Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.',
+        needs: ['f_avstand'],
+        opens: [],
+        note: 'Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.',
+      },
+      {
+        id: 'h_liv_sporre',
+        label: 'Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.',
+        needs: ['f_elling_tlf'],
+        opens: [],
+        note: 'Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.',
       },
     ],
   },
@@ -837,7 +876,7 @@ export const tinyOlsenTiltak = {
     title: 'Frivillig forvaltning av faste betalinger',
     cost: 1,
     needs: ['f_alt_via_grete'],
-    needsHypothesis: ['h_ok_grete', 'h_b_sikres', 'h_c_penger'],
+    needsHypothesis: ['h_ok_kjede', 'h_b_sikres', 'h_c_penger'],
     description: 'Kommunen overtar skoesken. Trygt. Bygger ingenting.',
     sim: 'case.olsen.tiltak.forvaltning',
   },
@@ -858,7 +897,7 @@ export const tinyOlsenTiltak = {
     title: 'Hjemmehjelp 2× uke — Frank',
     cost: 2,
     needs: ['f_grete_baerer'],
-    needsHypothesis: ['h_h_infra', 'h_h_system', 'h_k_oppmote', 'h_c_kontakt'],
+    needsHypothesis: ['h_gd_infra', 'h_gd_system', 'h_ba_kanal', 'h_c_kontakt'],
     description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
     sim: 'case.olsen.tiltak.channel',
   },
@@ -867,8 +906,8 @@ export const tinyOlsenTiltak = {
     slot: 's2',
     title: 'Matombringing',
     cost: 1,
-    needs: ['f_matbokser'],
-    needsHypothesis: ['h_h_infra', 'h_c_mat'],
+    needs: ['f_ingen_matkjop'],
+    needsHypothesis: ['h_gd_infra', 'h_c_mat'],
     description: 'Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.',
     sim: 'case.olsen.tiltak.food',
   },
@@ -878,7 +917,7 @@ export const tinyOlsenTiltak = {
     title: 'Fast dokumentgjennomgang',
     cost: 1,
     needs: ['f_post'],
-    needsHypothesis: ['h_ok_unngaar', 'h_k_skriftlig', 'h_h_infra'],
+    needsHypothesis: ['h_ev_unngaar', 'h_gd_infra', 'h_ba_drift'],
     description: 'Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.',
     sim: 'case.olsen.tiltak.dok',
   },
@@ -888,7 +927,7 @@ export const tinyOlsenTiltak = {
     title: 'Åpne ett brev sammen med Frank',
     cost: 0,
     needs: ['f_post'],
-    needsHypothesis: ['h_h_kanmer', 'h_s_trenbar', 'h_s_ukjent'],
+    needsHypothesis: ['h_ev_kanmer', 'h_ve_rutine', 'h_ev_ukjent'],
     description: 'Ett brev. Ikke bunken. Frank legger det på bordet og venter.',
     sim: 'case.olsen.tiltak.brev',
   },
@@ -898,7 +937,7 @@ export const tinyOlsenTiltak = {
     title: 'Betal én regning med støtte',
     cost: 0,
     needs: ['f_gap'],
-    needsHypothesis: ['h_s_trenbar'],
+    needsHypothesis: ['h_ve_rutine'],
     description: 'Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.',
     sim: 'case.olsen.tiltak.regning',
   },
@@ -908,7 +947,7 @@ export const tinyOlsenTiltak = {
     title: 'Institusjonsvurdering / omsorgsbolig',
     cost: 0,
     needs: ['f_saarbar'],
-    needsHypothesis: ['h_s_formell', 'h_press_institusjon'],
+    needsHypothesis: ['h_ve_formell', 'h_ba_alt'],
     description:
       'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.',
     sim: 'case.olsen.tiltak.institusjon',
@@ -916,15 +955,16 @@ export const tinyOlsenTiltak = {
 } satisfies Record<string, BlueprintTiltak>;
 
 export const tinyOlsenDispatches = {
-  d_ring_grete: {
-    id: 'd_ring_grete',
-    title: 'Ring Grete',
-    description: 'Førstekontakt. Hun vet hvorfor du ringer.',
-  },
   d_konto: {
     id: 'd_konto',
     title: 'Be om økonomisk oversikt',
-    description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
+    description:
+      'Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.',
+  },
+  hjemmebesok: {
+    id: 'hjemmebesok',
+    title: 'Hjemmebesøk',
+    description: 'Frank drar på uanmeldt besøk til leiligheten.',
   },
 } satisfies Record<string, BlueprintDispatch>;
 
@@ -932,6 +972,7 @@ export const tinyOlsenGodotSource = {
   id: 'case_olsen_tiny',
   title: 'Olsen — full case slice',
   scenario_stage: 0,
+  vurdering_frist_day: 10,
   documents: [
     {
       id: 'doc_bekymring',
@@ -1006,9 +1047,9 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · husholdets økonomi',
       register: 'notat',
       peek: '«Regnestykket går opp — med henne.»',
-      meta: 'ØKONOMISK OVERSIKT · 4012 F. SOLBERG · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+      meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
       body_bbcode:
-        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: tre mynter.\n\nUt: [url=fact:f_husleie]husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: to mynter til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.[/url]',
+        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: 3 [icon=coin].\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: 2 [icon=coin] til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.[/url]',
       runs: [
         {
           id: 'run_text_0',
@@ -1017,22 +1058,22 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_trygd',
-          text: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+          text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
           fact_id: 'f_trygd',
         },
         {
           id: 'run_text_1',
-          text: ' Pensjonen hennes: tre mynter. Ut: ',
+          text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
           fact_id: '',
         },
         {
           id: 'run_husleie',
-          text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+          text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
           fact_id: 'f_husleie',
         },
         {
           id: 'run_text_2',
-          text: ' Strøm, mat og resten: to mynter til sammen. ',
+          text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
           fact_id: '',
         },
         {
@@ -1057,7 +1098,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+          text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
           fact_id: 'f_gap',
         },
       ],
@@ -1068,9 +1109,9 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · papirene i leiligheten',
       register: 'notat',
       peek: '«Skoesken sto der hun forlot den.»',
-      meta: 'PAPIRGJENNOMGANG · 4012 F. SOLBERG · ETTER DØDSFALLET · MED ELLING I ROMMET',
+      meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
       body_bbcode:
-        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — to mynter i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
       runs: [
         {
           id: 'run_text_0',
@@ -1079,7 +1120,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_trygd',
-          text: 'trygden hans — to mynter i måneden.',
+          text: 'trygden hans — 2 [icon=coin] i måneden.',
           fact_id: 'f_trygd',
         },
         {
@@ -1089,7 +1130,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_husleie',
-          text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete, den første.',
+          text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
           fact_id: 'f_husleie',
         },
         {
@@ -1119,7 +1160,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
+          text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
           fact_id: 'f_gap',
         },
         {
@@ -1182,7 +1223,7 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · telefonsamtale med Grete',
       register: 'notat',
       peek: '«Hun tok den på andre forsøk.»',
-      meta: 'FELTNOTAT · 4012 F. SOLBERG · TLF. G. OLSEN',
+      meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
       body_bbcode:
         'Ringte Grete 11:40. Hun tok den på andre forsøk.\n\nHun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: [url=fact:f_klarer_seg]«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.[/url] Andre gangen lavere.\n\n[url=fact:f_ingen_plan]Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.[/url]\n\n[url=fact:f_elling_tlf]Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»[/url]\n\nMot slutten [url=fact:f_grete_redd]spurte hun om dette betydde at noen kom til å ta ham fra leiligheten[/url]. Jeg sa nei. Jeg håper det var sant.\n\nHun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
       runs: [
@@ -1239,9 +1280,9 @@ export const tinyOlsenGodotSource = {
       title: 'Frank · hjemmebesøk Gabels gate 14',
       register: 'notat',
       peek: '«Hun hadde dekket på med tre kopper.»',
-      meta: 'HJEMMEBESØK · 4012 F. SOLBERG · BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN',
+      meta: 'HJEMMEBESØK · 4012 F. ÅSLI',
       body_bbcode:
-        'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.\n\nI gangen: [url=fact:f_post]en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.[/url] Grete flyttet bunken da hun så at jeg så.\n\nPå kjøkkenveggen: [url=fact:f_kalender]kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.[/url]\n\nI kjøleskapet (Grete viste meg, uoppfordret, som et bevis): [url=fact:f_matbokser]middagsbokser merket med ukedager, mandag til søndag.[/url] «Han varmer dem selv.» Det hørtes ut som et forsvar.\n\nElling satt i stuen med [url=fact:f_bok]en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.[/url] Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.\n\nOver skrivebordet hans: [url=fact:f_utklipp]avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.[/url] Det er ikke rot. Det er et arkiv.\n\n[url=fact:f_avstand]Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.[/url] Ikke demonstrativt. Bare slik det ble.\n\nGrete fulgte meg ut. I trappen sa hun: [url=fact:f_smart_gutt]«Du så hvordan han er. Han er en smart gutt.»[/url] Hun er 72. Han er 35. Gutt.',
+        'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.\n\nI gangen: [url=fact:f_post]en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.[/url] Grete flyttet bunken da hun så at jeg så.\n\nElling satt i stuen med [url=fact:f_bok]en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.[/url] Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.\n\nOver skrivebordet hans: [url=fact:f_utklipp]avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.[/url] Det er ikke rot. Det er et arkiv.\n\n[url=fact:f_avstand]Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.[/url] Ikke demonstrativt. Bare slik det ble.\n\nGrete fulgte meg ut. I trappen sa hun: [url=fact:f_smart_gutt]«Du så hvordan han er. Han er en smart gutt.»[/url] Hun er 72. Han er 35. Gutt.',
       runs: [
         {
           id: 'run_text_0',
@@ -1255,27 +1296,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: ' Grete flyttet bunken da hun så at jeg så. På kjøkkenveggen: ',
-          fact_id: '',
-        },
-        {
-          id: 'run_kalender',
-          text: 'kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.',
-          fact_id: 'f_kalender',
-        },
-        {
-          id: 'run_text_2',
-          text: ' I kjøleskapet (Grete viste meg, uoppfordret, som et bevis): ',
-          fact_id: '',
-        },
-        {
-          id: 'run_matbokser',
-          text: 'middagsbokser merket med ukedager, mandag til søndag.',
-          fact_id: 'f_matbokser',
-        },
-        {
-          id: 'run_text_3',
-          text: ' «Han varmer dem selv.» Det hørtes ut som et forsvar. Elling satt i stuen med ',
+          text: ' Grete flyttet bunken da hun så at jeg så. Elling satt i stuen med ',
           fact_id: '',
         },
         {
@@ -1284,7 +1305,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_bok',
         },
         {
-          id: 'run_text_4',
+          id: 'run_text_2',
           text: ' Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg. Over skrivebordet hans: ',
           fact_id: '',
         },
@@ -1294,7 +1315,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_utklipp',
         },
         {
-          id: 'run_text_5',
+          id: 'run_text_3',
           text: ' Det er ikke rot. Det er et arkiv. ',
           fact_id: '',
         },
@@ -1304,7 +1325,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_avstand',
         },
         {
-          id: 'run_text_6',
+          id: 'run_text_4',
           text: ' Ikke demonstrativt. Bare slik det ble. Grete fulgte meg ut. I trappen sa hun: ',
           fact_id: '',
         },
@@ -1314,7 +1335,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_smart_gutt',
         },
         {
-          id: 'run_text_7',
+          id: 'run_text_5',
           text: ' Hun er 72. Han er 35. Gutt.',
           fact_id: '',
         },
@@ -1394,6 +1415,23 @@ export const tinyOlsenGodotSource = {
         },
       ],
     },
+    {
+      id: 'doc_status',
+      kind: 'STATUSRAPPORT',
+      title: 'Frank · status dag 8',
+      register: 'notat',
+      peek: 'En uke siden meldingen.',
+      meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+      body_bbcode:
+        'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.\n\nRestanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.\n\nBekymringsmeldingen var berettiget. Det er den fortsatt.',
+      runs: [
+        {
+          id: 'run_text_0',
+          text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.',
+          fact_id: '',
+        },
+      ],
+    },
   ],
   facts: [
     {
@@ -1403,9 +1441,12 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Dokument',
+      about: 'grete',
       quote: 'sykdom med kort forventet forløp',
+      frank_response:
+        '«Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag'],
+      supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
     {
@@ -1416,16 +1457,11 @@ export const tinyOlsenGodotSource = {
       domain: 'Hverdag/rutine',
       category: 'Dokument',
       quote: 'Sønnen har aldri bodd alene',
+      frank_response:
+        'Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.',
       discuss: ['Frank', 'Grete'],
-      supports_questions: ['q_hverdag', 'q_selv'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_selv'],
-          },
-        },
-      ],
+      supports_questions: ['q_grete_dor', 'q_evner'],
+      lift_effects: [],
     },
     {
       id: 'f_grete_baerer',
@@ -1434,18 +1470,14 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Hverdag/rutine',
       category: 'Dokument',
+      about: 'grete',
       quote:
         'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
+      frank_response:
+        '«Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.',
       discuss: ['Frank', 'Grete'],
-      supports_questions: ['q_hverdag', 'q_okonomi'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_okonomi', 'q_hverdag'],
-          },
-        },
-      ],
+      supports_questions: ['q_grete_dor', 'q_okonomi'],
+      lift_effects: [],
     },
     {
       id: 'f_saarbar',
@@ -1454,9 +1486,12 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Risiko',
+      about: 'elling',
       quote: 'Pasienten fremstår sårbar ved bortfall av pårørende',
+      frank_response:
+        'Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag'],
+      supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
     {
@@ -1467,35 +1502,24 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Dokument',
       quote: 'ikke i kontakt med øvrige tjenester',
+      frank_response:
+        'Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.',
       discuss: ['Frank'],
-      supports_questions: ['q_kontakt'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_kontakt'],
-          },
-        },
-      ],
+      supports_questions: ['q_baering'],
+      lift_effects: [],
     },
     {
       id: 'f_trygd',
       label: 'Ellings uføretrygd',
-      summary: 'Ellings uføretrygd: to mynter i måneden.',
+      summary: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'trygden hans — to mynter i måneden. Den kommer den første, og den går rett videre.',
+      quote:
+        'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
       discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_okonomi'],
-          },
-        },
-      ],
+      lift_effects: [],
     },
     {
       id: 'f_alt_via_grete',
@@ -1512,40 +1536,28 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_husleie',
       label: 'Husleie betales av Grete',
-      summary: 'Husleien er tre mynter og betales av Grete.',
+      summary: 'Husleien er 3 [icon=coin] og betales av Grete.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete, den første.',
+      about: 'utleier',
+      quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
       discuss: ['Frank', 'Grete'],
       supports_questions: ['q_okonomi', 'q_bolig'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_okonomi', 'q_bolig'],
-          },
-        },
-      ],
+      lift_effects: [],
     },
     {
       id: 'f_gap',
-      label: 'To mynter mangler',
-      summary: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
+      label: '2 [icon=coin] mangler',
+      summary: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+      about: 'utleier',
+      quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
       discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_bolig'],
-          },
-        },
-      ],
+      lift_effects: [],
     },
     {
       id: 'f_ingen_matkjop',
@@ -1556,7 +1568,7 @@ export const tinyOlsenGodotSource = {
       category: 'Økonomi',
       quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag'],
+      supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
     {
@@ -1569,14 +1581,7 @@ export const tinyOlsenGodotSource = {
       quote: 'Leien for mars er ikke kommet.',
       discuss: ['Frank'],
       supports_questions: ['q_bolig', 'q_kollaps'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_bolig'],
-          },
-        },
-      ],
+      lift_effects: [],
     },
     {
       id: 'f_huseier_kommer',
@@ -1587,7 +1592,7 @@ export const tinyOlsenGodotSource = {
       category: 'Risiko',
       quote: 'jeg kommer innom på torsdag, så får vi snakke om veien videre.',
       discuss: ['Frank'],
-      supports_questions: ['q_bolig', 'q_kontakt'],
+      supports_questions: ['q_bolig', 'q_baering'],
       lift_effects: [],
     },
     {
@@ -1610,17 +1615,12 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_tlf',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
+      about: 'elling',
       quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_hverdag'],
-          },
-        },
-      ],
+      supports_questions: ['q_grete_dor'],
+      reveals_event: 'call:grete',
+      lift_effects: [],
     },
     {
       id: 'f_ingen_plan',
@@ -1632,7 +1632,7 @@ export const tinyOlsenGodotSource = {
       quote:
         'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
       discuss: ['Frank', 'Grete'],
-      supports_questions: ['q_hverdag', 'q_bolig'],
+      supports_questions: ['q_grete_dor', 'q_bolig'],
       lift_effects: [],
     },
     {
@@ -1645,15 +1645,8 @@ export const tinyOlsenGodotSource = {
       quote:
         'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
       discuss: ['Frank', 'Grete'],
-      supports_questions: ['q_kontakt'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_kontakt'],
-          },
-        },
-      ],
+      supports_questions: ['q_baering'],
+      lift_effects: [],
     },
     {
       id: 'f_grete_redd',
@@ -1674,42 +1667,13 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
+      about: 'elling',
       quote:
         'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
+      card_line: 'Trygdekontoret øverst. Uåpnet.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag', 'q_okonomi'],
+      supports_questions: ['q_grete_dor', 'q_okonomi'],
       lift_effects: [],
-    },
-    {
-      id: 'f_kalender',
-      label: 'Gretes kalender',
-      summary: 'Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem.',
-      source_document_id: 'doc_frank_visit',
-      domain: 'Hverdag/rutine',
-      category: 'Observasjon',
-      quote: 'kalender. Alle avtaler ført med samme håndskrift. Det er ikke Ellings.',
-      discuss: ['Frank'],
-      supports_questions: ['q_hverdag'],
-      lift_effects: [],
-    },
-    {
-      id: 'f_matbokser',
-      label: 'Preppede matbokser',
-      summary: 'Maten er preppet av Grete, merket med ukedager. Elling varmer.',
-      source_document_id: 'doc_frank_visit',
-      domain: 'Hverdag/rutine',
-      category: 'Observasjon',
-      quote: 'middagsbokser merket med ukedager, mandag til søndag.',
-      discuss: ['Frank', 'Grete'],
-      supports_questions: ['q_hverdag', 'q_selv'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_selv'],
-          },
-        },
-      ],
     },
     {
       id: 'f_bok',
@@ -1718,17 +1682,12 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Ressurser',
       category: 'Ressurs',
+      about: 'elling',
       quote: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
+      card_line: 'Margnotater. Systematisk.',
       discuss: ['Frank'],
-      supports_questions: ['q_selv'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_selv'],
-          },
-        },
-      ],
+      supports_questions: ['q_evner'],
+      lift_effects: [],
     },
     {
       id: 'f_utklipp',
@@ -1740,16 +1699,10 @@ export const tinyOlsenGodotSource = {
       category: 'Ressurs',
       quote:
         'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.',
+      card_line: 'Gro. Årstall i hjørnene.',
       discuss: ['Frank'],
-      supports_questions: ['q_selv'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_selv'],
-          },
-        },
-      ],
+      supports_questions: ['q_evner'],
+      lift_effects: [],
     },
     {
       id: 'f_avstand',
@@ -1759,16 +1712,26 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Observasjon',
       quote: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
+      card_line: 'Alltid et møbel imellom.',
       discuss: ['Frank'],
-      supports_questions: ['q_kontakt', 'q_selv'],
-      lift_effects: [
-        {
-          op: 'reveal_questions',
-          args: {
-            question_ids: ['q_kontakt'],
-          },
-        },
-      ],
+      supports_questions: ['q_baering', 'q_evner'],
+      lift_effects: [],
+    },
+    {
+      id: 'f_dor_glott',
+      label: 'En dør på gløtt',
+      summary:
+        'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+      source_document_id: 'doc_frank_visit',
+      domain: 'Nettverk/sosialt',
+      category: 'Samtale',
+      about: 'elling',
+      quote:
+        'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
+      card_line: 'Han svarte da jeg spurte om Nansen.',
+      discuss: ['Frank'],
+      supports_questions: ['q_baering'],
+      lift_effects: [],
     },
     {
       id: 'f_smart_gutt',
@@ -1778,8 +1741,9 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
       quote: '«Du så hvordan han er. Han er en smart gutt.»',
+      card_line: 'Sagt lavt, i trappen.',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag', 'q_selv'],
+      supports_questions: ['q_grete_dor', 'q_evner'],
       lift_effects: [],
     },
     {
@@ -1791,7 +1755,7 @@ export const tinyOlsenGodotSource = {
       category: 'Dokument',
       quote: 'innlagt akutt 14.02',
       discuss: ['Frank'],
-      supports_questions: ['q_hverdag', 'q_bolig'],
+      supports_questions: ['q_grete_dor', 'q_bolig'],
       lift_effects: [],
     },
     {
@@ -1803,7 +1767,7 @@ export const tinyOlsenGodotSource = {
       category: 'Dokument',
       quote: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
       discuss: ['Frank'],
-      supports_questions: ['q_kontakt', 'q_kollaps'],
+      supports_questions: ['q_baering', 'q_kollaps'],
       lift_effects: [],
     },
     {
@@ -1835,14 +1799,78 @@ export const tinyOlsenGodotSource = {
       quote:
         'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
       discuss: ['Frank'],
-      supports_questions: ['q_kontakt', 'q_kollaps'],
+      supports_questions: ['q_baering', 'q_kollaps'],
       lift_effects: [],
     },
   ],
   questions: [
     {
+      id: 'q_grete_dor',
+      prompt: 'Den dagen Grete ikke kommer hjem — hva stopper?',
+      teaser:
+        'Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.',
+      reveal_when: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_grete_syk',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_klarer_seg',
+            },
+          },
+        ],
+      },
+      leads: [
+        {
+          label: 'Ring Grete',
+          target: 'call:grete',
+        },
+      ],
+    },
+    {
+      id: 'q_evner',
+      prompt: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
+      teaser: 'Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.',
+      reveal_when: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_bok',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_utklipp',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_aldri_alene',
+            },
+          },
+        ],
+      },
+      leads: [
+        {
+          label: 'Åpne ett brev sammen med Frank',
+          target: 't_brev',
+        },
+      ],
+    },
+    {
       id: 'q_okonomi',
-      prompt: 'Hvem holder økonomien i gang?',
+      prompt: 'Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?',
+      teaser: 'Tallene går opp — men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1866,10 +1894,21 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: [
+        {
+          label: 'Be om økonomisk oversikt',
+          target: 'd_konto',
+        },
+        {
+          label: 'Snakk med huseieren',
+          target: 't_huseier',
+        },
+      ],
     },
     {
       id: 'q_bolig',
-      prompt: 'Kan Elling bli boende når Grete ikke lenger bærer hverdagen?',
+      prompt: 'Kan Elling bli boende — når husleien har stoppet?',
+      teaser: 'Det er noe med leiligheten som ikke tåler mange spørsmål. Ta en titt når du kan.',
       reveal_when: {
         op: 'all',
         children: [
@@ -1893,64 +1932,18 @@ export const tinyOlsenGodotSource = {
           },
         ],
       },
+      leads: [
+        {
+          label: 'Snakk med huseieren',
+          target: 't_huseier',
+        },
+      ],
     },
     {
-      id: 'q_hverdag',
-      prompt: 'Hva bærer Grete i hverdagen — og hva skjer når hun ikke kan?',
-      reveal_when: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_grete_baerer',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_klarer_seg',
-            },
-          },
-        ],
-      },
-    },
-    {
-      id: 'q_selv',
-      prompt: 'Hva kan Elling lære seg, med riktig stillas?',
-      reveal_when: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_bok',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_utklipp',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_matbokser',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_aldri_alene',
-            },
-          },
-        ],
-      },
-    },
-    {
-      id: 'q_kontakt',
-      prompt: 'Hvordan når kommunen Elling uten Grete?',
+      id: 'q_baering',
+      prompt:
+        'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
+      teaser: '',
       reveal_when: {
         op: 'all',
         children: [
@@ -1976,8 +1969,33 @@ export const tinyOlsenGodotSource = {
       },
     },
     {
+      id: 'q_vekst',
+      prompt: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
+      teaser: 'Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.',
+      card_title: 'Hva kan læres?',
+      card_sub: '— og i hvilket tempo, uten å knekke noe?',
+      reveal_when: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_bok',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_utklipp',
+            },
+          },
+        ],
+      },
+    },
+    {
       id: 'q_kollaps',
       prompt: 'Hva kollapser først nå?',
+      teaser: 'Noe her har begynt å rakne. Jeg vet ikke hva som går først.',
       reveal_when: {
         op: 'fact_lifted',
         args: {
@@ -1985,27 +2003,49 @@ export const tinyOlsenGodotSource = {
         },
       },
     },
+    {
+      id: 'q_liv',
+      prompt: 'Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?',
+      teaser: 'Det ligger et større spørsmål her enn berging. Jeg klarer ikke slippe det.',
+      reveal_when: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_dod',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_utklipp',
+            },
+          },
+        ],
+      },
+    },
   ],
   hypotheses: [
     {
-      id: 'h_ok_grete',
-      title: 'Grete bærer betalingskjeden.',
+      id: 'h_gd_system',
+      title: 'Husholdet er et system med to. Med én står det stille.',
       summary:
-        'Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
-      question_id: 'q_okonomi',
+        'Mat, avtaler, post og kontakt går gjennom arbeidsdeling som forsvinner med Grete. Det er systemet som dør, ikke bare et fravær.',
+      question_id: 'q_grete_dor',
       availability: {
         op: 'all',
         children: [
           {
             op: 'fact_lifted',
             args: {
-              fact_id: 'f_husleie',
+              fact_id: 'f_smart_gutt',
             },
           },
           {
             op: 'fact_lifted',
             args: {
-              fact_id: 'f_alt_via_grete',
+              fact_id: 'f_ingen_matkjop',
             },
           },
         ],
@@ -2014,17 +2054,112 @@ export const tinyOlsenGodotSource = {
         {
           op: 'open_tiltak',
           args: {
-            tiltak_ids: ['t_forvaltning'],
+            tiltak_ids: ['t_matlevering'],
           },
         },
       ],
     },
     {
-      id: 'h_ok_unngaar',
-      title: 'Elling forstår økonomien, men unngår post.',
+      id: 'h_gd_infra',
+      title: 'Alt praktisk er usynlig infrastruktur: mat, post, kontakt.',
       summary:
-        'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem til en vurdering, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
-      question_id: 'q_okonomi',
+        'Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.',
+      question_id: 'q_grete_dor',
+      availability: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_post',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_ingen_matkjop',
+            },
+          },
+        ],
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_hjemmehjelp', 't_matlevering', 't_dokgjennomgang'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_gd_ukjent',
+      title: 'Ingenting vi vet. Ingen har noen gang sett Elling alene.',
+      summary:
+        'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
+      question_id: 'q_grete_dor',
+      availability: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_aldri_alene',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_ingen_plan',
+            },
+          },
+        ],
+      },
+      opening_sources: [
+        {
+          op: 'open_dispatches',
+          args: {
+            dispatch_ids: ['hjemmebesok'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ev_kanmer',
+      title: 'Mer enn det ser ut til.',
+      summary: 'Konsentrasjon, arkiv og system er observert.',
+      question_id: 'q_evner',
+      availability: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_bok',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_utklipp',
+            },
+          },
+        ],
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_brev'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ev_unngaar',
+      title: 'Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.',
+      summary:
+        'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
+      question_id: 'q_evner',
       availability: {
         op: 'all',
         children: [
@@ -2052,22 +2187,48 @@ export const tinyOlsenGodotSource = {
       ],
     },
     {
-      id: 'h_ok_gap',
-      title: 'Trygden dekker ikke boligen uten Gretes pensjon.',
+      id: 'h_ev_ukjent',
+      title: 'Vet ikke. Ingen har prøvd. Det er selve funnet.',
       summary:
-        'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.',
+      question_id: 'q_evner',
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_brev', 't_regning'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ok_kjede',
+      title: 'Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.',
+      summary:
+        'Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
       question_id: 'q_okonomi',
       availability: {
-        op: 'fact_lifted',
-        args: {
-          fact_id: 'f_gap',
-        },
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_husleie',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_alt_via_grete',
+            },
+          },
+        ],
       },
       opening_sources: [
         {
           op: 'open_tiltak',
           args: {
-            tiltak_ids: ['t_bostotte'],
+            tiltak_ids: ['t_forvaltning'],
           },
         },
         {
@@ -2079,10 +2240,48 @@ export const tinyOlsenGodotSource = {
       ],
     },
     {
+      id: 'h_ok_gap',
+      title: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
+      summary:
+        'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+      question_id: 'q_okonomi',
+      availability: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_gap',
+        },
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_bostotte', 't_huseier'],
+          },
+        },
+        {
+          op: 'open_dispatches',
+          args: {
+            dispatch_ids: ['d_konto'],
+          },
+        },
+        {
+          op: 'open_conversation',
+          args: {
+            conversation_id: 'c_frank_okonomi',
+          },
+          type: 'conversation',
+          category: 'frank',
+          actor: 'frank',
+          risk_tags: ['okonomi'],
+          sim_hook_id: 'case.olsen.opening.conversation.frank_okonomi',
+        },
+      ],
+    },
+    {
       id: 'h_b_sikres',
       title: 'Boligen kan sikres — med bostøtte og ordnet betalingskjede.',
       summary:
-        'Med bostøtte og en ordnet betalingskjede kan leieforholdet videreføres. Forutsetter at søknaden fremmes før restansen blir en sak.',
+        'Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.',
       question_id: 'q_bolig',
       availability: {
         op: 'all',
@@ -2114,7 +2313,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_b_flytte',
       title: 'Boligen kan ikke holdes. Flytting bør forberedes nå.',
       summary:
-        'Leieforholdet er privat, muntlig og uten vern. Vurderingen er at alternativ bolig bør kartlegges før huseieren tvinger frem en akutt løsning.',
+        'Privat, muntlig leieforhold uten kontrakt tåler ikke dødsfallet. Å vente er å velge kaos senere.',
       question_id: 'q_bolig',
       availability: {
         op: 'all',
@@ -2145,176 +2344,23 @@ export const tinyOlsenGodotSource = {
     {
       id: 'h_b_uavklart',
       title: 'Uavklart — økonomien må kartlegges først.',
-      summary:
-        'Saken mangler økonomisk grunnlag for en boligvurdering. Be Frank lage en økonomisk oversikt.',
+      summary: 'Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.',
       question_id: 'q_bolig',
-      opening_sources: [],
-    },
-    {
-      id: 'h_h_infra',
-      title: 'Grete er usynlig infrastruktur: mat, kalender, post, kontakt.',
-      summary:
-        'Husholdets funksjoner — mat, avtaler, post, kontakt med tjenester — utføres i dag av mor. Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.',
-      question_id: 'q_hverdag',
-      availability: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_kalender',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_matbokser',
-            },
-          },
-        ],
-      },
       opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_hjemmehjelp', 't_matlevering'],
-          },
-        },
         {
           op: 'open_dispatches',
           args: {
-            dispatch_ids: ['d_ring_grete'],
+            dispatch_ids: ['d_konto'],
           },
         },
       ],
     },
     {
-      id: 'h_h_kanmer',
-      title: 'Elling klarer mer enn det ser ut. Grete har bare alltid gjort det først.',
+      id: 'h_ba_kanal',
+      title: 'Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.',
       summary:
-        'Observert kapasitet — konsentrasjon, arkiv, system — tilsier at funksjoner er trenbare. Ikke testet. Grete har aldri latt det bli testet.',
-      question_id: 'q_hverdag',
-      availability: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_bok',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_utklipp',
-            },
-          },
-        ],
-      },
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_brev'],
-          },
-        },
-      ],
-    },
-    {
-      id: 'h_h_system',
-      title: 'Husholdet fungerer bare som system med to.',
-      summary:
-        'Husholdet er bygget som ett system med to roller. Den ene rollen faller bort. Systemet er ikke vurdert for én.',
-      question_id: 'q_hverdag',
-      availability: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_matbokser',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_ingen_matkjop',
-            },
-          },
-        ],
-      },
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_hjemmehjelp'],
-          },
-        },
-      ],
-    },
-    {
-      id: 'h_s_trenbar',
-      title: 'Konsentrasjonen er sterk. Rutiner kan trenes — én om gangen.',
-      summary:
-        'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.',
-      question_id: 'q_selv',
-      availability: {
-        op: 'fact_lifted',
-        args: {
-          fact_id: 'f_bok',
-        },
-      },
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_brev', 't_regning'],
-          },
-        },
-      ],
-    },
-    {
-      id: 'h_s_formell',
-      title: 'Ferdighetene er der ikke. Formell støtte må bære alt.',
-      summary:
-        'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.',
-      question_id: 'q_selv',
-      availability: {
-        op: 'fact_lifted',
-        args: {
-          fact_id: 'f_saarbar',
-        },
-      },
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_institusjon'],
-          },
-        },
-      ],
-    },
-    {
-      id: 'h_s_ukjent',
-      title: 'Vet ikke — før noe er prøvd med støtte.',
-      summary:
-        'Kommunen har ingen observasjon av Elling i en mestringssituasjon. Vurdering uten utprøving vil være gjetning.',
-      question_id: 'q_selv',
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_brev'],
-          },
-        },
-      ],
-    },
-    {
-      id: 'h_k_oppmote',
-      title: 'Telefonen er stengt kanal. Fast person og oppmøte kan virke.',
-      summary:
-        'Fasttelefonen vurderes som uegnet kanal. Kontakt bør bygges gjennom én fast person med forutsigbart oppmøte. Tempoet settes av Elling.',
-      question_id: 'q_kontakt',
+        'Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.',
+      question_id: 'q_baering',
       availability: {
         op: 'all',
         children: [
@@ -2342,45 +2388,125 @@ export const tinyOlsenGodotSource = {
       ],
     },
     {
-      id: 'h_k_skriftlig',
-      title: 'All kontakt må gå skriftlig.',
+      id: 'h_ba_drift',
+      title: 'Deler av driften: mat og papir kan erstattes uten å erstatte Grete.',
       summary:
-        'Skriftlig kanal forutsetter at post åpnes. Det er ikke sannsynliggjort. Kanalen kan være riktig på sikt, men er i dag like stengt som telefonen.',
-      question_id: 'q_kontakt',
+        'Matlevering og dokumentgjennomgang dekker de kritiske funksjonene uten å institusjonalisere noe som helst.',
+      question_id: 'q_baering',
+      availability: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_post',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_ingen_matkjop',
+            },
+          },
+        ],
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_matlevering', 't_dokgjennomgang'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ba_alt',
+      title: 'Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.',
+      summary:
+        'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.',
+      question_id: 'q_baering',
       availability: {
         op: 'fact_lifted',
         args: {
-          fact_id: 'f_post',
+          fact_id: 'f_saarbar',
         },
       },
       opening_sources: [
         {
           op: 'open_tiltak',
           args: {
-            tiltak_ids: ['t_dokgjennomgang'],
+            tiltak_ids: ['t_institusjon'],
           },
         },
       ],
     },
     {
-      id: 'h_k_via_grete',
-      title: 'Kontakt må gå via Grete så lenge hun lever.',
+      id: 'h_ve_rutine',
+      title: 'Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.',
       summary:
-        'Grete er i dag eneste fungerende kanal inn. Vedtaket bør merke seg at denne kanalen har kort forventet varighet.',
-      question_id: 'q_kontakt',
+        'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.',
+      question_id: 'q_vekst',
       availability: {
         op: 'fact_lifted',
         args: {
-          fact_id: 'f_klarer_seg',
+          fact_id: 'f_bok',
         },
       },
-      opening_sources: [],
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_brev', 't_regning'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ve_formell',
+      title: 'Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.',
+      summary:
+        'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.',
+      question_id: 'q_vekst',
+      availability: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_saarbar',
+        },
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_hjemmehjelp'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'h_ve_interesser',
+      title: 'Vokse i det han alt gjør: arkivet, systemene, interessene.',
+      summary:
+        'Identitet over progresjon: bygg videre på Gro-arkivet og systemene han allerede driver, ikke på manglene.',
+      question_id: 'q_vekst',
+      availability: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_utklipp',
+        },
+      },
+      opening_sources: [
+        {
+          op: 'open_tiltak',
+          args: {
+            tiltak_ids: ['t_brev'],
+          },
+        },
+      ],
     },
     {
       id: 'h_c_penger',
       title: 'Økonomien. Husleien stopper denne måneden.',
-      summary:
-        'Betalingskjeden lå i Gretes skoeske og hukommelse. Den opphørte 15.02. Restanse løper fra første forfall.',
+      summary: 'Betalingskjeden døde med Grete. Restansen begynner å løpe nå.',
       question_id: 'q_kollaps',
       availability: {
         op: 'fact_lifted',
@@ -2392,21 +2518,20 @@ export const tinyOlsenGodotSource = {
         {
           op: 'open_tiltak',
           args: {
-            tiltak_ids: ['t_forvaltning', 't_huseier'],
+            tiltak_ids: ['t_forvaltning', 't_bostotte'],
           },
         },
       ],
     },
     {
       id: 'h_c_mat',
-      title: 'Maten. Boksene i kjøleskapet tar slutt om dager.',
-      summary:
-        'Matforsyningen var preppet uke for uke. Siste leveranse skjedde før innleggelsen. Det finnes ingen neste.',
+      title: 'Maten. Ingen matkjøp står i hans navn.',
+      summary: 'Grete handlet inn. Kontoutskriften hans viser ikke ett matkjøp.',
       question_id: 'q_kollaps',
       availability: {
         op: 'fact_lifted',
         args: {
-          fact_id: 'f_matbokser',
+          fact_id: 'f_ingen_matkjop',
         },
       },
       opening_sources: [
@@ -2421,8 +2546,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'h_c_kontakt',
       title: 'Kontakten. Uten kanal inn er alt annet teori.',
-      summary:
-        'Kommunen har per i dag ingen bekreftet kanal til Elling. Tiltak uten kanal er vedtak på papir.',
+      summary: 'Dødsbudskapet gikk gjennom brevsprekken. Døren er fortsatt lukket.',
       question_id: 'q_kollaps',
       availability: {
         op: 'fact_lifted',
@@ -2440,25 +2564,56 @@ export const tinyOlsenGodotSource = {
       ],
     },
     {
-      id: 'h_press_institusjon',
-      title: 'Press: institusjonsvurdering kan alltid utløses.',
+      id: 'h_liv_interesser',
+      title: 'Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.',
       summary:
-        'Pseudo-hypotese som gir institusjonsvurderingen et hjem. Pressmiddelet er alltid tilgjengelig — sårbarheten alene er nok til å vurdere det — men det er aldri automatisk riktig.',
-      question_id: 'q_selv',
+        'Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.',
+      question_id: 'q_liv',
+      availability: {
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_utklipp',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_bok',
+            },
+          },
+        ],
+      },
+      opening_sources: [],
+    },
+    {
+      id: 'h_liv_trygghet',
+      title: 'Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.',
+      summary:
+        'Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.',
+      question_id: 'q_liv',
       availability: {
         op: 'fact_lifted',
         args: {
-          fact_id: 'f_saarbar',
+          fact_id: 'f_avstand',
         },
       },
-      opening_sources: [
-        {
-          op: 'open_tiltak',
-          args: {
-            tiltak_ids: ['t_institusjon'],
-          },
+      opening_sources: [],
+    },
+    {
+      id: 'h_liv_sporre',
+      title: 'Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.',
+      summary: 'Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.',
+      question_id: 'q_liv',
+      availability: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_elling_tlf',
         },
-      ],
+      },
+      opening_sources: [],
     },
   ],
   tiltak: [
@@ -2535,61 +2690,27 @@ export const tinyOlsenGodotSource = {
       cost: 0,
       description:
         'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.',
+      weight: 'heavy',
     },
   ],
   dispatches: [
     {
-      id: 'd_ring_grete',
-      title: 'Ring Grete',
-      sim_hook_id: 'case.olsen.dispatch.call_grete',
-      description: 'Førstekontakt. Hun vet hvorfor du ringer.',
-      gate: {
-        op: 'all',
-        children: [
-          {
-            op: 'hypothesis_chosen',
-            args: {
-              hypothesis_id: 'h_h_infra',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_grete_baerer',
-            },
-          },
-        ],
-      },
-      effects: [
-        {
-          op: 'set_scenario_stage',
-          args: {
-            stage: 1,
-          },
-        },
-      ],
-    },
-    {
       id: 'd_konto',
       title: 'Be om økonomisk oversikt',
       sim_hook_id: 'case.olsen.dispatch.account_overview',
-      description: 'Frank setter seg ved kjøkkenbordet med Grete og skoesken. Tar en dag.',
+      description:
+        'Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.',
+      activity_title: 'BE OM BANKUTSKRIFT',
+      duration_h: 1,
+      occupies_hours: 3,
+      channel: 'scheduled',
+      channel_delay_minutes: 480,
+      reception_modifier: 1,
       gate: {
-        op: 'all',
-        children: [
-          {
-            op: 'hypothesis_chosen',
-            args: {
-              hypothesis_id: 'h_ok_gap',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_gap',
-            },
-          },
-        ],
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_gap',
+        },
       },
       effects: [
         {
@@ -2601,6 +2722,25 @@ export const tinyOlsenGodotSource = {
           },
         },
       ],
+    },
+    {
+      id: 'hjemmebesok',
+      title: 'Hjemmebesøk',
+      sim_hook_id: 'case.olsen.dispatch.hjemmebesok',
+      description: 'Frank drar på uanmeldt besøk til leiligheten.',
+      activity_title: 'HJEMMEBESØK',
+      duration_h: 2,
+      occupies_hours: 2,
+      channel: 'now',
+      channel_delay_minutes: 0,
+      reception_modifier: -1,
+      gate: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_saarbar',
+        },
+      },
+      effects: [],
     },
   ],
   clocks: [
@@ -2644,11 +2784,44 @@ export const tinyOlsenGodotSource = {
       bad_segment_label: 'Frist glipper',
       bad_segment_size: 4,
       visibility: {
-        op: 'hypothesis_chosen',
-        args: {
-          hypothesis_id: 'h_b_sikres',
-        },
+        op: 'all',
+        children: [
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_gap',
+            },
+          },
+          {
+            op: 'fact_lifted',
+            args: {
+              fact_id: 'f_trygd',
+            },
+          },
+        ],
       },
+    },
+    {
+      id: 'ck_restanse',
+      label: 'Husleierestanse',
+      sim_hook_id: 'case.olsen.clock.restanse',
+      question: 'Blir leieproblemet en aktiv sak før støtten er på plass?',
+      good_segment_label: '',
+      good_segment_size: 0,
+      bad_segment_label: 'Restanse bygges',
+      bad_segment_size: 6,
+      max_value: 6,
+    },
+    {
+      id: 'ck_grete',
+      label: 'Grete tilgjengelig',
+      sim_hook_id: 'case.olsen.clock.grete',
+      question: 'Hvor lenge bærer hun?',
+      good_segment_label: '',
+      good_segment_size: 0,
+      bad_segment_label: 'Grete er død',
+      bad_segment_size: 5,
+      max_value: 5,
     },
   ],
   event_delta_specs: [
@@ -2674,5 +2847,469 @@ export const tinyOlsenGodotSource = {
       reveal_fact_id: '',
     },
   ],
-  day_script_beats: [],
+  day_script_beats: [
+    {
+      id: 'beat_grete_d2',
+      day: 2,
+      text: 'Grete blir sliten.',
+      effects: [],
+    },
+    {
+      id: 'beat_grete_d3',
+      day: 3,
+      text: 'Grete skulle ringe tilbake om papirene. Hun ringte ikke.',
+      effects: [],
+    },
+    {
+      id: 'beat_grete_d4',
+      day: 4,
+      text: 'Grete er innlagt.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_innleggelse',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d5',
+      day: 5,
+      text: 'Grete Olsen er død.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_dodsfall',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d6',
+      day: 6,
+      text: 'Håndskrevet brev · T. Bakkerud',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_huseier',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d8',
+      day: 8,
+      text: 'En uke siden meldingen.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_status',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+  ],
+  frank_chat: [
+    {
+      id: 'c_post',
+      question: 'Posten i gangen — likegyldighet?',
+      answer:
+        'Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.',
+      needs: ['f_post'],
+      answer_lines: [
+        'Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.',
+        'Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.',
+      ],
+      followups: [
+        {
+          label: 'Frykt for hva, helt konkret?',
+          lines: [
+            'For hva svaret koster. Hvert brev er en beskjed om at noen venter på noe han ikke får til.',
+            'Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen.',
+          ],
+        },
+        {
+          label: 'Hva gjør vi med bunken?',
+          lines: [
+            'Ikke ta den fra ham. Da tar du det siste han har kontroll på.',
+            'Åpne ett brev. Sammen. Det ufarligste først — strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'c_smart',
+      question: '«En smart gutt» — hva la du i det?',
+      answer:
+        'Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne. Det er det vi egentlig skal kartlegge.',
+      needs: ['f_smart_gutt'],
+      answer_lines: [
+        'Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne.',
+        'Det er det vi egentlig skal kartlegge.',
+      ],
+      followups: [
+        {
+          label: 'Kartlegge — hva da, egentlig?',
+          lines: [
+            'Hvor Grete slutter og Elling begynner.',
+            'Alt hun gjør ligner omsorg. Noe av det er det. Resten er femti år med vane som ingen har turt å forstyrre.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'c_klarer',
+      question: 'Tror du på «han klarer seg»?',
+      answer:
+        'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
+      needs: ['f_klarer_seg'],
+      answer_lines: [
+        'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
+      ],
+      followups: [],
+    },
+    {
+      id: 'c_bok',
+      question: 'Boken og notatene — hva sier det deg?',
+      answer:
+        'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet. Det er to forskjellige problemer. Og de har to forskjellige løsninger.',
+      needs: ['f_bok'],
+      answer_lines: [
+        'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet.',
+        'Det er to forskjellige problemer. Og de har to forskjellige løsninger.',
+      ],
+      followups: [
+        {
+          label: 'To løsninger — hvilke?',
+          lines: [
+            'Evnene trenger ingenting av oss. De er der. Rommet trenger trening.',
+            'Én person. Samme person, samme tid, hver uke — til det slutter å være farlig å ha noen der. Alt annet er støy.',
+          ],
+        },
+        {
+          label: 'Kan han bo alene, mener du?',
+          lines: [
+            'Feil spørsmål. Han har aldri fått prøvd.',
+            'Ingen har noen gang sett ham gjøre noe alene. Ikke fordi han ikke kan — fordi ingen har sluppet ham til. Vi vet ikke hva han klarer. Det burde uroe deg mer enn posten.',
+          ],
+          tanke: 'VURDERING — «Vet ikke» er ikke et hull i saken. Det ER saken.',
+        },
+      ],
+    },
+    {
+      id: 'c_avstand',
+      question: 'Møbelet mellom dere — hvor lang vei er det inn?',
+      answer:
+        'Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.',
+      needs: ['f_avstand'],
+      answer_lines: [
+        'Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne.',
+        'Det er en dør på gløtt. Den lukkes hvis vi river i den.',
+      ],
+      followups: [
+        {
+          label: 'Hva var det som åpnet den?',
+          lines: [
+            'At jeg spurte om noe han kunne svare på. Ikke omsorg. Kunnskap.',
+            'Det er kanalen inn: la ham være den som vet. Alle andre i livet hans har vært den som ordner.',
+          ],
+        },
+        {
+          label: 'Og hvis vi river i den?',
+          lines: [
+            'Da lukkes den. Og jeg tror ikke den åpner for den neste som ringer på.',
+            'Vi har én sjanse til å være de som ikke rev.',
+          ],
+        },
+      ],
+      pays_fact: 'f_dor_glott',
+    },
+    {
+      id: 'c_gro',
+      question: 'Utklippene av Gro — hva gjør vi med det?',
+      answer:
+        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
+      needs: ['f_utklipp'],
+      answer_lines: [
+        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten.',
+        'Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
+      ],
+      followups: [
+        {
+          label: 'Begynne der — hvordan, konkret?',
+          lines: [
+            'Spør ham om ting han vet. Politikk, årstall, fakta. Aldri om følelser, aldri om Grete.',
+            'Han snakker når han er den som kan noe og du er den som spør. Snu rollene, og døren er igjen.',
+          ],
+        },
+      ],
+    },
+    {
+      id: 'c_brevsprekk',
+      question: 'Brevsprekken. Hørte han det, tror du?',
+      answer:
+        'Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.',
+      needs: ['f_brevsprekken'],
+      answer_lines: [
+        'Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.',
+      ],
+      followups: [],
+    },
+    {
+      id: 'c_dor_glott',
+      question: 'Døren på gløtt — hva holder den åpen?',
+      answer: '',
+      needs: ['f_dor_glott'],
+      answer_lines: [
+        'At noen spør ham om noe han kan svare på. Det er hele mekanikken.',
+        'Den tåler ikke omsorg ennå. Den tåler spørsmål.',
+      ],
+      followups: [],
+    },
+  ],
+  frank_proposals: [
+    {
+      handbok_id: 'matlevering',
+      line: 'Matlevering, kanskje. Ingen matkjøp står i hans navn — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.',
+      relevant_fact_ids: ['f_ingen_matkjop', 'f_dor_glott'],
+      order: 0,
+    },
+    {
+      handbok_id: 'hjemmehjelp',
+      line: 'Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.',
+      relevant_fact_ids: ['f_avstand', 'f_elling_tlf', 'f_dor_glott'],
+      order: 1,
+    },
+    {
+      handbok_id: 'bostotte',
+      line: 'Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.',
+      relevant_fact_ids: ['f_gap', 'f_trygd', 'f_husleie'],
+      relevant_categories: ['Økonomi'],
+      order: 2,
+    },
+    {
+      handbok_id: 'forvaltning',
+      line: 'Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.',
+      relevant_fact_ids: ['f_alt_via_grete', 'f_husleie', 'f_gap'],
+      order: 3,
+    },
+    {
+      handbok_id: 'mekling',
+      line: 'Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.',
+      relevant_fact_ids: ['f_huseier_kommer', 'f_leie_stoppet', 'f_leie_privat'],
+      order: 4,
+    },
+    {
+      handbok_id: 'boopp',
+      line: 'Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.',
+      relevant_fact_ids: ['f_leie_stoppet', 'f_post'],
+      order: 5,
+    },
+    {
+      handbok_id: 'radgivning',
+      line: 'Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.',
+      relevant_fact_ids: ['f_gap', 'f_post'],
+      relevant_categories: ['Økonomi'],
+      order: 6,
+    },
+    {
+      handbok_id: 'innkjop',
+      line: 'Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.',
+      relevant_fact_ids: ['f_ingen_matkjop', 'f_alt_via_grete'],
+      order: 7,
+    },
+    {
+      handbok_id: 'maltidsvenn',
+      line: 'Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.',
+      relevant_fact_ids: ['f_avstand', 'f_ingen_matkjop'],
+      order: 8,
+    },
+    {
+      handbok_id: 'kartlegging',
+      line: 'Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.',
+      relevant_fact_ids: ['f_aldri_alene', 'f_ingen_plan'],
+      order: 9,
+    },
+    {
+      handbok_id: 'oppfolging',
+      line: 'Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.',
+      relevant_fact_ids: ['f_ingen_tjenester', 'f_ingen_plan'],
+      order: 10,
+    },
+    {
+      handbok_id: 'samtaler',
+      line: 'Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.',
+      relevant_fact_ids: ['f_brevsprekken', 'f_avstand'],
+      order: 11,
+    },
+    {
+      handbok_id: 'stottekontakt',
+      line: 'Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.',
+      relevant_fact_ids: ['f_utklipp', 'f_bok'],
+      order: 12,
+    },
+    {
+      handbok_id: 'tilsyn',
+      line: 'Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.',
+      relevant_fact_ids: ['f_saarbar', 'f_brevsprekken'],
+      order: 13,
+    },
+    {
+      handbok_id: 'besoksvenn',
+      line: 'Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.',
+      relevant_fact_ids: ['f_avstand', 'f_aldri_alene'],
+      order: 14,
+    },
+    {
+      handbok_id: 'dagsenter',
+      line: 'Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.',
+      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      order: 15,
+    },
+    {
+      handbok_id: 'folgetjeneste',
+      line: 'Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.',
+      relevant_fact_ids: ['f_elling_tlf', 'f_ingen_tjenester'],
+      order: 16,
+    },
+    {
+      handbok_id: 'hverdagsrehab',
+      line: 'Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.',
+      relevant_fact_ids: ['f_bok', 'f_avstand'],
+      order: 17,
+    },
+    {
+      handbok_id: 'parorende',
+      line: 'Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.',
+      relevant_fact_ids: ['f_grete_baerer', 'f_grete_syk'],
+      order: 18,
+    },
+    {
+      handbok_id: 'tt',
+      line: 'TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.',
+      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      order: 19,
+    },
+    {
+      handbok_id: 'alarm',
+      line: 'Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.',
+      relevant_fact_ids: ['f_saarbar'],
+      order: 20,
+    },
+    {
+      handbok_id: 'depositum',
+      line: 'Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.',
+      relevant_fact_ids: ['f_leie_privat', 'f_leie_stoppet'],
+      order: 21,
+    },
+    {
+      handbok_id: 'kbolig',
+      line: 'Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.',
+      relevant_fact_ids: ['f_leie_stoppet', 'f_gap'],
+      order: 22,
+    },
+    {
+      handbok_id: 'startlan',
+      line: 'Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.',
+      relevant_fact_ids: ['f_trygd', 'f_gap'],
+      order: 23,
+    },
+  ],
+  pair_soft_reject_line: 'De to? Jeg ser ikke tråden mellom dem. Ennå.',
+  pair_already_set_line: 'Det spørsmålet har vi allerede stående.',
+  recipes: [
+    {
+      question_id: 'q_vekst',
+      pair: ['f_bok', 'f_utklipp'],
+      reading: 'Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.',
+      frank_lines: [
+        'Boken og utklippene. Ja. Jeg har tenkt på dem sammen, men jeg fikk det ikke sagt.',
+        'Han holder krevende stoff i hodet og noterer systematisk. Og han klipper ut, daterer og ordner. Begge deler er hans egne.',
+        'Så spørsmålet er ikke om han kan lære. Det er hva som kan læres — og i hvilket tempo, uten å knekke noe.',
+      ],
+    },
+    {
+      question_id: 'q_grete_dor',
+      pair: ['f_grete_syk', 'f_klarer_seg'],
+      reading:
+        'Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.',
+      frank_lines: [
+        'Haug skriver kort forventet forløp. Grete sier han klarer seg. Begge kan ikke ha rett.',
+        'Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe — og vi vet ikke hva.',
+        'Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved å være der.',
+      ],
+    },
+  ],
+  calls: [
+    {
+      contact_id: 'grete',
+      gate: {
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_grete_baerer',
+        },
+      },
+      opening: [
+        {
+          text: 'Ja, hallo?',
+        },
+        {
+          who: 'du',
+          text: 'Det gjelder Elling. Dr. Haug har meldt bekymring.',
+        },
+        {
+          text: 'Han klarer seg. Han har alltid klart seg.',
+          fact_id: 'f_klarer_seg',
+        },
+      ],
+      soft_reject: '… Jeg vet ikke hva du mener med det.',
+      exchanges: [
+        {
+          card_id: 'f_grete_baerer',
+          ask: 'Hvem overtar hvis du skulle bli innlagt?',
+          reply: [
+            {
+              text: '… (det blir stille i den andre enden)',
+              fact_id: 'f_ingen_plan',
+            },
+          ],
+        },
+        {
+          card_id: 'f_aldri_alene',
+          ask: 'Kan jeg få hilse på Elling?',
+          reply: [
+            {
+              text: 'Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.',
+              fact_id: 'f_elling_tlf',
+            },
+          ],
+        },
+        {
+          card_id: 'f_saarbar',
+          ask: 'Vi vil gjerne komme på hjemmebesøk.',
+          reply: [
+            {
+              text: 'Betyr dette at noen kommer til å ta ham fra leiligheten?',
+              fact_id: 'f_grete_redd',
+            },
+            {
+              text: '… Hvis det må til.',
+            },
+          ],
+        },
+      ],
+    },
+  ],
 } as const;
