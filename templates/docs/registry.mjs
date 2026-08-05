@@ -1,7 +1,8 @@
 // TASK-916 — Kind → template registry.
 //
-// GROUND TRUTH: exactly SIX distinct Kind: values across the 8 tiny-Olsen documents
-// (BEKYMRINGSMELDING, ØKONOMISK OVERSIKT, BREV, FELTNOTAT, RAPPORT, MELDING) plus
+// GROUND TRUTH: exactly SEVEN distinct Kind: values across the 9 tiny-Olsen documents
+// (BEKYMRINGSMELDING, ØKONOMISK OVERSIKT, BREV, FELTNOTAT, RAPPORT, MELDING,
+// STATUSRAPPORT — the last added by the SB-024 rewrite's doc_status) plus
 // ONE generated stationery kind (DAGSRAPPORT, gym-synthesized). PAPIRGJENNOMGANG is
 // NOT a kind — it is a vestigial doc_stock STOCK key / Meta sub-label on doc_papirer,
 // so it has no template here.
@@ -12,9 +13,10 @@ import * as brev from './kinds/brev.mjs';
 import * as feltnotat from './kinds/feltnotat.mjs';
 import * as rapport from './kinds/rapport.mjs';
 import * as melding from './kinds/melding.mjs';
+import * as statusrapport from './kinds/statusrapport.mjs';
 import * as dagsrapport from './kinds/dagsrapport.mjs';
 
-// The six authored kinds baked from labContent documents.
+// The seven authored kinds baked from labContent documents.
 export const AUTHORED_KINDS = Object.freeze([
   'BEKYMRINGSMELDING',
   'ØKONOMISK OVERSIKT',
@@ -22,6 +24,7 @@ export const AUTHORED_KINDS = Object.freeze([
   'FELTNOTAT',
   'RAPPORT',
   'MELDING',
+  'STATUSRAPPORT',
 ]);
 
 // Generated stationery kinds (no labContent doc; rendered empty).
@@ -34,6 +37,7 @@ const TEMPLATES = Object.freeze({
   FELTNOTAT: feltnotat,
   RAPPORT: rapport,
   MELDING: melding,
+  STATUSRAPPORT: statusrapport,
   DAGSRAPPORT: dagsrapport,
 });
 

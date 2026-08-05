@@ -5,7 +5,7 @@
 //        │ buildTinyOlsenArtifacts -> labContent (READ-ONLY here)
 //        │ templates/docs/* (per-KIND HTML)  +  Playwright (TASK-914 launch path)
 //        └─> ../lifelines-core-loop/resources/cases/olsen/textures/
-//            ├─ <doc_id>.png          (8 authored docs + DAGSRAPPORT stationery)
+//            ├─ <doc_id>.png          (9 authored docs + DAGSRAPPORT stationery)
 //            └─ manifest.json         (per-doc UV fact rects, tab-indented)
 //
 // Mirrors generate-tiny-olsen-case.mjs: defaultPaths() + assertWritableDirectory()
@@ -54,7 +54,7 @@ const DEVICE_SCALE_FACTOR = 3;
 const UV_PRECISION = 5;
 const PNG_BYTE_COMPARE = true;
 
-// 8 authored docs in a fixed bake order (deterministic manifest key order).
+// 9 authored docs in a fixed bake order (deterministic manifest key order).
 export const AUTHORED_DOC_IDS = Object.freeze([
   'doc_bekymring',
   'doc_konto',
@@ -64,6 +64,7 @@ export const AUTHORED_DOC_IDS = Object.freeze([
   'doc_frank_visit',
   'doc_innleggelse',
   'doc_dodsfall',
+  'doc_status',
 ]);
 
 // Generated stationery: empty-content kinds with no labContent doc.

@@ -93,6 +93,7 @@ export const KIND_SIZES = Object.freeze({
   BREV: { width: 660, minHeight: 560 }, // A5-ish personal letter
   'ØKONOMISK OVERSIKT': { width: 560, minHeight: 620 }, // narrow ledger strip
   FELTNOTAT: { width: 640, minHeight: 460 }, // notepad index card
+  STATUSRAPPORT: { width: 700, minHeight: 400 }, // typed half-sheet status memo
   MELDING: { width: 480, minHeight: 360 }, // phone-message lapp
 });
 
