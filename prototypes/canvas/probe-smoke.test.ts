@@ -282,3 +282,125 @@ describe('canvas edge authoring (SB-033)', () => {
     localStorage.clear();
   });
 });
+
+// ---- SB-034: node lifecycle — create, duplicate, delete, sticky layout ----
+
+describe('canvas node lifecycle (SB-034)', () => {
+  it('creates nodes from templates: markup block, column-end slot, inspector open — nothing else moves', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = new Map(probe.graph.nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
+
+    const res = probe.createNode('question');
+    expect(res.ok).toBe(true);
+    expect(probe.getCaseText()).toContain('# Question: q_ny');
+
+    const node = probe.graph.nodes.find((n) => n.id === 'q_ny')!;
+    expect(node.kind).toBe('question');
+    expect(document.querySelector('.node[data-id="q_ny"]')).not.toBeNull();
+
+    // STICKY: every pre-existing node kept its exact position…
+    for (const n of probe.graph.nodes)
+      if (before.has(n.id)) expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    // …and the new node appended at the end of its kind column.
+    const others = probe.graph.nodes.filter((n) => n.kind === 'question' && n.id !== 'q_ny');
+    expect(node.x).toBe(others[0].x);
+    expect(node.y).toBeGreaterThan(Math.max(...others.map((q) => q.y)));
+
+    // The inspector opened on the new block for naming.
+    expect(probe.selectedId).toBe('q_ny');
+    expect(document.getElementById('inspector-body')!.textContent).toContain('q_ny');
+
+    // A fact lands inside its parent document's contiguous fact run.
+    const doc = probe.graph.nodes.find((n) => n.kind === 'document')!;
+    const res2 = probe.createNode('fact', { documentId: doc.id });
+    expect(res2.ok).toBe(true);
+    expect(probe.getCaseText()).toContain('## f_ny');
+    expect(probe.graph.nodes.find((n) => n.id === 'f_ny')!.kind).toBe('fact');
+    // A fact without a parent document refuses before writing.
+    const textBefore = probe.getCaseText();
+    expect(probe.createNode('fact').ok).toBe(false);
+    expect(probe.getCaseText()).toBe(textBefore);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2); // one save per create
+    localStorage.clear();
+  });
+
+  it('duplicates a fact: fresh id, body copied, compiles round-trip to a node', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    const res = probe.duplicateNode('f_grete_syk');
+    expect(res.ok).toBe(true);
+    expect(probe.getCaseText()).toContain('## f_grete_syk_kopi');
+    // The body came along: the label now appears twice in the markup.
+    expect(probe.getCaseText().match(/Label: Grete er alvorlig syk/g)!.length).toBe(2);
+
+    const node = probe.graph.nodes.find((n) => n.id === 'f_grete_syk_kopi')!;
+    expect(node.kind).toBe('fact');
+    expect(probe.selectedId).toBe('f_grete_syk_kopi');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    localStorage.clear();
+  });
+
+  it('delete of a referenced fact surfaces the reference list BEFORE writing, then cleans on confirm', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = probe.getCaseText();
+
+    probe.select('f_grete_syk');
+    probe.requestDelete('f_grete_syk');
+
+    // Nothing written yet — the confirm step surfaced the references first.
+    expect(probe.getCaseText()).toBe(before);
+    expect(fetchMock).not.toHaveBeenCalled();
+    const inspector = document.getElementById('inspector-body')!;
+    expect(inspector.textContent).toContain('INNKOMMENDE REFERANSER');
+    expect(inspector.textContent).toContain('q_grete_dor'); // when: f_grete_syk and f_klarer_seg
+    expect(inspector.textContent).toContain('parorende'); // Relevant: list on the proposal
+
+    probe.confirmDelete();
+    const text = probe.getCaseText();
+    expect(text).not.toContain('## f_grete_syk');
+    expect(probe.graph.nodes.some((n) => n.id === 'f_grete_syk')).toBe(false);
+    // Patchable references were cleaned: the cond term and the list entry…
+    expect(text).toContain('when: f_klarer_seg\n');
+    expect(text).toContain('Relevant: f_grete_baerer\n');
+    // …without breaking the §6 grammar.
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    expect(compileCase(text).diagnostics.filter((d) => d.code === 'cond-parse-error')).toEqual([]);
+    // Unpatchable references (document prose, the recipe header) were
+    // refused and reported instead of rewritten blind.
+    expect(document.getElementById('statusbar')!.textContent).toContain('ryddet ikke');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    localStorage.clear();
+  });
+
+  it('positions persist per case across reloads (sticky layout)', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    let probe = await bootProbe();
+    const before = new Map(probe.graph.nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
+
+    // Simulate a user reposition: move one node in the per-case store.
+    const stored = JSON.parse(localStorage.getItem(probe.POS_KEY)!) as Record<
+      string,
+      { x: number; y: number }
+    >;
+    stored['f_grete_syk'] = { x: 999, y: 777 };
+    localStorage.setItem(probe.POS_KEY, JSON.stringify(stored));
+
+    probe = await bootProbe();
+    const moved = probe.graph.nodes.find((n) => n.id === 'f_grete_syk')!;
+    expect({ x: moved.x, y: moved.y }).toEqual({ x: 999, y: 777 });
+    for (const n of probe.graph.nodes)
+      if (n.id !== 'f_grete_syk') expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    localStorage.clear();
+  });
+});

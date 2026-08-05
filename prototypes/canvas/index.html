@@ -450,6 +450,34 @@
         min-height: 0;
         white-space: pre-wrap;
       }
+      /* lifecycle action buttons (SB-034) */
+      #inspector .iactions {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      #inspector .iactions.wrap {
+        flex-wrap: wrap;
+      }
+      #inspector .ibtn {
+        all: unset;
+        padding: 4px 10px;
+        border: 1px solid var(--input-border);
+        border-radius: 6px;
+        background: var(--input);
+        color: var(--text-2);
+        font: 500 10.5px var(--mono);
+        cursor: pointer;
+      }
+      #inspector .ibtn:hover {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #inspector .ibtn.danger {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+
       #inspector .diag {
         font: 400 10px/1.5 var(--mono);
         color: var(--text-2);
@@ -532,6 +560,10 @@
           <span class="pct" id="z-pct">100%</span>
           <button id="z-in" title="zoom in">+</button>
           <button id="z-fit" title="fit the whole case">fit</button>
+          <button id="z-new" title="ny node (n)">+ ny</button>
+          <button id="z-layout" title="glem lagrede posisjoner og legg ut på nytt">
+            nytt oppsett
+          </button>
         </div>
         <div id="legend"></div>
       </div>

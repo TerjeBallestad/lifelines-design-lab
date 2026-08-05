@@ -5,17 +5,26 @@
 // SB-033 — edge authoring: drag from a node's port to a legal target writes
 // the relation to the markup (Supports/Opens/Needs lists, condition terms,
 // the hypothesis Question field); selecting an edge + Delete removes it.
+// SB-034 — node lifecycle: create from template (n / +), duplicate, delete
+// with an inbound-reference warning; sticky layout — positions persist per
+// case, edits never reshuffle the board, 'nytt oppsett' recomputes once.
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import { parseCaseText } from '../../src/compiler/parse.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
-import { patchField, listFieldAdd, listFieldRemove } from '../../src/compiler/patch.ts';
+import {
+  patchField,
+  listFieldAdd,
+  listFieldRemove,
+  appendBlock,
+  removeBlock,
+} from '../../src/compiler/patch.ts';
 import { parseCondition } from '../../src/compiler/condition.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
-import { buildGraph, layoutGraph, NODE_W, NODE_H } from './graph.ts';
-import type { CaseGraph, GraphNode, GraphEdge, NodeKind } from './graph.ts';
+import { buildGraph, layoutGraph, stickyLayout, NODE_W, NODE_H } from './graph.ts';
+import type { CaseGraph, GraphNode, GraphEdge, NodeKind, NodePos } from './graph.ts';
 
 const $ = (id: string) => document.getElementById(id) as HTMLElement;
 const viewport = $('viewport');
@@ -40,6 +49,41 @@ export function getCaseText(): string {
   return caseText;
 }
 
+// ---- sticky node positions (SB-034) --------------------------------------
+
+// Per-case position store. Stored positions survive every rebuild; the
+// barycenter layout runs only when the store is empty (first load or an
+// explicit 'nytt oppsett'). Stale ids are kept — a block that vanishes over
+// a broken compile keeps its slot when it comes back.
+export const POS_KEY = 'kildeverket-canvas-pos:content/cases/olsen/tiny-olsen.case.md';
+
+function loadPositions(): Map<string, NodePos> {
+  try {
+    const raw = localStorage.getItem(POS_KEY);
+    if (!raw) return new Map();
+    return new Map(Object.entries(JSON.parse(raw) as Record<string, NodePos>));
+  } catch {
+    return new Map();
+  }
+}
+
+function savePositions(): void {
+  const stored = loadPositions();
+  for (const node of graph.nodes) stored.set(node.id, { x: node.x, y: node.y });
+  localStorage.setItem(POS_KEY, JSON.stringify(Object.fromEntries(stored)));
+}
+
+/** 'nytt oppsett' — drop the stored positions, run barycenter once, refit. */
+export function relayout(): void {
+  localStorage.removeItem(POS_KEY);
+  extent = layoutGraph(graph);
+  savePositions();
+  renderWorld();
+  renderStatus();
+  select(selectedId);
+  fit();
+}
+
 // ---- compile + derive (rebuilt on every committed edit) ------------------
 
 let result: CompileResult;
@@ -54,8 +98,15 @@ let outOf = new Map<string, GraphEdge[]>();
 function rebuild(): void {
   const t0 = performance.now();
   result = compileCase(caseText);
-  graph = buildGraph(result.slice);
-  extent = layoutGraph(graph);
+  const tiltakNeeds = Object.fromEntries(
+    Object.values(result.labContent.tiltak).map((t) => [t.id, t.needs]),
+  );
+  graph = buildGraph(result.slice, { tiltakNeeds });
+  // Sticky layout (SB-034): stored positions win; only unplaced nodes get a
+  // slot (column end). An empty store — first load or 'nytt oppsett' — runs
+  // the barycenter pass once. Rebuilds must never reshuffle the board.
+  extent = stickyLayout(graph, loadPositions());
+  savePositions();
   compileMs = Math.round(performance.now() - t0);
 
   const parsed = parseCaseText(caseText, new DiagnosticBag());
@@ -355,7 +406,21 @@ function renderInspector(id: string | null): void {
     <div class="sect">OPENS / FEEDS · ${outs.length}</div>
     ${outs.map((e) => relRow(e, e.to)).join('') || '<div class="empty">nothing — dead end?</div>'}
     <div class="sect">FED BY · ${ins.length}</div>
-    ${ins.map((e) => relRow(e, e.from)).join('') || '<div class="empty">no inbound — entry point</div>'}`;
+    ${ins.map((e) => relRow(e, e.from)).join('') || '<div class="empty">no inbound — entry point</div>'}
+    ${
+      block && block.type !== 'case'
+        ? `<div class="sect">HANDLINGER</div>
+    <div class="iactions">
+      <button class="ibtn" id="i-dup">dupliser</button>
+      <button class="ibtn danger" id="i-del">slett</button>
+    </div>`
+        : ''
+    }`;
+  document.getElementById('i-dup')?.addEventListener('click', () => {
+    const res = duplicateNode(id);
+    if (!res.ok && res.reason) showTip(res.reason, viewport.clientWidth / 2, 80);
+  });
+  document.getElementById('i-del')?.addEventListener('click', () => requestDelete(id));
   inspectorBody.querySelectorAll<HTMLElement>('[data-goto]').forEach((el) =>
     el.addEventListener('click', () => {
       const target = el.dataset.goto!;
@@ -585,6 +650,10 @@ export function disconnect(edge: GraphEdge): EdgeWriteResult {
       if (patched === caseText)
         patched = listFieldRemove(caseText, edge.from, 'Opens dispatches', edge.to);
       if (patched === caseText) patched = null;
+    } else if (label === 'needs' && to.kind === 'tiltak') {
+      // SB-034: tiltak Needs: is a list field, not a condition.
+      patched = listFieldRemove(caseText, edge.to, 'Needs', edge.from);
+      if (patched === caseText) patched = null;
     } else if (label === 'needs' || label === 'gate') {
       patched = condRemove(edge.to, edge.from);
     } else {
@@ -603,6 +672,299 @@ export function disconnect(edge: GraphEdge): EdgeWriteResult {
   } catch (err) {
     return { ok: false, reason: err instanceof Error ? err.message : String(err) };
   }
+}
+
+// ---- node lifecycle (SB-034): create · duplicate · delete -----------------
+
+const ID_PREFIX: Record<NodeKind, string> = {
+  document: 'doc_',
+  fact: 'f_',
+  question: 'q_',
+  hypothesis: 'h_',
+  tiltak: 't_',
+  dispatch: 'd_', // plain Opens: only classifies d_-prefixed ids (SB-033)
+  clock: 'ck_',
+};
+
+/** `base`, else `base2`, `base3`, … — unique against every parsed block. */
+function freshId(base: string): string {
+  if (!blockById.has(base) && !nodeById.has(base)) return base;
+  let n = 2;
+  while (blockById.has(`${base}${n}`) || nodeById.has(`${base}${n}`)) n += 1;
+  return `${base}${n}`;
+}
+
+let lifecycleNote = '';
+
+/**
+ * Create a node of `kind` from its DEFAULT_TEMPLATES block, commit, land it
+ * at the end of its kind column (sticky layout appends), select it so the
+ * inspector opens for naming. Facts need a parent document.
+ */
+export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): EdgeWriteResult {
+  const id = freshId(`${ID_PREFIX[kind]}ny`);
+  try {
+    let patched: string;
+    if (kind === 'fact') {
+      if (!opts.documentId)
+        return { ok: false, reason: 'et faktum trenger et dokument — velg ett i listen' };
+      patched = appendBlock(caseText, 'fact', id, { documentId: opts.documentId });
+    } else {
+      patched = appendBlock(caseText, kind, id);
+    }
+    commitText(patched);
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+  if (!nodeById.has(id))
+    return { ok: false, reason: `${id} ble skrevet, men kompilerte ikke til en node` };
+  select(id);
+  centerOn(id);
+  inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus();
+  return { ok: true };
+}
+
+/** Copy a block's body as the template for a fresh `<id>_kopi` block. */
+export function duplicateNode(sourceId: string): EdgeWriteResult {
+  const block = blockById.get(sourceId);
+  const node = nodeById.get(sourceId);
+  if (!block || !node) return { ok: false, reason: `ukjent blokk ${sourceId}` };
+  const body = caseText.split('\n').slice(block.startLine, block.endLine);
+  while (body.length > 0 && body[0].trim() === '') body.shift();
+  while (body.length > 0 && body[body.length - 1].trim() === '') body.pop();
+  const id = freshId(`${sourceId}_kopi`);
+  try {
+    const patched = appendBlock(caseText, block.type, id, {
+      template: body.join('\n'),
+      ...(block.type === 'fact' ? { documentId: block.documentId } : {}),
+    });
+    commitText(patched);
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+  if (!nodeById.has(id))
+    return { ok: false, reason: `${id} ble skrevet, men kompilerte ikke til en node` };
+  select(id);
+  centerOn(id);
+  return { ok: true };
+}
+
+/** One inbound reference to a block slated for removal. */
+export interface RefHit {
+  blockId: string;
+  key: string; // field key, or 'prosa' / 'effekt' / 'header'
+  targetId: string;
+  /** How a confirmed delete handles it: patch it away, or report-only. */
+  action: 'list' | 'cond' | 'field' | 'report';
+}
+
+const LIST_REF_KEYS = new Set([
+  'Supports',
+  'Opens',
+  'Opens dispatches',
+  'Opens tiltak',
+  'Discuss',
+  'Relevant',
+  'Needs hypothesis',
+]);
+const COND_REF_KEYS = new Set([
+  'when',
+  'Opens when',
+  'needs',
+  'gate',
+  'Gate',
+  'visible when',
+  'Visible when',
+]);
+
+function refActionFor(block: RawBlock, key: string): RefHit['action'] {
+  // 'Needs' is a plain list on tiltak but a condition on hypotheses.
+  if (key === 'Needs') return block.type === 'hypothesis' ? 'cond' : 'list';
+  if (LIST_REF_KEYS.has(key)) return 'list';
+  if (COND_REF_KEYS.has(key)) return 'cond';
+  if (key === 'Question' && block.type === 'hypothesis') return 'field';
+  return 'report'; // free-text fields we refuse to rewrite blind
+}
+
+/** Every textual inbound reference to the ids in `family`, outside it. */
+function findReferences(family: string[]): RefHit[] {
+  const removal = new Set(family);
+  const probes = family.map((id) => ({ id, re: new RegExp(`\\b${id}\\b`) }));
+  const hits: RefHit[] = [];
+  for (const block of blockById.values()) {
+    if (removal.has(block.id) || block.type === 'case') continue;
+    for (const field of block.fields)
+      for (const { id, re } of probes)
+        if (re.test(field.value))
+          hits.push({
+            blockId: block.id,
+            key: field.key,
+            targetId: id,
+            action: refActionFor(block, field.key),
+          });
+    for (const effect of block.effects)
+      for (const { id, re } of probes)
+        if (re.test(effect.body))
+          hits.push({ blockId: block.id, key: 'effekt', targetId: id, action: 'report' });
+    for (const prose of block.proseLines)
+      for (const { id, re } of probes)
+        if (re.test(prose.text))
+          hits.push({ blockId: block.id, key: 'prosa', targetId: id, action: 'report' });
+    if (block.pair)
+      for (const { id } of probes)
+        if (block.pair.includes(id))
+          hits.push({ blockId: block.id, key: 'header', targetId: id, action: 'report' });
+  }
+  return hits;
+}
+
+let pendingDelete: { id: string; family: string[]; refs: RefHit[] } | null = null;
+
+/**
+ * Start a delete. A referenced block surfaces its inbound reference list in
+ * the inspector BEFORE anything is written; an unreferenced one goes
+ * straight through. Deleting a document takes its contiguous ## facts along
+ * (removeBlock alone would orphan them).
+ */
+export function requestDelete(id: string): void {
+  const block = blockById.get(id);
+  if (!block || block.type === 'case') return;
+  const family = [id];
+  if (block.type === 'document')
+    for (const b of blockById.values())
+      if (b.type === 'fact' && b.documentId === id) family.push(b.id);
+  const refs = findReferences(family);
+  if (refs.length === 0) {
+    performDelete(family, refs);
+    return;
+  }
+  pendingDelete = { id, family, refs };
+  renderDeleteConfirm();
+}
+
+/** Confirmed delete: clean the patchable references, then remove the blocks. */
+export function confirmDelete(): void {
+  if (!pendingDelete) return;
+  const pending = pendingDelete;
+  pendingDelete = null;
+  performDelete(pending.family, pending.refs);
+}
+
+export function cancelDelete(): void {
+  pendingDelete = null;
+  renderInspector(selectedId);
+  renderStatus();
+}
+
+/** Drop `targetId` as a plain and-term from a live condition field. */
+function cleanCondRef(text: string, ref: RefHit): string | null {
+  const parsed = parseCaseText(text, new DiagnosticBag());
+  const field = parsed.blocks
+    .find((b) => b.id === ref.blockId)
+    ?.fields.find((f) => f.key === ref.key);
+  if (!field) return null;
+  const next = condRemoveTerm(field.value, ref.targetId);
+  return next === null ? null : patchField(text, ref.blockId, ref.key, next);
+}
+
+function performDelete(family: string[], refs: RefHit[]): void {
+  let text = caseText;
+  const refused: string[] = [];
+  for (const ref of refs) {
+    const tag = `${ref.blockId}.${ref.key}`;
+    try {
+      if (ref.action === 'list') {
+        text = listFieldRemove(text, ref.blockId, ref.key, ref.targetId);
+      } else if (ref.action === 'cond') {
+        const next = cleanCondRef(text, ref);
+        if (next === null) refused.push(tag);
+        else text = next;
+      } else if (ref.action === 'field') {
+        text = patchField(text, ref.blockId, ref.key, '');
+      } else {
+        refused.push(tag);
+      }
+    } catch {
+      refused.push(tag);
+    }
+  }
+  // Facts were appended to the family after their document — remove them
+  // first so the document never orphans mid-sequence.
+  for (const id of [...family].reverse()) text = removeBlock(text, id);
+  lifecycleNote =
+    refused.length > 0
+      ? `slettet ${family[0]} — ryddet ikke: ${[...new Set(refused)].join(', ')}`
+      : `slettet ${family[0]}`;
+  commitText(text);
+}
+
+function renderDeleteConfirm(): void {
+  if (!pendingDelete) return;
+  const { id, family, refs } = pendingDelete;
+  const rows = refs
+    .map(
+      (ref) => `<div class="rel">
+        <span class="via">${ref.action === 'report' ? 'ryddes ikke' : 'ryddes'}</span>
+        <span>${escapeHtml(ref.blockId)}</span>
+        <span class="rtitle">${escapeHtml(ref.key)} → ${escapeHtml(ref.targetId)}</span>
+      </div>`,
+    )
+    .join('');
+  inspectorBody.innerHTML = `
+    <div class="kind" style="color:var(--danger)">SLETT</div>
+    <div class="iid">${escapeHtml(id)}</div>
+    ${family.length > 1 ? `<div class="isub">tar med ${family.length - 1} fakta under dokumentet</div>` : ''}
+    <div class="sect">INNKOMMENDE REFERANSER · ${refs.length}</div>
+    ${rows}
+    <div class="form-note">«ryddes ikke» blir stående som dangling — kompilatoren flagger dem.</div>
+    <div class="iactions">
+      <button class="ibtn danger" id="del-confirm">slett og rydd</button>
+      <button class="ibtn" id="del-cancel">avbryt</button>
+    </div>`;
+  document.getElementById('del-confirm')?.addEventListener('click', confirmDelete);
+  document.getElementById('del-cancel')?.addEventListener('click', cancelDelete);
+}
+
+// ---- create panel (n / +) -------------------------------------------------
+
+/** Probe-grade create UI in the inspector: pick a kind, facts pick a parent. */
+export function openCreatePanel(): void {
+  const docs = graph.nodes.filter((n) => n.kind === 'document');
+  const selBlock = selectedId ? blockById.get(selectedId) : undefined;
+  const preDoc =
+    selBlock?.type === 'document'
+      ? selBlock.id
+      : selBlock?.type === 'fact'
+        ? selBlock.documentId
+        : undefined;
+  const kinds = Object.keys(KIND_LABEL) as NodeKind[];
+  inspectorBody.innerHTML = `
+    <div class="kind">NY NODE</div>
+    <div class="isub">velg type — malen fylles inn, døp den i skjemaet etterpå</div>
+    <div class="iactions wrap">${kinds
+      .map(
+        (kind) =>
+          `<button class="ibtn" data-mk="${kind}" style="color:var(${KIND_VAR[kind]})">${KIND_LABEL[kind]}</button>`,
+      )
+      .join('')}</div>
+    <label class="field"><span class="fkey">DOKUMENT (FOR FAKTUM)</span>
+      <select class="fval" id="mk-doc">${docs
+        .map(
+          (d) =>
+            `<option value="${escapeAttr(d.id)}"${d.id === preDoc ? ' selected' : ''}>${escapeHtml(`${d.id} — ${d.title}`)}</option>`,
+        )
+        .join('')}</select></label>
+    <div class="form-note" id="mk-note"></div>`;
+  inspectorBody.querySelectorAll<HTMLElement>('[data-mk]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const docSel = inspectorBody.querySelector<HTMLSelectElement>('#mk-doc');
+      const res = createNode(btn.dataset.mk as NodeKind, { documentId: docSel?.value });
+      if (!res.ok) {
+        const note = document.getElementById('mk-note');
+        if (note) note.textContent = res.reason ?? '';
+      }
+    }),
+  );
 }
 
 // ---- drag-to-connect UI ---------------------------------------------------
@@ -670,16 +1032,33 @@ window.addEventListener('pointerup', (event) => {
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Delete' && event.key !== 'Backspace') return;
   if (event.target instanceof HTMLElement && event.target.closest('.fval')) return;
-  if (selectedEdgeKey === null) return;
-  const edge = graph.edges.find((e) => edgeKeyOf(e) === selectedEdgeKey);
-  if (!edge) return;
-  const res = disconnect(edge);
-  if (res.ok) {
-    applyEdgeSelection(null);
-    renderStatus();
-  } else if (res.reason) {
-    showTip(res.reason, viewport.clientWidth / 2, viewport.clientHeight / 2);
+  if (selectedEdgeKey !== null) {
+    const edge = graph.edges.find((e) => edgeKeyOf(e) === selectedEdgeKey);
+    if (!edge) return;
+    const res = disconnect(edge);
+    if (res.ok) {
+      applyEdgeSelection(null);
+      renderStatus();
+    } else if (res.reason) {
+      showTip(res.reason, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    }
+    return;
   }
+  // SB-034: Delete on a selected node starts the (reference-aware) delete.
+  if (selectedId !== null) requestDelete(selectedId);
+});
+
+// SB-034: n / + opens the create panel (outside form fields only).
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'n' && event.key !== '+') return;
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
+  if (
+    event.target instanceof HTMLElement &&
+    event.target.closest('input, textarea, select, [contenteditable]')
+  )
+    return;
+  event.preventDefault();
+  openCreatePanel();
 });
 
 // ---- pan + zoom ----------------------------------------------------------
@@ -761,6 +1140,8 @@ $('z-out').addEventListener('click', () => {
   applyTransform();
 });
 $('z-fit').addEventListener('click', fit);
+$('z-new')?.addEventListener('click', openCreatePanel);
+$('z-layout')?.addEventListener('click', relayout);
 document.addEventListener('keydown', (event) => {
   const inField = event.target instanceof HTMLElement && event.target.closest('.fval');
   if (event.key === 'Escape' && !inField) select(null);
@@ -782,8 +1163,9 @@ function renderStatus(): void {
   ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
   ${draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
   ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
+  ${lifecycleNote ? `<span class="warn-c">${escapeHtml(lifecycleNote)}</span>` : ''}
   ${selectedEdgeKey ? '<span class="warn-c">kant valgt — delete fjerner relasjonen</span>' : ''}
-  <span class="hint">click node · edit fields · dra fra port for ny kant · klikk kant + delete · esc clear</span>`;
+  <span class="hint">click node · edit fields · n ny node · delete sletter · dra fra port for ny kant · esc clear</span>`;
 }
 
 // ---- boot ----------------------------------------------------------------

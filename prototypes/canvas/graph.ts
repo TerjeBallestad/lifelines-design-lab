@@ -66,7 +66,13 @@ export function idsInPredicate(spec: PredicateSpec | undefined | null): string[]
   return out;
 }
 
-export function buildGraph(slice: CaseSlice): CaseGraph {
+export interface BuildGraphOptions {
+  /** SB-034: tiltak id → fact ids from its `Needs:` list (the slice omits
+   *  them; the caller lifts them from labContent). Draws fact→tiltak edges. */
+  tiltakNeeds?: Record<string, string[]>;
+}
+
+export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): CaseGraph {
   const nodes: GraphNode[] = [];
   const edgeSet = new Map<string, GraphEdge>();
   const known = new Set<string>();
@@ -212,6 +218,10 @@ export function buildGraph(slice: CaseSlice): CaseGraph {
   for (const ck of slice.clocks)
     for (const id of idsInPredicate(ck.visibility)) addEdge(id, ck.id, 'gate');
 
+  // SB-034 gap fix: tiltak Needs: lists are fact→tiltak edges too.
+  for (const [tiltakId, needIds] of Object.entries(opts.tiltakNeeds ?? {}))
+    for (const factId of needIds) addEdge(factId, tiltakId, 'needs');
+
   // Drop edges whose endpoint never became a node (stubs stay diagnostics).
   const edges = [...edgeSet.values()].filter((e) => known.has(e.from) && known.has(e.to));
   return { nodes, edges, arrivals };
@@ -274,4 +284,49 @@ export function layoutGraph(graph: CaseGraph): { width: number; height: number }
   });
 
   return { width: 6 * NODE_W + 5 * COL_GAP, height };
+}
+
+// ---- sticky layout (SB-034) ----------------------------------------------
+
+export interface NodePos {
+  x: number;
+  y: number;
+}
+
+/**
+ * Sticky variant of layoutGraph: nodes with a stored position keep it
+ * byte-for-byte; nodes without one append at the end of their kind column.
+ * An empty store falls back to one barycenter pass (first load / re-layout).
+ * Edits must never reshuffle the board — that is the SB-034 hard rule.
+ */
+export function stickyLayout(
+  graph: CaseGraph,
+  stored: Map<string, NodePos>,
+): { width: number; height: number } {
+  if (stored.size === 0) return layoutGraph(graph);
+
+  const fresh: GraphNode[] = [];
+  const bottomOf = new Map<number, number>(); // column index → lowest occupied y
+  for (const node of graph.nodes) {
+    const pos = stored.get(node.id);
+    if (!pos) {
+      fresh.push(node);
+      continue;
+    }
+    node.x = pos.x;
+    node.y = pos.y;
+    const column = COLUMN_OF[node.kind];
+    bottomOf.set(column, Math.max(bottomOf.get(column) ?? Number.NEGATIVE_INFINITY, node.y));
+  }
+  for (const node of fresh) {
+    const column = COLUMN_OF[node.kind];
+    const bottom = bottomOf.get(column);
+    node.x = column * (NODE_W + COL_GAP);
+    node.y = bottom === undefined ? 0 : bottom + NODE_H + ROW_GAP;
+    bottomOf.set(column, node.y);
+  }
+
+  const width = Math.max(6 * NODE_W + 5 * COL_GAP, ...graph.nodes.map((n) => n.x + NODE_W));
+  const height = Math.max(1, ...graph.nodes.map((n) => n.y + NODE_H));
+  return { width, height };
 }
