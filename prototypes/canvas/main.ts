@@ -1,12 +1,17 @@
 // SB-026 probe — Canvas view generated from the real 0.2 compiler output.
+// SB-032 — the inspector becomes the edit surface: per-kind forms write
+// markup patches (src/compiler/patch.ts), POST /__save-case, recompile,
+// re-render. The markup stays the store (DD-003).
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
-// The playable question: at ~84 nodes, does the generated graph answer real
-// authoring questions (what does this fact open? which day is quiet?) —
-// or does it collapse into decoration?
 import { compileCase } from '../../src/compiler/index.ts';
+import type { CompileResult } from '../../src/compiler/index.ts';
+import { parseCaseText } from '../../src/compiler/parse.ts';
+import type { RawBlock } from '../../src/compiler/parse.ts';
+import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
+import { patchField } from '../../src/compiler/patch.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
 import { buildGraph, layoutGraph, NODE_W, NODE_H } from './graph.ts';
-import type { GraphNode, GraphEdge, NodeKind } from './graph.ts';
+import type { CaseGraph, GraphNode, GraphEdge, NodeKind } from './graph.ts';
 
 const $ = (id: string) => document.getElementById(id) as HTMLElement;
 const viewport = $('viewport');
@@ -17,22 +22,57 @@ const inspectorBody = $('inspector-body');
 const statusbar = $('statusbar');
 const counts = $('counts');
 
-// ---- compile + derive ----------------------------------------------------
+// ---- text state + draft safety -------------------------------------------
 
-const t0 = performance.now();
-const result = compileCase(initialText);
-export const graph = buildGraph(result.slice);
-const extent = layoutGraph(graph);
-const compileMs = Math.round(performance.now() - t0);
+// Same draft key as the script editor (SB-025 rule: a vite reload must never
+// wipe unsaved work). A draft made on either surface is visible on both.
+export const DRAFT_KEY = 'kildeverket-draft:content/cases/olsen/tiny-olsen.case.md';
+const bootDraft = localStorage.getItem(DRAFT_KEY);
+let caseText = bootDraft != null && bootDraft !== initialText ? bootDraft : initialText;
+let draftRestored = caseText !== initialText;
 
-const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
-const inOf = new Map<string, GraphEdge[]>();
-const outOf = new Map<string, GraphEdge[]>();
-for (const edge of graph.edges) {
-  if (!outOf.has(edge.from)) outOf.set(edge.from, []);
-  if (!inOf.has(edge.to)) inOf.set(edge.to, []);
-  outOf.get(edge.from)!.push(edge);
-  inOf.get(edge.to)!.push(edge);
+/** The current markup buffer (the single source the canvas edits). */
+export function getCaseText(): string {
+  return caseText;
+}
+
+// ---- compile + derive (rebuilt on every committed edit) ------------------
+
+let result: CompileResult;
+export let graph: CaseGraph;
+let extent = { width: 1, height: 1 };
+let compileMs = 0;
+let nodeById = new Map<string, GraphNode>();
+let blockById = new Map<string, RawBlock>();
+let inOf = new Map<string, GraphEdge[]>();
+let outOf = new Map<string, GraphEdge[]>();
+
+function rebuild(): void {
+  const t0 = performance.now();
+  result = compileCase(caseText);
+  graph = buildGraph(result.slice);
+  extent = layoutGraph(graph);
+  compileMs = Math.round(performance.now() - t0);
+
+  const parsed = parseCaseText(caseText, new DiagnosticBag());
+  blockById = new Map();
+  if (parsed.caseBlock) blockById.set(parsed.caseBlock.id, parsed.caseBlock);
+  for (const block of parsed.blocks) blockById.set(block.id, block);
+
+  nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+  inOf = new Map();
+  outOf = new Map();
+  for (const edge of graph.edges) {
+    if (!outOf.has(edge.from)) outOf.set(edge.from, []);
+    if (!inOf.has(edge.to)) inOf.set(edge.to, []);
+    outOf.get(edge.from)!.push(edge);
+    inOf.get(edge.to)!.push(edge);
+  }
+
+  renderWorld();
+  renderStatus();
+  // Selection survives the rebuild; a node the edit removed clears it.
+  select(selectedId !== null && nodeById.has(selectedId) ? selectedId : null);
 }
 
 // ---- render --------------------------------------------------------------
@@ -68,54 +108,62 @@ const EDGE_VAR: Record<string, string> = {
 const cssVar = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#62667a';
 
-edgesSvg.setAttribute('width', String(extent.width));
-edgesSvg.setAttribute('height', String(extent.height));
-
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const edgeEls = new Map<GraphEdge, { path: SVGPathElement; text: SVGTextElement }>();
-for (const edge of graph.edges) {
-  const from = nodeById.get(edge.from)!;
-  const to = nodeById.get(edge.to)!;
-  const forward = to.x >= from.x + NODE_W;
-  const sx = forward ? from.x + NODE_W : from.x;
-  const tx = forward ? to.x : to.x + NODE_W;
-  const sy = from.y + NODE_H / 2;
-  const ty = to.y + NODE_H / 2;
-  const reach = Math.max(Math.abs(tx - sx) / 2, 44) * (forward ? 1 : -1);
-  const path = document.createElementNS(SVG_NS, 'path');
-  path.setAttribute('d', `M ${sx} ${sy} C ${sx + reach} ${sy}, ${tx - reach} ${ty}, ${tx} ${ty}`);
-  const text = document.createElementNS(SVG_NS, 'text');
-  text.setAttribute('x', String((sx + tx) / 2));
-  text.setAttribute('y', String((sy + ty) / 2 - 4));
-  text.setAttribute('text-anchor', 'middle');
-  text.textContent = edge.label;
-  text.style.display = 'none';
-  edgesSvg.append(path, text);
-  edgeEls.set(edge, { path, text });
-}
+let edgeEls = new Map<GraphEdge, { path: SVGPathElement; text: SVGTextElement }>();
+let nodeEls = new Map<string, HTMLElement>();
 
-const nodeEls = new Map<string, HTMLElement>();
-for (const node of graph.nodes) {
-  const el = document.createElement('div');
-  el.className = `node k-${node.kind}`;
-  el.style.left = `${node.x}px`;
-  el.style.top = `${node.y}px`;
-  el.dataset.id = node.id;
-  el.innerHTML = `
+function renderWorld(): void {
+  edgesSvg.setAttribute('width', String(extent.width));
+  edgesSvg.setAttribute('height', String(extent.height));
+  while (edgesSvg.firstChild) edgesSvg.firstChild.remove();
+  nodesHost.innerHTML = '';
+  edgeEls = new Map();
+  nodeEls = new Map();
+
+  for (const edge of graph.edges) {
+    const from = nodeById.get(edge.from)!;
+    const to = nodeById.get(edge.to)!;
+    const forward = to.x >= from.x + NODE_W;
+    const sx = forward ? from.x + NODE_W : from.x;
+    const tx = forward ? to.x : to.x + NODE_W;
+    const sy = from.y + NODE_H / 2;
+    const ty = to.y + NODE_H / 2;
+    const reach = Math.max(Math.abs(tx - sx) / 2, 44) * (forward ? 1 : -1);
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', `M ${sx} ${sy} C ${sx + reach} ${sy}, ${tx - reach} ${ty}, ${tx} ${ty}`);
+    const text = document.createElementNS(SVG_NS, 'text');
+    text.setAttribute('x', String((sx + tx) / 2));
+    text.setAttribute('y', String((sy + ty) / 2 - 4));
+    text.setAttribute('text-anchor', 'middle');
+    text.textContent = edge.label;
+    text.style.display = 'none';
+    edgesSvg.append(path, text);
+    edgeEls.set(edge, { path, text });
+  }
+
+  for (const node of graph.nodes) {
+    const el = document.createElement('div');
+    el.className = `node k-${node.kind}`;
+    el.style.left = `${node.x}px`;
+    el.style.top = `${node.y}px`;
+    el.dataset.id = node.id;
+    el.innerHTML = `
     <div class="nid">${node.id.toUpperCase()}</div>
     <div class="ntitle">${escapeHtml(node.title)}</div>
     <div class="nsub">${escapeHtml(node.sub)}</div>`;
-  el.addEventListener('click', (event) => {
-    event.stopPropagation();
-    select(node.id);
-  });
-  nodesHost.append(el);
-  nodeEls.set(node.id, el);
+    el.addEventListener('click', (event) => {
+      event.stopPropagation();
+      select(node.id);
+    });
+    nodesHost.append(el);
+    nodeEls.set(node.id, el);
+  }
 }
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+const escapeAttr = (s: string) => escapeHtml(s).replace(/"/g, '&quot;');
 
 const legend = $('legend');
 legend.innerHTML = (Object.keys(KIND_LABEL) as NodeKind[])
@@ -167,19 +215,99 @@ function relRow(edge: GraphEdge, otherId: string): string {
   </div>`;
 }
 
+// ---- inspector: per-kind edit forms --------------------------------------
+
+// Markup field per form row. `keys` are candidates in preference order; the
+// first key the block already carries wins (questions write Title unless the
+// block uses an explicit Prompt line). Multiline fields render as textareas
+// but stay single markup lines — newlines collapse to spaces on commit.
+interface FieldSpec {
+  keys: string[];
+  multiline?: boolean;
+}
+const FORM_FIELDS: Record<NodeKind, FieldSpec[]> = {
+  document: [{ keys: ['Title'] }, { keys: ['Peek'] }, { keys: ['Meta'] }],
+  fact: [
+    { keys: ['Label'] },
+    { keys: ['Summary'], multiline: true },
+    { keys: ['Category'] },
+    { keys: ['Quote'], multiline: true },
+  ],
+  question: [
+    { keys: ['Prompt', 'Title'], multiline: true },
+    { keys: ['Teaser'], multiline: true },
+    { keys: ['Card title'] },
+  ],
+  hypothesis: [
+    { keys: ['Title'], multiline: true },
+    { keys: ['Summary'], multiline: true },
+  ],
+  tiltak: [
+    { keys: ['Title'] },
+    { keys: ['Slot'] },
+    { keys: ['Cost'] },
+    { keys: ['Description'], multiline: true },
+  ],
+  dispatch: [
+    { keys: ['Title'] },
+    { keys: ['Activity'] },
+    { keys: ['Channel'] },
+    { keys: ['Delay'] },
+    { keys: ['Description'], multiline: true },
+  ],
+  clock: [{ keys: ['Label'] }, { keys: ['Question'] }, { keys: ['Good'] }, { keys: ['Bad'] }],
+};
+
+function formHtml(node: GraphNode, block: RawBlock): string {
+  if (block.type === 'beat' || block.type === 'conversation') {
+    return `<div class="form-note">Prose/weave block — read-only here for now.</div>`;
+  }
+  const rows = (FORM_FIELDS[node.kind] ?? []).map((spec) => {
+    const key = spec.keys.find((k) => block.fields.some((f) => f.key === k)) ?? spec.keys[0];
+    const value = block.fields.find((f) => f.key === key)?.value ?? '';
+    const control = spec.multiline
+      ? `<textarea class="fval" data-key="${escapeAttr(key)}" rows="3">${escapeHtml(value)}</textarea>`
+      : `<input class="fval" data-key="${escapeAttr(key)}" value="${escapeAttr(value)}" />`;
+    return `<label class="field"><span class="fkey">${escapeHtml(key)}</span>${control}</label>`;
+  });
+  return `<div class="sect">FELTER</div>${rows.join('')}<div class="form-note" id="form-note"></div>`;
+}
+
+function diagHtml(block: RawBlock | undefined): string {
+  if (!block) return '';
+  const diags = result.diagnostics.filter(
+    (d) =>
+      (d.span.startLine <= block.endLine && d.span.endLine >= block.startLine) ||
+      d.subjectIds.includes(block.id),
+  );
+  if (diags.length === 0) return '';
+  const rows = diags.map(
+    (d) =>
+      `<div class="diag s-${d.severity}"><span class="dcode">${escapeHtml(d.code)}</span>${escapeHtml(d.message)}</div>`,
+  );
+  return `<div class="sect">DIAGNOSTIKK · ${diags.length}</div>${rows.join('')}`;
+}
+
 function renderInspector(id: string | null): void {
+  const activeKey =
+    document.activeElement instanceof HTMLElement && inspectorBody.contains(document.activeElement)
+      ? document.activeElement.dataset.key
+      : undefined;
+
   if (!id) {
     inspectorBody.innerHTML = '<div class="empty">Click a node. Esc clears the selection.</div>';
     return;
   }
   const node = nodeById.get(id)!;
+  const block = blockById.get(id);
   const outs = outOf.get(id) ?? [];
   const ins = inOf.get(id) ?? [];
   inspectorBody.innerHTML = `
     <div class="kind" style="color:var(${KIND_VAR[node.kind]})">${KIND_LABEL[node.kind]}</div>
     <div class="iid">${id}</div>
-    <div class="ititle">${escapeHtml(node.title)}</div>
     <div class="isub">${escapeHtml(node.sub)}</div>
+    ${block ? formHtml(node, block) : `<div class="ititle">${escapeHtml(node.title)}</div>`}
+    ${diagHtml(block)}
     <div class="sect">OPENS / FEEDS · ${outs.length}</div>
     ${outs.map((e) => relRow(e, e.to)).join('') || '<div class="empty">nothing — dead end?</div>'}
     <div class="sect">FED BY · ${ins.length}</div>
@@ -191,6 +319,72 @@ function renderInspector(id: string | null): void {
       centerOn(target);
     }),
   );
+  inspectorBody.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.fval').forEach((el) => {
+    el.addEventListener('change', () => commitField(id, el.dataset.key!, el.value));
+    el.addEventListener('input', () => stashDraft(id, el.dataset.key!, el.value));
+    if (el instanceof HTMLInputElement)
+      el.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') el.blur();
+      });
+  });
+  if (activeKey) {
+    inspectorBody
+      .querySelector<HTMLInputElement | HTMLTextAreaElement>(`.fval[data-key="${activeKey}"]`)
+      ?.focus();
+  }
+}
+
+// ---- edit pipeline: patch → draft → save → recompile ---------------------
+
+/** Markup fields are single lines; a textarea newline collapses to a space. */
+const oneLine = (value: string) => value.replace(/\s*\n\s*/g, ' ').trim();
+
+let draftTimer: ReturnType<typeof setTimeout> | undefined;
+
+// Typed-but-uncommitted edits land in the draft (debounced) so a vite reload
+// never wipes them. A committed save clears the draft again.
+function stashDraft(blockId: string, key: string, value: string): void {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => {
+    try {
+      const patched = patchField(caseText, blockId, key, oneLine(value));
+      if (patched !== caseText) localStorage.setItem(DRAFT_KEY, patched);
+    } catch {
+      // Unpatchable while typing (e.g. mid-edit weirdness) — commit surfaces it.
+    }
+  }, 300);
+}
+
+function commitField(blockId: string, key: string, value: string): void {
+  let patched: string;
+  try {
+    patched = patchField(caseText, blockId, key, oneLine(value));
+  } catch (err) {
+    const note = document.getElementById('form-note');
+    if (note) note.textContent = err instanceof Error ? err.message : String(err);
+    return;
+  }
+  if (patched === caseText) return; // no-op: nothing written, nothing saved
+  caseText = patched;
+  localStorage.setItem(DRAFT_KEY, caseText);
+  rebuild();
+  void persist();
+}
+
+let saveNote = '';
+
+async function persist(): Promise<void> {
+  try {
+    const res = await fetch('/__save-case', { method: 'POST', body: caseText });
+    if (!res.ok) throw new Error(await res.text());
+    localStorage.removeItem(DRAFT_KEY);
+    draftRestored = false;
+    const t = new Date();
+    saveNote = `saved ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+  } catch (err) {
+    saveNote = `save failed — draft kept (${err instanceof Error ? err.message : String(err)})`;
+  }
+  renderStatus();
 }
 
 // ---- pan + zoom ----------------------------------------------------------
@@ -273,23 +467,30 @@ $('z-out').addEventListener('click', () => {
 });
 $('z-fit').addEventListener('click', fit);
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') select(null);
+  const inField = event.target instanceof HTMLElement && event.target.closest('.fval');
+  if (event.key === 'Escape' && !inField) select(null);
 });
 
 // ---- status bar ----------------------------------------------------------
 
-const warnings = result.diagnostics.filter((d) => d.severity === 'warning').length;
-const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
-const quiet = result.diagnostics.find((d) => d.code === 'lint-quiet-day');
-const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
+function renderStatus(): void {
+  const warnings = result.diagnostics.filter((d) => d.severity === 'warning').length;
+  const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
+  const quiet = result.diagnostics.find((d) => d.code === 'lint-quiet-day');
+  const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
 
-counts.textContent = `${graph.nodes.length} noder · ${graph.edges.length} kanter`;
-statusbar.innerHTML = `
+  counts.textContent = `${graph.nodes.length} noder · ${graph.edges.length} kanter`;
+  statusbar.innerHTML = `
   <span class="${errors ? 'warn-c' : 'ok'}">compiled ${compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
   <span>${graph.nodes.length} nodes · ${graph.edges.length} edges</span>
   ${warnings ? `<span class="warn-c">${warnings} warnings</span>` : ''}
   ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
-  <span class="hint">click node · esc clear · scroll zoom · drag pan · fit</span>`;
+  ${draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
+  ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
+  <span class="hint">click node · edit fields · esc clear · scroll zoom · drag pan · fit</span>`;
+}
 
+// ---- boot ----------------------------------------------------------------
+
+rebuild();
 fit();
-select(null);

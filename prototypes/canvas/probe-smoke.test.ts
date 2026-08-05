@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 // Smoke test for the SB-026 canvas probe: derives the graph from the real
 // compiled case, then boots the page in jsdom and clicks through it.
+// SB-032 adds the inspector-editing acceptance tests at the bottom.
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 const ROOT = process.cwd();
 const caseText = readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8');
@@ -100,5 +101,91 @@ describe('canvas probe page', () => {
     const statusbar = document.getElementById('statusbar')!;
     if (quiet) expect(statusbar.textContent).toContain('pacing');
     else expect(statusbar.textContent).not.toContain('pacing');
+  });
+});
+
+// ---- SB-032: the inspector is the edit surface ----------------------------
+
+const DRAFT_KEY = 'kildeverket-draft:content/cases/olsen/tiny-olsen.case.md';
+
+/** Fresh module + fresh DOM, exactly like a page load. */
+async function bootProbe() {
+  vi.resetModules();
+  const html = readFileSync(`${ROOT}/prototypes/canvas/index.html`, 'utf8');
+  const body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
+  document.body.innerHTML = body.replace(/<script[^]*?<\/script>/g, '');
+  return import('./main.ts');
+}
+
+describe('canvas inspector editing (SB-032)', () => {
+  it('edits a fact label through the form: patch, save POST, recompiled re-render', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    probe.select('f_grete_syk');
+    const input = document.querySelector<HTMLInputElement>(
+      '#inspector-body .fval[data-key="Label"]',
+    )!;
+    expect(input.value).toBe('Grete er alvorlig syk');
+
+    input.value = 'Grete er alvorlig syk (redigert)';
+    input.dispatchEvent(new Event('change'));
+
+    // The patch landed in the buffer and the recompiled node re-rendered.
+    expect(probe.getCaseText()).toContain('Label: Grete er alvorlig syk (redigert)');
+    const nodeEl = document.querySelector('.node[data-id="f_grete_syk"]')!;
+    expect(nodeEl.textContent).toContain('Grete er alvorlig syk (redigert)');
+
+    // Selection survived the rebuild.
+    expect(probe.selectedId).toBe('f_grete_syk');
+    expect(document.querySelector('.node.selected')!.getAttribute('data-id')).toBe('f_grete_syk');
+
+    // Exactly one save POST; the draft clears once it succeeds.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe('/__save-case');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
+    localStorage.clear();
+  });
+
+  it('restores an unsaved draft from localStorage after a reload', async () => {
+    localStorage.clear();
+    const draft = caseText.replace('Label: Grete er alvorlig syk', 'Label: Draft label survives');
+    expect(draft).not.toBe(caseText);
+    localStorage.setItem(DRAFT_KEY, draft);
+
+    const probe = await bootProbe();
+
+    expect(probe.getCaseText()).toBe(draft);
+    probe.select('f_grete_syk');
+    const input = document.querySelector<HTMLInputElement>(
+      '#inspector-body .fval[data-key="Label"]',
+    )!;
+    expect(input.value).toBe('Draft label survives');
+    expect(document.getElementById('statusbar')!.textContent).toContain('restored');
+    localStorage.clear();
+  });
+
+  it('writes nothing on a no-op focus/blur: byte-identical text, no save POST', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = probe.getCaseText();
+
+    probe.select('f_grete_syk');
+    const input = document.querySelector<HTMLInputElement>(
+      '#inspector-body .fval[data-key="Label"]',
+    )!;
+    input.focus();
+    input.dispatchEvent(new Event('change')); // unchanged value
+    input.blur();
+
+    expect(probe.getCaseText()).toBe(before); // byte-identical
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
+    localStorage.clear();
   });
 });
