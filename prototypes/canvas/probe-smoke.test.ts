@@ -504,7 +504,11 @@ describe('canvas node lifecycle (SB-034)', () => {
     probe.confirmDelete();
     const text = probe.getCaseText();
     expect(text).not.toContain('## f_grete_syk');
-    expect(probe.graph.nodes.some((n) => n.id === 'f_grete_syk')).toBe(false);
+    // SB-046: the weave (a 'report'-only reference the delete refuses to
+    // rewrite) still names the fact, so it survives as a stub ghost — the
+    // SB-049 dangling-reference behavior, not a live fact block.
+    const remnant = probe.graph.nodes.find((n) => n.id === 'f_grete_syk');
+    expect(remnant?.stub).toBe(true);
     // Patchable references were cleaned: the cond term and the list entry…
     expect(text).toContain('when: f_klarer_seg\n');
     expect(text).toContain('Relevant: f_grete_baerer\n');
@@ -677,6 +681,94 @@ describe('canvas stub nodes (SB-049)', () => {
     const tipEl = document.getElementById('cursor-tip')!;
     expect(tipEl.classList.contains('show')).toBe(true);
     expect(tipEl.textContent).toContain('a fact lives under a document');
+    localStorage.clear();
+  });
+});
+
+// ---- SB-046: §8 weave blocks as read-only nodes with fact edges -----------
+
+describe('canvas weave nodes (SB-046)', () => {
+  it('every §8 weave block becomes a node with fact edges in both directions', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph } = await import('./graph.ts');
+    const { slice } = compileCase(caseText);
+    const graph = buildGraph(slice);
+    const nodeOf = (id: string) => graph.nodes.find((n) => n.id === id);
+    const hasEdge = (from: string, to: string, label: string) =>
+      graph.edges.some((e) => e.from === from && e.to === to && e.label === label);
+
+    // Calls: one node per call:<contact> block, needs in, pays out.
+    expect(slice.calls!.length).toBeGreaterThan(0);
+    for (const call of slice.calls!) {
+      const id = `call:${call.contact_id}`;
+      expect(nodeOf(id)?.kind).toBe('conversation');
+      for (const exchange of call.exchanges) {
+        expect(hasEdge(exchange.card_id, id, 'needs')).toBe(true);
+        for (const line of exchange.reply)
+          if (line.fact_id) expect(hasEdge(id, line.fact_id, 'pays')).toBe(true);
+      }
+    }
+
+    // Chat: one node for the chat block, per-entry needs in and pays out.
+    expect(slice.frank_chat!.length).toBeGreaterThan(0);
+    expect(nodeOf('chat:frank')?.kind).toBe('conversation');
+    for (const entry of slice.frank_chat!) {
+      for (const factId of entry.needs) expect(hasEdge(factId, 'chat:frank', 'needs')).toBe(true);
+      if (entry.pays_fact) expect(hasEdge('chat:frank', entry.pays_fact, 'pays')).toBe(true);
+    }
+
+    // Recipes: the pair feeds in, the crafted question opens out.
+    for (const recipe of slice.recipes ?? []) {
+      const id = `${recipe.pair[0]} + ${recipe.pair[1]}`;
+      expect(nodeOf(id)?.kind).toBe('recipe');
+      for (const factId of recipe.pair) expect(hasEdge(factId, id, 'needs')).toBe(true);
+      expect(hasEdge(id, recipe.question_id, 'opens')).toBe(true);
+    }
+
+    // Proposals: one node per block, Relevant: facts feed in.
+    expect(slice.frank_proposals!.length).toBeGreaterThan(0);
+    for (const proposal of slice.frank_proposals!) {
+      expect(nodeOf(proposal.handbok_id)?.kind).toBe('proposal');
+      for (const factId of proposal.relevant_fact_ids ?? [])
+        expect(hasEdge(factId, proposal.handbok_id, 'needs')).toBe(true);
+    }
+
+    // Still no dangling edges anywhere.
+    const ids = new Set(graph.nodes.map((n) => n.id));
+    for (const edge of graph.edges) {
+      expect(ids.has(edge.from)).toBe(true);
+      expect(ids.has(edge.to)).toBe(true);
+    }
+  });
+
+  it('a question lead onto call:grete survives — the call is a node now', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph } = await import('./graph.ts');
+    const graph = buildGraph(compileCase(caseText).slice);
+    // Before SB-046 the ensureNode filter dropped this edge (no prefix, no
+    // kind); the weave node keeps it on the board.
+    expect(graph.edges.some((e) => e.to === 'call:grete' && e.label === 'lead')).toBe(true);
+  });
+
+  it('clicking a weave node cross-jumps to its block and offers no form (SB-037)', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    const el = document.querySelector<HTMLElement>('.node[data-id="call:grete"]')!;
+    expect(el).not.toBeNull();
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    // The click cross-jumped the script lens to the conversation block.
+    const headingLine = lensLineOf(probe, '# Conversation: call:grete');
+    expect(probe.scriptLens.getCursorLine()).toBe(headingLine);
+
+    // The inspector shows the kind but no editable fields (SB-037 ruling:
+    // weave editing routes to the script surface, no canvas forms).
+    const inspector = document.getElementById('inspector-body')!;
+    expect(inspector.textContent).toContain('CONVERSATION');
+    expect(inspector.querySelector('.fval')).toBeNull();
+    expect(inspector.textContent).toContain('edit it in the script pane');
     localStorage.clear();
   });
 });

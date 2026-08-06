@@ -255,6 +255,9 @@ const KIND_LABEL: Record<NodeKind, string> = {
   tiltak: 'TILTAK',
   dispatch: 'DISPATCH',
   clock: 'CLOCK',
+  conversation: 'CONVERSATION',
+  recipe: 'RECIPE',
+  proposal: 'PROPOSAL',
 };
 const KIND_VAR: Record<NodeKind, string> = {
   document: '--blue',
@@ -264,6 +267,10 @@ const KIND_VAR: Record<NodeKind, string> = {
   tiltak: '--green',
   dispatch: '--orange',
   clock: '--gold',
+  // SB-046: the weave family shares one hue — the labels tell them apart.
+  conversation: '--teal',
+  recipe: '--teal',
+  proposal: '--teal',
 };
 const EDGE_VAR: Record<string, string> = {
   source: '--blue',
@@ -275,6 +282,7 @@ const EDGE_VAR: Record<string, string> = {
   reveals: '--gold',
   clock: '--gold',
   lead: '--yellow',
+  pays: '--teal',
 };
 const cssVar = (name: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#62667a';
@@ -494,11 +502,21 @@ const FORM_FIELDS: Record<NodeKind, FieldSpec[]> = {
     { keys: ['Description'], multiline: true },
   ],
   clock: [{ keys: ['Label'] }, { keys: ['Question'] }, { keys: ['Good'] }, { keys: ['Bad'] }],
+  // SB-046 (SB-037 ruling): weave blocks never grow canvas forms — editing
+  // routes to the script surface via the click cross-jump.
+  conversation: [],
+  recipe: [],
+  proposal: [],
 };
 
 function formHtml(node: GraphNode, block: RawBlock): string {
-  if (block.type === 'beat' || block.type === 'conversation') {
-    return `<div class="form-note">Prose/weave block — read-only here for now.</div>`;
+  if (
+    block.type === 'beat' ||
+    block.type === 'conversation' ||
+    block.type === 'recipe' ||
+    block.type === 'proposal'
+  ) {
+    return `<div class="form-note">Prose/weave block — edit it in the script pane (click jumped there already).</div>`;
   }
   const rows = (FORM_FIELDS[node.kind] ?? []).map((spec) => {
     const key = spec.keys.find((k) => block.fields.some((f) => f.key === k)) ?? spec.keys[0];
@@ -846,6 +864,11 @@ const ID_PREFIX: Record<NodeKind, string> = {
   tiltak: 't_',
   dispatch: 'd_', // plain Opens: only classifies d_-prefixed ids (SB-033)
   clock: 'ck_',
+  // SB-046: never reachable — RELATION has no weave entries, so birthKinds
+  // filters these out of the create menu; the entries just satisfy the type.
+  conversation: 'chat:',
+  recipe: 'recipe_',
+  proposal: 'prop_',
 };
 
 /** `base`, else `base2`, `base3`, … — unique against every parsed block. */
