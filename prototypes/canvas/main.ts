@@ -315,7 +315,8 @@ function renderWorld(): void {
 
   for (const node of graph.nodes) {
     const el = document.createElement('div');
-    el.className = `node k-${node.kind}`;
+    // SB-049: a stub renders as a ghost — dashed border, id for a title.
+    el.className = `node k-${node.kind}${node.stub ? ' stub' : ''}`;
     el.style.left = `${node.x}px`;
     el.style.top = `${node.y}px`;
     el.dataset.id = node.id;
@@ -533,10 +534,18 @@ function renderInspector(id: string | null): void {
   const outs = outOf.get(id) ?? [];
   const ins = inOf.get(id) ?? [];
   inspectorBody.innerHTML = `
-    <div class="kind" style="color:var(${KIND_VAR[node.kind]})">${KIND_LABEL[node.kind]}</div>
+    <div class="kind" style="color:var(${KIND_VAR[node.kind]})">${KIND_LABEL[node.kind]}${node.stub ? ' · STUB' : ''}</div>
     <div class="iid">${id}</div>
     <div class="isub">${escapeHtml(node.sub)}</div>
-    ${block ? formHtml(node, block) : `<div class="ititle">${escapeHtml(node.title)}</div>`}
+    ${block ? formHtml(node, block) : node.stub ? '' : `<div class="ititle">${escapeHtml(node.title)}</div>`}
+    ${
+      node.stub
+        ? `<div class="form-note">Named in the script but never defined — the compiler keeps it as a stub.</div>
+    <div class="iactions">
+      <button class="ibtn" id="i-create-stub">create the block</button>
+    </div>`
+        : ''
+    }
     ${diagHtml(block)}
     <div class="sect">OPENS / FEEDS · ${outs.length}</div>
     ${outs.map((e) => relRow(e, e.to)).join('') || '<div class="empty">nothing — dead end?</div>'}
@@ -556,6 +565,10 @@ function renderInspector(id: string | null): void {
     if (!res.ok && res.reason) showTip(res.reason, viewport.clientWidth / 2, 80);
   });
   document.getElementById('i-del')?.addEventListener('click', () => requestDelete(id));
+  document.getElementById('i-create-stub')?.addEventListener('click', () => {
+    const res = createFromStub(id);
+    if (!res.ok && res.reason) showTip(res.reason, viewport.clientWidth / 2, 80);
+  });
   inspectorBody.querySelectorAll<HTMLElement>('[data-goto]').forEach((el) =>
     el.addEventListener('click', () => {
       const target = el.dataset.goto!;
@@ -846,13 +859,14 @@ export interface CreateResult extends EdgeWriteResult {
  * so the inspector opens for naming. `opts.at` (SB-042) pre-stores the drop
  * point in the sticky POS store so the node lands where the drag released;
  * without it the sticky layout appends at the kind column's end. Facts need
- * a parent document.
+ * a parent document. `opts.id` (SB-049) creates the block under a caller-fixed
+ * id — the create-from-stub path, where the id already exists in references.
  */
 export function createNode(
   kind: NodeKind,
-  opts: { documentId?: string; at?: NodePos } = {},
+  opts: { documentId?: string; at?: NodePos; id?: string } = {},
 ): CreateResult {
-  const id = freshId(`${ID_PREFIX[kind]}ny`);
+  const id = opts.id ?? freshId(`${ID_PREFIX[kind]}ny`);
   if (opts.at) {
     const stored = loadPositions();
     stored.set(id, { x: opts.at.x, y: opts.at.y });
@@ -877,6 +891,25 @@ export function createNode(
   centerOn(id);
   inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus();
   return { ok: true, id };
+}
+
+/**
+ * SB-049: turn a stub (script named it, no block defines it) into the real
+ * thing — the SB-042 create machinery with the stub's own id. The wires
+ * already exist in the markup (that is what made it a stub), so the block is
+ * born wired the moment it compiles; the ghost's sticky slot carries over
+ * because savePositions stored it, and focus lands in the first inspector
+ * field per the SB-042 pattern.
+ */
+export function createFromStub(stubId: string): CreateResult {
+  const node = nodeById.get(stubId);
+  if (!node || !node.stub) return { ok: false, reason: `${stubId} is not a stub` };
+  if (node.kind === 'fact')
+    return {
+      ok: false,
+      reason: 'a fact lives under a document — add its ## block in the script',
+    };
+  return createNode(node.kind, { id: stubId, at: { x: node.x, y: node.y } });
 }
 
 /** Copy a block's body as the template for a fresh `<id>_kopi` block. */
