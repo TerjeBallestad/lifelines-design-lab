@@ -36,6 +36,8 @@ import type { Heading } from '../script-editor/lens.ts';
 import { buildSymbols } from '../script-editor/symbols.ts';
 import { buildGraph, layoutGraph, stickyLayout, NODE_W, NODE_H } from './graph.ts';
 import type { CaseGraph, GraphNode, GraphEdge, NodeKind, NodePos } from './graph.ts';
+import { buildWorklist } from './worklist.ts';
+import type { WorklistEntry, WorklistGroup } from './worklist.ts';
 
 const $ = (id: string) => document.getElementById(id) as HTMLElement;
 const viewport = $('viewport');
@@ -234,6 +236,9 @@ function rebuild(): void {
     symbols: buildSymbols(result, crossJumpHeadings),
     diagnostics: result.diagnostics,
   });
+
+  // SB-044: re-derive the loose-end worklist from the fresh compile.
+  renderWorklist();
 }
 
 // ---- render --------------------------------------------------------------
@@ -1340,6 +1345,82 @@ document.addEventListener('keydown', (event) => {
     event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane');
   if (event.key === 'Escape' && !inTypingSurface) select(null);
 });
+
+// ---- loose-end worklist (SB-044) -----------------------------------------
+
+// One panel over the canvas listing every dangling end — stubs (SB-040
+// ruling 2), empty required fields, compiler diagnostics — each row a jump.
+// The count lives on the topbar toggle, chrome-styled like `script pane`.
+const worklistPanel = $('worklist');
+const worklistBody = $('worklist-body');
+const worklistToggle = $('toggle-worklist');
+export let worklist: WorklistEntry[] = [];
+
+const GROUP_LABEL: Record<WorklistGroup, string> = {
+  stub: 'STUBS',
+  'empty-field': 'EMPTY FIELDS',
+  diagnostic: 'DIAGNOSTICS',
+};
+
+worklistToggle.addEventListener('click', () => {
+  worklistPanel.classList.toggle('show');
+});
+
+/**
+ * Jump to a worklist entry: select + center the first subject that exists as
+ * a node (SB-041 machinery — select() also scrolls the lens to the block),
+ * then land the script lens on the exact diagnostic line. Entries with no
+ * live node (case-level lints, weave lines) still jump in the script.
+ */
+export function jumpToWorklistEntry(entry: WorklistEntry): void {
+  const id = entry.subjectIds.find((subjectId) => nodeById.has(subjectId));
+  if (id) {
+    select(id);
+    centerOn(id);
+  }
+  suppressCursorEcho = true;
+  scriptLens.scrollToLine(id ? (blockById.get(id)?.startLine ?? entry.line) : entry.line);
+}
+
+function renderWorklist(): void {
+  worklist = buildWorklist(result.diagnostics, [...blockById.values()]);
+  worklistToggle.textContent = `loose ends · ${worklist.length}`;
+  worklistToggle.classList.toggle('has-loose', worklist.length > 0);
+
+  const groups = (Object.keys(GROUP_LABEL) as WorklistGroup[])
+    .map((group) => ({
+      group,
+      rows: worklist
+        .map((entry, index) => ({ entry, index }))
+        .filter((r) => r.entry.group === group),
+    }))
+    .filter((g) => g.rows.length > 0);
+
+  worklistBody.innerHTML =
+    groups.length === 0
+      ? '<div class="empty">No loose ends — every thread is tied.</div>'
+      : groups
+          .map(
+            ({ group, rows }) =>
+              `<div class="sect">${GROUP_LABEL[group]} · ${rows.length}</div>` +
+              rows
+                .map(
+                  ({ entry, index }) =>
+                    `<div class="wl-row s-${entry.severity}" data-wi="${index}">
+                      <span class="dcode">${escapeHtml(entry.code)}</span>
+                      <span class="wmsg">${escapeHtml(entry.message)}</span>
+                    </div>`,
+                )
+                .join(''),
+          )
+          .join('');
+
+  worklistBody.querySelectorAll<HTMLElement>('[data-wi]').forEach((el) =>
+    el.addEventListener('click', () => {
+      jumpToWorklistEntry(worklist[Number(el.dataset.wi)]);
+    }),
+  );
+}
 
 // ---- status bar ----------------------------------------------------------
 
