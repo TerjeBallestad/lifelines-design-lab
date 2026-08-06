@@ -539,6 +539,146 @@ describe('canvas node lifecycle (SB-034)', () => {
   });
 });
 
+// ---- SB-049: stub nodes — unknown ids render as wired ghost nodes ---------
+
+describe('canvas stub nodes (SB-049)', () => {
+  it('an unknown id in Supports becomes a wired stub node in buildGraph', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph } = await import('./graph.ts');
+    const text = caseText.replace(
+      'Supports: q_grete_dor\nDiscuss: Frank',
+      'Supports: q_grete_dor, q_ukjent\nDiscuss: Frank',
+    );
+    expect(text).not.toBe(caseText);
+    const { slice, diagnostics } = compileCase(text);
+    // The compiler half of SB-040 ruling 2 already holds: a stub diagnostic.
+    expect(
+      diagnostics.some((d) => d.code === 'stub-unresolved-id' && d.subjectIds.includes('q_ukjent')),
+    ).toBe(true);
+
+    // The canvas half: the stub is a node now, carrying its wired edge.
+    const graph = buildGraph(slice);
+    const stub = graph.nodes.find((n) => n.id === 'q_ukjent')!;
+    expect(stub).toBeDefined();
+    expect(stub.stub).toBe(true);
+    expect(stub.kind).toBe('question');
+    expect(stub.title).toBe('q_ukjent');
+    expect(stub.sub).toBe('stub — no definition');
+    expect(
+      graph.edges.some(
+        (e) => e.from === 'f_grete_syk' && e.to === 'q_ukjent' && e.label === 'supports',
+      ),
+    ).toBe(true);
+
+    // Still no dangling edges: every endpoint is a node (real or stub).
+    const ids = new Set(graph.nodes.map((n) => n.id));
+    for (const edge of graph.edges) {
+      expect(ids.has(edge.from)).toBe(true);
+      expect(ids.has(edge.to)).toBe(true);
+    }
+  });
+
+  it('an unknown Opens target on a hypothesis stubs as a tiltak ghost', async () => {
+    const { compileCase } = await import('../../src/compiler/index.ts');
+    const { buildGraph } = await import('./graph.ts');
+    const text = caseText.replace('Opens: t_matlevering\n', 'Opens: t_matlevering, t_ukjent\n');
+    expect(text).not.toBe(caseText);
+    const graph = buildGraph(compileCase(text).slice);
+    const stub = graph.nodes.find((n) => n.id === 't_ukjent')!;
+    expect(stub).toBeDefined();
+    expect(stub.stub).toBe(true);
+    expect(stub.kind).toBe('tiltak');
+    expect(graph.edges.some((e) => e.to === 't_ukjent' && e.label === 'opens')).toBe(true);
+  });
+
+  it('renders the ghost, and "create the block" makes it real in place (SB-042 flow)', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    // Name an unknown question in the script — the draft path boots on it.
+    localStorage.setItem(
+      DRAFT_KEY,
+      caseText.replace(
+        'Supports: q_grete_dor\nDiscuss: Frank',
+        'Supports: q_grete_dor, q_ukjent\nDiscuss: Frank',
+      ),
+    );
+    const probe = await bootProbe();
+
+    // The ghost rendered: dashed stub styling hook + English sub line.
+    const ghost = document.querySelector<HTMLElement>('.node[data-id="q_ukjent"]')!;
+    expect(ghost).not.toBeNull();
+    expect(ghost.classList.contains('stub')).toBe(true);
+    expect(ghost.textContent).toContain('stub — no definition');
+
+    // Sticky layout: the stub sits in the question column, at its end —
+    // remember the slot so we can check the real node inherits it.
+    const stubNode = probe.graph.nodes.find((n) => n.id === 'q_ukjent')!;
+    const slot = { x: stubNode.x, y: stubNode.y };
+    const before = new Map(
+      probe.graph.nodes.filter((n) => n.id !== 'q_ukjent').map((n) => [n.id, { x: n.x, y: n.y }]),
+    );
+
+    // Click the ghost: the inspector offers "create the block".
+    ghost.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const inspector = document.getElementById('inspector-body')!;
+    expect(inspector.textContent).toContain('STUB');
+    const btn = document.getElementById('i-create-stub')!;
+    expect(btn.textContent).toBe('create the block');
+    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    // The block exists under the stub's own id and the ghost became real…
+    expect(probe.getCaseText()).toContain('# Question: q_ukjent');
+    const node = probe.graph.nodes.find((n) => n.id === 'q_ukjent')!;
+    expect(node.stub).toBeUndefined();
+    // …still wired (the Supports reference was there all along)…
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'f_grete_syk' && e.to === 'q_ukjent' && e.label === 'supports',
+      ),
+    ).toBe(true);
+    // …in the ghost's exact slot, with nothing else reshuffled (SB-034)…
+    expect({ x: node.x, y: node.y }).toEqual(slot);
+    for (const n of probe.graph.nodes)
+      if (before.has(n.id)) expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    // …selected with focus in the first inspector field (SB-042 pattern).
+    expect(probe.selectedId).toBe('q_ukjent');
+    const first = inspector.querySelector<HTMLInputElement>('.fval');
+    expect(document.activeElement).toBe(first);
+    expect(fetchMock).toHaveBeenCalledTimes(1); // one commit — no wire write needed
+    localStorage.clear();
+  });
+
+  it('a fact stub refuses create-from-stub with guidance — facts live under documents', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    localStorage.setItem(
+      DRAFT_KEY,
+      caseText.replace(
+        'needs: f_smart_gutt and f_ingen_matkjop',
+        'needs: f_smart_gutt and f_ingen_matkjop and f_ukjent',
+      ),
+    );
+    const probe = await bootProbe();
+    const beforeText = probe.getCaseText();
+
+    const ghost = document.querySelector<HTMLElement>('.node[data-id="f_ukjent"]')!;
+    expect(ghost).not.toBeNull();
+    ghost.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .getElementById('i-create-stub')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(probe.getCaseText()).toBe(beforeText); // nothing written
+    expect(fetchMock).not.toHaveBeenCalled();
+    const tipEl = document.getElementById('cursor-tip')!;
+    expect(tipEl.classList.contains('show')).toBe(true);
+    expect(tipEl.textContent).toContain('a fact lives under a document');
+    localStorage.clear();
+  });
+});
+
 // ---- SB-041: the script lens on the canvas page — two lenses, one buffer --
 
 describe('canvas script lens (SB-041)', () => {

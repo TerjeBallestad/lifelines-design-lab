@@ -24,6 +24,9 @@ export interface GraphNode {
   sub: string; // one metadata line, mockup-1a style
   x: number;
   y: number;
+  /** SB-049: an id named in the script (Supports/Opens/a condition) with no
+   *  block behind it — rendered as a ghost carrying its wired edges. */
+  stub?: boolean;
 }
 
 export interface GraphEdge {
@@ -40,6 +43,23 @@ export interface CaseGraph {
 }
 
 const ID_RE = /^(doc|f|q|h|t|d|ck)_/;
+
+/** The kind an id prefix promises — all a stub knows beyond its id. */
+const KIND_OF_PREFIX: Record<string, NodeKind> = {
+  doc: 'document',
+  f: 'fact',
+  q: 'question',
+  h: 'hypothesis',
+  t: 'tiltak',
+  d: 'dispatch',
+  ck: 'clock',
+};
+
+/** Kind inferred from a well-formed id prefix, or null (e.g. `call:grete`). */
+export function stubKindOf(id: string): NodeKind | null {
+  const match = id.match(ID_RE);
+  return match ? KIND_OF_PREFIX[match[1]] : null;
+}
 
 /** In-game icon markup in titles: coin renders as ¤ (mockup 1a), the rest drop. */
 function plainTitle(text: string): string {
@@ -194,8 +214,8 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
 
   for (const q of slice.questions) {
     for (const id of idsInPredicate(q.reveal_when)) addEdge(id, q.id, 'gate');
-    for (const lead of q.leads ?? [])
-      if (known.has(lead.target)) addEdge(q.id, lead.target, 'lead');
+    // SB-049: unknown lead targets stay in — the stub pass below catches them.
+    for (const lead of q.leads ?? []) addEdge(q.id, lead.target, 'lead');
   }
 
   for (const h of slice.hypotheses) {
@@ -222,8 +242,20 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
   for (const [tiltakId, needIds] of Object.entries(opts.tiltakNeeds ?? {}))
     for (const factId of needIds) addEdge(factId, tiltakId, 'needs');
 
-  // Drop edges whose endpoint never became a node (stubs stay diagnostics).
-  const edges = [...edgeSet.values()].filter((e) => known.has(e.from) && known.has(e.to));
+  // SB-049 (SB-040 ruling 2): an unknown id named in the script becomes a
+  // wired stub node — the Twine/Yarn/Ink consensus. The compiler already
+  // emitted stub-unresolved-id; here the ghost gets a body so the canvas can
+  // show it. Ids without a recognizable prefix (e.g. `call:grete`) still
+  // drop their edge — no kind, no column.
+  const ensureNode = (id: string): boolean => {
+    if (known.has(id)) return true;
+    const kind = stubKindOf(id);
+    if (kind === null) return false;
+    nodes.push({ id, kind, title: id, sub: 'stub — no definition', stub: true, x: 0, y: 0 });
+    known.add(id);
+    return true;
+  };
+  const edges = [...edgeSet.values()].filter((e) => ensureNode(e.from) && ensureNode(e.to));
   return { nodes, edges, arrivals };
 }
 

@@ -458,6 +458,19 @@
         background: var(--panel-hover);
       }
 
+      /* SB-049: stub ghosts — named in the script, no block behind them */
+      .node.stub {
+        border-style: dashed;
+        background: transparent;
+      }
+      .node.stub .ntitle {
+        color: var(--text-3);
+        font-style: italic;
+      }
+      .node.stub:hover {
+        background: var(--panel);
+      }
+
       /* per-kind color: left border + id */
       .k-document {
         border-left-color: var(--blue);
