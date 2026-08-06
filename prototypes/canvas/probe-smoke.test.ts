@@ -755,6 +755,84 @@ describe('canvas script lens (SB-041)', () => {
   });
 });
 
+// ---- SB-044: loose-end worklist — stubs and diagnostics as a jumpable list
+
+describe('canvas loose-end worklist (SB-044)', () => {
+  it('the topbar counter carries the count and the toggle shows the grouped panel', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    const toggle = document.getElementById('toggle-worklist')!;
+    expect(toggle.textContent).toBe(`loose ends · ${probe.worklist.length}`);
+
+    const panel = document.getElementById('worklist')!;
+    expect(panel.classList.contains('show')).toBe(false);
+    toggle.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(panel.classList.contains('show')).toBe(true);
+    expect(document.querySelectorAll('#worklist-body [data-wi]').length).toBe(
+      probe.worklist.length,
+    );
+    localStorage.clear();
+  });
+
+  it('a stub reference appears in the list and re-derives on every commit', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    const stubsBefore = probe.worklist.filter((e) => e.group === 'stub').length;
+    const countBefore = probe.worklist.length;
+
+    // Type an unknown Supports id in the lens — after the recompile the
+    // worklist grows by one stub and the counter follows.
+    probe.scriptLens.view.dispatch({
+      changes: {
+        from: probe.scriptLens.getText().indexOf('Supports: q_grete_dor\n'),
+        insert: 'Supports: q_finnes_ikke\n',
+      },
+    });
+    await new Promise((r) => setTimeout(r, 450));
+
+    const stubs = probe.worklist.filter((e) => e.group === 'stub');
+    expect(stubs.length).toBe(stubsBefore + 1);
+    expect(stubs.some((e) => e.subjectIds.includes('q_finnes_ikke'))).toBe(true);
+    expect(probe.worklist.length).toBeGreaterThan(countBefore);
+    expect(document.getElementById('toggle-worklist')!.textContent).toBe(
+      `loose ends · ${probe.worklist.length}`,
+    );
+    localStorage.clear();
+  });
+
+  it('clicking an entry jumps: node selected + centered, lens on the block heading', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    // A fresh blank tiltak is a loose end (empty Title) with a live node.
+    const res = probe.createNode('tiltak');
+    expect(res.ok).toBe(true);
+    probe.select(null);
+
+    const entry = probe.worklist.find(
+      (e) => e.group === 'empty-field' && e.subjectIds.includes('t_ny'),
+    )!;
+    expect(entry).toBeDefined();
+    expect(entry.message).toBe('t_ny: Title is empty');
+
+    document.getElementById('toggle-worklist')!.dispatchEvent(new MouseEvent('click'));
+    const row = [...document.querySelectorAll<HTMLElement>('#worklist-body [data-wi]')].find((el) =>
+      el.textContent!.includes('t_ny: Title is empty'),
+    )!;
+    row.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(probe.selectedId).toBe('t_ny');
+    expect(document.querySelector('.node.selected')!.getAttribute('data-id')).toBe('t_ny');
+    const headingLine = lensLineOf(probe, '# Tiltak: t_ny');
+    expect(probe.scriptLens.getCursorLine()).toBe(headingLine);
+    localStorage.clear();
+  });
+});
+
 // ---- SB-041 task 3: cross-jump both ways with a bounce guard --------------
 
 /** 1-based line number of the first line matching `needle` in the lens doc. */
