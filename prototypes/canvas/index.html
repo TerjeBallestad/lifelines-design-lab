@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kildeverket — canvas probe</title>
+    <title>Kildeverket — editor (script + canvas)</title>
     <style>
       /* PM Board tokens — same set as prototypes/script-editor */
       :root {
@@ -27,6 +27,12 @@
         --yellow: #e2c541;
         --danger: #e5484d;
         --gold: #d3b078;
+        /* SB-041 script lens tokens — same values as prototypes/script-editor */
+        --surface-code: #0d0e12;
+        --text-prose: #c9cbd4;
+        --tint-accent: rgba(123, 131, 235, 0.1);
+        --tint-orange: rgba(240, 136, 62, 0.09);
+        --tint-yellow: rgba(226, 197, 65, 0.1);
         --mono: ui-monospace, 'SF Mono', Menlo, monospace;
         --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       }
@@ -44,15 +50,22 @@
         font-family: var(--sans);
         overflow: hidden;
       }
+      /* SB-041 hybrid layout: script pane | canvas | inspector */
       #app {
         display: grid;
         grid-template-rows: 44px 1fr 28px;
-        grid-template-columns: 1fr 320px;
+        grid-template-columns: minmax(320px, 30%) 1fr 320px;
         grid-template-areas:
-          'top top'
-          'canvas inspector'
-          'status status';
+          'top top top'
+          'script canvas inspector'
+          'status status status';
         height: 100vh;
+      }
+      #app.script-collapsed {
+        grid-template-columns: 0 1fr 320px;
+      }
+      #app.script-collapsed #script-pane {
+        display: none;
       }
 
       /* top bar — same strip as the script probe, Canvas active */
@@ -101,6 +114,168 @@
         margin-left: auto;
         font: 500 10.5px var(--mono);
         color: var(--text-3);
+      }
+
+      /* topbar script-pane toggle (SB-041) */
+      #toggle-script {
+        all: unset;
+        padding: 4px 10px;
+        border: 1px solid var(--input-border);
+        border-radius: 7px;
+        background: var(--input);
+        color: var(--text-2);
+        font: 500 11px var(--sans);
+        cursor: pointer;
+      }
+      #toggle-script:hover {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+
+      /* script pane — CodeMirror lens host (SB-041), styling as the
+         standalone script page's #editor-pane */
+      #script-pane {
+        grid-area: script;
+        position: relative;
+        background: var(--surface-code);
+        border-right: 1px solid var(--border);
+        overflow: hidden;
+        min-width: 0;
+      }
+      #script-pane .cm-editor {
+        height: 100%;
+      }
+      #script-pane .cm-editor.cm-focused {
+        outline: none;
+      }
+
+      /* token classes (built by the lens classifier) */
+      .tok-h-doc {
+        color: var(--blue);
+        font-weight: 600;
+      }
+      .tok-h-fact {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .tok-h-question {
+        color: var(--yellow);
+        font-weight: 600;
+      }
+      .tok-h-hypothesis {
+        color: var(--purple);
+        font-weight: 600;
+      }
+      .tok-h-tiltak {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .tok-h-dispatch {
+        color: var(--orange);
+        font-weight: 600;
+      }
+      .tok-h-clock {
+        color: var(--gold);
+        font-weight: 600;
+      }
+      .tok-h-case {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .tok-key {
+        color: var(--text-3);
+      }
+      .tok-key-gate {
+        color: var(--yellow);
+      }
+      .tok-key-needs {
+        color: var(--purple);
+      }
+      .tok-key-opens {
+        color: var(--green);
+      }
+      .tok-id-doc {
+        color: var(--blue);
+      }
+      .tok-id-fact {
+        color: var(--accent);
+      }
+      .tok-id-question {
+        color: var(--yellow);
+      }
+      .tok-id-hypothesis {
+        color: var(--purple);
+      }
+      .tok-id-tiltak {
+        color: var(--green);
+      }
+      .tok-id-dispatch {
+        color: var(--orange);
+      }
+      .tok-id-clock {
+        color: var(--gold);
+      }
+      .tok-anchor-text {
+        background: var(--tint-accent);
+        border-radius: 3px;
+      }
+      .tok-anchor-ref {
+        color: var(--accent);
+      }
+      .tok-quote {
+        color: var(--text-2);
+        font-style: italic;
+      }
+      .tok-comment {
+        color: var(--text-4);
+        font-style: italic;
+      }
+      .tok-effect {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .tok-weave {
+        color: var(--purple);
+        font-weight: 600;
+      }
+      .tok-guard {
+        color: var(--yellow);
+      }
+      .tok-kw {
+        color: var(--text-2);
+        font-weight: 600;
+      }
+      .tok-icon {
+        color: var(--gold);
+      }
+      .tok-todo {
+        background: var(--tint-orange);
+      }
+      .tok-todo,
+      .tok-todo * {
+        color: var(--orange);
+      }
+
+      /* ⌘ held: ids advertise goto-definition */
+      body.goto-mode [class*='tok-id-'] {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+      }
+
+      /* lens hover tooltips */
+      .kv-tip {
+        max-width: 340px;
+        padding: 8px 11px;
+        font: 400 11px/1.55 var(--sans);
+      }
+      .kv-tip-title {
+        font: 600 10.5px var(--mono);
+        color: var(--text);
+        margin-bottom: 3px;
+      }
+      .kv-tip-body {
+        color: var(--text-2);
       }
 
       /* canvas viewport */
@@ -596,13 +771,15 @@
         <span class="name">Kildeverket</span>
         <span class="file">tiny-olsen.case.md</span>
         <span class="tabs">
-          <a href="../script-editor/">Script</a>
-          <span class="active">Canvas</span>
+          <span class="active">Editor</span>
+          <a href="../script-editor/" title="standalone script page">Script</a>
           <span title="not built — behind the fog">Pacing</span>
           <span title="not built">Playtest</span>
         </span>
+        <button id="toggle-script" title="collapse/expand the script pane">script pane</button>
         <span id="counts"></span>
       </div>
+      <div id="script-pane"></div>
       <div id="viewport">
         <div id="world">
           <svg id="edges"></svg>

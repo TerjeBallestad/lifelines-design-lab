@@ -5,6 +5,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 
+// CodeMirror (the SB-041 script lens) measures text with Range APIs jsdom
+// does not implement — same polyfill as the script-editor smoke test.
+Range.prototype.getBoundingClientRect = () =>
+  ({ x: 0, y: 0, top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 }) as DOMRect;
+Range.prototype.getClientRects = () =>
+  ({ length: 0, item: () => null, [Symbol.iterator]: [][Symbol.iterator] }) as DOMRectList;
+
 const ROOT = process.cwd();
 const caseText = readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8');
 
@@ -528,6 +535,170 @@ describe('canvas node lifecycle (SB-034)', () => {
     expect({ x: moved.x, y: moved.y }).toEqual({ x: 999, y: 777 });
     for (const n of probe.graph.nodes)
       if (n.id !== 'f_grete_syk') expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    localStorage.clear();
+  });
+});
+
+// ---- SB-041: the script lens on the canvas page — two lenses, one buffer --
+
+describe('canvas script lens (SB-041)', () => {
+  it('inspector field commit lands in the lens doc — one shared buffer', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    // The lens booted on the same buffer the canvas owns.
+    expect(probe.scriptLens.getText()).toBe(probe.getCaseText());
+
+    probe.select('f_grete_syk');
+    const input = document.querySelector<HTMLInputElement>(
+      '#inspector-body .fval[data-key="Label"]',
+    )!;
+    input.value = 'Grete er alvorlig syk (via inspektøren)';
+    input.dispatchEvent(new Event('change'));
+
+    // The patched line reached the CodeMirror doc itself, not a copy.
+    expect(probe.scriptLens.getText()).toContain('Label: Grete er alvorlig syk (via inspektøren)');
+    expect(probe.scriptLens.getText()).toBe(probe.getCaseText());
+    localStorage.clear();
+  });
+
+  it('a lens TODO edit recompiles after the debounce: statusbar updates, every position holds byte-identical', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = new Map(probe.graph.nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
+    const statusbar = document.getElementById('statusbar')!;
+    expect(statusbar.textContent).not.toContain('TODO');
+
+    probe.scriptLens.view.dispatch({ changes: { from: 0, insert: 'TODO: lens smoke line\n' } });
+    await new Promise((r) => setTimeout(r, 450));
+
+    // The typed edit became THE buffer and the recompile reached the statusbar…
+    expect(probe.getCaseText().startsWith('TODO: lens smoke line\n')).toBe(true);
+    expect(statusbar.textContent).toContain('1 TODO');
+    expect(statusbar.textContent).toContain('compiled');
+    // …while the sticky layout held: byte-identical x/y for every node.
+    for (const n of probe.graph.nodes) expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    expect(fetchMock).not.toHaveBeenCalled(); // typing drafts — it never auto-saves
+    localStorage.clear();
+  });
+
+  it('lens edit stashes the shared DRAFT_KEY; a canvas commit + successful save clears it', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    // Type in the lens: after the draft debounce the shared key holds the edit.
+    probe.scriptLens.view.dispatch({ changes: { from: 0, insert: '// lens draft line\n' } });
+    await new Promise((r) => setTimeout(r, 450));
+    expect(localStorage.getItem(DRAFT_KEY)).toContain('// lens draft line');
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    // A canvas commit on the (lens-synced) buffer saves and clears the draft.
+    probe.select('f_grete_syk');
+    const input = document.querySelector<HTMLInputElement>(
+      '#inspector-body .fval[data-key="Label"]',
+    )!;
+    input.value = 'Grete er alvorlig syk (commit etter lens-edit)';
+    input.dispatchEvent(new Event('change'));
+
+    // The commit patched the ONE buffer — the lens edit is still in it.
+    expect(probe.getCaseText()).toContain('// lens draft line');
+    expect(probe.getCaseText()).toContain('Label: Grete er alvorlig syk (commit etter lens-edit)');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
+    localStorage.clear();
+  });
+});
+
+// ---- SB-041 task 3: cross-jump both ways with a bounce guard --------------
+
+/** 1-based line number of the first line matching `needle` in the lens doc. */
+function lensLineOf(probe: Awaited<ReturnType<typeof bootProbe>>, needle: string): number {
+  const lines = probe.scriptLens.getText().split('\n');
+  const idx = lines.findIndex((l) => l.startsWith(needle));
+  expect(idx).toBeGreaterThanOrEqual(0);
+  return idx + 1;
+}
+
+const settle = (ms = 250) => new Promise((r) => setTimeout(r, ms));
+
+describe('canvas cross-jump (SB-041)', () => {
+  it('canvas select scrolls the lens to the block heading without stealing focus', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    const headingLine = lensLineOf(probe, '## f_grete_syk');
+
+    probe.select('f_grete_syk');
+
+    // The lens main selection sits on the fact's heading line…
+    expect(probe.scriptLens.getCursorLine()).toBe(headingLine);
+    // …and keyboard focus was NOT stolen by the script pane: a designer
+    // clicking a node then typing in an inspector field keeps typing there.
+    const pane = document.getElementById('script-pane')!;
+    expect(pane.contains(document.activeElement)).toBe(false);
+    localStorage.clear();
+  });
+
+  it('moving the lens cursor into another block selects + centers that node', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    expect(probe.selectedId).toBeNull();
+
+    // Put the cursor on a line INSIDE the q_okonomi block (heading + 1) —
+    // a real selection dispatch on the lens view, then wait out the 80ms
+    // cursor debounce.
+    const inside = lensLineOf(probe, '# Question: q_okonomi') + 1;
+    const pos = probe.scriptLens.view.state.doc.line(inside).from;
+    probe.scriptLens.view.dispatch({ selection: { anchor: pos } });
+    await settle();
+
+    expect(probe.selectedId).toBe('q_okonomi');
+    expect(document.querySelector('.node.selected')!.getAttribute('data-id')).toBe('q_okonomi');
+    localStorage.clear();
+  });
+
+  it('no bounce: each direction settles in one step, and typing in a block does not re-jump', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    // Canvas → script: after a generous settle the canvas selection is
+    // unchanged (the lens cursor echo was swallowed, no jump fired back).
+    const factHeading = lensLineOf(probe, '## f_grete_syk');
+    probe.select('f_grete_syk');
+    await settle();
+    expect(probe.selectedId).toBe('f_grete_syk');
+    expect(probe.scriptLens.getCursorLine()).toBe(factHeading);
+
+    // Script → canvas: the script-initiated select must not scroll the
+    // script pane back — the cursor stays exactly where the test put it.
+    const inside = lensLineOf(probe, '# Question: q_okonomi') + 1;
+    const pos = probe.scriptLens.view.state.doc.line(inside).from;
+    probe.scriptLens.view.dispatch({ selection: { anchor: pos } });
+    await settle();
+    expect(probe.selectedId).toBe('q_okonomi');
+    expect(probe.scriptLens.getCursorLine()).toBe(inside);
+
+    // Still settled after another generous wait — no delayed ping-pong.
+    await settle();
+    expect(probe.selectedId).toBe('q_okonomi');
+    expect(probe.scriptLens.getCursorLine()).toBe(inside);
+
+    // Typing on another line of the SAME block dedupes by block: the canvas
+    // selection holds and nothing re-fires.
+    probe.scriptLens.view.dispatch({
+      selection: { anchor: probe.scriptLens.view.state.doc.line(inside + 1).from },
+    });
+    await settle();
+    expect(probe.selectedId).toBe('q_okonomi');
+    expect(probe.scriptLens.getCursorLine()).toBe(inside + 1);
     localStorage.clear();
   });
 });

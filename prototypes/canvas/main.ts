@@ -12,6 +12,10 @@
 // a RELATION-filtered menu → the node lands at the drop point, wired, focus
 // in its first inspector field. Replaces the SB-034 'n → blank form' create
 // (killed by SB-040 ruling 2).
+// SB-041 — the hybrid editor: the shared CodeMirror script lens
+// (prototypes/script-editor/lens.ts) mounts on the left over the SAME
+// caseText buffer. Canvas commits push into the lens (setText, external);
+// lens typing debounce-recompiles, drafts, and rebuilds sticky.
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
@@ -27,6 +31,9 @@ import {
 } from '../../src/compiler/patch.ts';
 import { parseCondition } from '../../src/compiler/condition.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
+import { mountScriptLens, indexHeadings } from '../script-editor/lens.ts';
+import type { Heading } from '../script-editor/lens.ts';
+import { buildSymbols } from '../script-editor/symbols.ts';
 import { buildGraph, layoutGraph, stickyLayout, NODE_W, NODE_H } from './graph.ts';
 import type { CaseGraph, GraphNode, GraphEdge, NodeKind, NodePos } from './graph.ts';
 
@@ -52,6 +59,91 @@ let draftRestored = caseText !== initialText;
 export function getCaseText(): string {
   return caseText;
 }
+
+// ---- script lens (SB-041): the second surface over the same buffer --------
+
+// Typing in the script pane debounce-recompiles (150 ms) and stashes the
+// shared draft (300 ms) — the same rhythm as the standalone script page.
+// A canvas commit pushed back via setText() arrives tagged external and is
+// skipped here: the buffer already carries it, recompiling would echo.
+let lensCompileTimer: ReturnType<typeof setTimeout> | undefined;
+let lensDraftTimer: ReturnType<typeof setTimeout> | undefined;
+
+// ---- cross-jump both ways (SB-041 task 3, SB-040 ruling 1) ---------------
+//
+// Canvas → script: a real node selection scrolls the lens to the block's
+// heading WITHOUT stealing keyboard focus (scrollToLine). Script → canvas:
+// the debounced cursor-line callback resolves the enclosing block and
+// selects + centers it. Bounce guard: each direction sets a one-shot flag
+// the other consumes — one jump per user action, settling in one step.
+let crossJumpHeadings: Heading[] = [];
+/** Dedupe: the block the lens cursor last reported — typing inside one
+ *  block must not re-center the canvas on every keystroke. */
+let lastCursorBlockId: string | null = null;
+/** A canvas-initiated scrollToLine moves the lens selection, which fires
+ *  the cursor callback ~80ms later — this flag swallows that echo. */
+let suppressCursorEcho = false;
+/** A script-initiated select() must not scroll the script pane back. */
+let scriptDrivenSelect = false;
+
+/** The block whose section encloses a 1-based lens line, or null. */
+function blockIdAtLine(line: number): string | null {
+  let hit: string | null = null;
+  for (const h of crossJumpHeadings)
+    if (h.id !== '' && h.line <= line && line <= h.endLine) hit = h.id;
+  return hit;
+}
+
+/** Pull the lens doc into caseText and rebuild (sticky — SB-034). */
+function syncFromLens(): void {
+  clearTimeout(lensCompileTimer);
+  lensCompileTimer = undefined;
+  caseText = scriptLens.getText();
+  rebuild();
+}
+
+export const scriptLens = mountScriptLens({
+  parent: $('script-pane'),
+  doc: caseText,
+  onDocChanged: ({ external }) => {
+    if (external) return; // canvas commit round-trip — already compiled
+    clearTimeout(lensCompileTimer);
+    lensCompileTimer = setTimeout(syncFromLens, 150);
+    clearTimeout(lensDraftTimer);
+    lensDraftTimer = setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, scriptLens.getText());
+    }, 300);
+  },
+  onCursorLineChanged: (line) => {
+    const id = blockIdAtLine(line);
+    if (suppressCursorEcho) {
+      // The echo of a canvas-initiated jump — track the block, don't jump back.
+      suppressCursorEcho = false;
+      lastCursorBlockId = id;
+      return;
+    }
+    if (id === lastCursorBlockId) return; // still inside the same block
+    lastCursorBlockId = id;
+    if (id === null || id === selectedId || !nodeById.has(id)) return;
+    scriptDrivenSelect = true;
+    try {
+      select(id);
+      centerOn(id);
+    } finally {
+      scriptDrivenSelect = false;
+    }
+  },
+  onSaveRequested: () => {
+    // ⌘S in the lens: flush any pending recompile so persist() posts the
+    // exact buffer on screen, then save through the shared pipeline.
+    if (lensCompileTimer !== undefined) syncFromLens();
+    void persist();
+  },
+});
+
+$('toggle-script').addEventListener('click', () => {
+  $('app').classList.toggle('script-collapsed');
+});
 
 // ---- sticky node positions (SB-034) --------------------------------------
 
@@ -132,6 +224,16 @@ function rebuild(): void {
   renderStatus();
   // Selection survives the rebuild; a node the edit removed clears it.
   select(selectedId !== null && nodeById.has(selectedId) ? selectedId : null);
+
+  // SB-041: feed the lens fresh compile context — headings for folding/jump,
+  // symbols for autocomplete/hover/goto-def, diagnostics for lint squiggles.
+  // Hoisted into module state: the cursor→block resolution reads it too.
+  crossJumpHeadings = indexHeadings(caseText.split('\n'));
+  scriptLens.update({
+    headings: crossJumpHeadings,
+    symbols: buildSymbols(result, crossJumpHeadings),
+    diagnostics: result.diagnostics,
+  });
 }
 
 // ---- render --------------------------------------------------------------
@@ -263,6 +365,7 @@ export let selectedId: string | null = null;
 
 export function select(id: string | null): void {
   if (id !== null && selectedEdgeKey !== null) applyEdgeSelection(null);
+  const changed = id !== selectedId;
   selectedId = id;
   document.body.classList.toggle('has-selection', id !== null);
   const lit = new Set<string>();
@@ -289,6 +392,17 @@ export function select(id: string | null): void {
     els.text.style.display = on && edge.label ? '' : 'none';
   }
   renderInspector(id);
+  // SB-041 cross-jump, canvas → script: a real (changed, non-null) selection
+  // scrolls the lens to the block heading — no focus steal, so inspector
+  // typing keeps landing in the inspector. Script-driven selects skip this
+  // (bounce guard); rebuild's re-select of the same id skips via `changed`.
+  if (id !== null && changed && !scriptDrivenSelect) {
+    const block = blockById.get(id);
+    if (block) {
+      suppressCursorEcho = true;
+      scriptLens.scrollToLine(block.startLine);
+    }
+  }
 }
 
 // ---- edge selection (SB-033) ---------------------------------------------
@@ -498,11 +612,15 @@ function commitField(blockId: string, key: string, value: string): void {
   commitText(patched);
 }
 
-/** Shared commit tail: buffer → draft → rebuild → save POST. */
+/** Shared commit tail: buffer → draft → rebuild → lens sync → save POST. */
 function commitText(patched: string): void {
   caseText = patched;
   localStorage.setItem(DRAFT_KEY, caseText);
   rebuild();
+  // Push the committed buffer into the script lens as a minimal external
+  // replacement — cursor and undo history survive; the external flag stops
+  // the doc-changed handler from echoing a second compile.
+  scriptLens.setText(caseText);
   void persist();
 }
 
@@ -512,6 +630,8 @@ async function persist(): Promise<void> {
   try {
     const res = await fetch('/__save-case', { method: 'POST', body: caseText });
     if (!res.ok) throw new Error(await res.text());
+    // A lens draft stash still in flight would resurrect the cleared draft.
+    clearTimeout(lensDraftTimer);
     localStorage.removeItem(DRAFT_KEY);
     draftRestored = false;
     const t = new Date();
@@ -1115,7 +1235,8 @@ window.addEventListener('pointerup', (event) => {
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Delete' && event.key !== 'Backspace') return;
-  if (event.target instanceof HTMLElement && event.target.closest('.fval')) return;
+  // Typing surfaces own these keys: inspector fields and the script lens.
+  if (event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane')) return;
   if (selectedEdgeKey !== null) {
     const edge = graph.edges.find((e) => edgeKeyOf(e) === selectedEdgeKey);
     if (!edge) return;
@@ -1213,8 +1334,11 @@ $('z-out').addEventListener('click', () => {
 $('z-fit').addEventListener('click', fit);
 $('z-layout')?.addEventListener('click', relayout);
 document.addEventListener('keydown', (event) => {
-  const inField = event.target instanceof HTMLElement && event.target.closest('.fval');
-  if (event.key === 'Escape' && !inField) select(null);
+  // Esc while typing — inspector field OR the script lens — must not clear
+  // the canvas selection mid-thought (SB-041); Esc on the canvas side clears.
+  const inTypingSurface =
+    event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane');
+  if (event.key === 'Escape' && !inTypingSurface) select(null);
 });
 
 // ---- status bar ----------------------------------------------------------
@@ -1222,6 +1346,7 @@ document.addEventListener('keydown', (event) => {
 function renderStatus(): void {
   const warnings = result.diagnostics.filter((d) => d.severity === 'warning').length;
   const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
+  const todos = result.diagnostics.filter((d) => d.code === 'todo-line').length;
   const quiet = result.diagnostics.find((d) => d.code === 'lint-quiet-day');
   const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
 
@@ -1230,6 +1355,7 @@ function renderStatus(): void {
   <span class="${errors ? 'warn-c' : 'ok'}">compiled ${compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
   <span>${graph.nodes.length} nodes · ${graph.edges.length} edges</span>
   ${warnings ? `<span class="warn-c">${warnings} warnings</span>` : ''}
+  ${todos ? `<span class="warn-c">${todos} TODO</span>` : ''}
   ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
   ${draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
   ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
