@@ -184,6 +184,40 @@
         display: block;
       }
 
+      /* SB-042: drop-create menu — release a port drag on empty canvas */
+      #create-menu {
+        position: fixed;
+        z-index: 21;
+        display: none;
+        flex-direction: column;
+        min-width: 148px;
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-radius: 7px;
+        padding: 3px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      }
+      #create-menu.show {
+        display: flex;
+      }
+      #create-menu .cm-head {
+        font: 600 8.5px var(--mono);
+        letter-spacing: 0.07em;
+        color: var(--text-4);
+        padding: 4px 8px 3px;
+      }
+      #create-menu .cm-item {
+        all: unset;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+      #create-menu .cm-item:hover {
+        background: var(--panel-hover);
+      }
+
       /* nodes */
       .node {
         position: absolute;
@@ -579,7 +613,6 @@
           <span class="pct" id="z-pct">100%</span>
           <button id="z-in" title="zoom in">+</button>
           <button id="z-fit" title="fit the whole case">fit</button>
-          <button id="z-new" title="new node (n)">+ new</button>
           <button id="z-layout" title="forget saved positions and lay out again">re-layout</button>
         </div>
         <div id="legend"></div>

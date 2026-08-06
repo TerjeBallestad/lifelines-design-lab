@@ -285,6 +285,128 @@ describe('canvas edge authoring (SB-033)', () => {
 
 // ---- SB-034: node lifecycle — create, duplicate, delete, sticky layout ----
 
+// ---- SB-042: drag-wire-to-empty create ------------------------------------
+
+/** Drag from a node's port and release on empty canvas at (300, 200). */
+function dragToEmpty(fromId: string): void {
+  const port = document.querySelector<HTMLElement>(`.node[data-id="${fromId}"] .port`)!;
+  port.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10 }));
+  window.dispatchEvent(new MouseEvent('pointermove', { clientX: 300, clientY: 200 }));
+  document
+    .getElementById('viewport')!
+    .dispatchEvent(new MouseEvent('pointerup', { bubbles: true, clientX: 300, clientY: 200 }));
+}
+
+describe('canvas drag-wire-to-empty create (SB-042)', () => {
+  it('release on empty canvas opens the menu filtered by the RELATION table', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    await bootProbe();
+
+    const fact = document.querySelector<HTMLElement>('.node[data-id="f_grete_syk"]')!;
+    expect(fact).not.toBeNull();
+    dragToEmpty('f_grete_syk');
+
+    const menu = document.getElementById('create-menu')!;
+    expect(menu.classList.contains('show')).toBe(true);
+    const offered = [...menu.querySelectorAll<HTMLElement>('[data-mk]')].map((b) => b.dataset.mk);
+    // Everything a fact may legally feed — and nothing else.
+    expect(offered.sort()).toEqual(['clock', 'dispatch', 'hypothesis', 'question', 'tiltak']);
+    localStorage.clear();
+  });
+
+  it('picking QUESTION from a fact drag: born at the drop point, wired, inspector focused', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const before = new Map(probe.graph.nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
+
+    dragToEmpty('f_grete_syk');
+    document
+      .querySelector<HTMLElement>('#create-menu [data-mk="question"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    // The block exists and the wire was written in the same gesture.
+    expect(probe.getCaseText()).toContain('# Question: q_ny');
+    expect(probe.getCaseText()).toMatch(/Supports: .*q_ny/);
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'f_grete_syk' && e.to === 'q_ny' && e.label === 'supports',
+      ),
+    ).toBe(true);
+
+    // Born at the drop point (viewport transform is identity in jsdom)…
+    const node = probe.graph.nodes.find((n) => n.id === 'q_ny')!;
+    expect({ x: node.x, y: node.y }).toEqual({ x: 300, y: 200 });
+    // …every pre-existing node kept its exact position…
+    for (const n of probe.graph.nodes)
+      if (before.has(n.id)) expect({ x: n.x, y: n.y }).toEqual(before.get(n.id));
+    // …and the inspector opened on it for naming.
+    expect(probe.selectedId).toBe('q_ny');
+    expect(document.getElementById('create-menu')!.classList.contains('show')).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(2); // create commit + wire commit
+    localStorage.clear();
+  });
+
+  it('document port offers FACT; the fact is born under that document', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const doc = probe.graph.nodes.find((n) => n.kind === 'document')!;
+
+    dragToEmpty(doc.id);
+    const menu = document.getElementById('create-menu')!;
+    const offered = [...menu.querySelectorAll<HTMLElement>('[data-mk]')].map((b) => b.dataset.mk);
+    expect(offered).toEqual(['fact']);
+
+    menu
+      .querySelector<HTMLElement>('[data-mk="fact"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(probe.getCaseText()).toContain('## f_ny');
+    // The source edge is derived from containment — one commit, no wire write.
+    expect(
+      probe.graph.edges.some((e) => e.from === doc.id && e.to === 'f_ny' && e.label === 'source'),
+    ).toBe(true);
+    expect(probe.selectedId).toBe('f_ny');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    localStorage.clear();
+  });
+
+  it('an endpoint port (tiltak) refuses with the cursor tip — nothing written', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+    const beforeText = probe.getCaseText();
+
+    const tiltak = probe.graph.nodes.find((n) => n.kind === 'tiltak')!;
+    dragToEmpty(tiltak.id);
+
+    expect(document.getElementById('create-menu')!.classList.contains('show')).toBe(false);
+    const tipEl = document.getElementById('cursor-tip')!;
+    expect(tipEl.classList.contains('show')).toBe(true);
+    expect(tipEl.textContent).toContain('no node can be born');
+    expect(probe.getCaseText()).toBe(beforeText);
+    expect(fetchMock).not.toHaveBeenCalled();
+    localStorage.clear();
+  });
+
+  it('the bare n-key create is gone (SB-040 ruling 2)', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    await bootProbe();
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'n', bubbles: true, cancelable: true }),
+    );
+    expect(document.getElementById('inspector-body')!.textContent).not.toContain('NEW NODE');
+    expect(document.getElementById('z-new')).toBeNull();
+    localStorage.clear();
+  });
+});
+
 describe('canvas node lifecycle (SB-034)', () => {
   it('creates nodes from templates: markup block, column-end slot, inspector open — nothing else moves', async () => {
     localStorage.clear();

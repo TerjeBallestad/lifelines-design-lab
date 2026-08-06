@@ -5,9 +5,13 @@
 // SB-033 — edge authoring: drag from a node's port to a legal target writes
 // the relation to the markup (Supports/Opens/Needs lists, condition terms,
 // the hypothesis Question field); selecting an edge + Delete removes it.
-// SB-034 — node lifecycle: create from template (n / +), duplicate, delete
-// with an inbound-reference warning; sticky layout — positions persist per
-// case, edits never reshuffle the board, 're-layout' recomputes once.
+// SB-034 — node lifecycle: duplicate, delete with an inbound-reference
+// warning; sticky layout — positions persist per case, edits never reshuffle
+// the board, 're-layout' recomputes once.
+// SB-042 — drag-wire-to-empty create: release a port drag on empty canvas →
+// a RELATION-filtered menu → the node lands at the drop point, wired, focus
+// in its first inspector field. Replaces the SB-034 'n → blank form' create
+// (killed by SB-040 ruling 2).
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
@@ -713,18 +717,32 @@ function freshId(base: string): string {
 
 let lifecycleNote = '';
 
+export interface CreateResult extends EdgeWriteResult {
+  id?: string;
+}
+
 /**
- * Create a node of `kind` from its DEFAULT_TEMPLATES block, commit, land it
- * at the end of its kind column (sticky layout appends), select it so the
- * inspector opens for naming. Facts need a parent document.
+ * Create a node of `kind` from its DEFAULT_TEMPLATES block, commit, select it
+ * so the inspector opens for naming. `opts.at` (SB-042) pre-stores the drop
+ * point in the sticky POS store so the node lands where the drag released;
+ * without it the sticky layout appends at the kind column's end. Facts need
+ * a parent document.
  */
-export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): EdgeWriteResult {
+export function createNode(
+  kind: NodeKind,
+  opts: { documentId?: string; at?: NodePos } = {},
+): CreateResult {
   const id = freshId(`${ID_PREFIX[kind]}ny`);
+  if (opts.at) {
+    const stored = loadPositions();
+    stored.set(id, { x: opts.at.x, y: opts.at.y });
+    localStorage.setItem(POS_KEY, JSON.stringify(Object.fromEntries(stored)));
+  }
   try {
     let patched: string;
     if (kind === 'fact') {
       if (!opts.documentId)
-        return { ok: false, reason: 'a fact needs a document — pick one from the list' };
+        return { ok: false, reason: 'a fact needs a document — drag from its document instead' };
       patched = appendBlock(caseText, 'fact', id, { documentId: opts.documentId });
     } else {
       patched = appendBlock(caseText, kind, id);
@@ -738,7 +756,7 @@ export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): 
   select(id);
   centerOn(id);
   inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus();
-  return { ok: true };
+  return { ok: true, id };
 }
 
 /** Copy a block's body as the template for a fresh `<id>_kopi` block. */
@@ -942,47 +960,90 @@ function renderDeleteConfirm(): void {
   document.getElementById('del-cancel')?.addEventListener('click', cancelDelete);
 }
 
-// ---- create panel (n / +) -------------------------------------------------
+// ---- drop-create menu (SB-042) --------------------------------------------
 
-/** Probe-grade create UI in the inspector: pick a kind, facts pick a parent. */
-export function openCreatePanel(): void {
-  const docs = graph.nodes.filter((n) => n.kind === 'document');
-  const selBlock = selectedId ? blockById.get(selectedId) : undefined;
-  const preDoc =
-    selBlock?.type === 'document'
-      ? selBlock.id
-      : selBlock?.type === 'fact'
-        ? selBlock.documentId
-        : undefined;
-  const kinds = Object.keys(KIND_LABEL) as NodeKind[];
-  inspectorBody.innerHTML = `
-    <div class="kind">NEW NODE</div>
-    <div class="isub">pick a kind — the template fills in, rename it in the form after</div>
-    <div class="iactions wrap">${kinds
+// SB-040 ruling 2 killed the bare 'n → blank form' create. The canvas's
+// native create gesture is drag-wire-to-empty: release a port drag on empty
+// canvas → a menu of the kinds legal from that port → the node lands at the
+// drop point, wired, focus in its first field. Document creation lives on
+// the script lens (script creates by naming).
+const createMenu = document.createElement('div');
+createMenu.id = 'create-menu';
+document.body.append(createMenu);
+
+export function closeCreateMenu(): void {
+  createMenu.classList.remove('show');
+  createMenu.innerHTML = '';
+}
+
+/** Kinds a drag from `kind` may give birth to. document→fact is legal even
+ *  though RELATION has no entry: the ## block under the document IS the wire
+ *  (the source edge is derived from containment). */
+export function birthKinds(kind: NodeKind): NodeKind[] {
+  return (Object.keys(KIND_LABEL) as NodeKind[]).filter(
+    (target) =>
+      RELATION[`${kind}→${target}`] !== undefined || (kind === 'document' && target === 'fact'),
+  );
+}
+
+/** Create + wire + focus, per the menu pick. Exported for the smoke test. */
+export function dropCreate(fromId: string, kind: NodeKind, at: NodePos): CreateResult {
+  const from = nodeById.get(fromId);
+  if (!from) return { ok: false, reason: 'unknown node' };
+  const res = createNode(kind, {
+    at,
+    documentId: from.kind === 'document' && kind === 'fact' ? fromId : undefined,
+  });
+  if (!res.ok || !res.id) return res;
+  if (RELATION[`${from.kind}→${kind}`]) {
+    const wired = connect(fromId, res.id);
+    if (!wired.ok) return { ok: false, id: res.id, reason: wired.reason };
+  }
+  return res;
+}
+
+export function openDropCreateMenu(fromId: string, clientX: number, clientY: number): void {
+  const from = nodeById.get(fromId);
+  if (!from) return;
+  const kinds = birthKinds(from.kind);
+  if (kinds.length === 0) {
+    showTip(
+      `${KIND_LABEL[from.kind]} is an endpoint — no node can be born from its port`,
+      clientX,
+      clientY,
+    );
+    return;
+  }
+  const at = toWorldPoint(clientX, clientY);
+  createMenu.innerHTML =
+    `<div class="cm-head">NEW FROM ${escapeHtml(fromId.toUpperCase())}</div>` +
+    kinds
       .map(
         (kind) =>
-          `<button class="ibtn" data-mk="${kind}" style="color:var(${KIND_VAR[kind]})">${KIND_LABEL[kind]}</button>`,
+          `<button class="cm-item" data-mk="${kind}" style="color:var(${KIND_VAR[kind]})">${KIND_LABEL[kind]}</button>`,
       )
-      .join('')}</div>
-    <label class="field"><span class="fkey">DOCUMENT (FOR FACT)</span>
-      <select class="fval" id="mk-doc">${docs
-        .map(
-          (d) =>
-            `<option value="${escapeAttr(d.id)}"${d.id === preDoc ? ' selected' : ''}>${escapeHtml(`${d.id} — ${d.title}`)}</option>`,
-        )
-        .join('')}</select></label>
-    <div class="form-note" id="mk-note"></div>`;
-  inspectorBody.querySelectorAll<HTMLElement>('[data-mk]').forEach((btn) =>
+      .join('');
+  createMenu.style.left = `${clientX + 4}px`;
+  createMenu.style.top = `${clientY + 4}px`;
+  createMenu.classList.add('show');
+  createMenu.querySelectorAll<HTMLElement>('[data-mk]').forEach((btn) =>
     btn.addEventListener('click', () => {
-      const docSel = inspectorBody.querySelector<HTMLSelectElement>('#mk-doc');
-      const res = createNode(btn.dataset.mk as NodeKind, { documentId: docSel?.value });
-      if (!res.ok) {
-        const note = document.getElementById('mk-note');
-        if (note) note.textContent = res.reason ?? '';
-      }
+      closeCreateMenu();
+      const res = dropCreate(fromId, btn.dataset.mk as NodeKind, at);
+      if (!res.ok && res.reason) showTip(res.reason, clientX, clientY);
     }),
   );
 }
+
+// A pointerdown anywhere outside the menu dismisses it (the opening gesture
+// ended on pointerup, so this never races the open). Esc dismisses too.
+document.addEventListener('pointerdown', (event) => {
+  if (event.target instanceof Element && event.target.closest('#create-menu')) return;
+  closeCreateMenu();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeCreateMenu();
+});
 
 // ---- drag-to-connect UI ---------------------------------------------------
 
@@ -1041,7 +1102,13 @@ window.addEventListener('pointerup', (event) => {
   const targetEl =
     event.target instanceof Element ? event.target.closest<HTMLElement>('.node') : null;
   const toId = targetEl?.dataset.id;
-  if (!toId || toId === drag.fromId) return;
+  if (!toId) {
+    // SB-042: released on empty canvas → the filtered create menu.
+    const onCanvas = event.target instanceof Element && event.target.closest('#viewport');
+    if (onCanvas) openDropCreateMenu(drag.fromId, event.clientX, event.clientY);
+    return;
+  }
+  if (toId === drag.fromId) return;
   const res = connect(drag.fromId, toId);
   if (!res.ok && res.reason) showTip(res.reason, event.clientX, event.clientY);
 });
@@ -1063,19 +1130,6 @@ document.addEventListener('keydown', (event) => {
   }
   // SB-034: Delete on a selected node starts the (reference-aware) delete.
   if (selectedId !== null) requestDelete(selectedId);
-});
-
-// SB-034: n / + opens the create panel (outside form fields only).
-document.addEventListener('keydown', (event) => {
-  if (event.key !== 'n' && event.key !== '+') return;
-  if (event.metaKey || event.ctrlKey || event.altKey) return;
-  if (
-    event.target instanceof HTMLElement &&
-    event.target.closest('input, textarea, select, [contenteditable]')
-  )
-    return;
-  event.preventDefault();
-  openCreatePanel();
 });
 
 // ---- pan + zoom ----------------------------------------------------------
@@ -1157,7 +1211,6 @@ $('z-out').addEventListener('click', () => {
   applyTransform();
 });
 $('z-fit').addEventListener('click', fit);
-$('z-new')?.addEventListener('click', openCreatePanel);
 $('z-layout')?.addEventListener('click', relayout);
 document.addEventListener('keydown', (event) => {
   const inField = event.target instanceof HTMLElement && event.target.closest('.fval');
@@ -1182,7 +1235,7 @@ function renderStatus(): void {
   ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
   ${lifecycleNote ? `<span class="warn-c">${escapeHtml(lifecycleNote)}</span>` : ''}
   ${selectedEdgeKey ? '<span class="warn-c">edge selected — delete removes the relation</span>' : ''}
-  <span class="hint">click node · edit fields · n new node · delete removes · drag from port for new edge · esc clear</span>`;
+  <span class="hint">click node · edit fields · drag port to empty space for new node · delete removes · esc clear</span>`;
 }
 
 // ---- boot ----------------------------------------------------------------
