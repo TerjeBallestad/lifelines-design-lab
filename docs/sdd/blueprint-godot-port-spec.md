@@ -16,14 +16,14 @@ This document is a **mechanical, behavior-exact** description of what the protot
 
 The prototype already declares its own four layers (the "Blåkopi" panel, lines 1383–1408). Keep them.
 
-| Prototype layer | Lines | Godot home | Notes |
-| --- | --- | --- | --- |
-| **CONTENT** — pure data dicts | 1421–2281 | `Resource` classes (.tres) or a `Content` autoload of typed dictionaries | No logic. Documents, hotspots, facts, questions+hypotheses, tiltak, dispatches, chat, clocks, prologue, script, slot labels, domains. |
-| **STATE** — one `state` object | 2287–2320 | `GameState` autoload (singleton) | Single source of truth. Emits `changed` after every mutation batch. |
-| **ENGINE** — pure functions over state | 2326–2538 | `CaseEngine` (static funcs or autoload) | Mutate `GameState`, return result structs. No node/scene access. |
-| **SIM (mock)** | 2544–2709 | `Sim` autoload, `sim_tick()` | Authored event pools + need drift + tiltak modifiers. Replaced by real core-loop later via `sim_tick(day, tiltak) → events + state`. |
-| **DAY / SCRIPT / END** | 2715–2883 | `DayDirector` (or part of `Sim`) | `advance_day()`, `SCRIPT` beats, `end_game()`. |
-| **UI** — per-surface render | 2889–3494 | Scenes + signals | One state, six surfaces, modal overlays, toasts. Each surface re-renders on `GameState.changed`. |
+| Prototype layer                        | Lines     | Godot home                                                               | Notes                                                                                                                                 |
+| -------------------------------------- | --------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **CONTENT** — pure data dicts          | 1421–2281 | `Resource` classes (.tres) or a `Content` autoload of typed dictionaries | No logic. Documents, hotspots, facts, questions+hypotheses, tiltak, dispatches, chat, clocks, prologue, script, slot labels, domains. |
+| **STATE** — one `state` object         | 2287–2320 | `GameState` autoload (singleton)                                         | Single source of truth. Emits `changed` after every mutation batch.                                                                   |
+| **ENGINE** — pure functions over state | 2326–2538 | `CaseEngine` (static funcs or autoload)                                  | Mutate `GameState`, return result structs. No node/scene access.                                                                      |
+| **SIM (mock)**                         | 2544–2709 | `Sim` autoload, `sim_tick()`                                             | Authored event pools + need drift + tiltak modifiers. Replaced by real core-loop later via `sim_tick(day, tiltak) → events + state`.  |
+| **DAY / SCRIPT / END**                 | 2715–2883 | `DayDirector` (or part of `Sim`)                                         | `advance_day()`, `SCRIPT` beats, `end_game()`.                                                                                        |
+| **UI** — per-surface render            | 2889–3494 | Scenes + signals                                                         | One state, six surfaces, modal overlays, toasts. Each surface re-renders on `GameState.changed`.                                      |
 
 **Core rule that replaces `renderAll()`:** every engine mutation finishes by emitting `GameState.changed`. Every surface scene connects to `changed` and rebuilds itself. Toasts and modal navigation are separate one-shot signals (they are side effects, not state). This is the only structural deviation from the prototype, and it is mandatory in Godot.
 
@@ -43,13 +43,13 @@ Ordered list, drives column order in Sakens fakta and icon/color lookup:
 
 Domain icon + color table (`DOMAIN_ICONS`, lines 2892–2898):
 
-| Domain | Glyph | Color var |
-| --- | --- | --- |
-| Økonomi/bolig | ● | `--hint-gold` `#c89a2e` |
-| Hverdag/rutine | ⌂ | `--hint-green` `#7aa66f` |
-| Helse/risiko | ✚ | `--hint-warn` `#c86244` |
-| Nettverk/sosialt | ☎ | `--hint-blue` `#5b7fc4` |
-| Ressurser | ✦ | `--hint-purple` `#a57bc2` |
+| Domain           | Glyph | Color var                 |
+| ---------------- | ----- | ------------------------- |
+| Økonomi/bolig    | ●     | `--hint-gold` `#c89a2e`   |
+| Hverdag/rutine   | ⌂     | `--hint-green` `#7aa66f`  |
+| Helse/risiko     | ✚     | `--hint-warn` `#c86244`   |
+| Nettverk/sosialt | ☎     | `--hint-blue` `#5b7fc4`   |
+| Ressurser        | ✦     | `--hint-purple` `#a57bc2` |
 
 Glyphs render as a bordered round badge (`.dico`, lines 493–504). In Godot use the same unicode glyphs in a small `Panel`+`Label` or a custom-drawn chip; or swap for authored sprite icons later.
 
@@ -97,6 +97,7 @@ class_name QuestionDef extends Resource
 @export var appearsOn: Array[StringName]  # fact ids that REVEAL this question when first lifted
 @export var hypos: Array[HypoDef]
 ```
+
 ```gdscript
 class_name HypoDef extends Resource
 @export var id: StringName
@@ -127,6 +128,7 @@ class_name TiltakDef extends Resource
 ```
 
 Slots and labels (`SLOT_LABELS`, lines 2115–2120):
+
 - `s1` — BOLIG/ØKONOMI-SIKRING: `t_bostotte` (0), `t_forvaltning` (1), `t_huseier` (0)
 - `s2` — ERSTATT GRETES USYNLIGE ARBEID: `t_hjemmehjelp` (2), `t_matlevering` (1), `t_dokgjennomgang` (1)
 - `s3` — SKJØR SELVSTENDIG RUTINE: `t_brev` (0, needsVisit), `t_regning` (0, needsVisit), `t_telefon` (0, early)
@@ -136,34 +138,35 @@ Slots and labels (`SLOT_LABELS`, lines 2115–2120):
 
 Each costs **1 action**. `avail` is a predicate over state (port as a method/lambda). `result` is one of: `{doc, delay}`, `{fact, log}`, or `{special}`.
 
-| id | avail (summary) | result |
-| --- | --- | --- |
-| `d_ring_grete` | no `doc_frank_tlf` and `greteStage < 4` | doc `doc_frank_tlf`, delay 0 |
-| `d_konto` | no `doc_konto`, none pending, `greteStage < 4` | doc `doc_konto`, delay 1 |
-| `d_besok` | has `doc_frank_tlf`, no `doc_frank_visit`, none pending, `greteStage < 4` | doc `doc_frank_visit`, delay 1 |
-| `d_ring_elling` | no fact `f_ubesvart`, `greteStage >= 4` | fact `f_ubesvart` + log line |
-| `d_papirer` | `greteStage >= 5`, no `doc_konto`, no `doc_papirer`, (`sim.doorOpened` or has `t_hjemmehjelp`) | doc `doc_papirer`, delay 0 |
-| `d_besok_alene` | `greteStage >= 5` | special `visit_after` |
-| `d_bostotte_f` | has `t_bostotte` and `!ck_bostotte.done` | special `bostotte_push` |
+| id              | avail (summary)                                                                                | result                         |
+| --------------- | ---------------------------------------------------------------------------------------------- | ------------------------------ |
+| `d_ring_grete`  | no `doc_frank_tlf` and `greteStage < 4`                                                        | doc `doc_frank_tlf`, delay 0   |
+| `d_konto`       | no `doc_konto`, none pending, `greteStage < 4`                                                 | doc `doc_konto`, delay 1       |
+| `d_besok`       | has `doc_frank_tlf`, no `doc_frank_visit`, none pending, `greteStage < 4`                      | doc `doc_frank_visit`, delay 1 |
+| `d_ring_elling` | no fact `f_ubesvart`, `greteStage >= 4`                                                        | fact `f_ubesvart` + log line   |
+| `d_papirer`     | `greteStage >= 5`, no `doc_konto`, no `doc_papirer`, (`sim.doorOpened` or has `t_hjemmehjelp`) | doc `doc_papirer`, delay 0     |
+| `d_besok_alene` | `greteStage >= 5`                                                                              | special `visit_after`          |
+| `d_bostotte_f`  | has `t_bostotte` and `!ck_bostotte.done`                                                       | special `bostotte_push`        |
 
 ### 1.7 Chat (`CHAT`, lines 2181–2236) — 9 Frank Q&A
 
 ```gdscript
 { id, needs: fact_id, q, a }   # a is bbcode-capable (c_avstand embeds a hotspot f_dor_glott)
 ```
+
 Free (no action). A chat entry is askable when its `needs` fact is present and `id` not in `state.asked`. Asking pushes `{who:"DEG", text:q}` and `{who:"FRANK", text:a}` to `chatLog`. Note `c_avstand`'s answer contains a liftable hotspot (`f_dor_glott`) — facts can be lifted from chat, not just documents.
 
 ### 1.8 Clocks (`CLOCK_DEFS`, lines 2239–2281) — 5 clocks
 
 Paired progress clocks (SDD-003). Fill only, never reverse.
 
-| id | name | good (label,size) | bad (label,size) | showWhen |
-| --- | --- | --- | --- | --- |
-| `ck_bostotte` | Bostøtte sak | Søknad komplett, 4 | Frist glipper, 4 | has `t_bostotte` |
-| `ck_overfort` | Gretes arbeid overføres | Funksjoner overført, 6 | Alt går via Grete, 6 | has `doc_frank_tlf` |
-| `ck_rutine` | Skjør rutine | Rutine tåler støtte, 4 | Presset for hardt, 4 | any s3 tiltak enacted |
-| `ck_restanse` | Husleierestanse | — | Restanse bygges, 6 | has `doc_huseier` |
-| `ck_grete` | Grete tilgjengelig | scenario, size 5, stages[] | — | always |
+| id            | name                    | good (label,size)          | bad (label,size)     | showWhen              |
+| ------------- | ----------------------- | -------------------------- | -------------------- | --------------------- |
+| `ck_bostotte` | Bostøtte sak            | Søknad komplett, 4         | Frist glipper, 4     | has `t_bostotte`      |
+| `ck_overfort` | Gretes arbeid overføres | Funksjoner overført, 6     | Alt går via Grete, 6 | has `doc_frank_tlf`   |
+| `ck_rutine`   | Skjør rutine            | Rutine tåler støtte, 4     | Presset for hardt, 4 | any s3 tiltak enacted |
+| `ck_restanse` | Husleierestanse         | —                          | Restanse bygges, 6   | has `doc_huseier`     |
+| `ck_grete`    | Grete tilgjengelig      | scenario, size 5, stages[] | —                    | always                |
 
 `ck_grete` is a **scenario clock**: it shows `greteStage` (1..5) of 5 filled segments, with `stages` labels `["Grete bærer alt","Grete blir sliten","Grete avlyser","Grete er innlagt","Grete er død"]`. Pressure without a visible countdown (stage ≤2 shows the question `q`, stage ≥3 shows `stages[stage-1] + "."`).
 
@@ -230,21 +233,21 @@ Note: `ck_grete` is NOT in `state.clocks` — it derives entirely from `greteSta
 
 Port each function verbatim. They mutate `GameState` and return result structs; the UI layer reads results to fire toasts and navigate. None touches a node. After a UI-driven engine call completes, the caller emits `GameState.changed`.
 
-| Function | Lines | Behavior |
-| --- | --- | --- |
-| `receive_doc(docId)` | 2326 | If not already present, add `docs[docId] = {day, read:false, isNew:true}`. |
-| `lift_fact(factId)` | 2331 | If already lifted, return null. Else add `facts[factId]={day,fresh:true}`, `unread++`, and for every question whose `appearsOn` includes this fact and which is not yet visible, set `questions[qId]={visible:true,hypo:null}`. Return `{fact, newQuestions:[...]}`. |
-| `facts_for(qId)` | 2346 | All lifted fact ids whose `supports` includes qId. |
-| `question_state(qId)` | 2350 | `"skjult"` if not visible · `"Foreløpig arbeidssvar"` if hypo chosen · `"Delvis belyst"` if ≥2 supporting facts · else `"Åpent"`. |
-| `hypo_available(h)` | 2357 | All of `h.needs` are lifted facts. |
-| `choose_hypo(qId, hypoId)` | 2362 | Toggle: if hypo not available, false. Else set `questions[qId].hypo` to hypoId, or null if it was already that id. Hypotheses are provisional — switchable any time. |
-| `hypo_chosen(hId)` | 2370 | Any question currently has this hypo chosen. |
-| `chosen_hypos()` | 2374 | List of `{qId, hypo}` for all chosen. |
-| `tiltak_available(tid)` | 2380 | Returns `{ok, why}`. Blocked reasons in order: already enacted (`iverksatt`); missing required facts (`mangler grunnlag i sakens fakta`); `needsVisit` and no `doc_frank_visit` (`krever gjennomført hjemmebesøk`); `needsHypo` and none of them chosen (`krever arbeidshypotese under: «<first question title>»`). Else `{ok:true}`. |
-| `draft_cost()` / `spent_cost()` | 2402 | Sum of `cost` over draft / enacted tiltak. |
-| `enact_vedtak()` | 2409 | See §3.1. |
-| `run_dispatch(did)` | 2461 | See §3.2. |
-| `ask_frank(chatId)` | 2532 | If found and not asked: push to `asked`, append DEG+FRANK lines to `chatLog`. |
+| Function                        | Lines | Behavior                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `receive_doc(docId)`            | 2326  | If not already present, add `docs[docId] = {day, read:false, isNew:true}`.                                                                                                                                                                                                                                                            |
+| `lift_fact(factId)`             | 2331  | If already lifted, return null. Else add `facts[factId]={day,fresh:true}`, `unread++`, and for every question whose `appearsOn` includes this fact and which is not yet visible, set `questions[qId]={visible:true,hypo:null}`. Return `{fact, newQuestions:[...]}`.                                                                  |
+| `facts_for(qId)`                | 2346  | All lifted fact ids whose `supports` includes qId.                                                                                                                                                                                                                                                                                    |
+| `question_state(qId)`           | 2350  | `"skjult"` if not visible · `"Foreløpig arbeidssvar"` if hypo chosen · `"Delvis belyst"` if ≥2 supporting facts · else `"Åpent"`.                                                                                                                                                                                                     |
+| `hypo_available(h)`             | 2357  | All of `h.needs` are lifted facts.                                                                                                                                                                                                                                                                                                    |
+| `choose_hypo(qId, hypoId)`      | 2362  | Toggle: if hypo not available, false. Else set `questions[qId].hypo` to hypoId, or null if it was already that id. Hypotheses are provisional — switchable any time.                                                                                                                                                                  |
+| `hypo_chosen(hId)`              | 2370  | Any question currently has this hypo chosen.                                                                                                                                                                                                                                                                                          |
+| `chosen_hypos()`                | 2374  | List of `{qId, hypo}` for all chosen.                                                                                                                                                                                                                                                                                                 |
+| `tiltak_available(tid)`         | 2380  | Returns `{ok, why}`. Blocked reasons in order: already enacted (`iverksatt`); missing required facts (`mangler grunnlag i sakens fakta`); `needsVisit` and no `doc_frank_visit` (`krever gjennomført hjemmebesøk`); `needsHypo` and none of them chosen (`krever arbeidshypotese under: «<first question title>»`). Else `{ok:true}`. |
+| `draft_cost()` / `spent_cost()` | 2402  | Sum of `cost` over draft / enacted tiltak.                                                                                                                                                                                                                                                                                            |
+| `enact_vedtak()`                | 2409  | See §3.1.                                                                                                                                                                                                                                                                                                                             |
+| `run_dispatch(did)`             | 2461  | See §3.2.                                                                                                                                                                                                                                                                                                                             |
+| `ask_frank(chatId)`             | 2532  | If found and not asked: push to `asked`, append DEG+FRANK lines to `chatLog`.                                                                                                                                                                                                                                                         |
 
 ### 3.1 `enact_vedtak()` (lines 2409–2459)
 
@@ -290,17 +293,20 @@ institusjon= has t_institusjon
 Branch on `greteStage`. `log(text, kind="obs")` appends `{day, text, kind}` to `sim.logg`. `flavor()` cycles the 7-line `FLAVOR` pool (lines 2558–2567) by a module-level index.
 
 **greteStage < 4 (Grete bears it — stable, that's the point):**
+
 - `security = 55`; `hunger = max(hunger, 70)`.
 - if `visitLevel>0 and day>=3` → log a flavor line.
 - if `day==3 and visitLevel>0` → log the "Grete var på kjøkkenet… kjøttkaker… fire nye bokser" line.
 - return.
 
 **greteStage == 4 (innlagt — apartment alone for the first time):**
+
 - `security = 38`; `foodBoxes--`; `mail++`.
 - if `visitLevel>0` → log "Ingen kom kl. 16…" and "Telefonen ringte to ganger (Ullevål)…", `unanswered += 2`.
 - return.
 
 **greteStage >= 5 (after death — the vedtak is now tested):**
+
 - `mail++`; `security = max(12, security-7)`; `energy = max(20, energy-4)`.
 - **Food:** `c.food && c.channel` → boxes `max(boxes,4)`, log "Matlevering 11:00… tatt inn", `hunger=65`. `c.food && !c.channel` → `boxes--`, log "Kassen ble stående i gangen…", `hunger=max(15,hunger-12)`. else → `boxes--`, `hunger = boxes>0 ? max(40,hunger-6) : max(10,hunger-15)`; box-count flavor logs at `boxes==1` and `boxes<=0`.
 - **Mail/dok:** `c.dok` → `mail=max(0,mail-3)`, log "Dokumentgjennomgang…". else if `mail>12` → log "Postbunken har veltet…".
@@ -315,14 +321,14 @@ Logs that embed `[url=fact:…]` (`f_egen_mappe`, `f_tirade`) make those facts l
 
 ### 4.3 `SCRIPT` beats (lines 2715–2750)
 
-| Day | Effect | Toast(s) (kind day) |
-| --- | --- | --- |
-| 2 | `greteStage=2` | — |
-| 3 | `greteStage=3` | "BESKJED FRA FRANK / Grete skulle ringe tilbake… Hun ringte ikke." |
-| 4 | `receive_doc(doc_innleggelse)`, `greteStage=4` | "MELDING FRA ULLEVÅL / Grete er innlagt." |
-| 5 | `receive_doc(doc_dodsfall)`, `greteStage=5`, force-reveal `q_kollaps` if absent | "MELDING FRA ULLEVÅL / Grete Olsen er død." |
-| 6 | `receive_doc(doc_huseier)` | "NY POST PÅ PULTEN / Håndskrevet brev · T. Bakkerud" |
-| 8 | `end_game()` | — |
+| Day | Effect                                                                          | Toast(s) (kind day)                                                |
+| --- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 2   | `greteStage=2`                                                                  | —                                                                  |
+| 3   | `greteStage=3`                                                                  | "BESKJED FRA FRANK / Grete skulle ringe tilbake… Hun ringte ikke." |
+| 4   | `receive_doc(doc_innleggelse)`, `greteStage=4`                                  | "MELDING FRA ULLEVÅL / Grete er innlagt."                          |
+| 5   | `receive_doc(doc_dodsfall)`, `greteStage=5`, force-reveal `q_kollaps` if absent | "MELDING FRA ULLEVÅL / Grete Olsen er død."                        |
+| 6   | `receive_doc(doc_huseier)`                                                      | "NY POST PÅ PULTEN / Håndskrevet brev · T. Bakkerud"               |
+| 8   | `end_game()`                                                                    | —                                                                  |
 
 ### 4.4 `advance_day()` (lines 2752–2798)
 
@@ -339,6 +345,7 @@ Logs that embed `[url=fact:…]` (`f_egen_mappe`, `f_tirade`) make those facts l
 ### 4.5 `end_game()` (lines 2818–2883)
 
 Sets `phase="ended"`. Picks `para1/para2/closing` from `cover()` + clock state, in this priority order:
+
 1. `c.institusjon` → institution ending.
 2. `c.money && (c.channel || ck_rutine.good>0)` → housing secured + a channel/routine.
 3. `c.money` only → "Vedtaket var riktig utfylt. Det var ikke nok." (interpolates remaining foodBoxes + unanswered).
@@ -384,6 +391,7 @@ Main (Control, full rect, bg = --desk-dark)
 ### 5.2 Surface-by-surface render contracts
 
 **Topbar / badges** (`renderBadges`, lines 3419–3439):
+
 - `res-day` = day, `res-actions` = actions.
 - DISPONERT = spent coins (or —).
 - Badge fakta = `unread`. Badge sporsmal = count of visible questions with no hypo chosen AND at least one available hypo. Badge frank = count of askable chat (fact present, not asked). Hide badge when 0.
@@ -409,6 +417,7 @@ Main (Control, full rect, bg = --desk-dark)
 **Frank** (`renderFrank`, lines 3311–3345): left = dispatch list. Header "SEND FRANK · 1 HANDLING PER OPPDRAG · <actions> IGJEN I DAG". One `dispatch-card` per `avail` dispatch (title, desc, "SEND · 1 HANDLING" button disabled if `actions==0` or phase≠play). If none available, "Ingen oppdrag akkurat nå…". Right = chat: header, scrollable `chat-log` (DEG right-aligned, FRANK left), then ask buttons for each askable chat entry. Decorate hotspots inside chat (the `f_dor_glott` anchor). Auto-scroll log to bottom.
 
 **Leiligheten** (`renderApt`, lines 3359–3416): if `visitLevel==0` → locked panel ("Kommunen har ikke innsyn… Et hjemmebesøk er den eneste veien inn…"). Else two columns:
+
 - apt-state: "ELLING · ANSLAG" frame (header meta = "LØPENDE — FRANK HAR KANAL INN" if visitLevel==2 else "SIST OBSERVERT VED BESØK — TALL ER ANSLAG"), 4 need bars (Mat/hunger, Krefter/energy, Kontakt/social, Trygghet/security) with fill color crit `<25` / low `<45` / else green, value `~round(v)`; plus "SIMULERINGEN ER MOCKET…" footnote. "LEILIGHETEN · GABELS GATE 14 · 3. ETG" frame: Postbunken (`mail` brev, warn if >11), Middagsbokser (`max(0,foodBoxes)`, warn if ≤1), Ubesvarte anrop (`unanswered`, warn if >4), Døren ("går opp for Frank" / "lukket"), Gretes stol ("pleddet brettet").
 - apt-logg: "Logg · det kommunen vet" (meta DAGLIG if visitLevel==2 else FRAGMENTARISK), entries grouped by day (`DAG <d> · <WEEKDAY>`), tiltak-kind lines tinted. Decorate hotspots in logg.
 
@@ -429,6 +438,7 @@ Main (Control, full rect, bg = --desk-dark)
 This is the one interaction that must feel identical. In HTML it's a single delegated click listener (lines 2910–2923) over any `.ev` span anywhere (documents, chat, logg).
 
 Godot implementation:
+
 1. Hotspots are bbcode `[url=fact:<id>]text[/url]` inside `RichTextLabel`s with `meta_clicked` connected.
 2. On `meta_clicked("fact:<id>")`: if fact already lifted, ignore. Else `lift_fact(id)`; mark that anchor `collected`; fire toast "FAKTUM LAGT TIL · <domain> / <text>" (kind fact); for each newly-revealed question, fire toast "ÅPENT SPØRSMÅL / <title>" (kind hypo); emit `changed`.
 3. **Decoration** (`decorateEvs`, lines 2925–2929; re-applied on each render): an anchor whose fact is already lifted renders as highlighter-yellow `[bgcolor=#fff8b0]` **and is no longer a link** (no spyglass, not clickable). Yellow appears ONLY after lift — never before.
@@ -445,32 +455,32 @@ The paper-and-ink look is not decoration; it's the product. Replicate the CSS `:
 
 **Palette** (lines 10–30):
 
-| var | hex | use |
-| --- | --- | --- |
-| --paper | #f5f1e8 | document/card base |
-| --paper-shade | #ece7d8 | secondary panels |
-| --paper-fold | #dcd5c2 | inactive tab |
-| --ink | #2a2520 | text, borders |
-| --ink-dim | #6b6259 | secondary text |
-| --ink-faint | #a49a8c | tertiary / dashed |
-| --desk | #463c31 | desk wood |
-| --desk-dark | #382f26 | body bg |
-| --hint-gold | #c89a2e | primary accent, coins |
-| --hint-warn | #c86244 | risk / bad clocks |
-| --hint-green | #7aa66f | good clocks, needs ok |
-| --hint-blue | #5b7fc4 | day toasts, partial |
-| --hint-purple | #a57bc2 | Ressurser |
-| --hint-lock | #9b9387 | disabled / locked |
-| --mark | #fff8b0 | highlighter yellow |
+| var           | hex     | use                   |
+| ------------- | ------- | --------------------- |
+| --paper       | #f5f1e8 | document/card base    |
+| --paper-shade | #ece7d8 | secondary panels      |
+| --paper-fold  | #dcd5c2 | inactive tab          |
+| --ink         | #2a2520 | text, borders         |
+| --ink-dim     | #6b6259 | secondary text        |
+| --ink-faint   | #a49a8c | tertiary / dashed     |
+| --desk        | #463c31 | desk wood             |
+| --desk-dark   | #382f26 | body bg               |
+| --hint-gold   | #c89a2e | primary accent, coins |
+| --hint-warn   | #c86244 | risk / bad clocks     |
+| --hint-green  | #7aa66f | good clocks, needs ok |
+| --hint-blue   | #5b7fc4 | day toasts, partial   |
+| --hint-purple | #a57bc2 | Ressurser             |
+| --hint-lock   | #9b9387 | disabled / locked     |
+| --mark        | #fff8b0 | highlighter yellow    |
 
 **Fonts — four registers** (the single most important fidelity fix, port-risk §1.2):
 
-| Role | Family | Godot |
-| --- | --- | --- |
-| hand-1 (body) | Kalam | import MSDF (msdf=true), theme variation `DocBody` |
-| hand-2 (annotation/handwriting) | Caveat | **MSDF variant** (the raster one is the blur bug) |
-| hand-3 (labels/pills/tags/meta) | Architects Daughter | small caps look via letter-spacing + uppercase |
-| hand-title (titles/kind) | Gloock (serif) | titles, doc `kind`, case head |
+| Role                            | Family              | Godot                                              |
+| ------------------------------- | ------------------- | -------------------------------------------------- |
+| hand-1 (body)                   | Kalam               | import MSDF (msdf=true), theme variation `DocBody` |
+| hand-2 (annotation/handwriting) | Caveat              | **MSDF variant** (the raster one is the blur bug)  |
+| hand-3 (labels/pills/tags/meta) | Architects Daughter | small caps look via letter-spacing + uppercase     |
+| hand-title (titles/kind)        | Gloock (serif)      | titles, doc `kind`, case head                      |
 
 Core-loop currently ships only Caveat raster at one size — that's why documents read flat. Import all four as MSDF, build theme type variations per register.
 
@@ -522,5 +532,5 @@ When the real sim is ready it replaces the mock `sim_tick` behind the same contr
 - **Dispatches (7):** d_ring_grete, d_konto, d_besok, d_ring_elling, d_papirer, d_besok_alene, d_bostotte_f
 - **Chat (9):** c_kalender, c_post, c_smart, c_klarer, c_bok, c_avstand, c_gro, c_brevsprekk, c_videre
 - **Clocks (5):** ck_bostotte, ck_overfort, ck_rutine, ck_restanse, ck_grete
-</content>
-</invoke>
+  </content>
+  </invoke>
