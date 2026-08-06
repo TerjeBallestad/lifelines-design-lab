@@ -941,7 +941,6 @@ export function createFromStub(stubId: string): CreateResult {
       reason: 'a fact lives under a document — add its ## block in the script',
     };
   return createNode(node.kind, { id: stubId, at: { x: node.x, y: node.y } });
->>>>>>> worktree-agent-a0384486066f089d1
 }
 
 /** Copy a block's body as the template for a fresh `<id>_kopi` block. */
