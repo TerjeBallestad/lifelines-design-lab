@@ -64,7 +64,7 @@ describe('§2 documents', () => {
 });
 
 describe('§3 facts', () => {
-  it('fact under a document inherits it as source; Card: → card_line; About: → about', () => {
+  it('fact under a document inherits it as source', () => {
     expect(byId(slice.facts, 'f_dor_glott')).toEqual(fragments.facts.f_dor_glott);
   });
 
@@ -86,7 +86,7 @@ describe('§3 facts', () => {
 });
 
 describe('§4 questions', () => {
-  it('Card title/Card sub → card_title/card_sub; when: → reveal_when', () => {
+  it('Card title → card_title; when: → reveal_when (Card sub culled by SB-050)', () => {
     expect(byId(slice.questions, 'q_vekst')).toEqual(fragments.questions.q_vekst);
   });
 
@@ -236,7 +236,6 @@ describe('labContent', () => {
       text: 'Husleien har stoppet. Betalingskjeden døde med Grete.',
       quote: 'Leien for mars er ikke kommet.',
       supports: ['q_bolig', 'q_kollaps'],
-      discuss: ['Frank'],
     });
     expect(result.labContent.tiltak.t_bostotte.sim).toBe('case.olsen.tiltak.bostotte');
     expect(result.labContent.dispatches.d_konto).toEqual({

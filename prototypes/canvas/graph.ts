@@ -86,13 +86,7 @@ export function idsInPredicate(spec: PredicateSpec | undefined | null): string[]
   return out;
 }
 
-export interface BuildGraphOptions {
-  /** SB-034: tiltak id → fact ids from its `Needs:` list (the slice omits
-   *  them; the caller lifts them from labContent). Draws fact→tiltak edges. */
-  tiltakNeeds?: Record<string, string[]>;
-}
-
-export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): CaseGraph {
+export function buildGraph(slice: CaseSlice): CaseGraph {
   const nodes: GraphNode[] = [];
   const edgeSet = new Map<string, GraphEdge>();
   const known = new Set<string>();
@@ -237,10 +231,6 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
 
   for (const ck of slice.clocks)
     for (const id of idsInPredicate(ck.visibility)) addEdge(id, ck.id, 'gate');
-
-  // SB-034 gap fix: tiltak Needs: lists are fact→tiltak edges too.
-  for (const [tiltakId, needIds] of Object.entries(opts.tiltakNeeds ?? {}))
-    for (const factId of needIds) addEdge(factId, tiltakId, 'needs');
 
   // SB-049 (SB-040 ruling 2): an unknown id named in the script becomes a
   // wired stub node — the Twine/Yarn/Ink consensus. The compiler already

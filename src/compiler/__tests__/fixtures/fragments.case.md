@@ -20,9 +20,7 @@ Mor er under utredning og behandling for [sykdom med kort forventet forløp](fac
 Label: Grete er alvorlig syk
 Summary: Grete er alvorlig syk. Forventet forløp er kort.
 Domain: Helse/risiko · Category: Dokument
-About: grete
 Supports: q_grete_dor
-Discuss: Frank
 Frank: ««Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.»
 
 # Document: doc_frank_tlf
@@ -39,9 +37,7 @@ Hun var klar: [«Han klarer seg. Han har alltid klart seg.» Hun sa det to gange
 Label: «Han klarer seg»
 Summary: Grete avviser bekymringen. Gjentar formuleringen.
 Domain: Nettverk/sosialt · Category: Samtale
-About: elling
 Supports: q_grete_dor
-Discuss: Frank
 Reveals: call:grete
 
 # Document: doc_frank_visit
@@ -58,10 +54,7 @@ Men [han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det e
 Label: En dør på gløtt
 Summary: Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.
 Domain: Nettverk/sosialt · Category: Samtale
-About: elling
 Supports: q_baering
-Discuss: Frank
-Card: «Han svarte da jeg spurte om Nansen.»
 
 # Document: doc_huseier
 
@@ -79,7 +72,6 @@ Label: Husleien har stoppet
 Summary: Husleien har stoppet. Betalingskjeden døde med Grete.
 Domain: Økonomi/bolig · Category: Risiko
 Supports: q_bolig, q_kollaps
-Discuss: Frank
 
 # Document: doc_dodsfall
 
@@ -104,7 +96,6 @@ Label: Grete er død
 Summary: Grete Olsen døde 15.02 kl. 04:12.
 Domain: Helse/risiko · Category: Dokument
 Supports: q_kollaps
-Discuss: Frank
 ~ open q_kollaps
 
 # Question: q_grete_dor
@@ -129,7 +120,6 @@ when: f_gap and f_leie_stoppet
 Title: Hva kan læres — og i hvilket tempo, uten å knekke noe?
 Teaser: Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.
 Card title: Hva kan læres?
-Card sub: — og i hvilket tempo, uten å knekke noe?
 when: f_bok and f_utklipp
 
 # Question: q_baering
@@ -143,6 +133,7 @@ when: f_elling_tlf and f_avstand and f_ingen_tjenester
 Title: Hva kollapser først nå?
 Teaser: Noe her har begynt å rakne. Jeg vet ikke hva som går først.
 when: f_dod
+Card title:
 
 # Hypothesis: h_ok_gap
 

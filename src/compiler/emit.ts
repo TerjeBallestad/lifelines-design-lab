@@ -15,7 +15,7 @@ import { deliverEffect, emitEffects, parseEffectLine } from './effects.ts';
 import type { ParsedCase, RawBlock, RawField } from './parse.ts';
 import type { CallOut, ChatEntryOut } from './weave.ts';
 import { emitConversations } from './weave.ts';
-import type { GateSite, TiltakGate } from './lints.ts';
+import type { GateSite } from './lints.ts';
 import { runLints } from './lints.ts';
 
 export interface DocumentRun {
@@ -42,11 +42,8 @@ export interface FactOut {
   source_document_id: string;
   domain: string;
   category: string;
-  about?: string;
   quote: string;
   frank_response?: string;
-  card_line?: string;
-  discuss: string[];
   supports_questions: string[];
   reveals_event?: string;
   lift_effects: EffectSpec[];
@@ -62,7 +59,6 @@ export interface QuestionOut {
   prompt: string;
   teaser?: string;
   card_title?: string;
-  card_sub?: string;
   reveal_when?: PredicateSpec;
   leads?: LeadOut[];
 }
@@ -216,7 +212,6 @@ export interface LabContent {
       text: string;
       quote: string;
       supports: string[];
-      discuss: string[];
     }
   >;
   questions: Record<
@@ -241,8 +236,6 @@ export interface LabContent {
       slot: string;
       title: string;
       cost: number;
-      needs: string[];
-      needsHypothesis?: string[];
       description: string;
       sim: string;
     }
@@ -440,6 +433,29 @@ function bindCondition(
   return { ast, predicate: emitPredicate(ast, diag, ownerId, where) };
 }
 
+/**
+ * SB-050 cull (SB-054): a dead field is rejected like the 0.1 legacy fields —
+ * it parses, gets a fix-it diagnostic, and emits nothing. A field returns
+ * only when a reader exists.
+ */
+function cullField(
+  fieldMap: FieldMap,
+  diag: DiagnosticBag,
+  ownerId: string,
+  key: string,
+  why: string,
+): void {
+  for (const field of fieldMap.all(key)) {
+    diag.add(
+      codes.FIXIT_FIELD_CULLED,
+      'warning',
+      `"${key}:" is culled (SB-050) — ${why}; delete the line.`,
+      span(field.line),
+      [ownerId],
+    );
+  }
+}
+
 function warnLeftovers(fieldMap: FieldMap, diag: DiagnosticBag, ownerId: string): void {
   for (const field of fieldMap.leftovers()) {
     diag.add(
@@ -458,10 +474,8 @@ export function emitCase(
 ): { slice: CaseSlice; labContent: LabContent } {
   const refs: Ref[] = [];
   const seenIds = new Map<string, RawBlock>();
-  // §9 lint inputs (TASK-017): every §6 condition bound at a gate position,
-  // and the 0.1 tiltak gate fields.
+  // §9 lint inputs (TASK-017): every §6 condition bound at a gate position.
   const gateSites: GateSite[] = [];
-  const tiltakGates: TiltakGate[] = [];
 
   const checkDuplicate = (block: RawBlock): void => {
     const key = `${block.type}:${block.id}`;
@@ -628,9 +642,10 @@ export function emitCase(
       }
     }
 
-    const about = fields.value('About');
+    cullField(fields, diag, block.id, 'Card', 'no reader — the card face uses Summary');
+    cullField(fields, diag, block.id, 'About', 'no reader');
+    cullField(fields, diag, block.id, 'Discuss', 'no sim logic gates fact cards per person');
     const frank = fields.find('Frank');
-    const card = fields.find('Card');
     const reveals = fields.value('Reveals');
     // SB-024 extension: a fact paid outside any document (chat ~ pay) has no
     // run to derive its quote from — an explicit Quote: fills it. An anchored
@@ -644,11 +659,8 @@ export function emitCase(
       source_document_id: sourceDocumentId,
       domain: fields.value('Domain') ?? '',
       category: fields.value('Category') ?? '',
-      ...(about !== undefined ? { about } : {}),
       quote: anchorQuote || (quoteField ? stripGuillemets(quoteField.value) : ''),
       ...(frank ? { frank_response: stripGuillemets(frank.value) } : {}),
-      ...(card ? { card_line: stripGuillemets(card.value) } : {}),
-      discuss: listValue(fields.value('Discuss')),
       supports_questions: supports,
       ...(reveals !== undefined ? { reveals_event: reveals } : {}),
       lift_effects: liftEffects,
@@ -669,7 +681,7 @@ export function emitCase(
     const prompt = fields.value('Prompt') ?? titleValue;
     const teaser = fields.find('Teaser');
     const cardTitle = fields.value('Card title');
-    const cardSub = fields.value('Card sub');
+    cullField(fields, diag, block.id, 'Card sub', 'no reader — card faces left it (SB-587)');
     const whenField = fields.find('when', 'Opens when');
     const condition = bindCondition(whenField, diag, block.id);
     gateSites.push({
@@ -712,9 +724,9 @@ export function emitCase(
       );
     }
 
-    const appearsOn = fields.find('Appears on');
+    cullField(fields, diag, block.id, 'Appears on', 'the when: condition already names the facts');
     questionExtras.set(block.id, {
-      appearsOn: appearsOn ? listValue(appearsOn.value) : factIdsInCondition(condition.ast),
+      appearsOn: factIdsInCondition(condition.ast),
       titleForLab: titleValue,
     });
 
@@ -723,7 +735,6 @@ export function emitCase(
       prompt,
       ...(teaser ? { teaser: teaser.value } : {}),
       ...(cardTitle !== undefined ? { card_title: cardTitle } : {}),
-      ...(cardSub !== undefined ? { card_sub: cardSub } : {}),
       ...(condition.predicate ? { reveal_when: condition.predicate } : {}),
       ...(leads.length > 0 ? { leads } : {}),
     };
@@ -885,25 +896,14 @@ export function emitCase(
   });
 
   // ---- Tiltak -------------------------------------------------------------
-  interface TiltakExtra {
-    needs: string[];
-    needsHypothesis: string[];
-  }
-  const tiltakExtras = new Map<string, TiltakExtra>();
+  // SB-050 ruling 5: the hypothesis side owns the tiltak-availability edge
+  // (Opens:). The authored fact-gate on tiltak is dead — the real sim has no
+  // such mechanic.
   const tiltak: TiltakOut[] = byType('tiltak').map((block) => {
     const fields = new FieldMap(block.fields);
     const weight = fields.value('Weight');
-    tiltakExtras.set(block.id, {
-      needs: listValue(fields.value('Needs')),
-      needsHypothesis: listValue(fields.value('Needs hypothesis')),
-    });
-    const tiltakExtra = tiltakExtras.get(block.id)!;
-    tiltakGates.push({
-      ownerId: block.id,
-      needs: tiltakExtra.needs,
-      needsHypothesis: tiltakExtra.needsHypothesis,
-      where: blockSpan(block),
-    });
+    cullField(fields, diag, block.id, 'Needs', 'hypothesis Opens: owns the tiltak edge');
+    cullField(fields, diag, block.id, 'Needs hypothesis', 'hypothesis Opens: owns the tiltak edge');
     const out: TiltakOut = {
       id: block.id,
       title: fields.value('Title') ?? '',
@@ -1208,19 +1208,10 @@ export function emitCase(
     for (const factId of pair)
       refs.push({ id: factId, kind: 'fact', where: span(block.startLine), ownerId: block.id });
 
-    // The runtime CaseRecipe has no gate field — a gate: parses and validates
-    // via the shared §6 machinery, then warns and emits nothing (DD-002).
-    const gateField = fields.find('gate', 'Gate');
-    if (gateField) {
-      bindCondition(gateField, diag, block.id);
-      diag.add(
-        codes.RECIPE_GATE_UNSUPPORTED,
-        'warning',
-        `Recipes have no runtime gate field — the pair itself is the gate; "gate: ${gateField.value}" is dropped (engine backlog).`,
-        span(gateField.line),
-        [block.id],
-      );
-    }
+    // SB-050 cull: the pair itself is the gate — a recipe gate: never had a
+    // runtime reader (was RECIPE_GATE_UNSUPPORTED; retired by SB-054).
+    cullField(fields, diag, block.id, 'gate', 'the pair itself is the gate');
+    cullField(fields, diag, block.id, 'Gate', 'the pair itself is the gate');
 
     // The target question is authored as `~ open q_x`; other effect kinds
     // have no field on the recipe surface.
@@ -1424,7 +1415,6 @@ export function emitCase(
           : null,
       slice,
       gates: gateSites,
-      tiltakGates,
       spans: blockSpans,
       weaveSpans: weave.spans,
     },
@@ -1461,7 +1451,6 @@ export function emitCase(
           text: fact.summary,
           quote: fact.quote,
           supports: fact.supports_questions,
-          discuss: fact.discuss,
         },
       ]),
     ),
@@ -1491,24 +1480,17 @@ export function emitCase(
       }),
     ),
     tiltak: Object.fromEntries(
-      tiltak.map((entry) => {
-        const extra = tiltakExtras.get(entry.id);
-        return [
-          entry.id,
-          {
-            id: entry.id,
-            slot: entry.slot,
-            title: entry.title,
-            cost: entry.cost,
-            needs: extra?.needs ?? [],
-            ...(extra && extra.needsHypothesis.length > 0
-              ? { needsHypothesis: extra.needsHypothesis }
-              : {}),
-            description: entry.description,
-            sim: entry.sim_hook_id,
-          },
-        ];
-      }),
+      tiltak.map((entry) => [
+        entry.id,
+        {
+          id: entry.id,
+          slot: entry.slot,
+          title: entry.title,
+          cost: entry.cost,
+          description: entry.description,
+          sim: entry.sim_hook_id,
+        },
+      ]),
     ),
     dispatches: Object.fromEntries(
       dispatches.map((dispatch) => [

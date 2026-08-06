@@ -204,7 +204,7 @@ function sourceDocOf(factId: string): string | null {
 
 // FUNN card — the in-game desk fact card (scenes/ui/hand_card.tscn look):
 // red top rule, red FUNN stamp, Fraunces quote, source line. Editor extras
-// (supports/discuss/source links) ride below the card face in stamp type.
+// (supports/source links) ride below the card face in stamp type.
 function renderFactCard(factId: string) {
   const f = result.labContent.facts[factId];
   previewTitle.textContent = `FUNN — ${factId.toUpperCase()}`;
@@ -216,9 +216,6 @@ function renderFactCard(factId: string) {
         ? `<span class="fc-link" data-jump-kind="Question" data-jump-id="${qId}">? &nbsp;${esc(q.title || qId)}</span>`
         : `<span class="fc-link dead">? &nbsp;${qId} — stub</span>`;
     })
-    .join('');
-  const discuss = (f.discuss ?? [])
-    .map((p) => `<span class="fc-link dead">${p === 'Frank' ? '☎' : '○'} &nbsp;${esc(p)}</span>`)
     .join('');
   const srcDoc = sourceDocOf(factId);
   const srcTitle = srcDoc ? result.labContent.documents[srcDoc].title : null;
@@ -233,7 +230,6 @@ function renderFactCard(factId: string) {
     `<div class="funn-meta">` +
     `<div class="fc-rel"><h4>${esc(f.domain || '—')} · ${esc(f.category || '—')}</h4></div>` +
     `<div class="fc-rel"><h4>HENGER SAMMEN MED</h4>${supports || '<span class="fc-link dead">ingen spørsmål ennå</span>'}</div>` +
-    (discuss ? `<div class="fc-rel"><h4>KAN DRØFTES MED</h4>${discuss}</div>` : '') +
     (srcDoc
       ? `<div class="fc-rel"><h4>KILDE</h4><span class="fc-link" data-jump-kind="Document" data-jump-id="${srcDoc}">▤ &nbsp;${esc(srcTitle || srcDoc)}</span></div>`
       : `<div class="fc-rel"><h4>KILDE</h4><span class="fc-link dead">ingen anker i noe dokument — lint: fact without source anchor</span></div>`) +

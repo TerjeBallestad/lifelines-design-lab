@@ -1032,28 +1032,6 @@ const FactDialog = observer(function FactDialog({ store }: { store: BlueprintSto
               </button>
             ))}
         </FactRelation>
-        <FactRelation title="Kan drøftes med">
-          {fact.discuss.map((person) =>
-            person === 'Frank' ? (
-              <button
-                key={person}
-                className="block border-b border-dashed border-[#a49a8c] py-1 text-left"
-                type="button"
-                onClick={() => {
-                  store.closeFact();
-                  store.showSurface('frank');
-                }}
-              >
-                ☎ Frank
-              </button>
-            ) : (
-              <span key={person} className="block py-1 text-[#a49a8c]">
-                {store.progress.greteStage >= 5 ? '✝' : '○'} Grete
-                {store.progress.greteStage >= 5 ? ' — ikke lenger mulig' : ' — senere'}
-              </span>
-            ),
-          )}
-        </FactRelation>
         {source ? (
           <FactRelation title="Kilde">
             <button

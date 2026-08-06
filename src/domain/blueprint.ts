@@ -63,7 +63,6 @@ export interface BlueprintFact {
   text: string;
   quote: string;
   supports: BlueprintQuestionId[];
-  discuss: Array<'Frank' | 'Grete'>;
 }
 
 export interface BlueprintHypothesis {
@@ -86,8 +85,6 @@ export interface BlueprintTiltak {
   slot: BlueprintTiltakSlot;
   title: string;
   cost: number;
-  needs: BlueprintFactId[];
-  needsHypothesis?: BlueprintHypothesisId[];
   needsVisit?: boolean;
   early?: boolean;
   description: string;

@@ -203,10 +203,7 @@ let outOf = new Map<string, GraphEdge[]>();
 function rebuild(): void {
   const t0 = performance.now();
   result = compileCase(caseText);
-  const tiltakNeeds = Object.fromEntries(
-    Object.values(result.labContent.tiltak).map((t) => [t.id, t.needs]),
-  );
-  graph = buildGraph(result.slice, { tiltakNeeds });
+  graph = buildGraph(result.slice);
   // Sticky layout (SB-034): stored positions win; only unplaced nodes get a
   // slot (column end). An empty store — first load or 're-layout' — runs
   // the barycenter pass once. Rebuilds must never reshuffle the board.
@@ -467,7 +464,6 @@ const FORM_FIELDS: Record<NodeKind, FieldSpec[]> = {
       multiline: true,
       placeholder: 'what the player learns — e.g. Ellings uføretrygd: 2 [icon=coin] i måneden.',
     },
-    { keys: ['Domain'], placeholder: 'e.g. Økonomi/bolig' },
     { keys: ['Category'], placeholder: 'e.g. Økonomi' },
     {
       keys: ['Quote'],

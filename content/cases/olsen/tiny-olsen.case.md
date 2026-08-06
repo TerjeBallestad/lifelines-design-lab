@@ -24,28 +24,21 @@ spes. allmennmedisin
 Label: Grete er alvorlig syk
 Summary: Grete er alvorlig syk. Forventet forløp er kort.
 Domain: Helse/risiko · Category: Dokument
-About: grete
 Supports: q_grete_dor
-Discuss: Frank
 Frank: ««Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.»
 
 ## f_aldri_alene
-
 Label: Aldri bodd alene
 Summary: Elling (35) har aldri bodd alene.
 Domain: Hverdag/rutine · Category: Dokument
 Supports: q_grete_dor, q_evner
-Discuss: Frank, Grete
 Frank: «Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.»
 
 ## f_grete_baerer
-
 Label: Grete bærer rutiner
 Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
 Domain: Hverdag/rutine · Category: Dokument
-About: grete
 Supports: q_grete_dor, q_okonomi
-Discuss: Frank, Grete
 Frank: ««Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.»
 
 ## f_saarbar
@@ -53,9 +46,7 @@ Frank: ««Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt
 Label: Sårbar ved bortfall
 Summary: Elling vurderes som sårbar ved bortfall av pårørende.
 Domain: Helse/risiko · Category: Risiko
-About: elling
 Supports: q_grete_dor
-Discuss: Frank
 Frank: «Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.»
 
 ## f_ingen_tjenester
@@ -64,7 +55,6 @@ Label: Ingen tjenester
 Summary: Elling har ingen kontakt med øvrige tjenester.
 Domain: Nettverk/sosialt · Category: Dokument
 Supports: q_baering
-Discuss: Frank
 Frank: «Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.»
 
 # Document: doc_konto
@@ -92,7 +82,6 @@ Label: Ellings uføretrygd
 Summary: Ellings uføretrygd: 2 [icon=coin] i måneden.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
-Discuss: Frank
 
 ## f_alt_via_grete
 
@@ -100,25 +89,20 @@ Label: Alt går via Grete
 Summary: Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi
-Discuss: Frank, Grete
 
 ## f_husleie
 
 Label: Husleie betales av Grete
 Summary: Husleien er 3 [icon=coin] og betales av Grete.
 Domain: Økonomi/bolig · Category: Økonomi
-About: utleier
 Supports: q_okonomi, q_bolig
-Discuss: Frank, Grete
 
 ## f_gap
 
 Label: 2 [icon=coin] mangler
 Summary: Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.
 Domain: Økonomi/bolig · Category: Økonomi
-About: utleier
 Supports: q_okonomi, q_bolig
-Discuss: Frank
 
 ## f_ingen_matkjop
 
@@ -126,7 +110,6 @@ Label: Ingen egne matkjøp
 Summary: Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.
 Domain: Hverdag/rutine · Category: Økonomi
 Supports: q_grete_dor
-Discuss: Frank
 
 # Document: doc_papirer
 
@@ -171,7 +154,6 @@ Label: Husleien har stoppet
 Summary: Husleien har stoppet. Betalingskjeden døde med Grete.
 Domain: Økonomi/bolig · Category: Risiko
 Supports: q_bolig, q_kollaps
-Discuss: Frank
 
 ## f_huseier_kommer
 
@@ -179,7 +161,6 @@ Label: Huseieren kommer torsdag
 Summary: Huseieren varsler at han kommer innom. Torsdag.
 Domain: Økonomi/bolig · Category: Risiko
 Supports: q_bolig, q_baering
-Discuss: Frank
 
 ## f_leie_privat
 
@@ -187,7 +168,6 @@ Label: Privat leieforhold
 Summary: Leieforholdet er privat og muntlig innarbeidet siden 1971. Ingen kontrakt å lene seg på.
 Domain: Økonomi/bolig · Category: Dokument
 Supports: q_bolig
-Discuss: Frank
 
 # Document: doc_frank_tlf
 
@@ -213,9 +193,7 @@ Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.
 Label: «Han klarer seg»
 Summary: Grete avviser bekymringen. Gjentar formuleringen.
 Domain: Nettverk/sosialt · Category: Samtale
-About: elling
 Supports: q_grete_dor
-Discuss: Frank
 Reveals: call:grete
 
 ## f_ingen_plan
@@ -224,7 +202,6 @@ Label: Ingen overtakelsesplan
 Summary: Det finnes ingen plan for hvem som overtar etter Grete.
 Domain: Helse/risiko · Category: Samtale
 Supports: q_grete_dor, q_bolig
-Discuss: Frank, Grete
 
 ## f_elling_tlf
 
@@ -232,7 +209,6 @@ Label: Elling tar ikke telefonen
 Summary: Elling tar ikke telefonen. Grete normaliserer det.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_baering
-Discuss: Frank, Grete
 
 ## f_grete_redd
 
@@ -240,7 +216,6 @@ Label: Grete er redd
 Summary: Grete frykter at kommunen vil ta leiligheten — eller Elling.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_bolig
-Discuss: Frank
 
 # Document: doc_frank_visit
 
@@ -266,20 +241,14 @@ Grete fulgte meg ut. I trappen sa hun: [«Du så hvordan han er. Han er en smart
 Label: Uåpnet post
 Summary: Uåpnet post samler seg. Grete håndterer den — og skjuler den.
 Domain: Hverdag/rutine · Category: Observasjon
-About: elling
 Supports: q_grete_dor, q_okonomi
-Discuss: Frank
-Card: «Trygdekontoret øverst. Uåpnet.»
 
 ## f_bok
 
 Label: Bok med notater
 Summary: Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er en ressurs.
 Domain: Ressurser · Category: Ressurs
-About: elling
 Supports: q_evner
-Discuss: Frank
-Card: «Margnotater. Systematisk.»
 
 ## f_utklipp
 
@@ -287,8 +256,6 @@ Label: Avisutklipp-arkiv
 Summary: Elling samler og systematiserer: utklipp av Gro og Arbeiderpartiet, datert og ordnet.
 Domain: Ressurser · Category: Ressurs
 Supports: q_evner
-Discuss: Frank
-Card: «Gro. Årstall i hjørnene.»
 
 ## f_avstand
 
@@ -296,19 +263,14 @@ Label: Holder avstand
 Summary: Elling holder avstand til fremmede. Alltid et møbel mellom.
 Domain: Nettverk/sosialt · Category: Observasjon
 Supports: q_baering, q_evner
-Discuss: Frank
-Card: «Alltid et møbel imellom.»
 
 ## f_dor_glott
 
 Label: En dør på gløtt
 Summary: Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.
 Domain: Nettverk/sosialt · Category: Samtale
-About: elling
 Supports: q_baering
-Discuss: Frank
 Quote: «han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.»
-Card: «Han svarte da jeg spurte om Nansen.»
 
 ## f_smart_gutt
 
@@ -316,8 +278,6 @@ Label: «En smart gutt»
 Summary: Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_grete_dor, q_evner
-Discuss: Frank
-Card: «Sagt lavt, i trappen.»
 
 # Document: doc_innleggelse
 
@@ -340,7 +300,6 @@ Label: Grete innlagt
 Summary: Grete er akutt innlagt på Ullevål.
 Domain: Helse/risiko · Category: Dokument
 Supports: q_grete_dor, q_bolig
-Discuss: Frank
 
 ## f_elling_uvarslet
 
@@ -348,7 +307,6 @@ Label: Elling uvarslet
 Summary: Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.
 Domain: Helse/risiko · Category: Dokument
 Supports: q_baering, q_kollaps
-Discuss: Frank
 
 # Document: doc_dodsfall
 
@@ -373,7 +331,6 @@ Label: Grete er død
 Summary: Grete Olsen døde 15.02 kl. 04:12.
 Domain: Helse/risiko · Category: Dokument
 Supports: q_kollaps
-Discuss: Frank
 ~ open q_kollaps
 
 ## f_brevsprekken
@@ -382,7 +339,6 @@ Label: Beskjed gjennom brevsprekken
 Summary: Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.
 Domain: Nettverk/sosialt · Category: Dokument
 Supports: q_baering, q_kollaps
-Discuss: Frank
 
 # Document: doc_status
 
@@ -437,14 +393,13 @@ when: f_elling_tlf and f_avstand and f_ingen_tjenester
 Title: Hva kan læres — og i hvilket tempo, uten å knekke noe?
 Teaser: Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.
 Card title: Hva kan læres?
-Card sub: — og i hvilket tempo, uten å knekke noe?
 when: f_bok and f_utklipp
 
 # Question: q_kollaps
-
 Title: Hva kollapser først nå?
 Teaser: Noe her har begynt å rakne. Jeg vet ikke hva som går først.
 when: f_dod
+Card title:
 
 # Question: q_liv
 
@@ -461,7 +416,6 @@ needs: f_smart_gutt and f_ingen_matkjop
 Opens: t_matlevering
 
 # Hypothesis: h_gd_infra
-
 Title: Alt praktisk er usynlig infrastruktur: mat, post, kontakt.
 Summary: Funksjonene er ikke dokumentert noe sted og overlever ikke bortfall uten overføring.
 Question: q_grete_dor
@@ -618,6 +572,7 @@ Title: Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.
 Summary: Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.
 Question: q_liv
 needs: f_utklipp and f_bok
+Opens:
 
 # Hypothesis: h_liv_trygghet
 
@@ -637,8 +592,6 @@ needs: f_elling_tlf
 
 Title: Søk bostøtte
 Slot: s1 · Cost: 0
-Needs: f_trygd, f_husleie
-Needs hypothesis: h_ok_gap, h_b_sikres
 Description: Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid.
 Sim hook: case.olsen.tiltak.bostotte
 
@@ -646,8 +599,6 @@ Sim hook: case.olsen.tiltak.bostotte
 
 Title: Frivillig forvaltning av faste betalinger
 Slot: s1 · Cost: 1
-Needs: f_alt_via_grete
-Needs hypothesis: h_ok_kjede, h_b_sikres, h_c_penger
 Description: Kommunen overtar skoesken. Trygt. Bygger ingenting.
 Sim hook: case.olsen.tiltak.forvaltning
 
@@ -655,8 +606,6 @@ Sim hook: case.olsen.tiltak.forvaltning
 
 Title: Snakk med huseieren
 Slot: s1 · Cost: 0
-Needs: f_huseier_kommer
-Needs hypothesis: h_b_sikres, h_b_flytte, h_c_penger
 Description: Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.
 Sim hook: case.olsen.tiltak.garanti
 
@@ -664,8 +613,6 @@ Sim hook: case.olsen.tiltak.garanti
 
 Title: Hjemmehjelp 2× uke — Frank
 Slot: s2 · Cost: 2
-Needs: f_grete_baerer
-Needs hypothesis: h_gd_infra, h_gd_system, h_ba_kanal, h_c_kontakt
 Description: Fast person, fast tid. Den eneste kanalen inn som har virket hittil.
 Sim hook: case.olsen.tiltak.channel
 
@@ -673,8 +620,6 @@ Sim hook: case.olsen.tiltak.channel
 
 Title: Matombringing
 Slot: s2 · Cost: 1
-Needs: f_ingen_matkjop
-Needs hypothesis: h_gd_infra, h_c_mat
 Description: Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.
 Sim hook: case.olsen.tiltak.food
 
@@ -682,8 +627,6 @@ Sim hook: case.olsen.tiltak.food
 
 Title: Fast dokumentgjennomgang
 Slot: s2 · Cost: 1
-Needs: f_post
-Needs hypothesis: h_ev_unngaar, h_gd_infra, h_ba_drift
 Description: Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.
 Sim hook: case.olsen.tiltak.dok
 
@@ -691,8 +634,6 @@ Sim hook: case.olsen.tiltak.dok
 
 Title: Åpne ett brev sammen med Frank
 Slot: s3 · Cost: 0
-Needs: f_post
-Needs hypothesis: h_ev_kanmer, h_ve_rutine, h_ev_ukjent
 Description: Ett brev. Ikke bunken. Frank legger det på bordet og venter.
 Sim hook: case.olsen.tiltak.brev
 
@@ -700,8 +641,6 @@ Sim hook: case.olsen.tiltak.brev
 
 Title: Betal én regning med støtte
 Slot: s3 · Cost: 0
-Needs: f_gap
-Needs hypothesis: h_ve_rutine
 Description: Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.
 Sim hook: case.olsen.tiltak.regning
 
@@ -709,8 +648,6 @@ Sim hook: case.olsen.tiltak.regning
 
 Title: Institusjonsvurdering / omsorgsbolig
 Slot: press · Cost: 0 · Weight: heavy
-Needs: f_saarbar
-Needs hypothesis: h_ve_formell, h_ba_alt
 Description: Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.
 Sim hook: case.olsen.tiltak.institusjon
 

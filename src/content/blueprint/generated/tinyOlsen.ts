@@ -33,7 +33,14 @@ export const tinyOlsenDocuments = {
             factId: 'f_saarbar',
           },
           {
-            text: ' for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. ',
+            text: ' for sin sønn Elling Olsen (f. 14.03.1964). ',
+          },
+          {
+            text: 'Omfanget er ikke kartlagt',
+            factId: 'f_grete_baerer',
+          },
+          {
+            text: ', men han kan ha behov for støtte ved mors bortfall. ',
           },
         ],
       },
@@ -593,7 +600,6 @@ export const tinyOlsenFacts = {
     text: 'Grete er alvorlig syk. Forventet forløp er kort.',
     quote: 'sykdom med kort forventet forløp',
     supports: ['q_grete_dor'],
-    discuss: ['Frank'],
   },
   f_aldri_alene: {
     id: 'f_aldri_alene',
@@ -602,16 +608,14 @@ export const tinyOlsenFacts = {
     text: 'Elling (35) har aldri bodd alene.',
     quote: '',
     supports: ['q_grete_dor', 'q_evner'],
-    discuss: ['Frank', 'Grete'],
   },
   f_grete_baerer: {
     id: 'f_grete_baerer',
     domain: 'Hverdag/rutine',
     category: 'Dokument',
     text: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
-    quote: '',
+    quote: 'Omfanget er ikke kartlagt',
     supports: ['q_grete_dor', 'q_okonomi'],
-    discuss: ['Frank', 'Grete'],
   },
   f_saarbar: {
     id: 'f_saarbar',
@@ -620,7 +624,6 @@ export const tinyOlsenFacts = {
     text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
     quote: 'primær omsorgsperson',
     supports: ['q_grete_dor'],
-    discuss: ['Frank'],
   },
   f_ingen_tjenester: {
     id: 'f_ingen_tjenester',
@@ -629,7 +632,6 @@ export const tinyOlsenFacts = {
     text: 'Elling har ingen kontakt med øvrige tjenester.',
     quote: '',
     supports: ['q_baering'],
-    discuss: ['Frank'],
   },
   f_trygd: {
     id: 'f_trygd',
@@ -638,7 +640,6 @@ export const tinyOlsenFacts = {
     text: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
     quote: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
     supports: ['q_okonomi', 'q_bolig'],
-    discuss: ['Frank'],
   },
   f_alt_via_grete: {
     id: 'f_alt_via_grete',
@@ -647,7 +648,6 @@ export const tinyOlsenFacts = {
     text: 'Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.',
     quote: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
     supports: ['q_okonomi'],
-    discuss: ['Frank', 'Grete'],
   },
   f_husleie: {
     id: 'f_husleie',
@@ -656,7 +656,6 @@ export const tinyOlsenFacts = {
     text: 'Husleien er 3 [icon=coin] og betales av Grete.',
     quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
     supports: ['q_okonomi', 'q_bolig'],
-    discuss: ['Frank', 'Grete'],
   },
   f_gap: {
     id: 'f_gap',
@@ -665,7 +664,6 @@ export const tinyOlsenFacts = {
     text: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
     quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
     supports: ['q_okonomi', 'q_bolig'],
-    discuss: ['Frank'],
   },
   f_ingen_matkjop: {
     id: 'f_ingen_matkjop',
@@ -674,7 +672,6 @@ export const tinyOlsenFacts = {
     text: 'Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.',
     quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
     supports: ['q_grete_dor'],
-    discuss: ['Frank'],
   },
   f_leie_stoppet: {
     id: 'f_leie_stoppet',
@@ -683,7 +680,6 @@ export const tinyOlsenFacts = {
     text: 'Husleien har stoppet. Betalingskjeden døde med Grete.',
     quote: 'Leien for mars er ikke kommet.',
     supports: ['q_bolig', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_huseier_kommer: {
     id: 'f_huseier_kommer',
@@ -692,7 +688,6 @@ export const tinyOlsenFacts = {
     text: 'Huseieren varsler at han kommer innom. Torsdag.',
     quote: 'jeg kommer innom på torsdag, så får vi snakke om veien videre.',
     supports: ['q_bolig', 'q_baering'],
-    discuss: ['Frank'],
   },
   f_leie_privat: {
     id: 'f_leie_privat',
@@ -701,7 +696,6 @@ export const tinyOlsenFacts = {
     text: 'Leieforholdet er privat og muntlig innarbeidet siden 1971. Ingen kontrakt å lene seg på.',
     quote: 'Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.',
     supports: ['q_bolig'],
-    discuss: ['Frank'],
   },
   f_klarer_seg: {
     id: 'f_klarer_seg',
@@ -710,7 +704,6 @@ export const tinyOlsenFacts = {
     text: 'Grete avviser bekymringen. Gjentar formuleringen.',
     quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
     supports: ['q_grete_dor'],
-    discuss: ['Frank'],
   },
   f_ingen_plan: {
     id: 'f_ingen_plan',
@@ -720,7 +713,6 @@ export const tinyOlsenFacts = {
     quote:
       'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
     supports: ['q_grete_dor', 'q_bolig'],
-    discuss: ['Frank', 'Grete'],
   },
   f_elling_tlf: {
     id: 'f_elling_tlf',
@@ -730,7 +722,6 @@ export const tinyOlsenFacts = {
     quote:
       'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
     supports: ['q_baering'],
-    discuss: ['Frank', 'Grete'],
   },
   f_grete_redd: {
     id: 'f_grete_redd',
@@ -739,7 +730,6 @@ export const tinyOlsenFacts = {
     text: 'Grete frykter at kommunen vil ta leiligheten — eller Elling.',
     quote: 'spurte hun om dette betydde at noen kom til å ta ham fra leiligheten',
     supports: ['q_bolig'],
-    discuss: ['Frank'],
   },
   f_post: {
     id: 'f_post',
@@ -749,7 +739,6 @@ export const tinyOlsenFacts = {
     quote:
       'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
     supports: ['q_grete_dor', 'q_okonomi'],
-    discuss: ['Frank'],
   },
   f_bok: {
     id: 'f_bok',
@@ -758,7 +747,6 @@ export const tinyOlsenFacts = {
     text: 'Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er en ressurs.',
     quote: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
     supports: ['q_evner'],
-    discuss: ['Frank'],
   },
   f_utklipp: {
     id: 'f_utklipp',
@@ -768,7 +756,6 @@ export const tinyOlsenFacts = {
     quote:
       'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.',
     supports: ['q_evner'],
-    discuss: ['Frank'],
   },
   f_avstand: {
     id: 'f_avstand',
@@ -777,7 +764,6 @@ export const tinyOlsenFacts = {
     text: 'Elling holder avstand til fremmede. Alltid et møbel mellom.',
     quote: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
     supports: ['q_baering', 'q_evner'],
-    discuss: ['Frank'],
   },
   f_dor_glott: {
     id: 'f_dor_glott',
@@ -787,7 +773,6 @@ export const tinyOlsenFacts = {
     quote:
       'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
     supports: ['q_baering'],
-    discuss: ['Frank'],
   },
   f_smart_gutt: {
     id: 'f_smart_gutt',
@@ -796,7 +781,6 @@ export const tinyOlsenFacts = {
     text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
     quote: '«Du så hvordan han er. Han er en smart gutt.»',
     supports: ['q_grete_dor', 'q_evner'],
-    discuss: ['Frank'],
   },
   f_innlagt: {
     id: 'f_innlagt',
@@ -805,7 +789,6 @@ export const tinyOlsenFacts = {
     text: 'Grete er akutt innlagt på Ullevål.',
     quote: 'innlagt akutt 14.02',
     supports: ['q_grete_dor', 'q_bolig'],
-    discuss: ['Frank'],
   },
   f_elling_uvarslet: {
     id: 'f_elling_uvarslet',
@@ -814,7 +797,6 @@ export const tinyOlsenFacts = {
     text: 'Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.',
     quote: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
     supports: ['q_baering', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_dod: {
     id: 'f_dod',
@@ -823,7 +805,6 @@ export const tinyOlsenFacts = {
     text: 'Grete Olsen døde 15.02 kl. 04:12.',
     quote: 'Dødsfall konstatert 15.02 kl. 04:12.',
     supports: ['q_kollaps'],
-    discuss: ['Frank'],
   },
   f_brevsprekken: {
     id: 'f_brevsprekken',
@@ -833,7 +814,6 @@ export const tinyOlsenFacts = {
     quote:
       'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
     supports: ['q_baering', 'q_kollaps'],
-    discuss: ['Frank'],
   },
 } satisfies Record<string, BlueprintFact>;
 
@@ -1064,8 +1044,6 @@ export const tinyOlsenTiltak = {
     slot: 's1',
     title: 'Søk bostøtte',
     cost: 0,
-    needs: ['f_trygd', 'f_husleie'],
-    needsHypothesis: ['h_ok_gap', 'h_b_sikres'],
     description: 'Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid.',
     sim: 'case.olsen.tiltak.bostotte',
   },
@@ -1074,8 +1052,6 @@ export const tinyOlsenTiltak = {
     slot: 's1',
     title: 'Frivillig forvaltning av faste betalinger',
     cost: 1,
-    needs: ['f_alt_via_grete'],
-    needsHypothesis: ['h_ok_kjede', 'h_b_sikres', 'h_c_penger'],
     description: 'Kommunen overtar skoesken. Trygt. Bygger ingenting.',
     sim: 'case.olsen.tiltak.forvaltning',
   },
@@ -1084,8 +1060,6 @@ export const tinyOlsenTiltak = {
     slot: 's1',
     title: 'Snakk med huseieren',
     cost: 0,
-    needs: ['f_huseier_kommer'],
-    needsHypothesis: ['h_b_sikres', 'h_b_flytte', 'h_c_penger'],
     description:
       'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.',
     sim: 'case.olsen.tiltak.garanti',
@@ -1095,8 +1069,6 @@ export const tinyOlsenTiltak = {
     slot: 's2',
     title: 'Hjemmehjelp 2× uke — Frank',
     cost: 2,
-    needs: ['f_grete_baerer'],
-    needsHypothesis: ['h_gd_infra', 'h_gd_system', 'h_ba_kanal', 'h_c_kontakt'],
     description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
     sim: 'case.olsen.tiltak.channel',
   },
@@ -1105,8 +1077,6 @@ export const tinyOlsenTiltak = {
     slot: 's2',
     title: 'Matombringing',
     cost: 1,
-    needs: ['f_ingen_matkjop'],
-    needsHypothesis: ['h_gd_infra', 'h_c_mat'],
     description: 'Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.',
     sim: 'case.olsen.tiltak.food',
   },
@@ -1115,8 +1085,6 @@ export const tinyOlsenTiltak = {
     slot: 's2',
     title: 'Fast dokumentgjennomgang',
     cost: 1,
-    needs: ['f_post'],
-    needsHypothesis: ['h_ev_unngaar', 'h_gd_infra', 'h_ba_drift'],
     description: 'Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.',
     sim: 'case.olsen.tiltak.dok',
   },
@@ -1125,8 +1093,6 @@ export const tinyOlsenTiltak = {
     slot: 's3',
     title: 'Åpne ett brev sammen med Frank',
     cost: 0,
-    needs: ['f_post'],
-    needsHypothesis: ['h_ev_kanmer', 'h_ve_rutine', 'h_ev_ukjent'],
     description: 'Ett brev. Ikke bunken. Frank legger det på bordet og venter.',
     sim: 'case.olsen.tiltak.brev',
   },
@@ -1135,8 +1101,6 @@ export const tinyOlsenTiltak = {
     slot: 's3',
     title: 'Betal én regning med støtte',
     cost: 0,
-    needs: ['f_gap'],
-    needsHypothesis: ['h_ve_rutine'],
     description: 'Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.',
     sim: 'case.olsen.tiltak.regning',
   },
@@ -1145,8 +1109,6 @@ export const tinyOlsenTiltak = {
     slot: 'press',
     title: 'Institusjonsvurdering / omsorgsbolig',
     cost: 0,
-    needs: ['f_saarbar'],
-    needsHypothesis: ['h_ve_formell', 'h_ba_alt'],
     description:
       'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel.',
     sim: 'case.olsen.tiltak.institusjon',
@@ -1181,7 +1143,7 @@ export const tinyOlsenGodotSource = {
       peek: 'Bekymringsmelding Dr. J. Haug',
       meta: 'LEGESENTERET DR. J. HAUG, 11.02.1999',
       body_bbcode:
-        'Under behandling av pasient Grete Olsen (f. 1927) for en [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url] kommer det frem at hun er [url=fact:f_saarbar]primær omsorgsperson[/url] for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. \n\nMed hilsen\nJørgen Haug\nspes. allmennmedisin',
+        'Under behandling av pasient Grete Olsen (f. 1927) for en [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url] kommer det frem at hun er [url=fact:f_saarbar]primær omsorgsperson[/url] for sin sønn Elling Olsen (f. 14.03.1964). [url=fact:f_grete_baerer]Omfanget er ikke kartlagt[/url], men han kan ha behov for støtte ved mors bortfall. \n\nMed hilsen\nJørgen Haug\nspes. allmennmedisin',
       runs: [
         {
           id: 'run_text_0',
@@ -1205,7 +1167,17 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_2',
-          text: ' for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. Med hilsen Jørgen Haug spes. allmennmedisin',
+          text: ' for sin sønn Elling Olsen (f. 14.03.1964). ',
+          fact_id: '',
+        },
+        {
+          id: 'run_grete_baerer',
+          text: 'Omfanget er ikke kartlagt',
+          fact_id: 'f_grete_baerer',
+        },
+        {
+          id: 'run_text_3',
+          text: ', men han kan ha behov for støtte ved mors bortfall. Med hilsen Jørgen Haug spes. allmennmedisin',
           fact_id: '',
         },
       ],
@@ -1610,11 +1582,9 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Dokument',
-      about: 'grete',
       quote: 'sykdom med kort forventet forløp',
       frank_response:
         '«Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
@@ -1628,7 +1598,6 @@ export const tinyOlsenGodotSource = {
       quote: '',
       frank_response:
         'Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_grete_dor', 'q_evner'],
       lift_effects: [],
     },
@@ -1639,11 +1608,9 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Hverdag/rutine',
       category: 'Dokument',
-      about: 'grete',
-      quote: '',
+      quote: 'Omfanget er ikke kartlagt',
       frank_response:
         '«Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_grete_dor', 'q_okonomi'],
       lift_effects: [],
     },
@@ -1654,11 +1621,9 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_bekymring',
       domain: 'Helse/risiko',
       category: 'Risiko',
-      about: 'elling',
       quote: 'primær omsorgsperson',
       frank_response:
         'Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
@@ -1672,7 +1637,6 @@ export const tinyOlsenGodotSource = {
       quote: '',
       frank_response:
         'Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.',
-      discuss: ['Frank'],
       supports_questions: ['q_baering'],
       lift_effects: [],
     },
@@ -1685,7 +1649,6 @@ export const tinyOlsenGodotSource = {
       category: 'Økonomi',
       quote:
         'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
-      discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1697,7 +1660,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
       quote: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_okonomi'],
       lift_effects: [],
     },
@@ -1708,9 +1670,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      about: 'utleier',
       quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1721,9 +1681,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      about: 'utleier',
       quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
-      discuss: ['Frank'],
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1735,7 +1693,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Hverdag/rutine',
       category: 'Økonomi',
       quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
@@ -1747,7 +1704,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Økonomi/bolig',
       category: 'Risiko',
       quote: 'Leien for mars er ikke kommet.',
-      discuss: ['Frank'],
       supports_questions: ['q_bolig', 'q_kollaps'],
       lift_effects: [],
     },
@@ -1759,7 +1715,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Økonomi/bolig',
       category: 'Risiko',
       quote: 'jeg kommer innom på torsdag, så får vi snakke om veien videre.',
-      discuss: ['Frank'],
       supports_questions: ['q_bolig', 'q_baering'],
       lift_effects: [],
     },
@@ -1772,7 +1727,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Økonomi/bolig',
       category: 'Dokument',
       quote: 'Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.',
-      discuss: ['Frank'],
       supports_questions: ['q_bolig'],
       lift_effects: [],
     },
@@ -1783,9 +1737,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_tlf',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
-      about: 'elling',
       quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor'],
       reveals_event: 'call:grete',
       lift_effects: [],
@@ -1799,7 +1751,6 @@ export const tinyOlsenGodotSource = {
       category: 'Samtale',
       quote:
         'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_grete_dor', 'q_bolig'],
       lift_effects: [],
     },
@@ -1812,7 +1763,6 @@ export const tinyOlsenGodotSource = {
       category: 'Samtale',
       quote:
         'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
-      discuss: ['Frank', 'Grete'],
       supports_questions: ['q_baering'],
       lift_effects: [],
     },
@@ -1824,7 +1774,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
       quote: 'spurte hun om dette betydde at noen kom til å ta ham fra leiligheten',
-      discuss: ['Frank'],
       supports_questions: ['q_bolig'],
       lift_effects: [],
     },
@@ -1835,11 +1784,8 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
-      about: 'elling',
       quote:
         'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
-      card_line: 'Trygdekontoret øverst. Uåpnet.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor', 'q_okonomi'],
       lift_effects: [],
     },
@@ -1850,10 +1796,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Ressurser',
       category: 'Ressurs',
-      about: 'elling',
       quote: 'en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.',
-      card_line: 'Margnotater. Systematisk.',
-      discuss: ['Frank'],
       supports_questions: ['q_evner'],
       lift_effects: [],
     },
@@ -1867,8 +1810,6 @@ export const tinyOlsenGodotSource = {
       category: 'Ressurs',
       quote:
         'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.',
-      card_line: 'Gro. Årstall i hjørnene.',
-      discuss: ['Frank'],
       supports_questions: ['q_evner'],
       lift_effects: [],
     },
@@ -1880,8 +1821,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Observasjon',
       quote: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
-      card_line: 'Alltid et møbel imellom.',
-      discuss: ['Frank'],
       supports_questions: ['q_baering', 'q_evner'],
       lift_effects: [],
     },
@@ -1893,11 +1832,8 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_frank_visit',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
-      about: 'elling',
       quote:
         'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
-      card_line: 'Han svarte da jeg spurte om Nansen.',
-      discuss: ['Frank'],
       supports_questions: ['q_baering'],
       lift_effects: [],
     },
@@ -1909,8 +1845,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
       quote: '«Du så hvordan han er. Han er en smart gutt.»',
-      card_line: 'Sagt lavt, i trappen.',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor', 'q_evner'],
       lift_effects: [],
     },
@@ -1922,7 +1856,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Helse/risiko',
       category: 'Dokument',
       quote: 'innlagt akutt 14.02',
-      discuss: ['Frank'],
       supports_questions: ['q_grete_dor', 'q_bolig'],
       lift_effects: [],
     },
@@ -1934,7 +1867,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Helse/risiko',
       category: 'Dokument',
       quote: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
-      discuss: ['Frank'],
       supports_questions: ['q_baering', 'q_kollaps'],
       lift_effects: [],
     },
@@ -1946,7 +1878,6 @@ export const tinyOlsenGodotSource = {
       domain: 'Helse/risiko',
       category: 'Dokument',
       quote: 'Dødsfall konstatert 15.02 kl. 04:12.',
-      discuss: ['Frank'],
       supports_questions: ['q_kollaps'],
       lift_effects: [
         {
@@ -1966,7 +1897,6 @@ export const tinyOlsenGodotSource = {
       category: 'Dokument',
       quote:
         'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
-      discuss: ['Frank'],
       supports_questions: ['q_baering', 'q_kollaps'],
       lift_effects: [],
     },
@@ -2141,7 +2071,6 @@ export const tinyOlsenGodotSource = {
       prompt: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
       teaser: 'Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.',
       card_title: 'Hva kan læres?',
-      card_sub: '— og i hvilket tempo, uten å knekke noe?',
       reveal_when: {
         op: 'all',
         children: [
@@ -2164,6 +2093,7 @@ export const tinyOlsenGodotSource = {
       id: 'q_kollaps',
       prompt: 'Hva kollapser først nå?',
       teaser: 'Noe her har begynt å rakne. Jeg vet ikke hva som går først.',
+      card_title: '',
       reveal_when: {
         op: 'fact_lifted',
         args: {

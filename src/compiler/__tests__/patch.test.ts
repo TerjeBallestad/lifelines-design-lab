@@ -65,14 +65,14 @@ describe('(b) patch→compile equals editing the field by hand', () => {
   it('patchField(when) rewrites a condition expression', () => {
     const patched = patchField(olsen, 'q_kollaps', 'when', 'f_dod and f_brevsprekken');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[444, 'when: f_dod', 'when: f_dod and f_brevsprekken']]);
+    expect(diff).toEqual([[401, 'when: f_dod', 'when: f_dod and f_brevsprekken']]);
     expect(compileCase(patched).diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
   });
 
   it('patchField inserts a missing field after the last field line', () => {
     const patched = patchField(olsen, 'f_trygd', 'Card', '«Trygden — 2 i måneden.»');
     const diff = changedLines(olsen, patched);
-    expect(diff[0]).toEqual([94, '', 'Card: «Trygden — 2 i måneden.»']);
+    expect(diff[0]).toEqual([85, '', 'Card: «Trygden — 2 i måneden.»']);
     const fact = compileCase(patched).slice.facts.find((f: { id: string }) => f.id === 'f_trygd');
     expect(fact).toBeTruthy();
   });
@@ -94,13 +94,13 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldAdd appends to the existing line without reformatting it', () => {
     const patched = listFieldAdd(olsen, 'f_bok', 'Supports', 'q_liv');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[278, 'Supports: q_evner', 'Supports: q_evner, q_liv']]);
+    expect(diff).toEqual([[251, 'Supports: q_evner', 'Supports: q_evner, q_liv']]);
   });
 
   it('listFieldAdd fills an empty list field in place', () => {
     const patched = listFieldAdd(olsen, 'h_ev_ukjent', 'Needs', 'f_aldri_alene');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[497, 'Needs:', 'Needs: f_aldri_alene']]);
+    expect(diff).toEqual([[454, 'Needs:', 'Needs: f_aldri_alene']]);
   });
 
   it('listFieldRemove keeps the order of the remaining entries', () => {
@@ -108,7 +108,7 @@ describe('(c) list ops preserve line order and formatting', () => {
     const diff = changedLines(olsen, patched);
     expect(diff).toEqual([
       [
-        466,
+        423,
         'Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang',
         'Opens: t_hjemmehjelp, t_dokgjennomgang',
       ],
@@ -125,7 +125,7 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldRemove of the last entry leaves the bare key line', () => {
     const once = listFieldRemove(olsen, 'f_bok', 'Supports', 'q_evner');
     const diff = changedLines(olsen, once);
-    expect(diff).toEqual([[278, 'Supports: q_evner', 'Supports:']]);
+    expect(diff).toEqual([[251, 'Supports: q_evner', 'Supports:']]);
   });
 });
 
@@ -227,9 +227,8 @@ describe('liftFact (SB-043): a document passage becomes a fact stub', () => {
       '## f_ny\n' +
         'Label: \n' +
         'Summary: \n' +
-        'Domain:  · Category: \n' +
+        'Category: \n' +
         'Supports: \n' +
-        'Discuss: Frank\n' +
         `Quote: «${passage}»\n`,
     );
     // Sits after the document's last fact, before the next document.

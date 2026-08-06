@@ -49,7 +49,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete er alvorlig syk. Forventet forløp er kort.',
     quote: 'sykdom med kort forventet forløp',
     supports: ['q_hverdag'],
-    discuss: ['Frank'],
   },
   f_aldri_alene: {
     id: 'f_aldri_alene',
@@ -58,7 +57,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling (35) har aldri bodd alene.',
     quote: 'har etter det opplyste aldri bodd alene',
     supports: ['q_hverdag', 'q_selv'],
-    discuss: ['Frank', 'Grete'],
   },
   f_grete_baerer: {
     id: 'f_grete_baerer',
@@ -67,7 +65,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
     quote: 'mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt',
     supports: ['q_hverdag', 'q_okonomi'],
-    discuss: ['Frank', 'Grete'],
   },
   f_saarbar: {
     id: 'f_saarbar',
@@ -76,7 +73,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
     quote: 'sårbar ved bortfall av pårørende',
     supports: ['q_hverdag', 'q_selv'],
-    discuss: ['Frank'],
   },
   f_ingen_tjenester: {
     id: 'f_ingen_tjenester',
@@ -85,7 +81,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling har ingen kontakt med øvrige tjenester.',
     quote: 'ikke i kontakt med øvrige tjenester',
     supports: ['q_kontakt'],
-    discuss: ['Frank'],
   },
   f_klarer_seg: {
     id: 'f_klarer_seg',
@@ -94,7 +89,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete avviser bekymringen. Gjentar formuleringen.',
     quote: 'Han klarer seg. Han har alltid klart seg.',
     supports: ['q_hverdag', 'q_kontakt'],
-    discuss: ['Frank'],
   },
   f_ingen_plan: {
     id: 'f_ingen_plan',
@@ -103,7 +97,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Det finnes ingen plan for hvem som overtar etter Grete.',
     quote: 'hvem som overtar hvis hun blir innlagt. det ble stille.',
     supports: ['q_hverdag', 'q_bolig'],
-    discuss: ['Frank', 'Grete'],
   },
   f_elling_tlf: {
     id: 'f_elling_tlf',
@@ -112,7 +105,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling tar ikke telefonen. Grete normaliserer det.',
     quote: 'han liker bare ikke apparatet',
     supports: ['q_kontakt'],
-    discuss: ['Frank', 'Grete'],
   },
   f_grete_redd: {
     id: 'f_grete_redd',
@@ -121,7 +113,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete frykter at kommunen vil ta leiligheten, eller Elling.',
     quote: 'ta ham fra leiligheten',
     supports: ['q_bolig'],
-    discuss: ['Frank'],
   },
   f_post: {
     id: 'f_post',
@@ -130,7 +121,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Uåpnet post samler seg. Grete håndterer den og skjuler den.',
     quote: 'en bunke uåpnet post på skoskapet',
     supports: ['q_hverdag', 'q_okonomi', 'q_kontakt'],
-    discuss: ['Frank'],
   },
   f_kalender: {
     id: 'f_kalender',
@@ -139,7 +129,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Kalenderen føres av Grete. Avtaler finnes bare så lenge hun fører dem.',
     quote: 'alle avtaler ført med samme håndskrift',
     supports: ['q_hverdag'],
-    discuss: ['Frank'],
   },
   f_matbokser: {
     id: 'f_matbokser',
@@ -148,7 +137,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Maten er preppet av Grete, merket med ukedager. Elling varmer.',
     quote: 'middagsbokser merket med ukedager',
     supports: ['q_hverdag', 'q_selv', 'q_kollaps'],
-    discuss: ['Frank', 'Grete'],
   },
   f_bok: {
     id: 'f_bok',
@@ -157,7 +145,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling leser krevende stoff og noterer systematisk.',
     quote: 'en bok om polarekspedisjoner. han noterte i margen',
     supports: ['q_selv', 'q_okonomi'],
-    discuss: ['Frank'],
   },
   f_utklipp: {
     id: 'f_utklipp',
@@ -166,7 +153,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling samler og systematiserer Gro- og Arbeiderpartiet-utklipp.',
     quote: 'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai',
     supports: ['q_selv'],
-    discuss: ['Frank'],
   },
   f_avstand: {
     id: 'f_avstand',
@@ -175,7 +161,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling holder avstand til fremmede. Alltid et møbel mellom.',
     quote: 'alltid et møbel mellom oss',
     supports: ['q_kontakt', 'q_selv'],
-    discuss: ['Frank'],
   },
   f_smart_gutt: {
     id: 'f_smart_gutt',
@@ -184,7 +169,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
     quote: 'han er en smart gutt',
     supports: ['q_hverdag', 'q_selv'],
-    discuss: ['Frank'],
   },
   f_trygd: {
     id: 'f_trygd',
@@ -193,7 +177,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Ellings uføretrygd: to mynter i måneden.',
     quote: 'trygden hans — to mynter i måneden',
     supports: ['q_okonomi', 'q_bolig'],
-    discuss: ['Frank'],
   },
   f_husleie: {
     id: 'f_husleie',
@@ -202,7 +185,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Husleien er tre mynter og betales av Grete.',
     quote: 'husleien — tre mynter. den betales kontant til huseieren',
     supports: ['q_okonomi', 'q_bolig'],
-    discuss: ['Frank', 'Grete'],
   },
   f_alt_via_grete: {
     id: 'f_alt_via_grete',
@@ -211,7 +193,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Alle betalinger og avtaler går gjennom Grete.',
     quote: 'alle betalinger går gjennom Grete. alle avtaler står i hennes navn',
     supports: ['q_okonomi'],
-    discuss: ['Frank', 'Grete'],
   },
   f_gap: {
     id: 'f_gap',
@@ -220,7 +201,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
     quote: 'uten henne mangler det to mynter. hver måned',
     supports: ['q_okonomi', 'q_bolig', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_ingen_matkjop: {
     id: 'f_ingen_matkjop',
@@ -229,7 +209,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling har aldri betalt for mat selv.',
     quote: 'ikke ett kjøp som var hans',
     supports: ['q_hverdag'],
-    discuss: ['Frank'],
   },
   f_innlagt: {
     id: 'f_innlagt',
@@ -238,7 +217,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete er akutt innlagt på Ullevål.',
     quote: 'innlagt akutt 14.02',
     supports: ['q_hverdag', 'q_bolig'],
-    discuss: ['Frank'],
   },
   f_elling_uvarslet: {
     id: 'f_elling_uvarslet',
@@ -247,7 +225,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.',
     quote: 'sønnen ikke er varslet. ber om at kommunen ser til ham',
     supports: ['q_kontakt', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_dod: {
     id: 'f_dod',
@@ -256,7 +233,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Grete Olsen døde 15.02 kl. 04:12.',
     quote: 'dødsfall konstatert 15.02 kl. 04:12',
     supports: ['q_kollaps'],
-    discuss: ['Frank'],
   },
   f_brevsprekken: {
     id: 'f_brevsprekken',
@@ -265,7 +241,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.',
     quote: 'beskjeden ble gitt gjennom brevsprekken',
     supports: ['q_kontakt', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_leie_stoppet: {
     id: 'f_leie_stoppet',
@@ -274,7 +249,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Husleien har stoppet. Betalingskjeden døde med Grete.',
     quote: 'leien for mars er ikke kommet',
     supports: ['q_bolig', 'q_kollaps'],
-    discuss: ['Frank'],
   },
   f_huseier_kommer: {
     id: 'f_huseier_kommer',
@@ -283,7 +257,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Huseieren varsler at han kommer innom torsdag.',
     quote: 'jeg kommer innom på torsdag',
     supports: ['q_bolig', 'q_kontakt'],
-    discuss: ['Frank'],
   },
   f_leie_privat: {
     id: 'f_leie_privat',
@@ -292,7 +265,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Leieforholdet er privat og muntlig innarbeidet siden 1971.',
     quote: 'siden -71 uten papirer',
     supports: ['q_bolig'],
-    discuss: ['Frank'],
   },
   f_ubesvart: {
     id: 'f_ubesvart',
@@ -301,7 +273,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling tar ikke telefonen, heller ikke når den ringer i hans egen stue.',
     quote: 'åtte ring. fasttelefonen står to meter fra stolen hans',
     supports: ['q_kontakt'],
-    discuss: ['Frank'],
   },
   f_dor_glott: {
     id: 'f_dor_glott',
@@ -310,7 +281,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Døren er på gløtt: kontakt er mulig i Ellings tempo, med én fast person.',
     quote: 'det er en dør på gløtt',
     supports: ['q_kontakt', 'q_selv'],
-    discuss: ['Frank'],
   },
   f_tirade: {
     id: 'f_tirade',
@@ -319,7 +289,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Press utløser foredrag, ikke mestring. Tempoet må være hans.',
     quote: 'et kvarter langt foredrag om apparatets historie',
     supports: ['q_selv', 'q_kontakt'],
-    discuss: ['Frank'],
   },
   f_egen_mappe: {
     id: 'f_egen_mappe',
@@ -328,7 +297,6 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     text: 'Elling lager egne systemer når ingen krever det av ham.',
     quote: 'en mappe han hadde laget selv. den var merket. små bokstaver',
     supports: ['q_selv'],
-    discuss: ['Frank'],
   },
 };
 
@@ -820,8 +788,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's1',
     title: 'Søk bostøtte',
     cost: 0,
-    needs: ['f_trygd', 'f_husleie'],
-    needsHypothesis: ['h_ok_gap', 'h_b_sikres'],
     description: 'Husbanken. Krever dokumentert inntekt og husleie. Saksbehandlingstid.',
     sim: 'bostotte',
   },
@@ -830,8 +796,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's1',
     title: 'Frivillig forvaltning av faste betalinger',
     cost: 1,
-    needs: ['f_alt_via_grete'],
-    needsHypothesis: ['h_ok_grete', 'h_b_sikres', 'h_c_penger'],
     description: 'Kommunen overtar skoesken. Trygt. Bygger ingenting.',
     sim: 'forvaltning',
   },
@@ -840,8 +804,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's1',
     title: 'Snakk med huseieren',
     cost: 0,
-    needs: ['f_huseier_kommer'],
-    needsHypothesis: ['h_b_sikres', 'h_b_flytte', 'h_c_penger'],
     description: 'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank.',
     sim: 'garanti',
   },
@@ -850,8 +812,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's2',
     title: 'Hjemmehjelp 2x uke — Frank',
     cost: 2,
-    needs: ['f_grete_baerer'],
-    needsHypothesis: ['h_h_infra', 'h_h_system', 'h_k_oppmote', 'h_c_kontakt'],
     description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
     sim: 'hjemmehjelp',
   },
@@ -860,8 +820,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's2',
     title: 'Matombringing',
     cost: 1,
-    needs: ['f_matbokser'],
-    needsHypothesis: ['h_h_infra', 'h_c_mat'],
     description: 'Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal.',
     sim: 'mat',
   },
@@ -870,8 +828,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's2',
     title: 'Fast dokumentgjennomgang',
     cost: 1,
-    needs: ['f_post'],
-    needsHypothesis: ['h_ok_unngaar', 'h_k_skriftlig', 'h_h_infra'],
     description: 'Frank går gjennom posten ukentlig. Papiret når frem til en vurdering.',
     sim: 'dok',
   },
@@ -880,8 +836,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's3',
     title: 'Åpne ett brev sammen med Frank',
     cost: 0,
-    needs: ['f_post'],
-    needsHypothesis: ['h_h_kanmer', 'h_s_trenbar', 'h_s_ukjent'],
     needsVisit: true,
     description: 'Ett brev. Ikke bunken. Frank legger det på bordet og venter.',
     sim: 'brev',
@@ -891,8 +845,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's3',
     title: 'Betal én regning med støtte',
     cost: 0,
-    needs: ['f_gap'],
-    needsHypothesis: ['h_s_trenbar'],
     needsVisit: true,
     description: 'Én regning, én gang. Målet er at det har skjedd, ikke at det er lært.',
     sim: 'regning',
@@ -902,7 +854,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 's3',
     title: 'Telefontrening med manus',
     cost: 0,
-    needs: ['f_elling_tlf'],
     early: true,
     description: 'Manus ved apparatet i stuen. Krever trygghet som kanskje ikke finnes ennå.',
     sim: 'telefon',
@@ -912,7 +863,6 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
     slot: 'press',
     title: 'Institusjonsvurdering / omsorgsbolig',
     cost: 0,
-    needs: ['f_saarbar'],
     description: 'Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir et avsluttet kapittel.',
     sim: 'institusjon',
   },

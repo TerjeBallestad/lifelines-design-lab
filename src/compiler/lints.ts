@@ -20,21 +20,12 @@ export interface GateSite {
   where: Span;
 }
 
-/** 0.1 tiltak gate fields (Needs: fact list, Needs hypothesis: list). */
-export interface TiltakGate {
-  ownerId: string;
-  needs: string[];
-  needsHypothesis: string[];
-  where: Span;
-}
-
 export interface LintInput {
   caseId: string;
   /** null when the case has no Deadline: — the quiet-day lint does not run. */
   deadline: { day: number; where: Span } | null;
   slice: CaseSlice;
   gates: GateSite[];
-  tiltakGates: TiltakGate[];
   /** Block id → source span (facts, questions, hypotheses, clocks, recipes …). */
   spans: Map<string, Span>;
   /** Weave spans: `call:<contact>` and chat entry ids → conversation block span. */
@@ -127,14 +118,10 @@ export function runLints(input: LintInput, diag: DiagnosticBag): void {
           source.op === 'open_tiltak' && ((source.args?.tiltak_ids as string[]) ?? []).length > 0,
       ),
     );
-    const hypothesisIds = new Set(questionHypotheses.map((h) => h.id));
-    const tiltakNeedsHypothesis = input.tiltakGates.some((gate) =>
-      gate.needsHypothesis.some((id) => hypothesisIds.has(id)),
-    );
-    if (leadTiltak || hypothesisOpensTiltak || tiltakNeedsHypothesis) continue;
+    if (leadTiltak || hypothesisOpensTiltak) continue;
     advisory(
       codes.LINT_QUESTION_NO_TILTAK_PATH,
-      `Question ${question.id} has no path to a tiltak — no Lead targets one, none of its hypotheses opens one, and no tiltak needs one of its hypotheses.`,
+      `Question ${question.id} has no path to a tiltak — no Lead targets one and none of its hypotheses opens one.`,
       spanFor(question.id),
       [question.id],
     );
@@ -208,8 +195,6 @@ export function runLints(input: LintInput, diag: DiagnosticBag): void {
   };
   for (const gate of input.gates)
     for (const factId of factIdsInCondition(gate.ast)) gateFact(gate.ownerId, factId, gate.where);
-  for (const gate of input.tiltakGates)
-    for (const factId of gate.needs) gateFact(gate.ownerId, factId, gate.where);
   for (const recipe of slice.recipes ?? []) {
     const recipeId = `${recipe.pair[0]} + ${recipe.pair[1]}`;
     for (const factId of recipe.pair) gateFact(recipeId, factId, spanFor(recipeId));

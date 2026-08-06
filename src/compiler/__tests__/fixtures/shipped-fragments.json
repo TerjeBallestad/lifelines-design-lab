@@ -52,10 +52,7 @@
       "source_document_id": "doc_frank_visit",
       "domain": "Nettverk/sosialt",
       "category": "Samtale",
-      "about": "elling",
       "quote": "han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.",
-      "card_line": "Han svarte da jeg spurte om Nansen.",
-      "discuss": ["Frank"],
       "supports_questions": ["q_baering"],
       "lift_effects": []
     },
@@ -66,9 +63,7 @@
       "source_document_id": "doc_frank_tlf",
       "domain": "Nettverk/sosialt",
       "category": "Samtale",
-      "about": "elling",
       "quote": "«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.",
-      "discuss": ["Frank"],
       "supports_questions": ["q_grete_dor"],
       "reveals_event": "call:grete",
       "lift_effects": []
@@ -80,10 +75,8 @@
       "source_document_id": "doc_bekymring",
       "domain": "Helse/risiko",
       "category": "Dokument",
-      "about": "grete",
       "quote": "sykdom med kort forventet forløp",
       "frank_response": "«Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.",
-      "discuss": ["Frank"],
       "supports_questions": ["q_grete_dor"],
       "lift_effects": []
     },
@@ -95,7 +88,6 @@
       "domain": "Helse/risiko",
       "category": "Dokument",
       "quote": "Dødsfall konstatert 15.02 kl. 04:12.",
-      "discuss": ["Frank"],
       "supports_questions": ["q_kollaps"],
       "lift_effects": [
         {
@@ -114,7 +106,6 @@
       "domain": "Økonomi/bolig",
       "category": "Risiko",
       "quote": "Leien for mars er ikke kommet.",
-      "discuss": ["Frank"],
       "supports_questions": ["q_bolig", "q_kollaps"],
       "lift_effects": []
     }
@@ -125,7 +116,6 @@
       "prompt": "Hva kan læres — og i hvilket tempo, uten å knekke noe?",
       "teaser": "Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.",
       "card_title": "Hva kan læres?",
-      "card_sub": "— og i hvilket tempo, uten å knekke noe?",
       "reveal_when": {
         "op": "all",
         "children": [
@@ -176,6 +166,7 @@
       "id": "q_kollaps",
       "prompt": "Hva kollapser først nå?",
       "teaser": "Noe her har begynt å rakne. Jeg vet ikke hva som går først.",
+      "card_title": "",
       "reveal_when": {
         "op": "fact_lifted",
         "args": {
@@ -453,7 +444,6 @@
       "question": "Møbelet mellom dere — hvor lang vei er det inn?",
       "answer": "Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.",
       "needs": ["f_avstand"],
-      "pays_fact": "f_dor_glott",
       "answer_lines": [
         "Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne.",
         "Det er en dør på gløtt. Den lukkes hvis vi river i den."
@@ -473,17 +463,18 @@
             "Vi har én sjanse til å være de som ikke rev."
           ]
         }
-      ]
+      ],
+      "pays_fact": "f_dor_glott"
     },
     "c_dor_glott": {
       "id": "c_dor_glott",
       "question": "Døren på gløtt — hva holder den åpen?",
       "answer": "",
+      "needs": ["f_dor_glott"],
       "answer_lines": [
         "At noen spør ham om noe han kan svare på. Det er hele mekanikken.",
         "Den tåler ikke omsorg ennå. Den tåler spørsmål."
       ],
-      "needs": ["f_dor_glott"],
       "followups": []
     }
   },

@@ -215,7 +215,7 @@ describe('canvas edge authoring (SB-033)', () => {
     globalThis.fetch = fetchMock as never;
     const probe = await bootProbe();
 
-    expect(probe.getCaseText()).toContain('Supports: q_grete_dor\nDiscuss: Frank');
+    expect(probe.getCaseText()).toContain('Supports: q_grete_dor\nFrank: ««Kort');
     dragConnect('f_grete_syk', 'q_okonomi');
 
     // The case text gained the Supports entry…
@@ -448,9 +448,11 @@ describe('canvas node lifecycle (SB-034)', () => {
     expect(res2.ok).toBe(true);
     expect(probe.getCaseText()).toContain('## f_ny');
     expect(probe.graph.nodes.find((n) => n.id === 'f_ny')!.kind).toBe('fact');
-    // SB-039: the blank fact form guides — Domain row present, example placeholders.
+    // SB-039: the blank fact form guides — Category row present, example
+    // placeholders (Domain left the form with the SB-050 cull).
     const inspector = document.getElementById('inspector-body')!;
-    expect(inspector.querySelector('.fval[data-key="Domain"]')).not.toBeNull();
+    expect(inspector.querySelector('.fval[data-key="Domain"]')).toBeNull();
+    expect(inspector.querySelector('.fval[data-key="Category"]')).not.toBeNull();
     const label = inspector.querySelector<HTMLInputElement>('.fval[data-key="Label"]')!;
     expect(label.placeholder).toContain('Ellings uføretrygd');
     // A fact without a parent document refuses before writing.
@@ -546,8 +548,8 @@ describe('canvas stub nodes (SB-049)', () => {
     const { compileCase } = await import('../../src/compiler/index.ts');
     const { buildGraph } = await import('./graph.ts');
     const text = caseText.replace(
-      'Supports: q_grete_dor\nDiscuss: Frank',
-      'Supports: q_grete_dor, q_ukjent\nDiscuss: Frank',
+      'Supports: q_grete_dor\nFrank: ««Kort',
+      'Supports: q_grete_dor, q_ukjent\nFrank: ««Kort',
     );
     expect(text).not.toBe(caseText);
     const { slice, diagnostics } = compileCase(text);
@@ -599,8 +601,8 @@ describe('canvas stub nodes (SB-049)', () => {
     localStorage.setItem(
       DRAFT_KEY,
       caseText.replace(
-        'Supports: q_grete_dor\nDiscuss: Frank',
-        'Supports: q_grete_dor, q_ukjent\nDiscuss: Frank',
+        'Supports: q_grete_dor\nFrank: ««Kort',
+        'Supports: q_grete_dor, q_ukjent\nFrank: ««Kort',
       ),
     );
     const probe = await bootProbe();

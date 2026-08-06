@@ -25,10 +25,10 @@ const BLOCK_HEADERS: Partial<Record<BlockType, string>> = {
 /** Minimal body templates per kind, used by appendBlock when none is given. */
 export const DEFAULT_TEMPLATES: Partial<Record<BlockType, string>> = {
   document: 'Kind: RAPPORT · Register: notat\nTitle: \nPeek: \nMeta: ',
-  fact: 'Label: \nSummary: \nDomain:  · Category: \nSupports: \nDiscuss: Frank',
+  fact: 'Label: \nSummary: \nCategory: \nSupports: ',
   question: 'Title: \nTeaser: \nwhen: ',
   hypothesis: 'Title: \nSummary: \nQuestion: \nneeds: \nOpens: ',
-  tiltak: 'Title: \nSlot: s1 · Cost: 0\nNeeds: \nNeeds hypothesis: \nDescription: \nSim hook: ',
+  tiltak: 'Title: \nSlot: s1 · Cost: 0\nDescription: \nSim hook: ',
   dispatch:
     'Title: \nSim hook: \nDescription: \nActivity: \nChannel: now · Delay: 0m · Duration: 1h · Occupies: 1h\nReception: 0\ngate: ',
   clock: 'Label: \nSim hook: \nQuestion: \nGood:  / 4 · Bad:  / 4',

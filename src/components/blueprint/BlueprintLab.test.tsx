@@ -346,7 +346,8 @@ describe('BlueprintLab rendered interaction trace', () => {
     clickButton('Frivillig forvaltning');
     clickButton('Hjemmehjelp 2x uke');
     clickButton('Åpne ett brev');
-    clickButton('Institusjonsvurdering');
+    // SB-050 ruling 5: Institusjonsvurdering stays disabled — only h_s_formell
+    // opens it, and this run chose «Konsentrasjonen er sterk» (h_s_trenbar).
     clickButton('Fatt vedtak');
     expect(document.body.textContent).toContain('Pulten svarer først når du ber noen gjøre noe.');
     expect(document.body.textContent).toContain('Vedtak 1 · tiltakspakke');
@@ -355,7 +356,6 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(document.body.textContent).toContain('Frivillig forvaltning av faste betalinger');
     expect(document.body.textContent).toContain('Hjemmehjelp 2x uke');
     expect(document.body.textContent).toContain('Åpne ett brev sammen med Frank');
-    expect(document.body.textContent).toContain('Institusjonsvurdering / omsorgsbolig');
     expect(document.body.textContent).toContain('Arbeidshypotese lagt til grunn');
     expect(document.body.textContent).toContain('IVERKSATT');
     closeDocument();

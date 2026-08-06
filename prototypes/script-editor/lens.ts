@@ -268,11 +268,9 @@ export const KEY_DOCS: Record<string, string> = {
   Label: 'Short display name (facts, clocks).',
   Summary: 'The fact as one sentence — what the player holds after lifting it.',
   Domain:
-    'Life area: Økonomi/bolig · Helse/risiko · Hverdag/rutine · Nettverk/sosialt. Pairs with Category.',
+    'Optional life area (SB-050): Økonomi/bolig · Helse/risiko · Hverdag/rutine · Nettverk/sosialt.',
   Category: 'Card category on the board: Dokument · Risiko · Økonomi …',
-  About: 'Who the fact concerns (elling, grete, utleier …).',
   Supports: 'The question(s) this fact is evidence for — these are the fact→question edges.',
-  Discuss: 'Who this fact can be discussed with (Frank, Grete).',
   Frank: 'Frank’s spoken take on the fact («…»).',
   Source:
     'Standalone fact only: the document it comes from. A ## fact under a document inherits it.',
@@ -284,7 +282,7 @@ export const KEY_DOCS: Record<string, string> = {
   gate: 'Availability gate on a dispatch — §6 condition.',
   Gate: 'Availability gate on a dispatch — §6 condition (legacy capitalized form).',
   'visible when': 'When the clock becomes visible to the player — §6 condition.',
-  Leads: 'The tiltak this question points toward.',
+  Lead: 'A question exit: «label» -> target (tiltak, dispatch, conversation).',
   Question: 'The question this node belongs to (hypotheses, clocks).',
   Opens: 'What a proven hypothesis unlocks: tiltak, dispatches, conversations [risk=…].',
   Slot: 'Action economy: which dice slot the tiltak occupies.',

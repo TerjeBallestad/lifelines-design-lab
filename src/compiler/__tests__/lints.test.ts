@@ -130,7 +130,7 @@ Sim hook: x
     expect(lints(text, codes.LINT_QUESTION_NO_TILTAK_PATH)).toHaveLength(0);
   });
 
-  it('stays silent when a tiltak needs one of the question hypotheses (0.1 direction)', () => {
+  it('fires despite a tiltak Needs hypothesis: line — that direction is culled (SB-050 ruling 5)', () => {
     const text =
       HEADER +
       DOC_WITH_ANCHOR +
@@ -152,7 +152,7 @@ Needs hypothesis: h_leg
 Description: D
 Sim hook: x
 `;
-    expect(lints(text, codes.LINT_QUESTION_NO_TILTAK_PATH)).toHaveLength(0);
+    expect(lints(text, codes.LINT_QUESTION_NO_TILTAK_PATH)).toHaveLength(1);
   });
 });
 

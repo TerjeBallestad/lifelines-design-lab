@@ -163,15 +163,12 @@ describe('Blueprint v1 caseworker loop', () => {
     store.toggleDraftTiltak('t_forvaltning');
     store.toggleDraftTiltak('t_hjemmehjelp');
     store.toggleDraftTiltak('t_brev');
-    store.toggleDraftTiltak('t_institusjon');
+    // SB-050 ruling 5: t_institusjon is locked here — only h_s_formell opens
+    // it, and this run chose h_s_trenbar for q_selv.
+    expect(tiltakAvailability(store.progress, 't_institusjon').ok).toBe(false);
     store.enactTiltak();
 
-    expect(store.progress.enactedTiltakIds).toEqual([
-      't_forvaltning',
-      't_hjemmehjelp',
-      't_brev',
-      't_institusjon',
-    ]);
+    expect(store.progress.enactedTiltakIds).toEqual(['t_forvaltning', 't_hjemmehjelp', 't_brev']);
     expect(store.progress.documents.doc_vedtak_1).toBeDefined();
     expect(store.progress.vedtakRecords[0]).toMatchObject({
       documentId: 'doc_vedtak_1',

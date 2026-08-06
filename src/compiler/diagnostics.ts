@@ -76,6 +76,10 @@ export const codes = {
   PROPOSAL_MISSING_LINE: 'proposal-missing-line',
   PROPOSAL_MISSING_RELEVANT: 'proposal-missing-relevant',
   PROPOSAL_CATEGORIES_WITHOUT_RELEVANT: 'proposal-categories-without-relevant',
+  /**
+   * RETIRED by SB-054: the SB-050 cull rejects recipe gate: via
+   * FIXIT_FIELD_CULLED instead. Kept per the stable-codes law.
+   */
   RECIPE_GATE_UNSUPPORTED: 'recipe-gate-unsupported',
   RECIPE_EFFECT_UNSUPPORTED: 'recipe-effect-unsupported',
   RECIPE_QUESTION_CONFLICT: 'recipe-question-conflict',
@@ -86,6 +90,8 @@ export const codes = {
   FIXIT_EFFECTS_LINE: 'fixit-effects-line',
   FIXIT_REVEALS_QUESTIONS: 'fixit-reveals-questions',
   FIXIT_PAYS_FACT: 'fixit-pays-fact',
+  // SB-050 field cull (SB-054): a dead field parses, warns, and emits nothing.
+  FIXIT_FIELD_CULLED: 'fixit-field-culled',
   // §9 graph lints (TASK-017 — always advisory, computed on the compiled
   // case graph; exact reachability definitions live in
   // docs/markup-0.2-reference.md "Compiler extensions recorded by TASK-017")

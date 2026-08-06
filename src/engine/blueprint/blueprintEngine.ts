@@ -177,19 +177,21 @@ export function tiltakAvailability(
   const tiltak = blueprintTiltak[tiltakId];
   if (!tiltak) return { ok: false, why: 'ukjent tiltak' };
   if (progress.enactedTiltakIds.includes(tiltakId)) return { ok: false, why: 'iverksatt' };
-  if (!tiltak.needs.every((factId) => progress.facts[factId])) {
-    return { ok: false, why: 'mangler grunnlag i sakens fakta' };
-  }
   if (tiltak.needsVisit && !progress.documents.doc_frank_visit) {
     return { ok: false, why: 'krever gjennomført hjemmebesøk' };
   }
+  // SB-050 ruling 5: the gate is the inverse of hypothesis Opens — a tiltak
+  // some hypothesis opens is locked until one of those hypotheses is chosen.
+  const openers = Object.values(blueprintQuestions).flatMap((question) =>
+    question.hypotheses
+      .filter((hypothesis) => hypothesis.opens.includes(tiltakId))
+      .map((hypothesis) => ({ question, hypothesis })),
+  );
   if (
-    tiltak.needsHypothesis &&
-    !tiltak.needsHypothesis.some((hypothesisId) => hypothesisChosen(progress, hypothesisId))
+    openers.length > 0 &&
+    !openers.some(({ hypothesis }) => hypothesisChosen(progress, hypothesis.id))
   ) {
-    const questionTitle = Object.values(blueprintQuestions).find((question) =>
-      question.hypotheses.some((hypothesis) => tiltak.needsHypothesis?.includes(hypothesis.id)),
-    )?.title;
+    const questionTitle = openers[0].question.title;
     return {
       ok: false,
       why: `krever arbeidshypotese${questionTitle ? ` under «${questionTitle}»` : ''}`,

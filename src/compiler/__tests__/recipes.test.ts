@@ -113,7 +113,7 @@ describe('# Recipe: blocks (ruling 1b)', () => {
     expect(out.slice.recipes?.[0].question_id).toBe('q_a');
   });
 
-  it('gate: parses via §6 but has no runtime field — warns recipe-gate-unsupported, emits nothing for it (DD-002)', () => {
+  it('gate: is culled (SB-050) — warns fixit-field-culled, emits nothing for it', () => {
     const text = [
       ...MINIMAL_HEADER,
       '# Question: q_a',
@@ -125,7 +125,7 @@ describe('# Recipe: blocks (ruling 1b)', () => {
       '~ open q_a',
     ].join('\n');
     const out = compileCase(text);
-    expect(out.diagnostics.some((d) => d.code === codes.RECIPE_GATE_UNSUPPORTED)).toBe(true);
+    expect(out.diagnostics.some((d) => d.code === codes.FIXIT_FIELD_CULLED)).toBe(true);
     const recipe = out.slice.recipes?.[0];
     expect(recipe).toEqual({
       question_id: 'q_a',
