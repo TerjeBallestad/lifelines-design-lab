@@ -65,14 +65,14 @@ describe('(b) patch→compile equals editing the field by hand', () => {
   it('patchField(when) rewrites a condition expression', () => {
     const patched = patchField(olsen, 'q_kollaps', 'when', 'f_dod and f_brevsprekken');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[447, 'when: f_dod', 'when: f_dod and f_brevsprekken']]);
+    expect(diff).toEqual([[444, 'when: f_dod', 'when: f_dod and f_brevsprekken']]);
     expect(compileCase(patched).diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
   });
 
   it('patchField inserts a missing field after the last field line', () => {
     const patched = patchField(olsen, 'f_trygd', 'Card', '«Trygden — 2 i måneden.»');
     const diff = changedLines(olsen, patched);
-    expect(diff[0]).toEqual([96, '', 'Card: «Trygden — 2 i måneden.»']);
+    expect(diff[0]).toEqual([94, '', 'Card: «Trygden — 2 i måneden.»']);
     const fact = compileCase(patched).slice.facts.find((f: { id: string }) => f.id === 'f_trygd');
     expect(fact).toBeTruthy();
   });
@@ -94,13 +94,13 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldAdd appends to the existing line without reformatting it', () => {
     const patched = listFieldAdd(olsen, 'f_bok', 'Supports', 'q_liv');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[280, 'Supports: q_evner', 'Supports: q_evner, q_liv']]);
+    expect(diff).toEqual([[278, 'Supports: q_evner', 'Supports: q_evner, q_liv']]);
   });
 
   it('listFieldAdd fills an empty list field in place', () => {
     const patched = listFieldAdd(olsen, 'h_ev_ukjent', 'Needs', 'f_aldri_alene');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[500, 'Needs:', 'Needs: f_aldri_alene']]);
+    expect(diff).toEqual([[497, 'Needs:', 'Needs: f_aldri_alene']]);
   });
 
   it('listFieldRemove keeps the order of the remaining entries', () => {
@@ -108,7 +108,7 @@ describe('(c) list ops preserve line order and formatting', () => {
     const diff = changedLines(olsen, patched);
     expect(diff).toEqual([
       [
-        469,
+        466,
         'Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang',
         'Opens: t_hjemmehjelp, t_dokgjennomgang',
       ],
@@ -125,19 +125,60 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldRemove of the last entry leaves the bare key line', () => {
     const once = listFieldRemove(olsen, 'f_bok', 'Supports', 'q_evner');
     const diff = changedLines(olsen, once);
-    expect(diff).toEqual([[280, 'Supports: q_evner', 'Supports:']]);
+    expect(diff).toEqual([[278, 'Supports: q_evner', 'Supports:']]);
   });
 });
 
 describe('append/remove blocks', () => {
-  it('appendBlock adds an entity block at the end of the file', () => {
+  it('appendBlock lands the new question with its siblings and it compiles', () => {
     const patched = appendBlock(olsen, 'question', 'q_ny', {
       template: 'Title: Nytt spørsmål\nTeaser: \nwhen: f_dod',
     });
-    expect(patched.startsWith(olsen.trimEnd())).toBe(true);
     expect(patched).toContain('\n# Question: q_ny\n\nTitle: Nytt spørsmål\n');
     const compiled = compileCase(patched);
     expect(compiled.slice.questions.some((q: { id: string }) => q.id === 'q_ny')).toBe(true);
+  });
+
+  // SB-052: a drag-wire create must land next to its siblings of the same
+  // kind, not at an arbitrary spot at the end of the file.
+  const SIBLING_FIXTURES: Array<[string, string, string]> = [
+    ['document', 'Document', 'doc_ny'],
+    ['question', 'Question', 'q_ny'],
+    ['hypothesis', 'Hypothesis', 'h_ny'],
+    ['tiltak', 'Tiltak', 't_ny'],
+    ['dispatch', 'Dispatch', 'd_ny'],
+    ['clock', 'Clock', 'ck_ny'],
+    ['conversation', 'Conversation', 'chat:ny'],
+    ['proposal', 'Proposal', 'nytt_forslag'],
+    ['recipe', 'Recipe', 'f_bok + f_dod'],
+  ];
+
+  it.each(SIBLING_FIXTURES)(
+    'appendBlock(%s) inserts directly after the last %s block',
+    (kind, header, id) => {
+      const patched = appendBlock(olsen, kind as Parameters<typeof appendBlock>[1], id);
+      const lines = patched.split('\n');
+      const newAt = lines.indexOf(`# ${header}: ${id}`);
+      expect(newAt).toBeGreaterThan(-1);
+      const lastSibling = lines
+        .slice(0, newAt)
+        .map((l, i) => [l, i] as const)
+        .filter(([l]) => l.startsWith(`# ${header}: `))
+        .at(-1);
+      expect(lastSibling).toBeTruthy();
+      // Nothing but the sibling's own body (and, for a document, its ## fact
+      // run) sits between the last sibling and the new block: no top-level
+      // header of another kind intervenes.
+      const between = lines.slice(lastSibling![1] + 1, newAt);
+      expect(between.filter((l) => /^# \S/.test(l))).toEqual([]);
+    },
+  );
+
+  it('appendBlock falls back to the end of the file when the kind has no sibling', () => {
+    const mini = '# Case: mini\n\nTitle: Mini\n\n# Question: q_en\n\nTitle: Et spørsmål\n';
+    const patched = appendBlock(mini, 'clock', 'ck_ny');
+    expect(patched.startsWith(mini.trimEnd())).toBe(true);
+    expect(patched).toContain('\n# Clock: ck_ny\n');
   });
 
   it('appendBlock(fact) inserts under its parent document', () => {

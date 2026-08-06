@@ -226,9 +226,11 @@ export interface AppendBlockOptions {
 }
 
 /**
- * Append a new block. Entity kinds go at the end of the file as
- * `# <Header>: <id>`; a fact goes at the end of its parent document's span as
- * `## <id>` (opts.documentId is required). Duplicate ids throw.
+ * Append a new block. An entity kind goes after the last block of the same
+ * kind as `# <Header>: <id>` (SB-052 — new entries land with their siblings),
+ * or at the end of the file when the kind has no block yet. A fact goes at
+ * the end of its parent document's span as `## <id>` (opts.documentId is
+ * required). Duplicate ids throw.
  */
 export function appendBlock(
   text: string,
@@ -264,6 +266,29 @@ export function appendBlock(
 
   const header = BLOCK_HEADERS[kind];
   if (!header) throw new PatchError(`Cannot append a block of kind "${kind}".`);
+
+  // Insert after the last sibling of the same kind. A document anchors past
+  // its contiguous fact run so the new document never splits a family.
+  let anchor: RawBlock | null = null;
+  for (const b of parsed.blocks) {
+    if (b.type === kind && (!anchor || b.endLine > anchor.endLine)) anchor = b;
+  }
+  if (anchor && kind === 'document') {
+    const docId = anchor.id;
+    for (const b of parsed.blocks) {
+      if (b.type === 'fact' && b.documentId === docId && b.endLine > anchor.endLine) {
+        anchor = b;
+      }
+    }
+  }
+  if (anchor) {
+    const insert = ['', `# ${header}: ${id}`, ...(body.length > 0 ? ['', ...body] : []), ''];
+    const next = [...parsed.lines];
+    next.splice(anchor.endLine, 0, ...insert);
+    collapseWindow(next, anchor.endLine - 1, anchor.endLine + insert.length + 1);
+    return next.join('\n');
+  }
+
   const next = [...parsed.lines];
   while (next.length > 0 && next[next.length - 1].trim() === '') next.pop();
   next.push('', `# ${header}: ${id}`, ...(body.length > 0 ? ['', ...body] : []), '');
