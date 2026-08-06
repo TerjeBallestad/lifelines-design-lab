@@ -17,9 +17,10 @@ import {
   drawSelection,
   highlightActiveLine,
   highlightActiveLineGutter,
+  showTooltip,
 } from '@codemirror/view';
 import type { DecorationSet, Tooltip } from '@codemirror/view';
-import { EditorState, RangeSetBuilder, Annotation } from '@codemirror/state';
+import { EditorState, RangeSetBuilder, Annotation, StateField } from '@codemirror/state';
 import {
   codeFolding,
   foldGutter,
@@ -407,6 +408,20 @@ const theme = EditorView.theme(
     '.cm-panels': { backgroundColor: 'var(--bg-side)', color: 'var(--text-2)' },
     '.cm-searchMatch': { backgroundColor: 'rgba(226,197,65,.25)' },
     '.cm-selectionMatch': { backgroundColor: 'rgba(123,131,235,.15)' },
+    // SB-043: the "Lift as fact" selection popup
+    '.lift-tip': { padding: '2px' },
+    '.lift-btn': {
+      background: 'transparent',
+      border: 'none',
+      color: 'var(--text)',
+      fontFamily: 'var(--mono)',
+      fontSize: '11px',
+      padding: '4px 9px',
+      borderRadius: '6px',
+      cursor: 'pointer',
+    },
+    '.lift-btn:hover': { background: 'var(--panel-hover)', color: 'var(--accent)' },
+    '.lift-kbd': { color: 'var(--text-4)', marginLeft: '8px', fontSize: '10px' },
   },
   { dark: true },
 );
@@ -436,6 +451,20 @@ export interface ScriptLensOptions {
   onCursorLineChanged?: (line: number) => void;
   /** ⌘S inside the editor. The page owns what "save" means. */
   onSaveRequested?: () => void;
+  /**
+   * SB-043 select-to-lift: fires when the author triggers "Lift as fact" on
+   * a passage selected inside a document block's prose ("⌘⇧L" or the
+   * selection popup). The page owns the patch (liftFact) + commit; without
+   * this callback the affordance never shows.
+   */
+  onLiftFact?: (req: LiftFactRequest) => void;
+}
+
+export interface LiftFactRequest {
+  /** The `# Document:` block the selection lies in. */
+  documentId: string;
+  /** The selected passage, raw — the patch layer normalizes it. */
+  quote: string;
 }
 
 export interface ScriptLensContext {
@@ -465,6 +494,11 @@ export interface ScriptLensHandle {
   scrollToLine(lineNo: number): void;
   /** Jump to a heading by kind + id ('' kind matches any). */
   jumpToHeading(kind: string, id: string): void;
+  /**
+   * Put the caret at the END of a line and focus the editor — SB-043 lands
+   * the author on the new fact stub's `Label: ` line, ready to type.
+   */
+  focusLineEnd(lineNo: number): void;
   /** Feed fresh compile context; pushes lint diagnostics into the view. */
   update(ctx: ScriptLensContext): void;
   foldAllSections(): void;
@@ -543,6 +577,79 @@ export function mountScriptLens(opts: ScriptLensOptions): ScriptLensHandle {
     }
     return null;
   }
+
+  // ---- select-to-lift (SB-043, SB-040 ruling 3) -------------------------
+  //
+  // A selection inside a document block's prose is a liftable passage. The
+  // lens only detects and offers ("Lift as fact" popup + ⌘⇧L); the page owns
+  // the patch. Field/effect/heading lines are markup, not passage — refuse.
+
+  const FIELD_LINE_RE = /^[A-Za-zÆØÅæøå][A-Za-zÆØÅæøå ]{0,24}:( |$)/u;
+
+  function isProseLine(text: string): boolean {
+    const t = text.trim();
+    if (t === '' || t.startsWith('#') || t.startsWith('~') || t.startsWith('//')) return false;
+    if (/^([*+-]|->)/.test(t)) return false;
+    return !FIELD_LINE_RE.test(text);
+  }
+
+  function liftTarget(state: EditorState): LiftFactRequest | null {
+    if (!opts.onLiftFact) return null;
+    const sel = state.selection.main;
+    if (sel.empty) return null;
+    const fromLine = state.doc.lineAt(sel.from);
+    const toLine = state.doc.lineAt(sel.to);
+    // The enclosing section of the selection start must be a Document.
+    let section: Heading | null = null;
+    for (const h of headings) {
+      if (h.line <= fromLine.number) section = h;
+      else break;
+    }
+    if (!section || section.kind !== 'Document' || section.id === '') return null;
+    if (fromLine.number === section.line) return null; // the heading line itself
+    if (toLine.number > section.endLine) return null; // spills out of the document
+    if (!isProseLine(fromLine.text)) return null;
+    const quote = state.sliceDoc(sel.from, sel.to);
+    if (quote.trim() === '') return null;
+    return { documentId: section.id, quote };
+  }
+
+  function liftTooltip(state: EditorState): Tooltip | null {
+    const target = liftTarget(state);
+    if (!target) return null;
+    return {
+      pos: state.selection.main.from,
+      above: true,
+      create: (v: EditorView) => {
+        const dom = document.createElement('div');
+        dom.className = 'lift-tip';
+        const btn = document.createElement('button');
+        btn.className = 'lift-btn';
+        btn.textContent = 'Lift as fact';
+        const kbd = document.createElement('span');
+        kbd.className = 'lift-kbd';
+        kbd.textContent = '⌘⇧L';
+        btn.append(kbd);
+        // mousedown would collapse the selection before click lands — stop it.
+        btn.addEventListener('mousedown', (e) => e.preventDefault());
+        btn.addEventListener('click', () => {
+          const fresh = liftTarget(v.state);
+          if (fresh) opts.onLiftFact?.(fresh);
+        });
+        dom.append(btn);
+        return { dom };
+      },
+    };
+  }
+
+  const liftTooltipField = StateField.define<Tooltip | null>({
+    create: liftTooltip,
+    update(value, tr) {
+      if (!tr.docChanged && !tr.selection) return value;
+      return liftTooltip(tr.state);
+    },
+    provide: (f) => showTooltip.from(f),
+  });
 
   // ---- ⌘-click on an id → jump to its definition (heading line) ---------
 
@@ -634,6 +741,7 @@ export function mountScriptLens(opts: ScriptLensOptions): ScriptLensHandle {
         autocompletion({ override: [completeCase], activateOnTyping: true }),
         hoverDocs,
         gotoDefinition,
+        liftTooltipField,
         theme,
         EditorView.lineWrapping,
         keymap.of([
@@ -641,6 +749,15 @@ export function mountScriptLens(opts: ScriptLensOptions): ScriptLensHandle {
             key: 'Mod-s',
             run: () => {
               opts.onSaveRequested?.();
+              return true;
+            },
+          },
+          {
+            key: 'Mod-Shift-l',
+            run: (v) => {
+              const target = liftTarget(v.state);
+              if (!target) return false;
+              opts.onLiftFact?.(target);
               return true;
             },
           },
@@ -730,6 +847,21 @@ export function mountScriptLens(opts: ScriptLensOptions): ScriptLensHandle {
     jumpToHeading(kind: string, id: string) {
       const h = headings.find((x) => x.id === id && (kind === '' || x.kind === kind));
       if (h) jumpToLine(h.line);
+    },
+    focusLineEnd(lineNo: number) {
+      const doc = view.state.doc;
+      const line = doc.line(Math.min(lineNo, doc.lines));
+      unfoldAt(line.from);
+      try {
+        view.dispatch({
+          selection: { anchor: line.to },
+          effects: EditorView.scrollIntoView(line.to, { y: 'center' }),
+        });
+      } catch {
+        // jsdom lacks the layout APIs the scroll effect needs — see jumpToLine.
+        view.dispatch({ selection: { anchor: line.to } });
+      }
+      view.focus();
     },
     update(ctx: ScriptLensContext) {
       headings = ctx.headings;

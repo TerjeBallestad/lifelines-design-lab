@@ -271,6 +271,54 @@ export function appendBlock(
 }
 
 /**
+ * SB-043 select-to-lift: a document passage becomes a fact stub. Strips
+ * `[text](fact:id)` anchors down to their text (a human quoting the document
+ * writes the prose, not the markup), collapses whitespace, and drops
+ * surrounding «» so they never double.
+ */
+function normalizeQuote(raw: string): string {
+  return raw
+    .replace(/\[([^\]]*)\]\(fact:[\wæøåÆØÅ_.-]+\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^«/, '')
+    .replace(/»$/, '')
+    .trim();
+}
+
+export interface LiftFactResult {
+  /** The patched markup. */
+  text: string;
+  /** The new fact's id (`f_ny`, `f_ny2`, …). */
+  id: string;
+  /** 1-based line of the stub's `Label:` line — where focus goes next. */
+  labelLine: number;
+}
+
+/**
+ * Lift a selected passage from a document into a fact stub (SB-043, SB-040
+ * ruling 3): append a `## f_x` block at the end of the document's fact run
+ * with Quote pre-filled from the passage. The placement under the document IS
+ * the source wiring — a ## fact inherits its document (no `Source:` line).
+ */
+export function liftFact(text: string, documentId: string, quote: string): LiftFactResult {
+  const clean = normalizeQuote(quote);
+  if (clean === '') throw new PatchError('Nothing to lift — the selection is empty.');
+  const parsed = parse(text);
+  const taken = new Set(parsed.blocks.map((b) => b.id));
+  if (parsed.caseBlock) taken.add(parsed.caseBlock.id);
+  let id = 'f_ny';
+  for (let n = 2; taken.has(id); n += 1) id = `f_ny${n}`;
+  const template = `${DEFAULT_TEMPLATES.fact}\nQuote: «${clean}»`;
+  const next = appendBlock(text, 'fact', id, { documentId, template });
+  const label = parse(next)
+    .blocks.find((b) => b.id === id)
+    ?.fields.find((f) => f.key === 'Label');
+  if (!label) throw new PatchError(`Lifted ${id} but its Label line did not parse.`);
+  return { text: next, id, labelLine: label.line };
+}
+
+/**
  * Remove a block (its header through its last line). Facts under a document
  * are their own blocks — removing a document leaves its facts in place; the
  * canvas composes removals when it means the whole family.

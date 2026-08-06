@@ -702,3 +702,92 @@ describe('canvas cross-jump (SB-041)', () => {
     localStorage.clear();
   });
 });
+
+// ---- SB-043: select-to-lift — document passage becomes a fact stub --------
+
+describe('canvas select-to-lift (SB-043)', () => {
+  /** Select `needle` inside the lens doc; returns [from, to] positions. */
+  function selectInLens(probe: Awaited<ReturnType<typeof bootProbe>>, needle: string) {
+    const text = probe.scriptLens.getText();
+    const from = text.indexOf(needle);
+    expect(from).toBeGreaterThan(-1);
+    probe.scriptLens.view.dispatch({ selection: { anchor: from, head: from + needle.length } });
+  }
+
+  it('selecting a document passage offers the "Lift as fact" popup; the click lifts it', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    const passage = 'han kan ha behov for støtte ved mors bortfall';
+    selectInLens(probe, passage);
+    const btn = document.querySelector<HTMLButtonElement>('.lift-tip .lift-btn');
+    expect(btn).not.toBeNull();
+    expect(btn!.textContent).toContain('Lift as fact');
+
+    btn!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await settle();
+
+    // The stub landed under doc_bekymring with the Quote pre-filled…
+    const text = probe.getCaseText();
+    expect(text).toContain(`Quote: «${passage}»`);
+    const lines = text.split('\n');
+    const at = lines.indexOf('## f_ny');
+    expect(at).toBeGreaterThan(lines.indexOf('## f_ingen_tjenester'));
+    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto'));
+    // …compiled to a node wired to its document (containment = source edge)…
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'doc_bekymring' && e.to === 'f_ny' && e.label === 'source',
+      ),
+    ).toBe(true);
+    // …the caret sits at the end of the stub's Label line in the script pane…
+    expect(lines[probe.scriptLens.getCursorLine() - 1]).toBe('Label: ');
+    // …and the cross-jump selected the new node on the canvas.
+    expect(probe.selectedId).toBe('f_ny');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    localStorage.clear();
+  });
+
+  it('lift via the exported handler: quote normalized, second lift gets f_ny2', async () => {
+    localStorage.clear();
+    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    globalThis.fetch = fetchMock as never;
+    const probe = await bootProbe();
+
+    const first = probe.liftAsFact('doc_bekymring', 'en  [sykdom](fact:f_grete_syk)\nmed forløp');
+    expect(first).toEqual({ ok: true, id: 'f_ny' });
+    expect(probe.getCaseText()).toContain('Quote: «en sykdom med forløp»');
+
+    const second = probe.liftAsFact('doc_konto', 'andre løft');
+    expect(second).toEqual({ ok: true, id: 'f_ny2' });
+    expect(
+      probe.graph.edges.some(
+        (e) => e.from === 'doc_konto' && e.to === 'f_ny2' && e.label === 'source',
+      ),
+    ).toBe(true);
+    localStorage.clear();
+  });
+
+  it('no popup outside document prose: fact summaries and field lines refuse', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+
+    // Inside a fact block (## section) — not a document passage.
+    selectInLens(probe, 'Grete er alvorlig syk. Forventet forløp er kort.');
+    expect(document.querySelector('.lift-tip')).toBeNull();
+
+    // A field line inside a document block — markup, not passage.
+    selectInLens(probe, 'Bekymringsmelding Dr. J. Haug');
+    expect(document.querySelector('.lift-tip')).toBeNull();
+
+    // A refused source id writes nothing.
+    const before = probe.getCaseText();
+    const res = probe.liftAsFact('f_grete_syk', 'noe tekst');
+    expect(res.ok).toBe(false);
+    expect(probe.getCaseText()).toBe(before);
+    localStorage.clear();
+  });
+});

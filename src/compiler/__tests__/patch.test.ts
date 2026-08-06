@@ -9,6 +9,7 @@ import { compileCase } from '../index';
 import {
   PatchError,
   appendBlock,
+  liftFact,
   listFieldAdd,
   listFieldRemove,
   patchField,
@@ -172,6 +173,61 @@ describe('append/remove blocks', () => {
     expect(patched).not.toContain('## f_dor_glott');
     expect(patched).toContain('## f_smart_gutt');
     expect(patched).toContain('# Document: doc_frank_visit');
+  });
+});
+
+describe('liftFact (SB-043): a document passage becomes a fact stub', () => {
+  it('appends the stub at the end of the document fact run with Quote pre-filled', () => {
+    const passage = 'han kan ha behov for støtte ved mors bortfall';
+    const { text, id, labelLine } = liftFact(olsen, 'doc_bekymring', passage);
+    expect(id).toBe('f_ny');
+    // The exact markup a human would have typed.
+    expect(text).toContain(
+      '## f_ny\n' +
+        'Label: \n' +
+        'Summary: \n' +
+        'Domain:  · Category: \n' +
+        'Supports: \n' +
+        'Discuss: Frank\n' +
+        `Quote: «${passage}»\n`,
+    );
+    // Sits after the document's last fact, before the next document.
+    const lines = text.split('\n');
+    const at = lines.indexOf('## f_ny');
+    expect(at).toBeGreaterThan(lines.indexOf('## f_ingen_tjenester'));
+    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto'));
+    // labelLine points at the empty Label line — where focus goes next.
+    expect(lines[labelLine - 1]).toBe('Label: ');
+    // The ## placement wires it: the compiled fact carries its document.
+    const fact = compileCase(text).slice.facts.find((f: { id: string }) => f.id === 'f_ny');
+    expect(fact?.source_document_id).toBe('doc_bekymring');
+  });
+
+  it('normalizes the passage: anchors unwrap, whitespace collapses, «» never double', () => {
+    const raw = 'en [sykdom med kort forventet forløp](fact:f_grete_syk)\n  kommer  frem';
+    const { text } = liftFact(olsen, 'doc_bekymring', raw);
+    expect(text).toContain('Quote: «en sykdom med kort forventet forløp kommer frem»');
+    const wrapped = liftFact(olsen, 'doc_bekymring', '«Det er en dør på gløtt.»');
+    expect(wrapped.text).toContain('Quote: «Det er en dør på gløtt.»');
+  });
+
+  it('a second lift gets a fresh id (f_ny2) and lifts compose', () => {
+    const first = liftFact(olsen, 'doc_bekymring', 'første løft');
+    const second = liftFact(first.text, 'doc_konto', 'andre løft');
+    expect(second.id).toBe('f_ny2');
+    expect(second.text).toContain('## f_ny\n');
+    expect(second.text).toContain('## f_ny2\n');
+    const facts = compileCase(second.text).slice.facts as Array<{
+      id: string;
+      source_document_id?: string;
+    }>;
+    expect(facts.find((f) => f.id === 'f_ny2')?.source_document_id).toBe('doc_konto');
+  });
+
+  it('refuses an empty selection and a non-document source', () => {
+    expect(() => liftFact(olsen, 'doc_bekymring', '  «»  ')).toThrow(PatchError);
+    expect(() => liftFact(olsen, 'f_grete_syk', 'noe tekst')).toThrow(PatchError);
+    expect(() => liftFact(olsen, 'doc_finnes_ikke', 'noe tekst')).toThrow(PatchError);
   });
 });
 

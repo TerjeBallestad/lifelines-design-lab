@@ -28,6 +28,7 @@ import {
   listFieldRemove,
   appendBlock,
   removeBlock,
+  liftFact,
 } from '../../src/compiler/patch.ts';
 import { parseCondition } from '../../src/compiler/condition.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
@@ -138,6 +139,12 @@ export const scriptLens = mountScriptLens({
     // exact buffer on screen, then save through the shared pipeline.
     if (lensCompileTimer !== undefined) syncFromLens();
     void persist();
+  },
+  onLiftFact: ({ documentId, quote }) => {
+    // SB-043: a pending lens edit must land first — the lift patches caseText.
+    if (lensCompileTimer !== undefined) syncFromLens();
+    const res = liftAsFact(documentId, quote);
+    if (!res.ok && res.reason) showTip(res.reason, viewport.clientWidth / 2, 80);
   },
 });
 
@@ -877,6 +884,25 @@ export function createNode(
   centerOn(id);
   inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus();
   return { ok: true, id };
+}
+
+/**
+ * SB-043 select-to-lift: a passage selected in a document's prose (script
+ * lens) becomes a fact stub — Quote pre-filled, appended at the end of the
+ * document's fact run (the ## placement IS the source wire), caret landing
+ * on the new block's Label line. Exported for the smoke test.
+ */
+export function liftAsFact(documentId: string, quote: string): CreateResult {
+  try {
+    const { text, id, labelLine } = liftFact(caseText, documentId, quote);
+    commitText(text);
+    // Focus goes back to the script surface, end of `Label: ` — the 80 ms
+    // cursor callback then cross-selects the new node on the canvas.
+    scriptLens.focusLineEnd(labelLine);
+    return { ok: true, id };
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
 }
 
 /** Copy a block's body as the template for a fresh `<id>_kopi` block. */

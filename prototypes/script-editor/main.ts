@@ -5,6 +5,7 @@
 // save; the lens owns the editor view and its extensions.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
+import { liftFact } from '../../src/compiler/patch.ts';
 import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
 import { mountScriptLens, indexHeadings, KIND_COLOR } from './lens.ts';
 import type { Heading, ScriptSymbol } from './lens.ts';
@@ -60,6 +61,18 @@ const lens = mountScriptLens({
   onCursorLineChanged: () => onCursor(),
   onSaveRequested: () => {
     void save();
+  },
+  onLiftFact: ({ documentId, quote }) => {
+    // SB-043: append the fact stub via the patch layer, then land the caret
+    // on its Label line. setText fires onDocChanged → dirty/draft/recompile.
+    try {
+      const { labelLine, text } = liftFact(lens.getText(), documentId, quote);
+      lens.setText(text);
+      lens.focusLineEnd(labelLine);
+    } catch (err) {
+      saveState.textContent = err instanceof Error ? err.message : String(err);
+      saveState.classList.add('dirty');
+    }
   },
 });
 
