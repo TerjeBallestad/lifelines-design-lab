@@ -1,0 +1,122 @@
+{
+  "id": "PLAN-004",
+  "title": "SB-041 — Script lens on the canvas page: two lenses, one file, cross-jump",
+  "sddId": null,
+  "stage": "planned",
+  "sprintId": "SPRINT-001",
+  "context": {
+    "setupNotes": "Source: SB-041 body + the SB-040 resolution comment (four rulings). The hybrid loop: two surfaces, one store. The script surface is the raw markup 0.2 text, live-compiled — SB-025's proven CodeMirror form, NOT a WYSIWYG mode.\n\n## Architecture (settled here, no SDD deviation)\nThe hybrid page IS the canvas page (prototypes/canvas/): it grows a script pane on the left — script | canvas | inspector. Rationale: the canvas page already owns the store plumbing (caseText buffer, commitText, /__save-case POST, DRAFT_KEY draft channel) and the inspector diagnostics. The standalone script-editor page keeps working — the CodeMirror lens is extracted into a mountable module both pages import. No third prototype (pinned lab rule: probes never grow into a second implementation — this consolidates, it does not fork).\n\n## Save semantics (decision, record-keeping only)\nEach lens keeps its native semantics on the shared buffer: canvas gestures commit + auto-POST (discrete edits); script typing stashes the shared draft and ⌘S saves (continuous edits). Both clear the same DRAFT_KEY on a successful save. A vite reload must never lose typed work — that is the no-hot-edits law from SB-025.\n\n## Cautions\n- Sticky layout is a hard rule (SB-034): typing in the script pane recompiles and rebuilds the graph — the board must NOT reshuffle while typing, and a half-typed broken compile must not delete nodes' stored positions (stale ids are kept by design — keep it that way).\n- Evidence runs against the dev server write the real content/cases/olsen/tiny-olsen.case.md via /__save-case — ALWAYS git checkout the case file after a screenshot/evidence run.\n- npm run dev may pick a port other than 5173 (another vite instance often runs) — read the port from vite's stdout.\n- prettier check on docs/sdd/blueprint-godot-port-spec.md fails on main already — pre-existing, not yours; keep your own files clean (npx prettier --check <changed files>).\n- SB-042 landed first: canvas main.ts now has the drop-create menu (openDropCreateMenu, dropCreate, birthKinds) and no n/z-new create. 19 canvas smoke tests + 3 script-editor smoke tests are green on main — keep every one green.",
+    "relevantFiles": [
+      "prototypes/script-editor/main.ts",
+      "prototypes/script-editor/index.html",
+      "prototypes/script-editor/probe-smoke.test.ts",
+      "prototypes/canvas/main.ts",
+      "prototypes/canvas/index.html",
+      "prototypes/canvas/probe-smoke.test.ts",
+      "src/compiler/index.ts",
+      "src/compiler/parse.ts"
+    ],
+    "designDecisions": [
+      "SB-040 r1: hybrid authoring — two lenses over one markup store, neither primary; each surface owns the gestures it is best at (DD-003 as amended).",
+      "SB-040 r4: script surface = raw markup 0.2 text live-compiled; no WYSIWYG until a probe proves markup prose is the friction.",
+      "SB-040 r2 (script half): script creates by naming — an unknown id in Supports/Opens/a weave jump becomes a wired stub; the lens must keep making stubs visible (hover: 'stub — no definition yet').",
+      "DD-003: the markup is the store; every surface writes markup patches, never a parallel model."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-019",
+      "title": "Task 1: Extract the CodeMirror script lens into a mountable module",
+      "description": "Pull the editor surface out of prototypes/script-editor/main.ts into prototypes/script-editor/lens.ts so two pages can mount it. The lens owns: EditorView creation, theme, token highlighter, section folding, autocomplete, hover docs, goto-definition (⌘-click), lint diagnostics push, and jump/unfold helpers. It is parameterized — no module-level page state: it takes the initial text plus callbacks (doc changed, cursor line changed, save requested) and exposes methods (get text, apply an external text replacement without killing undo history/cursor, jump to line, update compile context). The compile loop stays OUTSIDE the lens: one compile owner per page feeds the lens its headings/symbols/diagnostics after each recompile. prototypes/script-editor/main.ts becomes the standalone host: it keeps the outline, preview rail, problems drawer, draft persistence and ⌘S save exactly as they behave today, wired through the lens API. Behavior on the standalone page must be indistinguishable.",
+      "steps": [
+        "Read prototypes/script-editor/main.ts fully and separate lens concerns (view/extensions/navigation) from page concerns (compile loop, outline, preview, problems, draft, save).",
+        "Create lens.ts with a mount function + typed options/handle as described; move highlighter, folding service, autocomplete, hover docs, goto-definition, theme, diagnostics push into it.",
+        "Rewrite script-editor main.ts on top of the lens handle; keep every page feature and the module's `view` export the smoke test imports.",
+        "Run the script-editor smoke tests, then the full suite."
+      ],
+      "verification": "judge: test. command: npx vitest run prototypes/script-editor/probe-smoke.test.ts && npm test && npm run lint. proves: the standalone script page still boots, compiles, reacts to edits, restores drafts — through the extracted lens; types line up. fake_evidence: a lens.ts that exists but main.ts still instantiates its own EditorView (grep main.ts for 'new EditorView' — it must be gone); green tests with the lens unused.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Lens extracted to prototypes/script-editor/lens.ts: mountScriptLens(opts) -> ScriptLensHandle. Options: {parent, doc, onDocChanged({external}), onCursorLineChanged(line) (80ms debounce), onSaveRequested}. Handle: {view, getText, setText (prefix/suffix-trimmed external replace, annotated so onDocChanged reports external:true; undo+cursor survive), getCursorLine, jumpToLine, jumpToHeading, update({headings, symbols, diagnostics}) pushes lint, foldAllSections, destroy}. Also exports Heading/ScriptSymbol/LensDiagnostic types, indexHeadings, KIND_COLOR, KIND_OF_PREFIX, idKind, KEY_DOCS, EFFECT_DOCS (single owner in lens). main.ts is now the standalone host: compile loop, outline, preview, problems, draft/DRAFT_KEY, beforeunload, dedupe of cursor-line renders; still exports view (= lens.view). Judges: probe-smoke 3/3, npm test 239/239 (17 files), lint tsc clean + changed files prettier-clean (only pre-existing blueprint-godot-port-spec.md warn), grep 'new EditorView' in main.ts empty.",
+          "timestamp": "2026-08-06T13:47:45.327Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-020",
+      "title": "Task 2: Mount the script lens on the canvas page — two lenses, one buffer",
+      "description": "The canvas page becomes the hybrid editor: layout script pane | canvas | inspector (script pane collapsible via a topbar toggle; canvas keeps its zoombar/legend). One caseText buffer with the canvas page's existing commit pipeline as the single owner. Both directions propagate: an inspector/gesture commit updates the CodeMirror doc in place (cursor and undo history survive a no-overlap change); typing in the script pane debounce-recompiles, rebuilds the graph sticky (board never reshuffles, stored positions survive a transiently broken compile), refreshes the inspector diagnostics, and stashes the shared DRAFT_KEY draft. Save semantics per setupNotes: canvas commits auto-POST as today; ⌘S in the script pane saves the buffer; both clear the shared draft. The topbar Script/Canvas tabs update: the canvas page is now 'Editor' (script + canvas); the standalone script page link stays.",
+      "steps": [
+        "Add the script pane host + collapse toggle to prototypes/canvas/index.html (grid column, CSS consistent with the existing tokens).",
+        "Mount the lens in canvas main.ts; feed it headings/symbols/diagnostics from the existing rebuild() compile; route lens doc-changes into caseText + draft + rebuild, and commitText() back into the lens as an external text replacement.",
+        "Wire ⌘S in the lens to the existing persist(); make both save paths clear the shared draft and report in the status bar.",
+        "Add acceptance tests to prototypes/canvas/probe-smoke.test.ts: (a) inspector field commit → the script pane doc contains the patched line; (b) a lens doc edit (insert a TODO line) → statusbar diagnostics update and the graph rebuild keeps every stored node position byte-identical; (c) draft: a lens edit stashes DRAFT_KEY, a canvas commit save clears it. Reuse the existing Range polyfill trick from the script-editor test for CodeMirror-in-jsdom.",
+        "Run the canvas smoke tests, the full suite, lint."
+      ],
+      "verification": "judge: test. command: npx vitest run prototypes/canvas/probe-smoke.test.ts && npm test && npm run lint. proves: two live lenses over one buffer — edits made on either surface appear on the other, drafts shared, sticky layout holds under typing. fake_evidence: a script pane that renders but reads its own separate buffer (test (a) catches it); green tests that never type into the lens.",
+      "blockedBy": [
+        "TASK-019"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Script lens mounted on the canvas page — two lenses, one caseText buffer. index.html: script|canvas|inspector grid (script column collapsible via topbar 'script pane' button toggling #app.script-collapsed), active tab renamed Editor with the standalone Script link kept, lens tokens (--surface-code/--text-prose/--tint-*) + tok-*/kv-tip/goto-mode CSS copied from the script page. main.ts: export const scriptLens = mountScriptLens(...) over caseText; commitText() -> rebuild() -> scriptLens.setText(caseText) (external flag stops the echo); lens typing -> 150ms syncFromLens (caseText=getText, sticky rebuild) + 300ms DRAFT_KEY stash; every rebuild feeds lens.update({headings: indexHeadings, symbols: buildSymbols, diagnostics}); Cmd-S in the lens flushes the pending recompile then persist(); persist success clears DRAFT_KEY and cancels a pending lens draft stash; Delete/Backspace inside #script-pane no longer trigger node delete; statusbar gained a TODO count. buildSymbols extracted to prototypes/script-editor/symbols.ts (one owner — script-editor main.ts now imports it). Tests: new describe 'canvas script lens (SB-041)' — (a) inspector commit reaches the lens doc and getText()===getCaseText(), (b) lens TODO edit -> statusbar '1 TODO' + byte-identical node positions + no auto-save, (c) lens edit stashes DRAFT_KEY, canvas commit+save clears it; Range polyfill added file-level. Judges: canvas smoke 22/22 (19 old + 3 new), script-editor 3/3, npm test 242/242 (17 files), tsc clean, prettier prototypes/ clean (only pre-existing blueprint-godot-port-spec.md warn).",
+          "timestamp": "2026-08-06T13:55:05.064Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-021",
+      "title": "Task 3: Cross-jump both ways with a bounce guard",
+      "description": "The jump-to-block loop from the SB-040 ruling. Canvas → script: selecting a node scrolls the script pane to its block heading (unfolding as the standalone page's jump already does) without stealing keyboard focus from the canvas/inspector. Script → canvas: when the cursor moves into a different block, the canvas selects + centers that node (the existing select()/centerOn()), debounced so typing inside one block does not re-center on every keystroke. Bounce guard: a jump initiated by one lens must not fire the other lens's jump handler back (flag or event-source tag — executor's choice); Esc still clears selection from either surface.",
+      "steps": [
+        "Canvas select() → lens jump-to-line (blockById carries startLine); suppress the resulting cursor-change echo.",
+        "Lens cursor-line callback → resolve the enclosing block id (headings) → select + center on the canvas when it differs from the current selection; suppress the echo back into the lens.",
+        "Acceptance tests: (a) probe.select('f_grete_syk') → lens selection/viewport sits on the fact's heading line; (b) dispatch a lens cursor move into another block → probe.selectedId becomes that block and the node is centered; (c) no infinite bounce: one jump each direction settles in one step (spy on the jump calls).",
+        "Run canvas smoke tests, full suite, lint."
+      ],
+      "verification": "judge: test. command: npx vitest run prototypes/canvas/probe-smoke.test.ts && npm test && npm run lint. proves: the two lenses navigate each other deterministically with no feedback loop. fake_evidence: cross-jump proven only by calling internal jump functions directly instead of through select()/cursor events; a bounce that 'settles' because the test never asserts call counts.",
+      "blockedBy": [
+        "TASK-020"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Cross-jump both ways wired. Canvas→script: select(id) on a real changed selection scrolls the lens via new scrollToLine (no-focus variant of jumpToLine in lens.ts — same unfold+select+scroll, no view.focus(); scroll effect try/caught for headless DOM). Script→canvas: onCursorLineChanged (80ms lens debounce) resolves the enclosing block over module-hoisted crossJumpHeadings, dedupes by block id (typing inside a block never re-centers), then select(id)+centerOn(id). Bounce guard: one-shot flags each way — suppressCursorEcho swallows the cursor echo of a canvas jump; scriptDrivenSelect stops a script-initiated select from scrolling the pane back; rebuild's same-id re-select skips via a changed check. Esc scoping: Esc inside .fval OR #script-pane no longer clears the canvas selection; Esc on the canvas still does. Judges: canvas smoke 25/25 (22+3 new 'canvas cross-jump (SB-041)' — jump lands on ## f_grete_syk heading w/o focus steal, cursor move into q_okonomi selects it, no-bounce stability + same-block dedupe asserted after generous settles); script-editor 3/3; npm test 245/245 (17 files); tsc clean; prettier prototypes/ clean (blueprint-godot-port-spec.md warn pre-existing).",
+          "timestamp": "2026-08-06T14:00:00.039Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-022",
+      "title": "Task 4: Screenshot evidence + the feel gate for Terje",
+      "description": "Prove the hybrid page renders and the loop is walkable, then hand the feel judgment to Terje as a gate ticket — the plan ends there; no task waits on him. Playwright against the dev server (pattern: the SB-042 evidence script — launch chromium from node_modules, read the port from vite stdout): (1) hybrid page boots with both lenses visible; (2) click a canvas node → script pane sits on its block; (3) type a naming edit in the script pane (e.g. add an unknown id to a Supports list) → the stub node appears on the canvas born wired (SB-040 ruling 2 script half). Screenshot each beat. Then git checkout content/cases/olsen/tiny-olsen.case.md. File the gate ticket: pm create issue \"[probe] feel-gate: does the hybrid loop hold — write in the script lens, watch the graph grow, wire on the canvas, loop back?\" --sprint SPRINT-001, body = playable question + how to start the dev server + what to try (write a new fact in prose, lift it, wire it, jump both ways) + 'answer feeds: SB-037 weave surfacing and the select-to-lift build'. pm patch the ticket --related to this plan's id.",
+      "steps": [
+        "Write and run the Playwright evidence script over the three beats; save screenshots to the scratchpad.",
+        "Revert the case file: git checkout -- content/cases/olsen/tiny-olsen.case.md; verify git status is clean for content/.",
+        "File the [probe] feel-gate ticket with the playable question and link it to this plan.",
+        "Attach a summary of the evidence (what each screenshot shows) as the task-done note."
+      ],
+      "verification": "judge: screenshot. command: node <evidence script> against npm run dev, then pm get the new gate ticket. proves: both lenses render side by side, cross-jump lands, script naming births a wired stub node. fake_evidence: screenshots of the two OLD standalone pages side by side in tabs; a gate ticket filed without the build actually being runnable.",
+      "blockedBy": [
+        "TASK-021"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Evidence run (Playwright, DOM-only readouts — a page-side import() of main.ts creates a second vite module instance and reads the wrong state; burned an hour on that). Beats: (1) hybrid boot, both lenses visible; (2) click f_post on the canvas → script pane sits on '## f_post' (line 264), focus NOT stolen from the canvas side; (3) typed '# Question: q_helt_ny / Title / when: f_post' at doc end through the real keyboard → node appears on the canvas wired (gate edge f_post→q_helt_ny, 85 nodes · 192 edges), zero pre-existing nodes moved. Case file on disk verified clean after the run. Screenshots in the session scratchpad (hybrid-boot / hybrid-cross-jump / hybrid-named-into-being). DEVIATION from the task text: 'unknown id in a Supports list births a canvas stub' is not achievable today — buildGraph drops edges to unknown ids (stubs stay diagnostics); beat 3 names a full block instead, and the gap is filed as SB-049. Feel gate filed as SB-048 (related: PLAN-004, SB-041).",
+          "timestamp": "2026-08-06T14:06:47.956Z"
+        }
+      ]
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-06T13:41:18.276Z",
+  "updatedAt": "2026-08-06T14:06:47.957Z"
+}
