@@ -186,7 +186,7 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
       for (const delta of slice.event_delta_specs)
         if (delta.event_type === fact.reveals_event) {
           const sign = delta.clock_direction >= 0 ? '+' : '−';
-          addEdge(fact.id, delta.clock_id, `klokke ${sign}${Math.abs(delta.clock_direction)}`);
+          addEdge(fact.id, delta.clock_id, `clock ${sign}${Math.abs(delta.clock_direction)}`);
         }
   }
   for (const delta of slice.event_delta_specs)

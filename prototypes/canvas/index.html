@@ -347,6 +347,25 @@
         margin-right: 4px;
         vertical-align: 1px;
       }
+      /* SB-039 port legend: the ring mirrors .port, the wire mirrors an edge */
+      #legend .ring {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--input);
+        border: 1px solid var(--text-3);
+        margin-right: 4px;
+        vertical-align: -1px;
+      }
+      #legend .wire {
+        display: inline-block;
+        width: 12px;
+        height: 2px;
+        background: var(--blue);
+        margin-right: 4px;
+        vertical-align: 2px;
+      }
 
       /* inspector rail */
       #inspector {
@@ -560,10 +579,8 @@
           <span class="pct" id="z-pct">100%</span>
           <button id="z-in" title="zoom in">+</button>
           <button id="z-fit" title="fit the whole case">fit</button>
-          <button id="z-new" title="ny node (n)">+ ny</button>
-          <button id="z-layout" title="glem lagrede posisjoner og legg ut på nytt">
-            nytt oppsett
-          </button>
+          <button id="z-new" title="new node (n)">+ new</button>
+          <button id="z-layout" title="forget saved positions and lay out again">re-layout</button>
         </div>
         <div id="legend"></div>
       </div>

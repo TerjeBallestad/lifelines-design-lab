@@ -13,7 +13,7 @@ Title: Bekymringsmelding
 Peek: Bekymringsmelding Dr. J. Haug
 Meta: LEGESENTERET DR. J. HAUG, 11.02.1999
 
-Under behandling av pasient Grete Olsen (f. 1927) for en [sykdom med kort forventet forløp](fact:f_grete_syk) kommer det frem at hun er [primær omsorgsperson](fact:f_saarbar) for sin sønn Elling Olsen (f. 14.03.1964). Omfanget er ikke kartlagt, men han kan ha behov for støtte ved mors bortfall. 
+Under behandling av pasient Grete Olsen (f. 1927) for en [sykdom med kort forventet forløp](fact:f_grete_syk) kommer det frem at hun er [primær omsorgsperson](fact:f_saarbar) for sin sønn Elling Olsen (f. 14.03.1964). [Omfanget er ikke kartlagt](fact:f_grete_baerer), men han kan ha behov for støtte ved mors bortfall. 
 
 Med hilsen
 Jørgen Haug

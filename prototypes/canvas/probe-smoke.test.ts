@@ -240,8 +240,8 @@ describe('canvas edge authoring (SB-033)', () => {
     expect(fetchMock).not.toHaveBeenCalled();
     const tipEl = document.getElementById('cursor-tip')!;
     expect(tipEl.classList.contains('show')).toBe(true);
-    expect(tipEl.textContent).toContain('ingen lovlig relasjon');
-    expect(tipEl.textContent).toContain('dra fra port for ny kant');
+    expect(tipEl.textContent).toContain('no legal relation');
+    expect(tipEl.textContent).toContain('drag from port for a new edge');
     localStorage.clear();
   });
 
@@ -319,6 +319,11 @@ describe('canvas node lifecycle (SB-034)', () => {
     expect(res2.ok).toBe(true);
     expect(probe.getCaseText()).toContain('## f_ny');
     expect(probe.graph.nodes.find((n) => n.id === 'f_ny')!.kind).toBe('fact');
+    // SB-039: the blank fact form guides — Domain row present, example placeholders.
+    const inspector = document.getElementById('inspector-body')!;
+    expect(inspector.querySelector('.fval[data-key="Domain"]')).not.toBeNull();
+    const label = inspector.querySelector<HTMLInputElement>('.fval[data-key="Label"]')!;
+    expect(label.placeholder).toContain('Ellings uføretrygd');
     // A fact without a parent document refuses before writing.
     const textBefore = probe.getCaseText();
     expect(probe.createNode('fact').ok).toBe(false);
@@ -361,7 +366,7 @@ describe('canvas node lifecycle (SB-034)', () => {
     expect(probe.getCaseText()).toBe(before);
     expect(fetchMock).not.toHaveBeenCalled();
     const inspector = document.getElementById('inspector-body')!;
-    expect(inspector.textContent).toContain('INNKOMMENDE REFERANSER');
+    expect(inspector.textContent).toContain('INCOMING REFERENCES');
     expect(inspector.textContent).toContain('q_grete_dor'); // when: f_grete_syk and f_klarer_seg
     expect(inspector.textContent).toContain('parorende'); // Relevant: list on the proposal
 
@@ -377,7 +382,7 @@ describe('canvas node lifecycle (SB-034)', () => {
     expect(compileCase(text).diagnostics.filter((d) => d.code === 'cond-parse-error')).toEqual([]);
     // Unpatchable references (document prose, the recipe header) were
     // refused and reported instead of rewritten blind.
-    expect(document.getElementById('statusbar')!.textContent).toContain('ryddet ikke');
+    expect(document.getElementById('statusbar')!.textContent).toContain('did not clean up');
     expect(fetchMock).toHaveBeenCalledTimes(1);
     localStorage.clear();
   });

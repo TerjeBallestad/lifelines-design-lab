@@ -7,7 +7,7 @@
 // the hypothesis Question field); selecting an edge + Delete removes it.
 // SB-034 — node lifecycle: create from template (n / +), duplicate, delete
 // with an inbound-reference warning; sticky layout — positions persist per
-// case, edits never reshuffle the board, 'nytt oppsett' recomputes once.
+// case, edits never reshuffle the board, 're-layout' recomputes once.
 // Probe code: outside tsconfig, Vite transpiles it in dev only.
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
@@ -53,7 +53,7 @@ export function getCaseText(): string {
 
 // Per-case position store. Stored positions survive every rebuild; the
 // barycenter layout runs only when the store is empty (first load or an
-// explicit 'nytt oppsett'). Stale ids are kept — a block that vanishes over
+// explicit 're-layout'). Stale ids are kept — a block that vanishes over
 // a broken compile keeps its slot when it comes back.
 export const POS_KEY = 'kildeverket-canvas-pos:content/cases/olsen/tiny-olsen.case.md';
 
@@ -73,7 +73,7 @@ function savePositions(): void {
   localStorage.setItem(POS_KEY, JSON.stringify(Object.fromEntries(stored)));
 }
 
-/** 'nytt oppsett' — drop the stored positions, run barycenter once, refit. */
+/** 're-layout' — drop the stored positions, run barycenter once, refit. */
 export function relayout(): void {
   localStorage.removeItem(POS_KEY);
   extent = layoutGraph(graph);
@@ -103,7 +103,7 @@ function rebuild(): void {
   );
   graph = buildGraph(result.slice, { tiltakNeeds });
   // Sticky layout (SB-034): stored positions win; only unplaced nodes get a
-  // slot (column end). An empty store — first load or 'nytt oppsett' — runs
+  // slot (column end). An empty store — first load or 're-layout' — runs
   // the barycenter pass once. Rebuilds must never reshuffle the board.
   extent = stickyLayout(graph, loadPositions());
   savePositions();
@@ -133,13 +133,13 @@ function rebuild(): void {
 // ---- render --------------------------------------------------------------
 
 const KIND_LABEL: Record<NodeKind, string> = {
-  document: 'DOKUMENT',
-  fact: 'FAKTUM',
-  question: 'SPØRSMÅL',
-  hypothesis: 'HYPOTESE',
+  document: 'DOCUMENT',
+  fact: 'FACT',
+  question: 'QUESTION',
+  hypothesis: 'HYPOTHESIS',
   tiltak: 'TILTAK',
   dispatch: 'DISPATCH',
-  clock: 'KLOKKE',
+  clock: 'CLOCK',
 };
 const KIND_VAR: Record<NodeKind, string> = {
   document: '--blue',
@@ -158,6 +158,7 @@ const EDGE_VAR: Record<string, string> = {
   opens: '--green',
   delivers: '--orange',
   reveals: '--gold',
+  clock: '--gold',
   lead: '--yellow',
 };
 const cssVar = (name: string) =>
@@ -223,7 +224,7 @@ function renderWorld(): void {
     // SB-033: the port — drag from here to a legal target to author an edge.
     const port = document.createElement('div');
     port.className = 'port';
-    port.title = 'dra fra port for ny kant';
+    port.title = 'drag from port for a new edge';
     port.addEventListener('pointerdown', (event) => {
       event.stopPropagation();
       event.preventDefault();
@@ -241,12 +242,16 @@ function escapeHtml(s: string): string {
 const escapeAttr = (s: string) => escapeHtml(s).replace(/"/g, '&quot;');
 
 const legend = $('legend');
-legend.innerHTML = (Object.keys(KIND_LABEL) as NodeKind[])
-  .map(
-    (kind) =>
-      `<span><span class="dot" style="background:var(${KIND_VAR[kind]})"></span>${KIND_LABEL[kind]}</span>`,
-  )
-  .join('');
+legend.innerHTML =
+  (Object.keys(KIND_LABEL) as NodeKind[])
+    .map(
+      (kind) =>
+        `<span><span class="dot" style="background:var(${KIND_VAR[kind]})"></span>${KIND_LABEL[kind]}</span>`,
+    )
+    .join('') +
+  // SB-039: the two port shapes confused on first contact — name them here.
+  `<span title="hover a node — the ring on its right edge is the drag source for a new edge"><span class="ring"></span>drag → new edge</span>
+   <span title="the line into a node's left side is derived from the markup (e.g. document feeds fact) — edit the fields, not the line"><span class="wire"></span>derived link</span>`;
 
 // ---- selection -----------------------------------------------------------
 
@@ -319,14 +324,25 @@ function relRow(edge: GraphEdge, otherId: string): string {
 interface FieldSpec {
   keys: string[];
   multiline?: boolean;
+  /** Empty-form guidance (SB-039): example text from a real Olsen block. */
+  placeholder?: string;
 }
 const FORM_FIELDS: Record<NodeKind, FieldSpec[]> = {
   document: [{ keys: ['Title'] }, { keys: ['Peek'] }, { keys: ['Meta'] }],
   fact: [
-    { keys: ['Label'] },
-    { keys: ['Summary'], multiline: true },
-    { keys: ['Category'] },
-    { keys: ['Quote'], multiline: true },
+    { keys: ['Label'], placeholder: 'short name — e.g. Ellings uføretrygd' },
+    {
+      keys: ['Summary'],
+      multiline: true,
+      placeholder: 'what the player learns — e.g. Ellings uføretrygd: 2 [icon=coin] i måneden.',
+    },
+    { keys: ['Domain'], placeholder: 'e.g. Økonomi/bolig' },
+    { keys: ['Category'], placeholder: 'e.g. Økonomi' },
+    {
+      keys: ['Quote'],
+      multiline: true,
+      placeholder: 'source line, verbatim — e.g. «Det er en dør på gløtt.»',
+    },
   ],
   question: [
     { keys: ['Prompt', 'Title'], multiline: true },
@@ -360,12 +376,13 @@ function formHtml(node: GraphNode, block: RawBlock): string {
   const rows = (FORM_FIELDS[node.kind] ?? []).map((spec) => {
     const key = spec.keys.find((k) => block.fields.some((f) => f.key === k)) ?? spec.keys[0];
     const value = block.fields.find((f) => f.key === key)?.value ?? '';
+    const ph = spec.placeholder ? ` placeholder="${escapeAttr(spec.placeholder)}"` : '';
     const control = spec.multiline
-      ? `<textarea class="fval" data-key="${escapeAttr(key)}" rows="3">${escapeHtml(value)}</textarea>`
-      : `<input class="fval" data-key="${escapeAttr(key)}" value="${escapeAttr(value)}" />`;
+      ? `<textarea class="fval" data-key="${escapeAttr(key)}" rows="3"${ph}>${escapeHtml(value)}</textarea>`
+      : `<input class="fval" data-key="${escapeAttr(key)}" value="${escapeAttr(value)}"${ph} />`;
     return `<label class="field"><span class="fkey">${escapeHtml(key)}</span>${control}</label>`;
   });
-  return `<div class="sect">FELTER</div>${rows.join('')}<div class="form-note" id="form-note"></div>`;
+  return `<div class="sect">FIELDS</div>${rows.join('')}<div class="form-note" id="form-note"></div>`;
 }
 
 function diagHtml(block: RawBlock | undefined): string {
@@ -380,7 +397,7 @@ function diagHtml(block: RawBlock | undefined): string {
     (d) =>
       `<div class="diag s-${d.severity}"><span class="dcode">${escapeHtml(d.code)}</span>${escapeHtml(d.message)}</div>`,
   );
-  return `<div class="sect">DIAGNOSTIKK · ${diags.length}</div>${rows.join('')}`;
+  return `<div class="sect">DIAGNOSTICS · ${diags.length}</div>${rows.join('')}`;
 }
 
 function renderInspector(id: string | null): void {
@@ -409,10 +426,10 @@ function renderInspector(id: string | null): void {
     ${ins.map((e) => relRow(e, e.from)).join('') || '<div class="empty">no inbound — entry point</div>'}
     ${
       block && block.type !== 'case'
-        ? `<div class="sect">HANDLINGER</div>
+        ? `<div class="sect">ACTIONS</div>
     <div class="iactions">
-      <button class="ibtn" id="i-dup">dupliser</button>
-      <button class="ibtn danger" id="i-del">slett</button>
+      <button class="ibtn" id="i-dup">duplicate</button>
+      <button class="ibtn danger" id="i-del">delete</button>
     </div>`
         : ''
     }`;
@@ -589,12 +606,12 @@ export interface EdgeWriteResult {
 export function connect(fromId: string, toId: string): EdgeWriteResult {
   const from = nodeById.get(fromId);
   const to = nodeById.get(toId);
-  if (!from || !to) return { ok: false, reason: 'ukjent node' };
+  if (!from || !to) return { ok: false, reason: 'unknown node' };
   const spec = RELATION[`${from.kind}→${to.kind}`];
   if (!spec) {
     return {
       ok: false,
-      reason: `${KIND_LABEL[from.kind]} → ${KIND_LABEL[to.kind]}: ingen lovlig relasjon — dra fra port for ny kant`,
+      reason: `${KIND_LABEL[from.kind]} → ${KIND_LABEL[to.kind]}: no legal relation — drag from port for a new edge`,
     };
   }
   const ownerId = spec.on === 'from' ? fromId : toId;
@@ -613,10 +630,10 @@ export function connect(fromId: string, toId: string): EdgeWriteResult {
       patched = patchField(caseText, ownerId, spec.field, otherId);
     } else {
       const cond = condField(ownerId);
-      if (!cond) return { ok: false, reason: `${ownerId} har ingen betingelse å utvide` };
+      if (!cond) return { ok: false, reason: `${ownerId} has no condition to extend` };
       const next = condAddTerm(cond.value, otherId);
       if (next === null)
-        return { ok: false, reason: `betingelsen på ${ownerId} lar seg ikke utvide trygt` };
+        return { ok: false, reason: `the condition on ${ownerId} cannot be extended safely` };
       patched =
         next === cond.value.trim() ? caseText : patchField(caseText, ownerId, cond.key, next);
     }
@@ -632,7 +649,7 @@ export function connect(fromId: string, toId: string): EdgeWriteResult {
 export function disconnect(edge: GraphEdge): EdgeWriteResult {
   const from = nodeById.get(edge.from);
   const to = nodeById.get(edge.to);
-  if (!from || !to) return { ok: false, reason: 'ukjent kant' };
+  if (!from || !to) return { ok: false, reason: 'unknown edge' };
   const label = edge.label.split(' ')[0];
   const condRemove = (ownerId: string, id: string): string | null => {
     const cond = condField(ownerId);
@@ -659,13 +676,13 @@ export function disconnect(edge: GraphEdge): EdgeWriteResult {
     } else {
       return {
         ok: false,
-        reason: `«${edge.label || 'carries'}» er en avledet kant — slettes ikke her`,
+        reason: `"${edge.label || 'carries'}" is a derived edge — it cannot be deleted here`,
       };
     }
     if (patched === null)
       return {
         ok: false,
-        reason: `fant ikke ${edge.from} som enkel oppføring/and-term på ${label === 'supports' || label === 'opens' ? edge.from : edge.to}`,
+        reason: `did not find ${edge.from} as a plain entry/and-term on ${label === 'supports' || label === 'opens' ? edge.from : edge.to}`,
       };
     commitText(patched);
     return { ok: true };
@@ -707,7 +724,7 @@ export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): 
     let patched: string;
     if (kind === 'fact') {
       if (!opts.documentId)
-        return { ok: false, reason: 'et faktum trenger et dokument — velg ett i listen' };
+        return { ok: false, reason: 'a fact needs a document — pick one from the list' };
       patched = appendBlock(caseText, 'fact', id, { documentId: opts.documentId });
     } else {
       patched = appendBlock(caseText, kind, id);
@@ -717,7 +734,7 @@ export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): 
     return { ok: false, reason: err instanceof Error ? err.message : String(err) };
   }
   if (!nodeById.has(id))
-    return { ok: false, reason: `${id} ble skrevet, men kompilerte ikke til en node` };
+    return { ok: false, reason: `${id} was written but did not compile to a node` };
   select(id);
   centerOn(id);
   inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus();
@@ -728,7 +745,7 @@ export function createNode(kind: NodeKind, opts: { documentId?: string } = {}): 
 export function duplicateNode(sourceId: string): EdgeWriteResult {
   const block = blockById.get(sourceId);
   const node = nodeById.get(sourceId);
-  if (!block || !node) return { ok: false, reason: `ukjent blokk ${sourceId}` };
+  if (!block || !node) return { ok: false, reason: `unknown block ${sourceId}` };
   const body = caseText.split('\n').slice(block.startLine, block.endLine);
   while (body.length > 0 && body[0].trim() === '') body.shift();
   while (body.length > 0 && body[body.length - 1].trim() === '') body.pop();
@@ -743,7 +760,7 @@ export function duplicateNode(sourceId: string): EdgeWriteResult {
     return { ok: false, reason: err instanceof Error ? err.message : String(err) };
   }
   if (!nodeById.has(id))
-    return { ok: false, reason: `${id} ble skrevet, men kompilerte ikke til en node` };
+    return { ok: false, reason: `${id} was written but did not compile to a node` };
   select(id);
   centerOn(id);
   return { ok: true };
@@ -893,8 +910,8 @@ function performDelete(family: string[], refs: RefHit[]): void {
   for (const id of [...family].reverse()) text = removeBlock(text, id);
   lifecycleNote =
     refused.length > 0
-      ? `slettet ${family[0]} — ryddet ikke: ${[...new Set(refused)].join(', ')}`
-      : `slettet ${family[0]}`;
+      ? `deleted ${family[0]} — did not clean up: ${[...new Set(refused)].join(', ')}`
+      : `deleted ${family[0]}`;
   commitText(text);
 }
 
@@ -904,22 +921,22 @@ function renderDeleteConfirm(): void {
   const rows = refs
     .map(
       (ref) => `<div class="rel">
-        <span class="via">${ref.action === 'report' ? 'ryddes ikke' : 'ryddes'}</span>
+        <span class="via">${ref.action === 'report' ? 'not cleaned' : 'cleaned'}</span>
         <span>${escapeHtml(ref.blockId)}</span>
         <span class="rtitle">${escapeHtml(ref.key)} → ${escapeHtml(ref.targetId)}</span>
       </div>`,
     )
     .join('');
   inspectorBody.innerHTML = `
-    <div class="kind" style="color:var(--danger)">SLETT</div>
+    <div class="kind" style="color:var(--danger)">DELETE</div>
     <div class="iid">${escapeHtml(id)}</div>
-    ${family.length > 1 ? `<div class="isub">tar med ${family.length - 1} fakta under dokumentet</div>` : ''}
-    <div class="sect">INNKOMMENDE REFERANSER · ${refs.length}</div>
+    ${family.length > 1 ? `<div class="isub">also deletes ${family.length - 1} facts under the document</div>` : ''}
+    <div class="sect">INCOMING REFERENCES · ${refs.length}</div>
     ${rows}
-    <div class="form-note">«ryddes ikke» blir stående som dangling — kompilatoren flagger dem.</div>
+    <div class="form-note">"not cleaned" references stay dangling — the compiler flags them.</div>
     <div class="iactions">
-      <button class="ibtn danger" id="del-confirm">slett og rydd</button>
-      <button class="ibtn" id="del-cancel">avbryt</button>
+      <button class="ibtn danger" id="del-confirm">delete and clean up</button>
+      <button class="ibtn" id="del-cancel">cancel</button>
     </div>`;
   document.getElementById('del-confirm')?.addEventListener('click', confirmDelete);
   document.getElementById('del-cancel')?.addEventListener('click', cancelDelete);
@@ -939,15 +956,15 @@ export function openCreatePanel(): void {
         : undefined;
   const kinds = Object.keys(KIND_LABEL) as NodeKind[];
   inspectorBody.innerHTML = `
-    <div class="kind">NY NODE</div>
-    <div class="isub">velg type — malen fylles inn, døp den i skjemaet etterpå</div>
+    <div class="kind">NEW NODE</div>
+    <div class="isub">pick a kind — the template fills in, rename it in the form after</div>
     <div class="iactions wrap">${kinds
       .map(
         (kind) =>
           `<button class="ibtn" data-mk="${kind}" style="color:var(${KIND_VAR[kind]})">${KIND_LABEL[kind]}</button>`,
       )
       .join('')}</div>
-    <label class="field"><span class="fkey">DOKUMENT (FOR FAKTUM)</span>
+    <label class="field"><span class="fkey">DOCUMENT (FOR FACT)</span>
       <select class="fval" id="mk-doc">${docs
         .map(
           (d) =>
@@ -1155,7 +1172,7 @@ function renderStatus(): void {
   const quiet = result.diagnostics.find((d) => d.code === 'lint-quiet-day');
   const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
 
-  counts.textContent = `${graph.nodes.length} noder · ${graph.edges.length} kanter`;
+  counts.textContent = `${graph.nodes.length} nodes · ${graph.edges.length} edges`;
   statusbar.innerHTML = `
   <span class="${errors ? 'warn-c' : 'ok'}">compiled ${compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
   <span>${graph.nodes.length} nodes · ${graph.edges.length} edges</span>
@@ -1164,8 +1181,8 @@ function renderStatus(): void {
   ${draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
   ${saveNote ? `<span class="${saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(saveNote)}</span>` : ''}
   ${lifecycleNote ? `<span class="warn-c">${escapeHtml(lifecycleNote)}</span>` : ''}
-  ${selectedEdgeKey ? '<span class="warn-c">kant valgt — delete fjerner relasjonen</span>' : ''}
-  <span class="hint">click node · edit fields · n ny node · delete sletter · dra fra port for ny kant · esc clear</span>`;
+  ${selectedEdgeKey ? '<span class="warn-c">edge selected — delete removes the relation</span>' : ''}
+  <span class="hint">click node · edit fields · n new node · delete removes · drag from port for new edge · esc clear</span>`;
 }
 
 // ---- boot ----------------------------------------------------------------
