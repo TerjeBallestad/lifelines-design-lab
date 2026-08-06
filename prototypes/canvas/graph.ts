@@ -15,7 +15,13 @@ export type NodeKind =
   | 'hypothesis'
   | 'tiltak'
   | 'dispatch'
-  | 'clock';
+  | 'clock'
+  // SB-046 (SB-037 ruling): §8 weave blocks as read-only nodes — chat/call
+  // conversations, recipes, proposals. Node id = the raw block id, so the
+  // SB-041 cross-jump machinery resolves them with no extra wiring.
+  | 'conversation'
+  | 'recipe'
+  | 'proposal';
 
 export interface GraphNode {
   id: string;
@@ -186,6 +192,47 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
       x: 0,
       y: 0,
     });
+
+  // SB-046: one node per §8 weave block. Ids reproduce the raw block ids
+  // (`call:grete`, `chat:frank`, `f_a + f_b`, the handbok slug) so clicking
+  // the node cross-jumps to the block's span in the script lens.
+  for (const call of slice.calls ?? [])
+    nodes.push({
+      id: `call:${call.contact_id}`,
+      kind: 'conversation',
+      title: `call: ${call.contact_id}`,
+      sub: `${call.exchanges.length} utvekslinger`,
+      x: 0,
+      y: 0,
+    });
+  if ((slice.frank_chat ?? []).length > 0)
+    nodes.push({
+      id: 'chat:frank',
+      kind: 'conversation',
+      title: 'chat: frank',
+      sub: `${slice.frank_chat!.length} oppslag`,
+      x: 0,
+      y: 0,
+    });
+  for (const recipe of slice.recipes ?? [])
+    nodes.push({
+      id: `${recipe.pair[0]} + ${recipe.pair[1]}`,
+      kind: 'recipe',
+      title: `${recipe.pair[0]} + ${recipe.pair[1]}`,
+      sub: `åpner ${recipe.question_id}`,
+      x: 0,
+      y: 0,
+    });
+  for (const proposal of slice.frank_proposals ?? [])
+    nodes.push({
+      id: proposal.handbok_id,
+      kind: 'proposal',
+      title: plainTitle(proposal.line),
+      sub: `${(proposal.relevant_fact_ids ?? []).length} relevante fakta`,
+      x: 0,
+      y: 0,
+    });
+
   for (const node of nodes) known.add(node.id);
 
   const effectEdges = (fromId: string, effects: EffectSpec[]) => {
@@ -242,11 +289,36 @@ export function buildGraph(slice: CaseSlice, opts: BuildGraphOptions = {}): Case
   for (const [tiltakId, needIds] of Object.entries(opts.tiltakNeeds ?? {}))
     for (const factId of needIds) addEdge(factId, tiltakId, 'needs');
 
+  // SB-046: fact edges in both directions on the weave nodes — needs in,
+  // pays_fact / inline fact anchors out (the SB-037 ruling's exact wording).
+  for (const call of slice.calls ?? []) {
+    const callId = `call:${call.contact_id}`;
+    for (const id of idsInPredicate(call.gate)) addEdge(id, callId, 'gate');
+    for (const line of call.opening) if (line.fact_id) addEdge(callId, line.fact_id, 'pays');
+    for (const exchange of call.exchanges) {
+      addEdge(exchange.card_id, callId, 'needs');
+      for (const line of exchange.reply)
+        if (line.fact_id) addEdge(callId, line.fact_id, 'pays');
+    }
+  }
+  for (const entry of slice.frank_chat ?? []) {
+    for (const id of entry.needs) addEdge(id, 'chat:frank', 'needs');
+    if (entry.pays_fact) addEdge('chat:frank', entry.pays_fact, 'pays');
+  }
+  for (const recipe of slice.recipes ?? []) {
+    const recipeId = `${recipe.pair[0]} + ${recipe.pair[1]}`;
+    for (const id of recipe.pair) addEdge(id, recipeId, 'needs');
+    addEdge(recipeId, recipe.question_id, 'opens');
+  }
+  for (const proposal of slice.frank_proposals ?? [])
+    for (const id of proposal.relevant_fact_ids ?? []) addEdge(id, proposal.handbok_id, 'needs');
+
   // SB-049 (SB-040 ruling 2): an unknown id named in the script becomes a
   // wired stub node — the Twine/Yarn/Ink consensus. The compiler already
   // emitted stub-unresolved-id; here the ghost gets a body so the canvas can
-  // show it. Ids without a recognizable prefix (e.g. `call:grete`) still
-  // drop their edge — no kind, no column.
+  // show it. Ids without a recognizable prefix still drop their edge — no
+  // kind, no column. (Weave ids like `call:grete` are real nodes since
+  // SB-046, so e.g. a question's lead edge onto them survives this filter.)
   const ensureNode = (id: string): boolean => {
     if (known.has(id)) return true;
     const kind = stubKindOf(id);
@@ -274,6 +346,11 @@ const COLUMN_OF: Record<NodeKind, number> = {
   tiltak: 4,
   dispatch: 4,
   clock: 5,
+  // SB-046: the weave family shares the source column — like documents,
+  // conversations feed facts (and consume them; those edges run right-to-left).
+  conversation: 0,
+  recipe: 0,
+  proposal: 0,
 };
 
 /** Assign x/y in place. Columns by kind (mockup 1a); rows ordered by the

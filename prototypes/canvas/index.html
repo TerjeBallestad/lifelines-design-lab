@@ -27,6 +27,7 @@
         --yellow: #e2c541;
         --danger: #e5484d;
         --gold: #d3b078;
+        --teal: #45c4b8; /* SB-046: the weave family (conversation/recipe/proposal) */
         /* SB-041 script lens tokens — same values as prototypes/script-editor */
         --surface-code: #0d0e12;
         --text-prose: #c9cbd4;
@@ -590,6 +591,17 @@
       }
       .k-clock .nid {
         color: var(--gold);
+      }
+      /* SB-046: the weave family shares the teal hue */
+      .k-conversation,
+      .k-recipe,
+      .k-proposal {
+        border-left-color: var(--teal);
+      }
+      .k-conversation .nid,
+      .k-recipe .nid,
+      .k-proposal .nid {
+        color: var(--teal);
       }
 
       /* zoom overlay + legend */
