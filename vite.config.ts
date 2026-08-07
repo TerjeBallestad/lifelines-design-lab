@@ -48,6 +48,9 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss(), caseSave()],
   test: {
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.harness/**'],
+    // `.claude/worktrees/**`: agent worktrees hold a full checkout of an older
+    // commit. Without this, vitest runs those stale copies as if they were
+    // source and reports failures that the main tree does not have.
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.harness/**', '**/.claude/worktrees/**'],
   },
 });
