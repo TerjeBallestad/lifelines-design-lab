@@ -48,8 +48,11 @@ describe.each(sources)('emit stability — $name', ({ path }) => {
 });
 
 describe('canonical serialization', () => {
-  it('the core-JSON serializer writes TAB indentation with a trailing newline', () => {
-    expect(serializeSliceJson({ id: 'x', documents: [{ id: 'd' }] })).toBe(
+  it('the core-JSON serializer writes TAB indentation, a trailing newline, and the _generated sentinel first', () => {
+    const emitted = serializeSliceJson({ id: 'x', documents: [{ id: 'd' }] });
+    const sentinelLine = emitted.split('\n')[1];
+    expect(sentinelLine.startsWith('\t"_generated": "DO NOT HAND-EDIT.')).toBe(true);
+    expect(emitted.replace(`${sentinelLine}\n`, '')).toBe(
       '{\n\t"id": "x",\n\t"documents": [\n\t\t{\n\t\t\t"id": "d"\n\t\t}\n\t]\n}\n',
     );
   });

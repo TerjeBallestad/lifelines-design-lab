@@ -601,14 +601,6 @@ export const tinyOlsenFacts = {
     quote: 'sykdom med kort forventet forløp',
     supports: ['q_grete_dor'],
   },
-  f_aldri_alene: {
-    id: 'f_aldri_alene',
-    domain: 'Hverdag/rutine',
-    category: 'Dokument',
-    text: 'Elling (35) har aldri bodd alene.',
-    quote: '',
-    supports: ['q_grete_dor', 'q_evner'],
-  },
   f_grete_baerer: {
     id: 'f_grete_baerer',
     domain: 'Hverdag/rutine',
@@ -624,14 +616,6 @@ export const tinyOlsenFacts = {
     text: 'Elling vurderes som sårbar ved bortfall av pårørende.',
     quote: 'primær omsorgsperson',
     supports: ['q_grete_dor'],
-  },
-  f_ingen_tjenester: {
-    id: 'f_ingen_tjenester',
-    domain: 'Nettverk/sosialt',
-    category: 'Dokument',
-    text: 'Elling har ingen kontakt med øvrige tjenester.',
-    quote: '',
-    supports: ['q_baering'],
   },
   f_trygd: {
     id: 'f_trygd',
@@ -840,7 +824,7 @@ export const tinyOlsenQuestions = {
       {
         id: 'h_gd_ukjent',
         label: 'Ingenting vi vet. Ingen har noen gang sett Elling alene.',
-        needs: ['f_aldri_alene', 'f_ingen_plan'],
+        needs: ['f_ingen_plan'],
         opens: [],
         note: 'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
       },
@@ -849,7 +833,7 @@ export const tinyOlsenQuestions = {
   q_evner: {
     id: 'q_evner',
     title: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
-    appearsOn: ['f_bok', 'f_utklipp', 'f_aldri_alene'],
+    appearsOn: ['f_bok', 'f_utklipp'],
     hypotheses: [
       {
         id: 'h_ev_kanmer',
@@ -927,7 +911,7 @@ export const tinyOlsenQuestions = {
     id: 'q_baering',
     title:
       'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
-    appearsOn: ['f_elling_tlf', 'f_avstand', 'f_ingen_tjenester'],
+    appearsOn: ['f_elling_tlf', 'f_avstand'],
     hypotheses: [
       {
         id: 'h_ba_kanal',
@@ -1589,19 +1573,6 @@ export const tinyOlsenGodotSource = {
       lift_effects: [],
     },
     {
-      id: 'f_aldri_alene',
-      label: 'Aldri bodd alene',
-      summary: 'Elling (35) har aldri bodd alene.',
-      source_document_id: 'doc_bekymring',
-      domain: 'Hverdag/rutine',
-      category: 'Dokument',
-      quote: '',
-      frank_response:
-        'Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.',
-      supports_questions: ['q_grete_dor', 'q_evner'],
-      lift_effects: [],
-    },
-    {
       id: 'f_grete_baerer',
       label: 'Grete bærer rutiner',
       summary: 'Grete bistår med gjøremål, økonomi og kontakt med tjenester.',
@@ -1625,19 +1596,6 @@ export const tinyOlsenGodotSource = {
       frank_response:
         'Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.',
       supports_questions: ['q_grete_dor'],
-      lift_effects: [],
-    },
-    {
-      id: 'f_ingen_tjenester',
-      label: 'Ingen tjenester',
-      summary: 'Elling har ingen kontakt med øvrige tjenester.',
-      source_document_id: 'doc_bekymring',
-      domain: 'Nettverk/sosialt',
-      category: 'Dokument',
-      quote: '',
-      frank_response:
-        'Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.',
-      supports_questions: ['q_baering'],
       lift_effects: [],
     },
     {
@@ -1950,12 +1908,6 @@ export const tinyOlsenGodotSource = {
               fact_id: 'f_utklipp',
             },
           },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_aldri_alene',
-            },
-          },
         ],
       },
       leads: [
@@ -2055,12 +2007,6 @@ export const tinyOlsenGodotSource = {
             op: 'fact_lifted',
             args: {
               fact_id: 'f_avstand',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_ingen_tjenester',
             },
           },
         ],
@@ -2196,21 +2142,10 @@ export const tinyOlsenGodotSource = {
         'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
       question_id: 'q_grete_dor',
       availability: {
-        op: 'all',
-        children: [
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_aldri_alene',
-            },
-          },
-          {
-            op: 'fact_lifted',
-            args: {
-              fact_id: 'f_ingen_plan',
-            },
-          },
-        ],
+        op: 'fact_lifted',
+        args: {
+          fact_id: 'f_ingen_plan',
+        },
       },
       opening_sources: [
         {
@@ -3237,13 +3172,13 @@ export const tinyOlsenGodotSource = {
     {
       handbok_id: 'kartlegging',
       line: 'Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.',
-      relevant_fact_ids: ['f_aldri_alene', 'f_ingen_plan'],
+      relevant_fact_ids: ['f_ingen_plan'],
       order: 9,
     },
     {
       handbok_id: 'oppfolging',
       line: 'Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.',
-      relevant_fact_ids: ['f_ingen_tjenester', 'f_ingen_plan'],
+      relevant_fact_ids: ['f_ingen_plan'],
       order: 10,
     },
     {
@@ -3267,19 +3202,19 @@ export const tinyOlsenGodotSource = {
     {
       handbok_id: 'besoksvenn',
       line: 'Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.',
-      relevant_fact_ids: ['f_avstand', 'f_aldri_alene'],
+      relevant_fact_ids: ['f_avstand'],
       order: 14,
     },
     {
       handbok_id: 'dagsenter',
       line: 'Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.',
-      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      relevant_fact_ids: ['f_avstand'],
       order: 15,
     },
     {
       handbok_id: 'folgetjeneste',
       line: 'Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.',
-      relevant_fact_ids: ['f_elling_tlf', 'f_ingen_tjenester'],
+      relevant_fact_ids: ['f_elling_tlf'],
       order: 16,
     },
     {
@@ -3297,7 +3232,7 @@ export const tinyOlsenGodotSource = {
     {
       handbok_id: 'tt',
       line: 'TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.',
-      relevant_fact_ids: ['f_avstand', 'f_ingen_tjenester'],
+      relevant_fact_ids: ['f_avstand'],
       order: 19,
     },
     {
@@ -3385,7 +3320,7 @@ export const tinyOlsenGodotSource = {
           ],
         },
         {
-          card_id: 'f_aldri_alene',
+          card_id: 'f_klarer_seg',
           ask: 'Kan jeg få hilse på Elling?',
           reply: [
             {

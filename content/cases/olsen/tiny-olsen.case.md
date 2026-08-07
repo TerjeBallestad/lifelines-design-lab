@@ -27,13 +27,6 @@ Domain: Helse/risiko · Category: Dokument
 Supports: q_grete_dor
 Frank: ««Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.»
 
-## f_aldri_alene
-Label: Aldri bodd alene
-Summary: Elling (35) har aldri bodd alene.
-Domain: Hverdag/rutine · Category: Dokument
-Supports: q_grete_dor, q_evner
-Frank: «Han er trettifem og har aldri bodd alene. Det sier ikke hva han kan. Det sier at ingen har sett ham prøve.»
-
 ## f_grete_baerer
 Label: Grete bærer rutiner
 Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
@@ -48,14 +41,6 @@ Summary: Elling vurderes som sårbar ved bortfall av pårørende.
 Domain: Helse/risiko · Category: Risiko
 Supports: q_grete_dor
 Frank: «Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.»
-
-## f_ingen_tjenester
-
-Label: Ingen tjenester
-Summary: Elling har ingen kontakt med øvrige tjenester.
-Domain: Nettverk/sosialt · Category: Dokument
-Supports: q_baering
-Frank: «Ingen. Ikke hjemmetjeneste, ikke dagsenter, ikke oss. Det finnes ingen mappe å slå opp i. Alt vi skal vite, må noen hente.»
 
 # Document: doc_konto
 
@@ -364,7 +349,7 @@ Lead: «Ring Grete» -> call:grete
 
 Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
 Teaser: Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.
-when: f_bok and f_utklipp and f_aldri_alene
+when: f_bok and f_utklipp
 Lead: «Åpne ett brev sammen med Frank» -> t_brev
 
 # Question: q_okonomi
@@ -386,7 +371,7 @@ Lead: «Snakk med huseieren» -> t_huseier
 
 Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
 Teaser:
-when: f_elling_tlf and f_avstand and f_ingen_tjenester
+when: f_elling_tlf and f_avstand
 
 # Question: q_vekst
 
@@ -427,7 +412,7 @@ Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang
 Title: Ingenting vi vet. Ingen har noen gang sett Elling alene.
 Summary: Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.
 Question: q_grete_dor
-needs: f_aldri_alene and f_ingen_plan
+needs: f_ingen_plan
 Opens dispatches: hjemmebesok
 
 # Hypothesis: h_ev_kanmer
@@ -868,12 +853,12 @@ Line: «Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er e
 
 # Proposal: kartlegging
 
-Relevant: f_aldri_alene, f_ingen_plan
+Relevant: f_ingen_plan
 Line: «Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.»
 
 # Proposal: oppfolging
 
-Relevant: f_ingen_tjenester, f_ingen_plan
+Relevant: f_ingen_plan
 Line: «Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.»
 
 # Proposal: samtaler
@@ -893,17 +878,17 @@ Line: «Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye tryk
 
 # Proposal: besoksvenn
 
-Relevant: f_avstand, f_aldri_alene
+Relevant: f_avstand
 Line: «Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.»
 
 # Proposal: dagsenter
 
-Relevant: f_avstand, f_ingen_tjenester
+Relevant: f_avstand
 Line: «Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.»
 
 # Proposal: folgetjeneste
 
-Relevant: f_elling_tlf, f_ingen_tjenester
+Relevant: f_elling_tlf
 Line: «Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.»
 
 # Proposal: hverdagsrehab
@@ -918,7 +903,7 @@ Line: «Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne let
 
 # Proposal: tt
 
-Relevant: f_avstand, f_ingen_tjenester
+Relevant: f_avstand
 Line: «TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.»
 
 # Proposal: alarm
@@ -967,7 +952,7 @@ du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 * f_grete_baerer: Hvem overtar hvis du skulle bli innlagt?
     [… (det blir stille i den andre enden)](fact:f_ingen_plan)
 
-* f_aldri_alene: Kan jeg få hilse på Elling?
+* f_klarer_seg: Kan jeg få hilse på Elling?
     [Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.](fact:f_elling_tlf)
 
 * f_saarbar: Vi vil gjerne komme på hjemmebesøk.
