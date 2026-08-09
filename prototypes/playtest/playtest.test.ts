@@ -52,9 +52,9 @@ describe('playtest page boot', () => {
     expect(document.querySelectorAll('#index .idx-item').length).toBeGreaterThan(50);
   });
 
-  it('boots the surface host to the empty surface, lit-rendered', () => {
-    expect(document.querySelector('#surface .empty')).not.toBeNull();
-    expect(document.getElementById('surface-title')!.textContent).toBe('GAME SURFACE');
+  it('boots the surface host to the coverage panel, lit-rendered (Task 3)', () => {
+    expect(document.querySelector('#surface .coverage-panel')).not.toBeNull();
+    expect(document.getElementById('surface-title')!.textContent).toContain('SURFACE COVERAGE');
   });
 
   it('renders a player surface on selection, not fallback JSON', () => {

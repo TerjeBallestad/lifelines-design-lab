@@ -6,11 +6,11 @@ import { html, render as litRender } from 'lit-html';
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import '../shared/surfaces.css';
-import { emptySurface } from '../shared/surfaces.ts';
 import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
 import { activeCasePath, resolveBootText, wireCaseChrome } from '../shared/active-case.ts';
 import { injectEditorFonts } from '../shared/doc-preview.ts';
 import { buildIndex, entitySurface } from './model.ts';
+import { coverageSurface } from './coverage.ts';
 import type { IndexEntry, IndexGroup } from './model.ts';
 
 injectEditorFonts();
@@ -43,7 +43,9 @@ function select(entry: IndexEntry): void {
 }
 
 function renderSurface(): void {
-  const surface = selected ? entitySurface(selected, result) : emptySurface();
+  // Task 3: the lens boots to the coverage panel — one glance says what of
+  // the emitted case still has no player surface.
+  const surface = selected ? entitySurface(selected, result) : coverageSurface(result);
   surfaceTitle.textContent = surface.title;
   litRender(surface.template, surfaceHost);
   if (surface.doc) {

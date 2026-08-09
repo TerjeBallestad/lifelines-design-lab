@@ -149,6 +149,46 @@
       #surface {
         max-width: 760px;
       }
+
+      /* Task 3: the coverage panel — every emitted kind, honest status */
+      .coverage-panel {
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-radius: 10px;
+        padding: 6px 0;
+      }
+      .cov-row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 4px 14px;
+        font: 500 11.5px var(--sans);
+        color: var(--text-2);
+      }
+      .cov-row + .cov-row {
+        border-top: 1px solid var(--border);
+      }
+      .cov-count {
+        margin-left: auto;
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+      }
+      .cov-status {
+        font: 500 9.5px var(--mono);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        width: 170px;
+        text-align: right;
+      }
+      .cov-player-surface .cov-status {
+        color: var(--green);
+      }
+      .cov-fallback-JSON .cov-status {
+        color: var(--orange);
+      }
+      .cov-no-player-surface-yet .cov-status {
+        color: var(--text-4);
+      }
     </style>
   </head>
   <body>
