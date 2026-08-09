@@ -3,9 +3,13 @@
 // mounted here — this file is the standalone page host. It owns the compile
 // loop, outline, preview rail, problems drawer, draft persistence and ⌘S
 // save; the lens owns the editor view and its extensions.
+import { html, render as litRender, nothing } from 'lit-html';
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
+import '../shared/surfaces.css';
+import { funnCard } from '../shared/surfaces.ts';
+import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
 import {
   activeCasePath,
   activeCaseText as initialText,
@@ -16,7 +20,7 @@ import {
 import { mountScriptLens, indexHeadings, KIND_COLOR } from './lens.ts';
 import type { Heading, ScriptSymbol } from './lens.ts';
 import { buildSymbols } from './symbols.ts';
-import { buildDocPreviewHtml, injectEditorFonts } from './doc-preview.ts';
+import { buildDocPreviewHtml, injectEditorFonts } from '../shared/doc-preview.ts';
 
 injectEditorFonts();
 
@@ -188,7 +192,7 @@ function renderPreview(line: number) {
   const h = headingAt(line);
   if (!h) {
     previewTitle.textContent = 'PREVIEW';
-    preview.innerHTML = '<div class="empty">Place the cursor in a section.</div>';
+    litRender(html`<div class="empty">Place the cursor in a section.</div>`, preview);
     return;
   }
   if (h.kind === 'Fact' && result.labContent.facts[h.id]) {
@@ -210,42 +214,55 @@ function sourceDocOf(factId: string): string | null {
   return null;
 }
 
-// FUNN card — the in-game desk fact card (scenes/ui/hand_card.tscn look):
-// red top rule, red FUNN stamp, Fraunces quote, source line. Editor extras
-// (supports/source links) ride below the card face in stamp type.
+// FUNN card — the shared in-game desk fact card (surfaces.ts), with the
+// script lens's editor extras (supports/source links) riding below the card
+// face in stamp type.
 function renderFactCard(factId: string) {
   const f = result.labContent.facts[factId];
   previewTitle.textContent = `FUNN — ${factId.toUpperCase()}`;
   const questions = result.slice.questions as unknown as Array<{ id: string; title?: string }>;
-  const supports = (f.supports ?? [])
-    .map((qId) => {
-      const q = questions.find((x) => x.id === qId);
-      return q
-        ? `<span class="fc-link" data-jump-kind="Question" data-jump-id="${qId}">? &nbsp;${esc(q.title || qId)}</span>`
-        : `<span class="fc-link dead">? &nbsp;${qId} — stub</span>`;
-    })
-    .join('');
+  const supports = (f.supports ?? []).map((qId) => {
+    const q = questions.find((x) => x.id === qId);
+    return q
+      ? html`<span class="fc-link" data-jump-kind="Question" data-jump-id=${qId}
+          >? &nbsp;${q.title || qId}</span
+        >`
+      : html`<span class="fc-link dead">? &nbsp;${qId} — stub</span>`;
+  });
   const srcDoc = sourceDocOf(factId);
   const srcTitle = srcDoc ? result.labContent.documents[srcDoc].title : null;
   const quote = f.quote || f.text || '';
-  preview.innerHTML =
-    `<div class="funn-card">` +
-    `<div class="funn-rule"></div>` +
-    `<div class="funn-stamp">FUNN</div>` +
-    `<div class="funn-quote">«${esc(quote)}»</div>` +
-    `<div class="funn-source">${esc(srcTitle || '—')}</div>` +
-    `</div>` +
-    `<div class="funn-meta">` +
-    `<div class="fc-rel"><h4>${esc(f.domain || '—')} · ${esc(f.category || '—')}</h4></div>` +
-    `<div class="fc-rel"><h4>HENGER SAMMEN MED</h4>${supports || '<span class="fc-link dead">ingen spørsmål ennå</span>'}</div>` +
-    (srcDoc
-      ? `<div class="fc-rel"><h4>KILDE</h4><span class="fc-link" data-jump-kind="Document" data-jump-id="${srcDoc}">▤ &nbsp;${esc(srcTitle || srcDoc)}</span></div>`
-      : `<div class="fc-rel"><h4>KILDE</h4><span class="fc-link dead">ingen anker i noe dokument — lint: fact without source anchor</span></div>`) +
-    `</div>`;
+  litRender(
+    html`${funnCard(quote, srcTitle)}
+      <div class="funn-meta">
+        <div class="fc-rel"><h4>${f.domain || '—'} · ${f.category || '—'}</h4></div>
+        <div class="fc-rel">
+          <h4>HENGER SAMMEN MED</h4>
+          ${supports.length
+            ? supports
+            : html`<span class="fc-link dead">ingen spørsmål ennå</span>`}
+        </div>
+        ${srcDoc
+          ? html`<div class="fc-rel">
+              <h4>KILDE</h4>
+              <span class="fc-link" data-jump-kind="Document" data-jump-id=${srcDoc}
+                >▤ &nbsp;${srcTitle || srcDoc}</span
+              >
+            </div>`
+          : html`<div class="fc-rel">
+              <h4>KILDE</h4>
+              <span class="fc-link dead"
+                >ingen anker i noe dokument — lint: fact without source anchor</span
+              >
+            </div>`}
+      </div>`,
+    preview,
+  );
 }
 
 // Real bake template in an iframe — the same HTML the Playwright bake
-// screenshots into core-loop textures, scaled to the rail.
+// screenshots into core-loop textures, scaled to the rail. The iframe wiring
+// and the lightbox are the shared doc-frame module (SB-082).
 function renderDocPreview(docId: string, focusFact: string | null) {
   const d = result.labContent.documents[docId];
   previewTitle.textContent = `PREVIEW — ${docId.toUpperCase()}`;
@@ -255,85 +272,50 @@ function renderDocPreview(docId: string, focusFact: string | null) {
   factIds.forEach((f) =>
     (result.labContent.facts[f]?.supports ?? []).forEach((q) => questions.add(q)),
   );
-  const { html, width, kindUsed, fallback } = buildDocPreviewHtml(docId, d as never);
-  preview.innerHTML =
-    (fallback
-      ? `<div class="chips" style="margin-bottom:8px"><span class="chip" style="color:var(--orange);border-color:rgba(240,136,62,.35);background:var(--tint-orange)">no template for ${esc(d.kind)} — showing ${esc(kindUsed)}</span></div>`
-      : '') +
-    `<div class="doc-frame-wrap"><iframe id="doc-frame" title="${esc(docId)}"></iframe></div>` +
-    `<div class="lb-hint">click the page to read it full size</div>` +
-    `<div class="feeds-head">THIS SECTION FEEDS</div><div class="chips">` +
-    `<span class="chip" style="color:var(--accent);border-color:rgba(123,131,235,.3);background:var(--tint-accent)">${factIds.size} facts</span>` +
-    (questions.size
-      ? `<span class="chip" style="color:var(--yellow);border-color:rgba(226,197,65,.3);background:var(--tint-yellow)">${[...questions].join(' · ')}</span>`
-      : '') +
-    `</div>`;
+  const { html: sheetHtml, width, kindUsed, fallback } = buildDocPreviewHtml(docId, d as never);
+  litRender(
+    html`${fallback
+        ? html`<div class="chips" style="margin-bottom:8px">
+            <span
+              class="chip"
+              style="color:var(--orange);border-color:rgba(240,136,62,.35);background:var(--tint-orange)"
+              >no template for ${d.kind} — showing ${kindUsed}</span
+            >
+          </div>`
+        : nothing}
+      <div class="doc-frame-wrap"><iframe class="doc-frame" title=${docId}></iframe></div>
+      <div class="lb-hint">click the page to read it full size</div>
+      <div class="feeds-head">THIS SECTION FEEDS</div>
+      <div class="chips">
+        <span
+          class="chip"
+          style="color:var(--accent);border-color:rgba(123,131,235,.3);background:var(--tint-accent)"
+          >${factIds.size} facts</span
+        >
+        ${questions.size
+          ? html`<span
+              class="chip"
+              style="color:var(--yellow);border-color:rgba(226,197,65,.3);background:var(--tint-yellow)"
+              >${[...questions].join(' · ')}</span
+            >`
+          : nothing}
+      </div>`,
+    preview,
+  );
   const wrap = preview.querySelector('.doc-frame-wrap') as HTMLElement;
-  const iframe = preview.querySelector('#doc-frame') as HTMLIFrameElement;
-  wireDocFrame(iframe, wrap, html, width, focusFact, () => openLightbox(html, width, focusFact));
-}
-
-// Shared iframe wiring: scale-to-fit, focus highlight, anchor click-to-jump,
-// and (rail only) click-anywhere-else opens the readable lightbox.
-function wireDocFrame(
-  iframe: HTMLIFrameElement,
-  wrap: HTMLElement,
-  html: string,
-  width: number,
-  focusFact: string | null,
-  onPageClick: (() => void) | null,
-) {
-  iframe.style.width = `${width}px`;
-  iframe.addEventListener('load', () => {
-    const idoc = iframe.contentDocument;
-    if (!idoc) return;
-    if (focusFact) {
-      idoc.querySelector(`[data-fact-id="${focusFact}"]`)?.classList.add('focus');
-    }
-    if (onPageClick) idoc.body.style.cursor = 'zoom-in';
-    idoc.addEventListener('click', (ev) => {
-      const el = (ev.target as HTMLElement).closest('[data-fact-id]');
-      const id = el?.getAttribute('data-fact-id');
-      if (id) {
-        closeLightbox();
-        lens.jumpToHeading('Fact', id);
-      } else if (onPageClick) {
-        onPageClick();
-      }
-    });
-    const fit = () => {
-      const h = idoc.body?.scrollHeight ?? 0;
-      const scale = Math.min(1, wrap.clientWidth / width);
-      iframe.style.height = `${h}px`;
-      iframe.style.transform = `scale(${scale})`;
-      wrap.style.height = `${h * scale}px`;
-    };
-    fit();
-    // refit once webfonts finish loading (reflow changes page height)
-    idoc.fonts?.ready.then(fit).catch(() => {});
+  const iframe = preview.querySelector('.doc-frame') as HTMLIFrameElement;
+  wireDocFrame(iframe, wrap, sheetHtml, width, {
+    focusFact,
+    onJump: (id) => {
+      lightbox.close();
+      lens.jumpToHeading('Fact', id);
+    },
+    onPageClick: () => lightbox.open(sheetHtml, width, focusFact),
   });
-  iframe.srcdoc = html;
 }
 
 // Readable full-size view over the editor. Esc / backdrop click closes.
-const lightbox = $('doc-lightbox');
-function openLightbox(html: string, width: number, focusFact: string | null) {
-  lightbox.innerHTML = `<div class="lb-inner"><iframe title="document"></iframe></div>`;
-  lightbox.classList.add('open');
-  const inner = lightbox.querySelector('.lb-inner') as HTMLElement;
-  inner.style.width = `${Math.min(width, window.innerWidth * 0.86)}px`;
-  wireDocFrame(inner.querySelector('iframe')!, inner, html, width, focusFact, null);
-}
-function closeLightbox() {
-  lightbox.classList.remove('open');
-  lightbox.innerHTML = '';
-}
-lightbox.addEventListener('click', (e) => {
-  if (e.target === lightbox) closeLightbox();
-});
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
-});
+const lightbox = createLightbox($('doc-lightbox'), (id) => lens.jumpToHeading('Fact', id));
 
 function renderNodePreview(h: Heading) {
   previewTitle.textContent = `PREVIEW — ${h.id ? h.id.toUpperCase() : h.kind.toUpperCase()}`;
@@ -346,10 +328,18 @@ function renderNodePreview(h: Heading) {
   }
   if (!node && h.kind === 'Fact') node = result.labContent.facts[h.id];
   const color = KIND_COLOR[h.kind] ?? 'var(--text-2)';
-  const body = node
-    ? `<div class="node-json">${esc(JSON.stringify(node, null, 2))}</div>`
-    : `<div class="node-json" style="color:var(--text-4)">No compiled node for this section (${esc(h.kind.toLowerCase())} — parsed but not emitted, or a stub).</div>`;
-  preview.innerHTML = `<div class="node-card"><div class="node-kind" style="color:${color}">${h.kind.toUpperCase()} · COMPILED OUTPUT</div><div class="node-id">${esc(h.id || '—')}</div>${body}</div>`;
+  // node-json is white-space: pre-wrap — keep the interpolation tight.
+  const missing = `No compiled node for this section (${h.kind.toLowerCase()} — parsed but not emitted, or a stub).`;
+  litRender(
+    html`<div class="node-card">
+      <div class="node-kind" style="color:${color}">${h.kind.toUpperCase()} · COMPILED OUTPUT</div>
+      <div class="node-id">${h.id || '—'}</div>
+      ${node
+        ? html`<div class="node-json">${JSON.stringify(node, null, 2)}</div>`
+        : html`<div class="node-json" style="color:var(--text-4)">${missing}</div>`}
+    </div>`,
+    preview,
+  );
 }
 
 preview.addEventListener('click', (e) => {

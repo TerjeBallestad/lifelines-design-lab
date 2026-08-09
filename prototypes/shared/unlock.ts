@@ -7,7 +7,7 @@
 // here in plain words; a node nothing opens says so out loud.
 import type { CaseSlice } from '../../src/compiler/emit.ts';
 import type { PredicateSpec } from '../../src/compiler/condition.ts';
-import type { NodeKind } from './graph.ts';
+import type { NodeKind } from './node-kind.ts';
 
 /** «Title» (id) — title first, the id in parens for the jump-minded. */
 function nameOf(id: string, slice: CaseSlice): string {

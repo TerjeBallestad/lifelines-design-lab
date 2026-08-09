@@ -15,7 +15,7 @@ import type { GraphNode, GraphEdge, NodeKind } from './graph.ts';
 import { KIND_LABEL, KIND_VAR, FORM_FIELDS } from './kinds.ts';
 import * as model from './model.ts';
 import * as editing from './editing.ts';
-import { unlockSentence } from './unlock.ts';
+import { unlockSentence } from '../shared/unlock.ts';
 
 // SB-078: non-reactive concerns only — DOM host, preview handle, camera,
 // tips. Selection writes go straight to model.setSelected.

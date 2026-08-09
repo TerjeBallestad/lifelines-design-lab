@@ -59,7 +59,7 @@ describe('script editor probe', () => {
 
   it('builds real-template preview HTML for every compiled document', async () => {
     const { compileCase } = await import('../../src/compiler/index.ts');
-    const { buildDocPreviewHtml } = await import('./doc-preview.ts');
+    const { buildDocPreviewHtml } = await import('../shared/doc-preview.ts');
     const text = readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8');
     const { labContent } = compileCase(text);
     for (const [docId, doc] of Object.entries(labContent.documents)) {

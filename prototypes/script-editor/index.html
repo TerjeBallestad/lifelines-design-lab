@@ -8,34 +8,11 @@
       /* Fonts arrive at runtime: main.ts injects @font-face for the bake TTFs
          (templates/docs/fonts) so the rail uses the exact in-game families. */
       /* PM Board tokens (extracted from the handoff design system) */
+      /* PM Board tokens live in prototypes/shared/surfaces.css (SB-082);
+         only the script-page extras stay here. */
       :root {
-        --bg: #0f1014;
-        --bg-side: #121318;
         --bg-rail: #111218;
-        --panel: #15161b;
-        --panel-hover: #1b1d24;
-        --input: #191b21;
-        --input-border: #22252f;
-        --border: #1f222b;
-        --border-2: #262933;
-        --text: #e6e7ec;
-        --text-2: #9b9fad;
-        --text-3: #62667a;
-        --text-4: #4a4e5e;
-        --text-prose: #c9cbd4;
-        --accent: #7b83eb;
-        --blue: #52a9ff;
-        --green: #46c288;
-        --orange: #f0883e;
-        --purple: #c084fc;
-        --yellow: #e2c541;
-        --danger: #e5484d;
-        --gold: #d3b078;
-        --surface-code: #0d0e12;
-        --tint-accent: rgba(123, 131, 235, 0.1);
-        --tint-orange: rgba(240, 136, 62, 0.09);
         --tint-danger: rgba(229, 72, 77, 0.12);
-        --tint-yellow: rgba(226, 197, 65, 0.1);
         /* paper/ink tokens from prototypes/blueprint_v1.html — the game surface */
         --paper: #f5f1e8;
         --paper-shade: #ece7d8;
@@ -51,8 +28,6 @@
         --hand-1: 'Kalam', cursive;
         --hand-2: 'Caveat', cursive;
         --hand-3: 'Architects Daughter', cursive;
-        --mono: ui-monospace, 'SF Mono', Menlo, monospace;
-        --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       }
       * {
         box-sizing: border-box;
@@ -383,92 +358,6 @@
         overflow-y: auto;
         min-height: 0;
       }
-      /* real bake template preview — iframe scaled to the rail */
-      #preview .doc-frame-wrap {
-        overflow: hidden;
-        border-radius: 3px;
-        box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.45);
-      }
-
-      #preview .lb-hint {
-        font: 400 9.5px var(--mono);
-        color: var(--text-4);
-        margin-top: 6px;
-      }
-
-      /* readable full-size document view (click the page to open) */
-      #doc-lightbox {
-        position: fixed;
-        inset: 0;
-        background: rgba(5, 6, 9, 0.72);
-        display: none;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 4vh 4vw;
-        z-index: 90;
-        cursor: zoom-out;
-      }
-      #doc-lightbox.open {
-        display: flex;
-      }
-      #doc-lightbox .lb-inner {
-        max-height: 92vh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        border-radius: 3px;
-        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
-        cursor: default;
-      }
-      #doc-lightbox .lb-inner iframe {
-        border: 0;
-        display: block;
-        transform-origin: top left;
-      }
-      #preview .doc-frame-wrap iframe {
-        border: 0;
-        display: block;
-        transform-origin: top left;
-        pointer-events: auto;
-      }
-
-      /* FUNN card — the in-game desk fact card (hand_card.tscn grammar) */
-      #preview .funn-card {
-        background: #f2ecdd;
-        border: 2px solid #2a2520;
-        border-radius: 3px;
-        box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.45);
-        padding: 14px 16px 16px;
-        color: #2a2520;
-      }
-      #preview .funn-card .funn-rule {
-        height: 5px;
-        background: #b8442c;
-        margin-bottom: 10px;
-      }
-      #preview .funn-card .funn-stamp {
-        font-family: 'Fraunces', Georgia, serif;
-        font-weight: 700;
-        font-size: 13px;
-        letter-spacing: 0.12em;
-        color: #b8442c;
-        margin-bottom: 6px;
-      }
-      #preview .funn-card .funn-quote {
-        font-family: 'Fraunces', Georgia, serif;
-        font-weight: 700;
-        font-size: 21px;
-        line-height: 1.28;
-        letter-spacing: -0.01em;
-      }
-      #preview .funn-card .funn-source {
-        font-family: 'Fraunces', Georgia, serif;
-        font-style: italic;
-        font-size: 12.5px;
-        color: #6b6259;
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1.5px solid #2a2520;
-      }
       #preview .funn-meta {
         margin-top: 12px;
       }
@@ -654,7 +543,7 @@
           <span class="t" id="preview-title">PREVIEW</span>
           <span class="sub">follows cursor</span>
         </div>
-        <div id="preview"><div class="empty">Place the cursor in a section.</div></div>
+        <div id="preview" class="surface"></div>
         <div id="problems">
           <div class="rail-head">
             <span class="t">PROBLEMS</span>
