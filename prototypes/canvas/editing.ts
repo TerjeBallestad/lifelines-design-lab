@@ -17,6 +17,7 @@ import type { RawBlock } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
 import type { GraphEdge, NodeKind, NodePos } from './graph.ts';
 import { KIND_LABEL, ID_PREFIX } from './kinds.ts';
+import { saveCaseUrl } from '../shared/active-case.ts';
 import { RELATION, COND_KEYS, condAddTerm, condRemoveTerm, refActionFor } from './relations.ts';
 import type { EdgeWriteResult, CreateResult, RefHit } from './relations.ts';
 import * as model from './model.ts';
@@ -94,7 +95,7 @@ export function commitText(patched: string): void {
 
 export async function persist(): Promise<void> {
   try {
-    const res = await fetch('/__save-case', { method: 'POST', body: model.getCaseText() });
+    const res = await fetch(saveCaseUrl, { method: 'POST', body: model.getCaseText() });
     if (!res.ok) throw new Error(await res.text());
     deps.clearLensDraftTimer();
     localStorage.removeItem(model.DRAFT_KEY);

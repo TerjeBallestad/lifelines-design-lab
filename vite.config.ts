@@ -1,18 +1,18 @@
 import { writeFile } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vitest/config';
 
-// Relative to the dev-server cwd, which is the project root.
-const CASE_PATH = 'content/cases/olsen/tiny-olsen.case.md';
-
-// Dev-only write-back for the SB-025 script-editor probe (prototypes/script-editor).
-// ⌘S in the probe POSTs the buffer here; the target path is fixed on purpose.
+// Dev-only write-back for the lens pages (SB-025, SB-083). ⌘S POSTs the
+// buffer to /__save-case?path=<relpath>; the target must be a .case.md
+// under content/cases/.
 function caseSave(): Plugin {
-  // Body of the last save POST. The probe imports the case file with `?raw`,
-  // so our own write would otherwise trigger a full page reload and wipe the
-  // selection/focus the probe just set (SB-039). External edits still reload.
-  let lastSaved: string | null = null;
+  // Per-path body of the last save POST. The probes import the case files
+  // with `?raw`, so our own write would otherwise trigger a full page reload
+  // and wipe the selection/focus the probe just set (SB-039). External edits
+  // still reload.
+  const lastSaved = new Map<string, string>();
   return {
     name: 'case-save',
     configureServer(server) {
@@ -22,11 +22,19 @@ function caseSave(): Plugin {
           res.end('POST only');
           return;
         }
+        const rel = new URL(req.url || '/', 'http://localhost').searchParams.get('path') ?? '';
+        const target = resolve(rel);
+        const casesRoot = resolve('content/cases');
+        if (!rel.endsWith('.case.md') || !target.startsWith(casesRoot + sep)) {
+          res.statusCode = 400;
+          res.end(`bad case path: ${rel}`);
+          return;
+        }
         let body = '';
         req.on('data', (chunk) => (body += chunk));
         req.on('end', () => {
-          lastSaved = body;
-          writeFile(CASE_PATH, body, 'utf8').then(
+          lastSaved.set(target, body);
+          writeFile(target, body, 'utf8').then(
             () => res.end('ok'),
             (err: unknown) => {
               res.statusCode = 500;
@@ -37,9 +45,10 @@ function caseSave(): Plugin {
       });
     },
     async handleHotUpdate(ctx) {
-      if (lastSaved === null || !ctx.file.endsWith(CASE_PATH)) return;
+      const saved = lastSaved.get(ctx.file);
+      if (saved === undefined) return;
       const content = await ctx.read();
-      if (content === lastSaved) return [];
+      if (content === saved) return [];
     },
   };
 }

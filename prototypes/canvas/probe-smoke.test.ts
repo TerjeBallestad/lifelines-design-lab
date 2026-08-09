@@ -151,7 +151,9 @@ describe('canvas inspector editing (SB-032)', () => {
 
     // Exactly one save POST; the draft clears once it succeeds.
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0][0]).toBe('/__save-case');
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      '/__save-case?path=content%2Fcases%2Folsen%2Ftiny-olsen.case.md',
+    );
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(localStorage.getItem(DRAFT_KEY)).toBeNull();
     localStorage.clear();
@@ -242,7 +244,9 @@ describe('canvas edge authoring (SB-033)', () => {
     ).toBe(true);
     expect(document.querySelector('[data-edge="f_grete_syk→q_okonomi·supports"]')).not.toBeNull();
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0][0]).toBe('/__save-case');
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      '/__save-case?path=content%2Fcases%2Folsen%2Ftiny-olsen.case.md',
+    );
     localStorage.clear();
   });
 

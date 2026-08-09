@@ -101,6 +101,9 @@
       #topbar .file {
         font: 500 10.5px var(--mono);
         color: var(--text-3);
+        background: none;
+        border: none;
+        cursor: pointer;
       }
       #topbar .tabs {
         display: inline-flex;
@@ -635,7 +638,7 @@
       <div id="topbar">
         <span class="logo"></span>
         <span class="name">Kildeverket</span>
-        <span class="file">tiny-olsen.case.md</span>
+        <select id="case-picker" class="file" title="active case"></select>
         <span class="tabs">
           <span class="active">Script</span>
           <a href="../canvas/" title="canvas lens">Canvas</a>

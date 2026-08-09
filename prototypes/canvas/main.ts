@@ -37,6 +37,7 @@ import { buildSymbols } from '../script-editor/symbols.ts';
 import { initPreview } from './preview.ts';
 import { initJump } from './jump.ts';
 import { buildWorklist } from './worklist.ts';
+import { wireCaseChrome } from '../shared/active-case.ts';
 import type { WorklistEntry, WorklistGroup } from './worklist.ts';
 
 // ---- the probe surface the smoke tests drive ------------------------------
@@ -860,4 +861,5 @@ reaction(
   },
 );
 
+wireCaseChrome();
 camera.fit();

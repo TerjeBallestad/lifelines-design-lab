@@ -6,7 +6,13 @@
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
-import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
+import {
+  activeCasePath,
+  activeCaseText as initialText,
+  draftKey,
+  saveCaseUrl,
+  wireCaseChrome,
+} from '../shared/active-case.ts';
 import { mountScriptLens, indexHeadings, KIND_COLOR } from './lens.ts';
 import type { Heading, ScriptSymbol } from './lens.ts';
 import { buildSymbols } from './symbols.ts';
@@ -38,7 +44,7 @@ let compileTimer: ReturnType<typeof setTimeout> | undefined;
 // Draft persistence: the buffer survives page reloads (vite live-reload wiped
 // an unsaved buffer once — never again). Every edit lands in localStorage;
 // a successful ⌘S clears it. On boot a draft that differs from disk wins.
-const DRAFT_KEY = 'kildeverket-draft:content/cases/olsen/tiny-olsen.case.md';
+const DRAFT_KEY = draftKey(activeCasePath);
 const draft = localStorage.getItem(DRAFT_KEY);
 const draftRestored = draft != null && draft !== initialText;
 const bootText = draftRestored ? draft : initialText;
@@ -127,7 +133,9 @@ function renderOutline(currentLine: number) {
     { label: 'Clocks', dot: 'var(--gold)', count: slice.clocks.length },
     { label: 'Day beats', dot: 'var(--yellow)', count: slice.day_script_beats.length },
   ];
-  const parts: string[] = [`<div class="head">CASE OLSEN</div>`];
+  const parts: string[] = [
+    `<div class="head">${esc((result.slice.title || 'CASE').toUpperCase())}</div>`,
+  ];
   for (const k of kinds) {
     parts.push(
       `<div class="o-kind" data-kind="${k.label}"><span class="dot" style="background:${k.dot}"></span>${k.label}<span class="count">${k.count}</span></div>`,
@@ -406,7 +414,7 @@ function renderStatus() {
   if (quiet) parts.push(`<span class="warn-c">${esc(quiet.message)}</span>`);
   else if (advisories.length)
     parts.push(`<span class="adv-c">${advisories.length} advisory</span>`);
-  parts.push(`<span class="hint">⌘S writes back to content/cases/olsen/tiny-olsen.case.md</span>`);
+  parts.push(`<span class="hint">⌘S writes back to ${esc(activeCasePath)}</span>`);
   statusbar.innerHTML = parts.join('');
 }
 
@@ -439,7 +447,7 @@ function recompile() {
 
 async function save() {
   try {
-    const res = await fetch('/__save-case', {
+    const res = await fetch(saveCaseUrl, {
       method: 'POST',
       body: lens.getText(),
     });
@@ -461,6 +469,8 @@ window.addEventListener('beforeunload', (e) => {
 });
 
 // ---- boot ---------------------------------------------------------------
+
+wireCaseChrome();
 
 if (draftRestored) {
   recompile();

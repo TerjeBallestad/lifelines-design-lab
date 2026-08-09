@@ -9,12 +9,13 @@ import type { NodePos } from './graph.ts';
 import { createSim, SETTLED } from './force.ts';
 import type { Sim } from './force.ts';
 import * as model from './model.ts';
+import { activeCasePath, posKey, modeKey, pinKey } from '../shared/active-case.ts';
 
 // Per-case position store. Stored positions survive every rebuild; the
 // barycenter layout runs only when the store is empty (first load or an
 // explicit 're-layout'). Stale ids are kept — a block that vanishes over
 // a broken compile keeps its slot when it comes back.
-export const POS_KEY = 'kildeverket-canvas-pos:content/cases/olsen/tiny-olsen.case.md';
+export const POS_KEY = posKey(activeCasePath);
 
 // Three layout candidates behind one toggle:
 //   hand    — kind columns + sticky drag placement (the SB-034 store)
@@ -23,8 +24,8 @@ export const POS_KEY = 'kildeverket-canvas-pos:content/cases/olsen/tiny-olsen.ca
 // Gravity/pin never write the hand store — switching back to `hand` restores
 // the placement you authored there byte-for-byte.
 export type LayoutMode = 'hand' | 'gravity' | 'pin';
-const MODE_KEY = 'kildeverket-canvas-mode:content/cases/olsen/tiny-olsen.case.md';
-const PIN_KEY = 'kildeverket-canvas-pins:content/cases/olsen/tiny-olsen.case.md';
+const MODE_KEY = modeKey(activeCasePath);
+const PIN_KEY = pinKey(activeCasePath);
 
 const bootMode: LayoutMode = (() => {
   const raw = localStorage.getItem(MODE_KEY);

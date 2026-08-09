@@ -14,7 +14,7 @@ import type { CompileResult } from '../../src/compiler/index.ts';
 import { parseCaseText } from '../../src/compiler/parse.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
-import initialText from '../../content/cases/olsen/tiny-olsen.case.md?raw';
+import { activeCasePath, activeCaseText, draftKey } from '../shared/active-case.ts';
 import { buildGraph } from './graph.ts';
 import type { CaseGraph, GraphNode, GraphEdge } from './graph.ts';
 import { indexHeadings } from '../script-editor/lens.ts';
@@ -26,15 +26,15 @@ configure({ enforceActions: 'never' });
 
 // Same draft key as the script editor (SB-025 rule: a vite reload must never
 // wipe unsaved work). A draft made on either surface is visible on both.
-export const DRAFT_KEY = 'kildeverket-draft:content/cases/olsen/tiny-olsen.case.md';
+export const DRAFT_KEY = draftKey(activeCasePath);
 const bootDraft = localStorage.getItem(DRAFT_KEY);
-const bootText = bootDraft != null && bootDraft !== initialText ? bootDraft : initialText;
+const bootText = bootDraft != null && bootDraft !== activeCaseText ? bootDraft : activeCaseText;
 
 export const state = observable(
   {
     /** The current markup buffer (the single source the canvas edits). */
     caseText: bootText,
-    draftRestored: bootText !== initialText,
+    draftRestored: bootText !== activeCaseText,
     result: undefined as unknown as CompileResult,
     graph: undefined as unknown as CaseGraph,
     nodeById: new Map<string, GraphNode>(),
