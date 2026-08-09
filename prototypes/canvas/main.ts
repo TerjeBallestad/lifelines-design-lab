@@ -15,6 +15,7 @@
 // (SB-041), selection, drags, the create menu, the worklist panel, the
 // status bar, wiring, and boot. It re-exports the probe surface the smoke
 // tests drive.
+import { action, autorun, observable, reaction } from 'mobx';
 import { NODE_W, NODE_H } from './graph.ts';
 import type { GraphEdge, NodeKind, NodePos } from './graph.ts';
 import { KIND_LABEL, KIND_VAR, EDGE_VAR, cssVar, escapeHtml } from './kinds.ts';
@@ -29,6 +30,7 @@ import { createCamera } from './camera.ts';
 import { mountScriptLens } from '../script-editor/lens.ts';
 import { buildSymbols } from '../script-editor/symbols.ts';
 import { initPreview } from './preview.ts';
+import { initJump } from './jump.ts';
 import { buildWorklist } from './worklist.ts';
 import type { WorklistEntry, WorklistGroup } from './worklist.ts';
 
@@ -72,9 +74,65 @@ const previewApi = initPreview({
   host: $('preview'),
   titleEl: $('preview-title'),
   lightbox: $('doc-lightbox'),
-  getResult: () => model.result,
+  getResult: () => model.state.result,
   onJump: (id) => {
-    if (!model.nodeById.has(id)) return;
+    if (!model.state.nodeById.has(id)) return;
+    select(id);
+    camera.centerOn(id);
+  },
+});
+
+// SB-055 follow-up: ⌘K fuzzy jump — type an id, a title, or content text;
+// Enter selects and centers. Stubs are listed too; jumping shows the ghost.
+// The content text also feeds the palette's expanded active row, so a hit
+// past the title ("politi" deep in a document body) is visible immediately.
+function jumpTextOf(node: { id: string; kind: NodeKind }): string {
+  const { slice, labContent } = model.state.result;
+  switch (node.kind) {
+    case 'fact': {
+      const f = slice.facts.find((x) => x.id === node.id);
+      return f ? [f.summary, f.quote, f.category, f.domain].filter(Boolean).join('\n') : '';
+    }
+    case 'document': {
+      const d = labContent.documents[node.id];
+      if (!d) return '';
+      const body = d.blocks.map((b) => b.runs.map((r) => r.text).join('')).join('\n');
+      return [d.peek, d.meta, body].filter(Boolean).join('\n');
+    }
+    case 'question': {
+      const q = slice.questions.find((x) => x.id === node.id);
+      return q ? [q.prompt, q.teaser, q.frank_response].filter(Boolean).join('\n') : '';
+    }
+    case 'hypothesis': {
+      const h = slice.hypotheses.find((x) => x.id === node.id);
+      return h?.summary ?? '';
+    }
+    case 'tiltak': {
+      const t = slice.tiltak.find((x) => x.id === node.id);
+      return t?.description ?? '';
+    }
+    case 'dispatch': {
+      const d = slice.dispatches.find((x) => x.id === node.id);
+      return d ? [d.description, d.activity_title].filter(Boolean).join('\n') : '';
+    }
+    case 'clock': {
+      const c = slice.clocks.find((x) => x.id === node.id);
+      return c
+        ? [c.question, c.good_segment_label, c.bad_segment_label].filter(Boolean).join('\n')
+        : '';
+    }
+    default:
+      return '';
+  }
+}
+
+initJump({
+  overlay: $('jump'),
+  input: $('jump-input') as HTMLInputElement,
+  list: $('jump-list'),
+  getNodes: () => model.state.graph.nodes.map((n) => ({ ...n, text: jumpTextOf(n) })),
+  onPick: (id) => {
+    if (!model.state.nodeById.has(id)) return;
     select(id);
     camera.centerOn(id);
   },
@@ -108,17 +166,18 @@ let scriptDrivenSelect = false;
 /** The block whose section encloses a 1-based lens line, or null. */
 function blockIdAtLine(line: number): string | null {
   let hit: string | null = null;
-  for (const h of model.crossJumpHeadings)
+  for (const h of model.state.crossJumpHeadings)
     if (h.id !== '' && h.line <= line && line <= h.endLine) hit = h.id;
   return hit;
 }
 
-/** Pull the lens doc into the buffer and rebuild (sticky — SB-034). */
+/** Pull the lens doc into the buffer — the caseText reaction rebuilds
+ *  (sticky — SB-034). An unchanged doc is a no-op, as is an unchanged
+ *  compile. */
 function syncFromLens(): void {
   clearTimeout(lensCompileTimer);
   lensCompileTimer = undefined;
   model.setCaseText(scriptLens.getText());
-  rebuild();
 }
 
 export const scriptLens = mountScriptLens({
@@ -143,7 +202,7 @@ export const scriptLens = mountScriptLens({
     }
     if (id === lastCursorBlockId) return; // still inside the same block
     lastCursorBlockId = id;
-    if (id === null || id === selectedId || !model.nodeById.has(id)) return;
+    if (id === null || id === model.ui.selectedId || !model.state.nodeById.has(id)) return;
     scriptDrivenSelect = true;
     try {
       select(id);
@@ -176,61 +235,81 @@ const camera = createCamera({
   viewport,
   world,
   zoomLabel: $('z-pct'),
-  getNodes: () => model.graph.nodes,
-  getNode: (id) => model.nodeById.get(id),
+  getNodes: () => model.state.graph.nodes,
+  getNode: (id) => model.state.nodeById.get(id),
   onBackgroundClick: () => select(null),
 });
 
 // ---- rebuild orchestration ------------------------------------------------
 
-let compileMs = 0;
+// SB-078: rebuild is one action — the status/worklist/inspector/highlight
+// autoruns at the bottom of this file fire once at its end, over a
+// consistent compile. It runs off the reaction on state.caseText; nothing
+// calls it directly except boot.
+const ui = observable({ compileMs: 0 });
 
-function rebuild(): void {
+const rebuild = action(function rebuild(): void {
   const t0 = performance.now();
   model.recompile();
   // Layout per mode (SB-051). Hand: sticky positions, rebuilds must never
   // reshuffle the board (SB-034). Gravity/pin: the force sim reseeds from
   // its own live positions, so a rebuild is a shiver, not a jump.
   layout.applyLayout();
-  compileMs = Math.round(performance.now() - t0);
+  ui.compileMs = Math.round(performance.now() - t0);
 
   model.deriveIndexes();
 
   render.renderWorld();
-  renderStatus();
   // Selection survives the rebuild; a node the edit removed clears it.
-  select(selectedId !== null && model.nodeById.has(selectedId) ? selectedId : null);
+  if (model.ui.selectedId !== null && !model.state.nodeById.has(model.ui.selectedId))
+    model.setSelected(null);
 
   // SB-041: feed the lens fresh compile context — headings for folding/jump,
   // symbols for autocomplete/hover/goto-def, diagnostics for lint squiggles.
   scriptLens.update({
-    headings: model.crossJumpHeadings,
-    symbols: buildSymbols(model.result, model.crossJumpHeadings),
-    diagnostics: model.result.diagnostics,
+    headings: model.state.crossJumpHeadings,
+    symbols: buildSymbols(model.state.result, model.state.crossJumpHeadings),
+    diagnostics: model.state.result.diagnostics,
   });
-
-  // SB-044: re-derive the loose-end worklist from the fresh compile.
-  renderWorklist();
-}
+});
 
 // ---- selection -----------------------------------------------------------
+//
+// SB-078: the selection lives in model.ui; these are thin wrappers plus the
+// style pass the highlight autorun (and a re-render after relayout) runs.
 
+// Probe-surface mirrors of model.ui — the smoke tests read them as live
+// module bindings. A dedicated autorun at the bottom keeps them current.
 export let selectedId: string | null = null;
+export let selectedEdgeKey: string | null = null;
 
 export function select(id: string | null): void {
-  if (id !== null && selectedEdgeKey !== null) applyEdgeSelection(null);
-  const changed = id !== selectedId;
-  selectedId = id;
+  model.setSelected(id);
+}
+
+export const edgeKeyOf = (edge: GraphEdge): string => `${edge.from}→${edge.to}·${edge.label}`;
+
+/** Select an edge (clears any node selection). Delete/Backspace removes it. */
+export function selectEdge(key: string | null): void {
+  model.setSelectedEdge(key);
+}
+
+/** Highlight pass: body class, lit neighborhood, edge selection styling.
+ *  Runs as an autorun (selection or compile changed) and imperatively after
+ *  a relayout/mode switch rebuilds the board DOM under an unchanged graph. */
+function applySelectionStyles(): void {
+  const id = model.ui.selectedId;
+  const edgeKey = model.ui.selectedEdgeKey;
   document.body.classList.toggle('has-selection', id !== null);
   const lit = new Set<string>();
   const litEdges = new Set<GraphEdge>();
   if (id) {
     lit.add(id);
-    for (const edge of model.outOf.get(id) ?? []) {
+    for (const edge of model.state.outOf.get(id) ?? []) {
       lit.add(edge.to);
       litEdges.add(edge);
     }
-    for (const edge of model.inOf.get(id) ?? []) {
+    for (const edge of model.state.inOf.get(id) ?? []) {
       lit.add(edge.from);
       litEdges.add(edge);
     }
@@ -244,38 +323,8 @@ export function select(id: string | null): void {
     els.path.classList.toggle('lit', on);
     els.path.style.stroke = on ? cssVar(EDGE_VAR[edge.label.split(' ')[0]] ?? '--text-3') : '';
     els.text.style.display = on && edge.label ? '' : 'none';
+    els.path.classList.toggle('edge-selected', edgeKeyOf(edge) === edgeKey);
   }
-  inspector.renderInspector(id);
-  // SB-041 cross-jump, canvas → script: a real (changed, non-null) selection
-  // scrolls the lens to the block heading — no focus steal, so inspector
-  // typing keeps landing in the inspector. Script-driven selects skip this
-  // (bounce guard); rebuild's re-select of the same id skips via `changed`.
-  if (id !== null && changed && !scriptDrivenSelect) {
-    const block = model.blockById.get(id);
-    if (block) {
-      suppressCursorEcho = true;
-      scriptLens.scrollToLine(block.startLine);
-    }
-  }
-}
-
-// ---- edge selection (SB-033) ---------------------------------------------
-
-export let selectedEdgeKey: string | null = null;
-
-export const edgeKeyOf = (edge: GraphEdge): string => `${edge.from}→${edge.to}·${edge.label}`;
-
-function applyEdgeSelection(key: string | null): void {
-  selectedEdgeKey = key;
-  for (const [edge, els] of render.edgeEls)
-    els.path.classList.toggle('edge-selected', edgeKeyOf(edge) === key);
-}
-
-/** Select an edge (clears any node selection). Delete/Backspace removes it. */
-export function selectEdge(key: string | null): void {
-  if (key !== null && selectedId !== null) select(null);
-  applyEdgeSelection(key);
-  renderStatus();
 }
 
 // ---- layout controls ------------------------------------------------------
@@ -284,8 +333,7 @@ export function selectEdge(key: string | null): void {
 export function relayout(): void {
   layout.relayoutState();
   render.renderWorld();
-  renderStatus();
-  select(selectedId);
+  applySelectionStyles();
   camera.fit();
 }
 
@@ -300,8 +348,7 @@ export function setLayoutMode(mode: LayoutMode): void {
   layout.setModeState(mode);
   reflectModeButtons();
   render.renderWorld();
-  renderStatus();
-  select(selectedId);
+  applySelectionStyles();
   camera.fit();
 }
 
@@ -327,7 +374,7 @@ export function dropCreate(
   kind: NodeKind,
   at: NodePos,
 ): ReturnType<typeof editing.createNode> {
-  const from = model.nodeById.get(fromId);
+  const from = model.state.nodeById.get(fromId);
   if (!from) return { ok: false, reason: 'unknown node' };
   const res = editing.createNode(kind, {
     at,
@@ -342,7 +389,7 @@ export function dropCreate(
 }
 
 export function openDropCreateMenu(fromId: string, clientX: number, clientY: number): void {
-  const from = model.nodeById.get(fromId);
+  const from = model.state.nodeById.get(fromId);
   if (!from) return;
   const kinds = birthKinds(from.kind);
   if (kinds.length === 0) {
@@ -413,7 +460,7 @@ function startLink(fromId: string, clientX: number, clientY: number): void {
 
 function updateLink(clientX: number, clientY: number): void {
   if (!linkDrag) return;
-  const from = model.nodeById.get(linkDrag.fromId);
+  const from = model.state.nodeById.get(linkDrag.fromId);
   if (!from) return;
   const sx = from.x + NODE_W;
   const sy = from.y + NODE_H / 2;
@@ -467,7 +514,7 @@ function startMove(id: string, clientX: number, clientY: number): void {
 
 window.addEventListener('pointermove', (event) => {
   if (!moveDrag) return;
-  const node = model.nodeById.get(moveDrag.id);
+  const node = model.state.nodeById.get(moveDrag.id);
   if (!node) {
     moveDrag = null;
     return;
@@ -535,20 +582,20 @@ document.addEventListener('keydown', (event) => {
   if (event.key !== 'Delete' && event.key !== 'Backspace') return;
   // Typing surfaces own these keys: inspector fields and the script lens.
   if (event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane')) return;
-  if (selectedEdgeKey !== null) {
-    const edge = model.graph.edges.find((e) => edgeKeyOf(e) === selectedEdgeKey);
+  const edgeKey = model.ui.selectedEdgeKey;
+  if (edgeKey !== null) {
+    const edge = model.state.graph.edges.find((e) => edgeKeyOf(e) === edgeKey);
     if (!edge) return;
     const res = editing.disconnect(edge);
     if (res.ok) {
-      applyEdgeSelection(null);
-      renderStatus();
+      model.setSelectedEdge(null);
     } else if (res.reason) {
       showTip(res.reason, viewport.clientWidth / 2, viewport.clientHeight / 2);
     }
     return;
   }
   // SB-034: Delete on a selected node starts the (reference-aware) delete.
-  if (selectedId !== null) editing.requestDelete(selectedId);
+  if (model.ui.selectedId !== null) editing.requestDelete(model.ui.selectedId);
 });
 
 $('z-in').addEventListener('click', camera.zoomIn);
@@ -595,17 +642,19 @@ worklistToggle.addEventListener('click', () => {
  * live node (case-level lints, weave lines) still jump in the script.
  */
 export function jumpToWorklistEntry(entry: WorklistEntry): void {
-  const id = entry.subjectIds.find((subjectId) => model.nodeById.has(subjectId));
+  const id = entry.subjectIds.find((subjectId) => model.state.nodeById.has(subjectId));
   if (id) {
     select(id);
     camera.centerOn(id);
   }
   suppressCursorEcho = true;
-  scriptLens.scrollToLine(id ? (model.blockById.get(id)?.startLine ?? entry.line) : entry.line);
+  scriptLens.scrollToLine(
+    id ? (model.state.blockById.get(id)?.startLine ?? entry.line) : entry.line,
+  );
 }
 
 function renderWorklist(): void {
-  worklist = buildWorklist(model.result.diagnostics, [...model.blockById.values()]);
+  worklist = buildWorklist(model.state.result.diagnostics, [...model.state.blockById.values()]);
   worklistToggle.textContent = `loose ends · ${worklist.length}`;
   worklistToggle.classList.toggle('has-loose', worklist.length > 0);
 
@@ -647,27 +696,27 @@ function renderWorklist(): void {
 // ---- status bar ----------------------------------------------------------
 
 function renderStatus(): void {
-  const warnings = model.result.diagnostics.filter((d) => d.severity === 'warning').length;
-  const errors = model.result.diagnostics.filter((d) => d.severity === 'error').length;
-  const todos = model.result.diagnostics.filter((d) => d.code === 'todo-line').length;
-  const quiet = model.result.diagnostics.find((d) => d.code === 'lint-quiet-day');
+  const warnings = model.state.result.diagnostics.filter((d) => d.severity === 'warning').length;
+  const errors = model.state.result.diagnostics.filter((d) => d.severity === 'error').length;
+  const todos = model.state.result.diagnostics.filter((d) => d.code === 'todo-line').length;
+  const quiet = model.state.result.diagnostics.find((d) => d.code === 'lint-quiet-day');
   const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
 
-  counts.textContent = `${model.graph.nodes.length} nodes · ${model.graph.edges.length} edges`;
+  counts.textContent = `${model.state.graph.nodes.length} nodes · ${model.state.graph.edges.length} edges`;
   statusbar.innerHTML = `
-  <span class="${errors ? 'warn-c' : 'ok'}">compiled ${compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
-  <span>${model.graph.nodes.length} nodes · ${model.graph.edges.length} edges</span>
+  <span class="${errors ? 'warn-c' : 'ok'}">compiled ${ui.compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
+  <span>${model.state.graph.nodes.length} nodes · ${model.state.graph.edges.length} edges</span>
   ${warnings ? `<span class="warn-c">${warnings} warnings</span>` : ''}
   ${todos ? `<span class="warn-c">${todos} TODO</span>` : ''}
   ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
-  ${model.draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
-  ${editing.saveNote ? `<span class="${editing.saveNote.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(editing.saveNote)}</span>` : ''}
-  ${editing.lifecycleNote ? `<span class="warn-c">${escapeHtml(editing.lifecycleNote)}</span>` : ''}
-  ${selectedEdgeKey ? '<span class="warn-c">edge selected — delete removes the relation</span>' : ''}
+  ${model.state.draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
+  ${editing.notes.save ? `<span class="${editing.notes.save.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(editing.notes.save)}</span>` : ''}
+  ${editing.notes.lifecycle ? `<span class="warn-c">${escapeHtml(editing.notes.lifecycle)}</span>` : ''}
+  ${model.ui.selectedEdgeKey ? '<span class="warn-c">edge selected — delete removes the relation</span>' : ''}
   <span class="hint">${
-    layout.layoutMode === 'hand'
+    layout.layoutUi.mode === 'hand'
       ? 'drag a node to place it · positions stick'
-      : layout.layoutMode === 'gravity'
+      : layout.layoutUi.mode === 'gravity'
         ? 'gravity — drag stirs, release floats'
         : 'gravity + pin — a drag pins the node, double-click frees it'
   } · drag port to empty space for new node · delete removes · esc clear</span>`;
@@ -692,36 +741,81 @@ render.initRenderer({
       return false;
     },
     edgeKeyOf,
-    selectedEdgeKey: () => selectedEdgeKey,
+    selectedEdgeKey: () => model.ui.selectedEdgeKey,
   },
 });
 render.initLegend($('legend'));
 layout.setFrameCallback(render.syncPositions);
 
 editing.initEditing({
-  rebuild,
   syncLens: (text) => scriptLens.setText(text),
   clearLensDraftTimer: () => clearTimeout(lensDraftTimer),
-  onStatusChanged: renderStatus,
-  select,
   centerOn: (id) => camera.centerOn(id),
   focusFirstField: () =>
     inspectorBody.querySelector<HTMLInputElement | HTMLTextAreaElement>('.fval')?.focus(),
   focusLensLineEnd: (line) => scriptLens.focusLineEnd(line),
-  showDeleteConfirm: inspector.renderDeleteConfirm,
-  onDeleteCancelled: () => {
-    inspector.renderInspector(selectedId);
-    renderStatus();
-  },
 });
 
 inspector.initInspector({
   inspectorBody,
   showPreview: (id, kind) => previewApi.show(id, kind),
-  select,
   centerOn: (id) => camera.centerOn(id),
   showTip: (text) => showTip(text, viewport.clientWidth / 2, 80),
 });
 
+// The first compile runs imperatively; every later one rides the reaction.
 rebuild();
+
+// ---- the reactive spine (SB-078) ------------------------------------------
+//
+// Autoruns fire once at the end of the rebuild action (a consistent
+// compile), and again on any selection / note / mode write. Registration
+// order is the old call order inside select(): highlight, inspector,
+// status, worklist, then the cross-jump — reactions run in that order.
+
+// Probe-surface mirrors — assigned here only.
+autorun(() => {
+  selectedId = model.ui.selectedId;
+  selectedEdgeKey = model.ui.selectedEdgeKey;
+});
+
+// Highlight: also touches the graph ref so a rebuild's fresh DOM restyles.
+autorun(() => {
+  void model.state.graph;
+  applySelectionStyles();
+});
+
+// Inspector: the delete-confirm surface wins while a delete is pending
+// (this dissolves the old showDeleteConfirm/onDeleteCancelled callbacks).
+autorun(() => {
+  if (editing.getPendingDelete() !== null) inspector.renderDeleteConfirm();
+  else inspector.renderInspector(model.ui.selectedId);
+});
+
+autorun(renderStatus);
+autorun(renderWorklist);
+
+// The rebuild spine: every committed buffer swap recompiles. Field commits,
+// edge writes, lifecycle, and lens typing all funnel through setCaseText.
+reaction(
+  () => model.state.caseText,
+  () => rebuild(),
+);
+
+// SB-041 cross-jump, canvas → script: a real (changed, non-null) selection
+// scrolls the lens to the block heading — no focus steal, so inspector
+// typing keeps landing in the inspector. Script-driven selects skip this
+// (bounce guard); a rebuild keeps the id, so it never re-fires this.
+reaction(
+  () => model.ui.selectedId,
+  (id) => {
+    if (id === null || scriptDrivenSelect) return;
+    const block = model.state.blockById.get(id);
+    if (block) {
+      suppressCursorEcho = true;
+      scriptLens.scrollToLine(block.startLine);
+    }
+  },
+);
+
 camera.fit();

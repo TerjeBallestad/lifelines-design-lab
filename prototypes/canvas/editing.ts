@@ -3,6 +3,7 @@
 // draft → save POST tail they all share. The markup stays the store
 // (DD-003); this module is the only writer. The shell injects rendering
 // and lens side-effects, so nothing here touches the canvas DOM directly.
+import { observable } from 'mobx';
 import {
   patchField,
   listFieldAdd,
@@ -21,21 +22,19 @@ import type { EdgeWriteResult, CreateResult, RefHit } from './relations.ts';
 import * as model from './model.ts';
 import * as layout from './layout-modes.ts';
 
+// SB-078: the deps are down to the genuinely non-reactive concerns — lens
+// handles, camera, and focus. Rebuild rides the caseText reaction, status
+// and the delete confirm ride the observables below, selection goes
+// straight to model.setSelected.
 export interface EditingDeps {
-  rebuild(): void;
   /** Push a committed buffer into the script lens (external, no echo). */
   syncLens(text: string): void;
   /** A lens draft stash still in flight would resurrect a cleared draft. */
   clearLensDraftTimer(): void;
-  onStatusChanged(): void;
-  select(id: string | null): void;
   centerOn(id: string): void;
   /** Focus the first inspector field of the fresh selection (SB-042). */
   focusFirstField(): void;
   focusLensLineEnd(line: number): void;
-  /** Surface the pending delete's reference list in the inspector. */
-  showDeleteConfirm(): void;
-  onDeleteCancelled(): void;
 }
 
 let deps: EditingDeps;
@@ -44,8 +43,8 @@ export function initEditing(d: EditingDeps): void {
   deps = d;
 }
 
-export let saveNote = '';
-export let lifecycleNote = '';
+/** Status-bar notes — the status autorun in main re-renders on a write. */
+export const notes = observable({ save: '', lifecycle: '' });
 
 // ---- patch → draft → save → recompile -------------------------------------
 
@@ -81,11 +80,11 @@ export function commitField(blockId: string, key: string, value: string): void {
   commitText(patched);
 }
 
-/** Shared commit tail: buffer → draft → rebuild → lens sync → save POST. */
+/** Shared commit tail: buffer → draft → lens sync → save POST. The rebuild
+ *  fires from main's reaction on state.caseText inside setCaseText. */
 export function commitText(patched: string): void {
   model.setCaseText(patched);
   localStorage.setItem(model.DRAFT_KEY, patched);
-  deps.rebuild();
   // Push the committed buffer into the script lens as a minimal external
   // replacement — cursor and undo history survive; the external flag stops
   // the doc-changed handler from echoing a second compile.
@@ -101,18 +100,17 @@ export async function persist(): Promise<void> {
     localStorage.removeItem(model.DRAFT_KEY);
     model.setDraftRestored(false);
     const t = new Date();
-    saveNote = `saved ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+    notes.save = `saved ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
   } catch (err) {
-    saveNote = `save failed — draft kept (${err instanceof Error ? err.message : String(err)})`;
+    notes.save = `save failed — draft kept (${err instanceof Error ? err.message : String(err)})`;
   }
-  deps.onStatusChanged();
 }
 
 // ---- edge authoring (SB-033) ----------------------------------------------
 
 function condField(ownerId: string): { key: string; value: string } | null {
-  const node = model.nodeById.get(ownerId);
-  const block = model.blockById.get(ownerId);
+  const node = model.state.nodeById.get(ownerId);
+  const block = model.state.blockById.get(ownerId);
   const keys = node ? COND_KEYS[node.kind] : undefined;
   if (!keys || !block) return null;
   const existing = block.fields.find((f) => keys.includes(f.key));
@@ -121,8 +119,8 @@ function condField(ownerId: string): { key: string; value: string } | null {
 
 /** Create the relation `fromId → toId` per the legality table and commit it. */
 export function connect(fromId: string, toId: string): EdgeWriteResult {
-  const from = model.nodeById.get(fromId);
-  const to = model.nodeById.get(toId);
+  const from = model.state.nodeById.get(fromId);
+  const to = model.state.nodeById.get(toId);
   if (!from || !to) return { ok: false, reason: 'unknown node' };
   const spec = RELATION[`${from.kind}→${to.kind}`];
   if (!spec) {
@@ -166,8 +164,8 @@ export function connect(fromId: string, toId: string): EdgeWriteResult {
 
 /** Remove the authored relation behind an edge; derived edges refuse. */
 export function disconnect(edge: GraphEdge): EdgeWriteResult {
-  const from = model.nodeById.get(edge.from);
-  const to = model.nodeById.get(edge.to);
+  const from = model.state.nodeById.get(edge.from);
+  const to = model.state.nodeById.get(edge.to);
   if (!from || !to) return { ok: false, reason: 'unknown edge' };
   const label = edge.label.split(' ')[0];
   const condRemove = (ownerId: string, id: string): string | null => {
@@ -214,9 +212,10 @@ export function disconnect(edge: GraphEdge): EdgeWriteResult {
 
 /** `base`, else `base2`, `base3`, … — unique against every parsed block. */
 function freshId(base: string): string {
-  if (!model.blockById.has(base) && !model.nodeById.has(base)) return base;
+  if (!model.state.blockById.has(base) && !model.state.nodeById.has(base)) return base;
   let n = 2;
-  while (model.blockById.has(`${base}${n}`) || model.nodeById.has(`${base}${n}`)) n += 1;
+  while (model.state.blockById.has(`${base}${n}`) || model.state.nodeById.has(`${base}${n}`))
+    n += 1;
   return `${base}${n}`;
 }
 
@@ -247,9 +246,9 @@ export function createNode(
   } catch (err) {
     return { ok: false, reason: err instanceof Error ? err.message : String(err) };
   }
-  if (!model.nodeById.has(id))
+  if (!model.state.nodeById.has(id))
     return { ok: false, reason: `${id} was written but did not compile to a node` };
-  deps.select(id);
+  model.setSelected(id);
   deps.centerOn(id);
   deps.focusFirstField();
   return { ok: true, id };
@@ -283,7 +282,7 @@ export function liftAsFact(documentId: string, quote: string): CreateResult {
  * field per the SB-042 pattern.
  */
 export function createFromStub(stubId: string): CreateResult {
-  const node = model.nodeById.get(stubId);
+  const node = model.state.nodeById.get(stubId);
   if (!node || !node.stub) return { ok: false, reason: `${stubId} is not a stub` };
   if (node.kind === 'fact')
     return {
@@ -295,8 +294,8 @@ export function createFromStub(stubId: string): CreateResult {
 
 /** Copy a block's body as the template for a fresh `<id>_kopi` block. */
 export function duplicateNode(sourceId: string): EdgeWriteResult {
-  const block = model.blockById.get(sourceId);
-  const node = model.nodeById.get(sourceId);
+  const block = model.state.blockById.get(sourceId);
+  const node = model.state.nodeById.get(sourceId);
   if (!block || !node) return { ok: false, reason: `unknown block ${sourceId}` };
   const body = model.getCaseText().split('\n').slice(block.startLine, block.endLine);
   while (body.length > 0 && body[0].trim() === '') body.shift();
@@ -311,9 +310,9 @@ export function duplicateNode(sourceId: string): EdgeWriteResult {
   } catch (err) {
     return { ok: false, reason: err instanceof Error ? err.message : String(err) };
   }
-  if (!model.nodeById.has(id))
+  if (!model.state.nodeById.has(id))
     return { ok: false, reason: `${id} was written but did not compile to a node` };
-  deps.select(id);
+  model.setSelected(id);
   deps.centerOn(id);
   return { ok: true };
 }
@@ -325,7 +324,7 @@ function findReferences(family: string[]): RefHit[] {
   const removal = new Set(family);
   const probes = family.map((id) => ({ id, re: new RegExp(`\\b${id}\\b`) }));
   const hits: RefHit[] = [];
-  for (const block of model.blockById.values()) {
+  for (const block of model.state.blockById.values()) {
     if (removal.has(block.id) || block.type === 'case') continue;
     for (const field of block.fields)
       for (const { id, re } of probes)
@@ -358,10 +357,12 @@ export interface PendingDelete {
   refs: RefHit[];
 }
 
-let pendingDelete: PendingDelete | null = null;
+/** SB-078: observable — the inspector autorun in main renders the confirm
+ *  surface while this is set and the normal inspector when it clears. */
+const pendingDelete = observable.box<PendingDelete | null>(null, { deep: false });
 
 export function getPendingDelete(): PendingDelete | null {
-  return pendingDelete;
+  return pendingDelete.get();
 }
 
 /**
@@ -371,32 +372,30 @@ export function getPendingDelete(): PendingDelete | null {
  * (removeBlock alone would orphan them).
  */
 export function requestDelete(id: string): void {
-  const block = model.blockById.get(id);
+  const block = model.state.blockById.get(id);
   if (!block || block.type === 'case') return;
   const family = [id];
   if (block.type === 'document')
-    for (const b of model.blockById.values())
+    for (const b of model.state.blockById.values())
       if (b.type === 'fact' && b.documentId === id) family.push(b.id);
   const refs = findReferences(family);
   if (refs.length === 0) {
     performDelete(family, refs);
     return;
   }
-  pendingDelete = { id, family, refs };
-  deps.showDeleteConfirm();
+  pendingDelete.set({ id, family, refs });
 }
 
 /** Confirmed delete: clean the patchable references, then remove the blocks. */
 export function confirmDelete(): void {
-  if (!pendingDelete) return;
-  const pending = pendingDelete;
-  pendingDelete = null;
+  const pending = pendingDelete.get();
+  if (!pending) return;
+  pendingDelete.set(null);
   performDelete(pending.family, pending.refs);
 }
 
 export function cancelDelete(): void {
-  pendingDelete = null;
-  deps.onDeleteCancelled();
+  pendingDelete.set(null);
 }
 
 /** Drop `targetId` as a plain and-term from a live condition field. */
@@ -434,7 +433,7 @@ function performDelete(family: string[], refs: RefHit[]): void {
   // Facts were appended to the family after their document — remove them
   // first so the document never orphans mid-sequence.
   for (const id of [...family].reverse()) text = removeBlock(text, id);
-  lifecycleNote =
+  notes.lifecycle =
     refused.length > 0
       ? `deleted ${family[0]} — did not clean up: ${[...new Set(refused)].join(', ')}`
       : `deleted ${family[0]}`;

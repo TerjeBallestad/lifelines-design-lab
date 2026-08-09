@@ -9,10 +9,11 @@ import * as model from './model.ts';
 import * as editing from './editing.ts';
 import { unlockSentence } from './unlock.ts';
 
+// SB-078: non-reactive concerns only — DOM host, preview handle, camera,
+// tips. Selection writes go straight to model.setSelected.
 export interface InspectorDeps {
   inspectorBody: HTMLElement;
   showPreview(id: string | null, kind: NodeKind | null): void;
-  select(id: string | null): void;
   centerOn(id: string): void;
   showTip(text: string): void;
 }
@@ -24,7 +25,7 @@ export function initInspector(d: InspectorDeps): void {
 }
 
 function relRow(edge: GraphEdge, otherId: string): string {
-  const other = model.nodeById.get(otherId)!;
+  const other = model.state.nodeById.get(otherId)!;
   return `<div class="rel" data-goto="${otherId}">
     <span class="via">${edge.label || 'carries'}</span>
     <span style="color:var(${KIND_VAR[other.kind]})">${otherId}</span>
@@ -55,7 +56,7 @@ function formHtml(node: GraphNode, block: RawBlock): string {
 
 function diagHtml(block: RawBlock | undefined): string {
   if (!block) return '';
-  const diags = model.result.diagnostics.filter(
+  const diags = model.state.result.diagnostics.filter(
     (d) =>
       (d.span.startLine <= block.endLine && d.span.endLine >= block.startLine) ||
       d.subjectIds.includes(block.id),
@@ -80,16 +81,16 @@ export function renderInspector(id: string | null): void {
     deps.showPreview(null, null);
     return;
   }
-  const node = model.nodeById.get(id)!;
-  const block = model.blockById.get(id);
-  const outs = model.outOf.get(id) ?? [];
-  const ins = model.inOf.get(id) ?? [];
+  const node = model.state.nodeById.get(id)!;
+  const block = model.state.blockById.get(id);
+  const outs = model.state.outOf.get(id) ?? [];
+  const ins = model.state.inOf.get(id) ?? [];
   // SB-055: the surface preview re-renders with the inspector — the same
   // funnel covers clicks, script-driven selects, and live recompiles.
   deps.showPreview(node.stub ? null : id, node.stub ? null : node.kind);
   // SB-055: one computed sentence answering "what opens this?" — from the
   // emitted predicates/effects, not the raw markup fields.
-  const unlock = node.stub ? '' : unlockSentence(id, node.kind, model.result.slice);
+  const unlock = node.stub ? '' : unlockSentence(id, node.kind, model.state.result.slice);
   inspectorBody.innerHTML = `
     <div class="kind" style="color:var(${KIND_VAR[node.kind]})">${KIND_LABEL[node.kind]}${node.stub ? ' · STUB' : ''}</div>
     <div class="iid">${id}</div>
@@ -130,7 +131,7 @@ export function renderInspector(id: string | null): void {
   inspectorBody.querySelectorAll<HTMLElement>('[data-goto]').forEach((el) =>
     el.addEventListener('click', () => {
       const target = el.dataset.goto!;
-      deps.select(target);
+      model.setSelected(target);
       deps.centerOn(target);
     }),
   );

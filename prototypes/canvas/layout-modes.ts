@@ -3,6 +3,7 @@
 // gravity modes run on. Owns `extent` (the world size renderWorld sizes the
 // edge svg to) and the localStorage stores; rendering stays out — the sim
 // loop reports frames through a callback main wires to syncPositions.
+import { observable } from 'mobx';
 import { layoutGraph, stickyLayout } from './graph.ts';
 import type { NodePos } from './graph.ts';
 import { createSim, SETTLED } from './force.ts';
@@ -25,10 +26,17 @@ export type LayoutMode = 'hand' | 'gravity' | 'pin';
 const MODE_KEY = 'kildeverket-canvas-mode:content/cases/olsen/tiny-olsen.case.md';
 const PIN_KEY = 'kildeverket-canvas-pins:content/cases/olsen/tiny-olsen.case.md';
 
-export let layoutMode: LayoutMode = (() => {
+const bootMode: LayoutMode = (() => {
   const raw = localStorage.getItem(MODE_KEY);
   return raw === 'gravity' || raw === 'pin' ? raw : 'hand';
 })();
+
+/** SB-078: observable mode — the status-bar autorun reads the hint off it. */
+export const layoutUi = observable({ mode: bootMode });
+
+// Probe-surface mirror of layoutUi.mode (main re-exports the live binding).
+// Assigned only in setModeState.
+export let layoutMode: LayoutMode = bootMode;
 
 export let extent = { width: 1, height: 1 };
 
@@ -44,7 +52,7 @@ export function loadPositions(): Map<string, NodePos> {
 
 export function savePositions(): void {
   const stored = loadPositions();
-  for (const node of model.graph.nodes) stored.set(node.id, { x: node.x, y: node.y });
+  for (const node of model.state.graph.nodes) stored.set(node.id, { x: node.x, y: node.y });
   localStorage.setItem(POS_KEY, JSON.stringify(Object.fromEntries(stored)));
 }
 
@@ -111,7 +119,7 @@ function simStep(): void {
   sim.tick();
   sim.tick();
   for (const sn of sim.nodes) {
-    const node = model.nodeById.get(sn.id);
+    const node = model.state.nodeById.get(sn.id);
     if (node) {
       node.x = sn.x;
       node.y = sn.y;
@@ -125,7 +133,7 @@ function simStep(): void {
 export function applyLayout(): void {
   if (layoutMode === 'hand') {
     stopSim();
-    extent = stickyLayout(model.graph, loadPositions());
+    extent = stickyLayout(model.state.graph, loadPositions());
     savePositions();
     return;
   }
@@ -135,8 +143,8 @@ export function applyLayout(): void {
   // sacred to the hand mode.
   const seed = new Map<string, NodePos>();
   if (sim) for (const sn of sim.nodes) seed.set(sn.id, { x: sn.x, y: sn.y });
-  extent = stickyLayout(model.graph, loadPositions());
-  for (const node of model.graph.nodes) {
+  extent = stickyLayout(model.state.graph, loadPositions());
+  for (const node of model.state.graph.nodes) {
     const pos = seed.get(node.id);
     if (pos) {
       node.x = pos.x;
@@ -144,7 +152,7 @@ export function applyLayout(): void {
     }
   }
   const pins = layoutMode === 'pin' ? loadPins() : new Map<string, NodePos>();
-  for (const node of model.graph.nodes) {
+  for (const node of model.state.graph.nodes) {
     const pos = pins.get(node.id);
     if (pos) {
       node.x = pos.x;
@@ -152,7 +160,7 @@ export function applyLayout(): void {
     }
   }
   stopSim();
-  sim = createSim(model.graph, new Set(pins.keys()));
+  sim = createSim(model.state.graph, new Set(pins.keys()));
   startSimLoop();
 }
 
@@ -161,21 +169,22 @@ export function applyLayout(): void {
 export function relayoutState(): void {
   if (layoutMode === 'hand') {
     localStorage.removeItem(POS_KEY);
-    extent = layoutGraph(model.graph);
+    extent = layoutGraph(model.state.graph);
     savePositions();
   } else {
     // Force modes: drop the pins (pin mode) and reseed from one barycenter
     // pass so the cloud reforms from a clean shape, not its own tangle.
     if (layoutMode === 'pin') localStorage.removeItem(PIN_KEY);
     stopSim();
-    extent = layoutGraph(model.graph);
-    sim = createSim(model.graph, new Set());
+    extent = layoutGraph(model.state.graph);
+    sim = createSim(model.state.graph, new Set());
     startSimLoop();
   }
 }
 
 /** State half of a mode switch — persist the mode and re-apply the layout. */
 export function setModeState(mode: LayoutMode): void {
+  layoutUi.mode = mode;
   layoutMode = mode;
   localStorage.setItem(MODE_KEY, mode);
   applyLayout();

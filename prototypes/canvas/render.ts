@@ -59,15 +59,15 @@ function edgeGeometry(from: GraphNode, to: GraphNode): { d: string; mx: number; 
 
 /** SB-051: move existing DOM to the current node positions — no rebuild. */
 export function syncPositions(): void {
-  for (const node of model.graph.nodes) {
+  for (const node of model.state.graph.nodes) {
     const el = nodeEls.get(node.id);
     if (!el) continue;
     el.style.left = `${node.x}px`;
     el.style.top = `${node.y}px`;
   }
   for (const [edge, els] of edgeEls) {
-    const from = model.nodeById.get(edge.from);
-    const to = model.nodeById.get(edge.to);
+    const from = model.state.nodeById.get(edge.from);
+    const to = model.state.nodeById.get(edge.to);
     if (!from || !to) continue;
     const g = edgeGeometry(from, to);
     els.path.setAttribute('d', g.d);
@@ -85,9 +85,9 @@ export function renderWorld(): void {
   edgeEls = new Map();
   nodeEls = new Map();
 
-  for (const edge of model.graph.edges) {
-    const from = model.nodeById.get(edge.from)!;
-    const to = model.nodeById.get(edge.to)!;
+  for (const edge of model.state.graph.edges) {
+    const from = model.state.nodeById.get(edge.from)!;
+    const to = model.state.nodeById.get(edge.to)!;
     const g = edgeGeometry(from, to);
     const path = document.createElementNS(SVG_NS, 'path');
     path.setAttribute('d', g.d);
@@ -112,7 +112,7 @@ export function renderWorld(): void {
     edgeEls.set(edge, { path, hit, text });
   }
 
-  for (const node of model.graph.nodes) {
+  for (const node of model.state.graph.nodes) {
     const el = document.createElement('div');
     // SB-049: a stub renders as a ghost — dashed border, id for a title.
     const pinned = layout.isPinned(node.id);
