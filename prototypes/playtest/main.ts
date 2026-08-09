@@ -9,7 +9,16 @@ import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import '../shared/surfaces.css';
 import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
-import { activeCasePath, playKey, resolveBootText, wireCaseChrome } from '../shared/active-case.ts';
+import {
+  activeCasePath,
+  draftKey,
+  playKey,
+  resolveBootText,
+  saveCaseUrl,
+  wireCaseChrome,
+} from '../shared/active-case.ts';
+import { findSourceBlock, spliceSourceBlock } from './source-block.ts';
+import type { SourceBlock } from './source-block.ts';
 import { injectEditorFonts } from '../shared/doc-preview.ts';
 import { buildIndex } from './model.ts';
 import { coverageSurface } from './coverage.ts';
@@ -49,16 +58,20 @@ const caseNote = $('case-note');
 const playbarHost = $('playbar');
 const logHost = $('log');
 
-// Read-only over the same buffer the editors see: an unsaved draft wins over
-// disk, exactly like the script and canvas lenses (SB-025 seam).
+// The same buffer the editors see: an unsaved draft wins over disk, exactly
+// like the script and canvas lenses (SB-025 seam). Mutable since the source
+// drawer (SB-063 amendment 3): a save recompiles everything in place.
 const { text: bootText, draftRestored } = resolveBootText();
-const result: CompileResult = compileCase(bootText);
-const groups: IndexGroup[] = buildIndex(result);
+let caseText = bootText;
+let result: CompileResult = compileCase(caseText);
+let groups: IndexGroup[] = buildIndex(result);
 
 // One StatusRow per index row — the snapshot the delta diffs over.
-const statusRows: StatusRow[] = groups.flatMap((group) =>
-  group.entries.map((entry) => ({ id: entry.id, kind: statusKind(entry), label: entry.label })),
-);
+const rowsOf = (gs: IndexGroup[]): StatusRow[] =>
+  gs.flatMap((group) =>
+    group.entries.map((entry) => ({ id: entry.id, kind: statusKind(entry), label: entry.label })),
+  );
+let statusRows: StatusRow[] = rowsOf(groups);
 
 // SB-063 amendment: the run survives a lens switch (sessionStorage, per case
 // and per tab — a fresh tab still starts clean; RESET stays the one wipe).
@@ -131,6 +144,7 @@ function renderSurface(): void {
     ? playSurface(selected, result, state, actions)
     : coverageSurface(result);
   surfaceTitle.textContent = surface.title;
+  editBtn.hidden = !selected || findSourceBlock(caseText, selected.id, selected.kind) === null;
   litRender(surface.template, surfaceHost);
   if (surface.doc) {
     const iframe = surfaceHost.querySelector<HTMLIFrameElement>('iframe.doc-frame');
@@ -243,6 +257,99 @@ function reset(): void {
   lastDelta = null;
   renderAll();
 }
+
+// ---- SB-063 amendment 3: the source drawer — tweak the selected entity's
+// ---- authored block without leaving the run. A save recompiles in place;
+// ---- edits land in the shared draft seam, so nothing is ever lost (the
+// ---- Script lens boots from the same draft).
+
+const appEl = $('app');
+const editBtn = $('edit-btn') as HTMLButtonElement;
+const edText = $('ed-text') as HTMLTextAreaElement;
+const edTitle = $('ed-title');
+const edStatus = $('ed-status');
+const DRAFT_STORE = draftKey(activeCasePath);
+let drawer: { id: string; kind: string; block: SourceBlock } | null = null;
+let draftTimer: ReturnType<typeof setTimeout> | undefined;
+
+function openDrawer(entry: IndexEntry): void {
+  const block = findSourceBlock(caseText, entry.id, entry.kind);
+  if (!block) return;
+  drawer = { id: entry.id, kind: entry.kind, block };
+  edTitle.textContent = `SOURCE · lines ${block.startLine}–${block.endLine}`;
+  edText.value = block.text;
+  edStatus.textContent = '';
+  appEl.classList.add('drawer-open');
+  edText.focus();
+}
+
+function closeDrawer(): void {
+  drawer = null;
+  appEl.classList.remove('drawer-open');
+}
+
+/** Recompile the whole lens over new case text; the run state stays (stale
+ *  ids sit in the sets and never match — same law as the lens-switch restore). */
+function rebuild(newText: string): void {
+  caseText = newText;
+  result = compileCase(caseText);
+  groups = buildIndex(result);
+  statusRows = rowsOf(groups);
+  if (selected) {
+    const stay = selected;
+    selected =
+      groups.flatMap((g) => g.entries).find((e) => e.id === stay.id && e.kind === stay.kind) ??
+      null;
+  }
+  renderAll();
+}
+
+async function saveDrawer(): Promise<void> {
+  if (!drawer) return;
+  const active = drawer;
+  const newText = spliceSourceBlock(caseText, active.block, edText.value);
+  try {
+    const res = await fetch(saveCaseUrl, { method: 'POST', body: newText });
+    if (!res.ok) throw new Error(await res.text());
+    clearTimeout(draftTimer);
+    localStorage.removeItem(DRAFT_STORE);
+    rebuild(newText);
+    // Lines may have shifted — re-anchor the open block.
+    const block = findSourceBlock(caseText, active.id, active.kind);
+    if (block) {
+      active.block = block;
+      edTitle.textContent = `SOURCE · lines ${block.startLine}–${block.endLine}`;
+    }
+    const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
+    const warnings = result.diagnostics.filter((d) => d.severity === 'warning').length;
+    edStatus.textContent = `saved · ${errors} errors · ${warnings} warnings`;
+  } catch (err) {
+    localStorage.setItem(DRAFT_STORE, newText);
+    edStatus.textContent = `save failed — draft kept · ${err instanceof Error ? err.message : String(err)}`;
+  }
+}
+
+edText.addEventListener('input', () => {
+  if (!drawer) return;
+  edStatus.textContent = 'unsaved — draft kept';
+  clearTimeout(draftTimer);
+  // The SB-025 draft law: every edit survives a reload, from the first keystroke.
+  const active = drawer;
+  draftTimer = setTimeout(() => {
+    localStorage.setItem(DRAFT_STORE, spliceSourceBlock(caseText, active.block, edText.value));
+  }, 300);
+});
+edText.addEventListener('keydown', (ev) => {
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') {
+    ev.preventDefault();
+    void saveDrawer();
+  }
+});
+editBtn.addEventListener('click', () => {
+  if (selected) openDrawer(selected);
+});
+$('ed-save').addEventListener('click', () => void saveDrawer());
+$('ed-close').addEventListener('click', closeDrawer);
 
 wireCaseChrome();
 caseNote.textContent = draftRestored ? `${activeCasePath} · unsaved draft` : activeCasePath;

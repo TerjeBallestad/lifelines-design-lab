@@ -25,13 +25,67 @@
       #app {
         display: grid;
         grid-template-rows: 44px 36px 1fr 150px;
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 300px 1fr 0;
         grid-template-areas:
-          'top top'
-          'play play'
-          'index reading'
-          'log reading';
+          'top top top'
+          'play play play'
+          'index reading edit'
+          'log reading edit';
         height: 100vh;
+      }
+      /* SB-063: the source drawer opens as a third column */
+      #app.drawer-open {
+        grid-template-columns: 300px 1fr 440px;
+      }
+      #editdrawer {
+        grid-area: edit;
+        display: none;
+        grid-template-rows: 32px 1fr 34px;
+        border-left: 1px solid var(--border);
+        background: var(--bg-side);
+        min-width: 0;
+      }
+      #app.drawer-open #editdrawer {
+        display: grid;
+      }
+      .ed-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--border);
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.06em;
+        color: var(--text-3);
+      }
+      .ed-head button {
+        margin-left: auto;
+      }
+      #ed-text {
+        border: none;
+        outline: none;
+        resize: none;
+        background: var(--bg);
+        color: var(--text);
+        font: 500 11.5px var(--mono);
+        line-height: 1.55;
+        padding: 10px 12px;
+        white-space: pre;
+        overflow: auto;
+      }
+      .ed-foot {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
+        border-top: 1px solid var(--border);
+      }
+      #ed-status {
+        font: 500 10px var(--mono);
+        color: var(--text-3);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* top bar (lens idiom) */
@@ -253,6 +307,9 @@
         padding: 22px 28px 60px;
       }
       #reading .read-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
         font: 600 10.5px var(--mono);
         letter-spacing: 0.08em;
         color: var(--text-4);
@@ -321,9 +378,23 @@
       <div id="index"></div>
       <div id="log"></div>
       <div id="reading">
-        <div class="read-head" id="surface-title">GAME SURFACE</div>
+        <div class="read-head">
+          <span id="surface-title">GAME SURFACE</span>
+          <button id="edit-btn" class="play-btn" hidden>EDIT SOURCE</button>
+        </div>
         <!-- SB-082 lesson: lit owns this host from boot — it stays empty here -->
         <div id="surface" class="surface"></div>
+      </div>
+      <div id="editdrawer">
+        <div class="ed-head">
+          <span id="ed-title">SOURCE</span>
+          <button id="ed-close" class="pb-mini" title="close drawer">✕</button>
+        </div>
+        <textarea id="ed-text" spellcheck="false"></textarea>
+        <div class="ed-foot">
+          <button id="ed-save" class="play-btn" title="save to disk (⌘S)">SAVE</button>
+          <span id="ed-status"></span>
+        </div>
       </div>
     </div>
     <div id="doc-lightbox"></div>
