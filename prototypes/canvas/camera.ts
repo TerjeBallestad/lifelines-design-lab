@@ -23,6 +23,8 @@ export const ZOOM_MIN = 0.12;
 export const ZOOM_MAX = 2.5;
 /** Matches the old exp(-deltaY·0.0016) wheel factor (d3 scales by 2^delta). */
 const WHEEL_FACTOR = 0.0016 / Math.LN2;
+/** Dot-grid spacing at zoom 1 — must match the #viewport background CSS. */
+const GRID = 26;
 
 export function createCamera(opts: {
   viewport: HTMLElement;
@@ -55,6 +57,10 @@ export function createCamera(opts: {
     .on('zoom', (event: D3ZoomEvent<HTMLElement, unknown>) => {
       const t = event.transform;
       world.style.transform = `translate(${t.x}px, ${t.y}px) scale(${t.k})`;
+      // The dot grid rides the same transform: spacing scales with zoom,
+      // the dots themselves stay 1px (the gradient box scales, not its stops).
+      viewport.style.backgroundPosition = `${t.x}px ${t.y}px`;
+      viewport.style.backgroundSize = `${GRID * t.k}px ${GRID * t.k}px`;
       zoomLabel.textContent = `${Math.round(t.k * 100)}%`;
     })
     .on('end', () => viewport.classList.remove('panning'));
