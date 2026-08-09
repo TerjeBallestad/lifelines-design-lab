@@ -39,12 +39,12 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 
 // ---- shared vocabulary ---------------------------------------------------
 
-export interface Heading {
-  line: number; // 1-based
-  endLine: number;
-  kind: string; // Document, Question, … or Fact for ##
-  id: string;
-}
+// Heading/indexHeadings moved to shared/headings.ts (pure string work — the
+// canvas needs it without the CodeMirror stack). Re-exported for the pages
+// that already import them from here.
+export { indexHeadings } from '../shared/headings.ts';
+export type { Heading } from '../shared/headings.ts';
+import type { Heading } from '../shared/headings.ts';
 
 export interface ScriptSymbol {
   id: string;
@@ -89,24 +89,6 @@ export const KIND_COLOR: Record<string, string> = {
 export function idKind(id: string): string | null {
   const p = Object.keys(KIND_OF_PREFIX).find((pre) => id.startsWith(pre));
   return p ? KIND_OF_PREFIX[p] : null;
-}
-
-/** Section index over raw markup lines — pages feed the result to update(). */
-export function indexHeadings(lines: string[]): Heading[] {
-  const hs: Heading[] = [];
-  lines.forEach((line, i) => {
-    let m = line.match(/^# ([A-Za-z]+)[^:]*:? *([\wæøåÆØÅ_.-]*)/);
-    if (m) {
-      hs.push({ line: i + 1, endLine: lines.length, kind: m[1], id: m[2] ?? '' });
-      return;
-    }
-    m = line.match(/^## ([\wæøåÆØÅ_.-]+)/);
-    if (m) hs.push({ line: i + 1, endLine: lines.length, kind: 'Fact', id: m[1] });
-  });
-  hs.forEach((h, i) => {
-    if (i + 1 < hs.length) h.endLine = hs[i + 1].line - 1;
-  });
-  return hs;
 }
 
 // ---- token classifier ---------------------------------------------------

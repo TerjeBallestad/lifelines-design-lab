@@ -44,7 +44,9 @@ export function createCamera(opts: {
     // must not start on a node, the zoombar, or the legend.
     .filter((event: WheelEvent | MouseEvent) => {
       if (event.type === 'wheel') return true;
-      if (event.button !== 0) return false;
+      // `event.button` truthy = a non-primary mouse button. Touch/pen starts
+      // carry no button at all — they must pass, or the board is inert there.
+      if (event.button) return false;
       const target = event.target instanceof Element ? event.target : null;
       return !target?.closest('.node, #zoombar, #legend');
     })

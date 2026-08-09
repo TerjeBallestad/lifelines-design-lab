@@ -2,7 +2,6 @@
 // pages operate on: discovery over content/cases, the ?case URL param, the
 // boot text, the localStorage key builders, and the save target. The lens
 // pages import this instead of hard-wiring a case path.
-import { compileCase } from '../../src/compiler/index.ts';
 
 // Eager on purpose: the case files stay inside the vite module graph, so an
 // external edit still triggers the live reload the probes rely on. A fetch()
@@ -44,15 +43,26 @@ export const pinKey = (path: string): string => `kildeverket-canvas-pins:${path}
 /** Save target for the active case — vite.config.ts validates the path. */
 export const saveCaseUrl = `/__save-case?path=${encodeURIComponent(activeCasePath)}`;
 
-/** Picker label: the compiled slice title, else the file name. */
+/**
+ * The active case's boot buffer (SB-025 rule: a reload must never wipe
+ * unsaved work). A localStorage draft that differs from disk wins; a
+ * successful save clears the draft again.
+ */
+export function resolveBootText(): { text: string; draftRestored: boolean } {
+  const draft = localStorage.getItem(draftKey(activeCasePath));
+  return draft !== null && draft !== activeCaseText
+    ? { text: draft, draftRestored: true }
+    : { text: activeCaseText, draftRestored: false };
+}
+
+/** Picker label: the case block's Title field, else the file name. A full
+ *  compile per case just for a label made every lens boot pay O(cases). */
 export function caseTitle(path: string): string {
-  try {
-    const title = compileCase(files[`/${path}`]).slice.title;
-    if (title) return title;
-  } catch {
-    // an uncompilable case still needs a picker entry
-  }
-  return path.split('/').pop() ?? path;
+  // The case block is the text up to the second `# ` heading; its Title line
+  // is plain (composite `·` lines live on documents only).
+  const head = (files[`/${path}`] ?? '').split(/\n# /)[0];
+  const title = head.match(/^Title:\s*(.+?)\s*(?:\/\/.*)?$/m)?.[1];
+  return title || (path.split('/').pop() ?? path);
 }
 
 /** Wire the topbar chrome: fill the #case-picker select (a change navigates
@@ -72,6 +82,12 @@ export function wireCaseChrome(): void {
     });
   }
   for (const link of document.querySelectorAll<HTMLAnchorElement>('#topbar .tabs a')) {
-    link.href = `${link.getAttribute('href')}?case=${encodeURIComponent(activeCasePath)}`;
+    // Splice the param in properly — a tab href may already carry ?query/#hash.
+    const raw = link.getAttribute('href') ?? '';
+    const hashAt = raw.indexOf('#');
+    const base = hashAt >= 0 ? raw.slice(0, hashAt) : raw;
+    const hash = hashAt >= 0 ? raw.slice(hashAt) : '';
+    const sep = base.includes('?') ? '&' : '?';
+    link.href = `${base}${sep}case=${encodeURIComponent(activeCasePath)}${hash}`;
   }
 }

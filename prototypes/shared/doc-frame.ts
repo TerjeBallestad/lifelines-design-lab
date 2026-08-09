@@ -89,7 +89,15 @@ export function createLightbox(el: HTMLElement, onJump?: (factId: string) => voi
     el.classList.add('open');
     const inner = el.querySelector('.lb-inner') as HTMLElement;
     inner.style.width = `${Math.min(width, window.innerWidth * 0.86)}px`;
-    wireDocFrame(inner.querySelector('iframe')!, inner, html, width, {
+    const iframe = inner.querySelector('iframe')!;
+    // Keydowns land in the iframe document once the reader clicks the sheet —
+    // the window listener below never sees them, so Esc must close from inside.
+    iframe.addEventListener('load', () => {
+      iframe.contentDocument?.addEventListener('keydown', (ke) => {
+        if (ke.key === 'Escape') close();
+      });
+    });
+    wireDocFrame(iframe, inner, html, width, {
       focusFact,
       onJump: (id) => {
         close();

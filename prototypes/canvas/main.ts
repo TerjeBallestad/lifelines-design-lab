@@ -77,10 +77,11 @@ const counts = $('counts');
 
 // SB-055: the game-surface preview above the inspector. Deferred getters —
 // `result` is assigned by the first rebuild() before any selection exists.
+const docLightbox = $('doc-lightbox');
 const previewApi = initPreview({
   host: $('preview'),
   titleEl: $('preview-title'),
-  lightbox: $('doc-lightbox'),
+  lightbox: docLightbox,
   getResult: () => model.state.result,
   onJump: (id) => {
     if (!model.state.nodeById.has(id)) return;
@@ -499,10 +500,9 @@ type NodeDragEvent = D3DragEvent<HTMLElement, unknown, unknown>;
 
 const nodeDrag = dragBehavior<HTMLElement, unknown>()
   .filter(
+    // `!event.button`, not `=== 0`: touch/pen starts carry no button at all.
     (event: MouseEvent) =>
-      event.button === 0 &&
-      event.target instanceof Element &&
-      event.target.closest('.node') !== null,
+      !event.button && event.target instanceof Element && event.target.closest('.node') !== null,
   )
   .clickDistance(4)
   .on('start', (event: NodeDragEvent) => {
@@ -618,10 +618,19 @@ function unpin(id: string): void {
   layout.startSimLoop();
 }
 
+/** Surfaces that own editing keys: inspector fields, the script lens, and
+ *  any focused chrome input (the ⌘K jump palette, the case picker). */
+function inTypingSurface(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.closest('.fval, #script-pane') !== null ||
+      target.matches('input, textarea, select, [contenteditable]'))
+  );
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Delete' && event.key !== 'Backspace') return;
-  // Typing surfaces own these keys: inspector fields and the script lens.
-  if (event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane')) return;
+  if (inTypingSurface(event.target)) return;
   const edgeKey = model.ui.selectedEdgeKey;
   if (edgeKey !== null) {
     const edge = model.state.graph.edges.find((e) => edgeKeyOf(e) === edgeKey);
@@ -650,9 +659,14 @@ reflectModeButtons();
 document.addEventListener('keydown', (event) => {
   // Esc while typing — inspector field OR the script lens — must not clear
   // the canvas selection mid-thought (SB-041); Esc on the canvas side clears.
-  const inTypingSurface =
-    event.target instanceof HTMLElement && event.target.closest('.fval, #script-pane');
-  if (event.key === 'Escape' && !inTypingSurface) select(null);
+  // With the doc lightbox open, Esc closes the lightbox (doc-frame.ts) and
+  // must leave the selection standing.
+  if (
+    event.key === 'Escape' &&
+    !inTypingSurface(event.target) &&
+    !docLightbox.classList.contains('open')
+  )
+    select(null);
 });
 
 // ---- loose-end worklist (SB-044) -----------------------------------------

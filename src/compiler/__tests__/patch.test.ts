@@ -86,7 +86,13 @@ describe('(b) patch→compile equals editing the field by hand', () => {
   it('patchField inserts a missing field after the last field line', () => {
     const patched = patchField(olsen, 'f_trygd', 'Card', '«Trygden — 2 i måneden.»');
     const diff = changedLines(olsen, patched);
-    expect(diff[0].slice(1)).toEqual(['', 'Card: «Trygden — 2 i måneden.»']);
+    // Pin the exact insert line: directly under the block's last field, never
+    // header-adjacent (the inspector's field-add depends on this placement).
+    expect(diff[0]).toEqual([
+      lineIn(olsen, 'f_trygd', 'Supports: q_okonomi, q_bolig') + 1,
+      '',
+      'Card: «Trygden — 2 i måneden.»',
+    ]);
     // Placement: the new field line lands inside the f_trygd block.
     const lines = patched.split('\n');
     const heading = lines

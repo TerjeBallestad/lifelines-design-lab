@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import { normalizePath } from 'vite';
 import { defineConfig, type Plugin } from 'vitest/config';
 
 // Dev-only write-back for the lens pages (SB-025, SB-083). ⌘S POSTs the
@@ -33,7 +34,9 @@ function caseSave(): Plugin {
         let body = '';
         req.on('data', (chunk) => (body += chunk));
         req.on('end', () => {
-          lastSaved.set(target, body);
+          // Key on vite's normalized form — handleHotUpdate's ctx.file uses
+          // forward slashes, so a raw win32 path.resolve key would never match.
+          lastSaved.set(normalizePath(target), body);
           writeFile(target, body, 'utf8').then(
             () => res.end('ok'),
             (err: unknown) => {

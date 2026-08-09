@@ -14,6 +14,7 @@ import {
   activeCasePath,
   activeCaseText as initialText,
   draftKey,
+  resolveBootText,
   saveCaseUrl,
   wireCaseChrome,
 } from '../shared/active-case.ts';
@@ -47,11 +48,9 @@ let compileTimer: ReturnType<typeof setTimeout> | undefined;
 
 // Draft persistence: the buffer survives page reloads (vite live-reload wiped
 // an unsaved buffer once — never again). Every edit lands in localStorage;
-// a successful ⌘S clears it. On boot a draft that differs from disk wins.
+// a successful ⌘S clears it. Boot resolution lives in the active-case seam.
 const DRAFT_KEY = draftKey(activeCasePath);
-const draft = localStorage.getItem(DRAFT_KEY);
-const draftRestored = draft != null && draft !== initialText;
-const bootText = draftRestored ? draft : initialText;
+const { text: bootText, draftRestored } = resolveBootText();
 let draftTimer: ReturnType<typeof setTimeout> | undefined;
 
 const lens = mountScriptLens({

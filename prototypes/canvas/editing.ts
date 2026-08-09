@@ -200,7 +200,10 @@ export function disconnect(edge: GraphEdge): EdgeWriteResult {
     if (patched === null)
       return {
         ok: false,
-        reason: `did not find ${edge.from} as a plain entry/and-term on ${label === 'supports' || label === 'opens' ? edge.from : edge.to}`,
+        reason:
+          label === 'supports' || label === 'opens'
+            ? `did not find ${edge.to} as a plain entry/and-term on ${edge.from}`
+            : `did not find ${edge.from} as a plain entry/and-term on ${edge.to}`,
       };
     commitText(patched);
     return { ok: true };
@@ -320,10 +323,13 @@ export function duplicateNode(sourceId: string): EdgeWriteResult {
 
 // ---- delete with reference cleanup ----------------------------------------
 
+/** Regex-escape an id — block ids are free-form (`f_bok + f_dod`, dots…). */
+const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /** Every textual inbound reference to the ids in `family`, outside it. */
 function findReferences(family: string[]): RefHit[] {
   const removal = new Set(family);
-  const probes = family.map((id) => ({ id, re: new RegExp(`\\b${id}\\b`) }));
+  const probes = family.map((id) => ({ id, re: new RegExp(`\\b${escapeRe(id)}\\b`) }));
   const hits: RefHit[] = [];
   for (const block of model.state.blockById.values()) {
     if (removal.has(block.id) || block.type === 'case') continue;
