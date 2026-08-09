@@ -8,6 +8,7 @@
 import type { CaseSlice } from '../../src/compiler/emit.ts';
 import type { PredicateSpec } from '../../src/compiler/condition.ts';
 import type { NodeKind } from './node-kind.ts';
+import { CHAT_FRANK_ID, callId, recipeId } from './weave-ids.ts';
 
 /** «Title» (id) — title first, the id in parens for the jump-minded. */
 function nameOf(id: string, slice: CaseSlice): string {
@@ -95,10 +96,10 @@ export function unlockSentence(id: string, kind: NodeKind, slice: CaseSlice): st
         const pays =
           call.opening.some((line) => line.fact_id === id) ||
           call.exchanges.some((x) => x.reply.some((line) => line.fact_id === id));
-        if (pays) parts.push(`paid by call:${call.contact_id}`);
+        if (pays) parts.push(`paid by ${callId(call.contact_id)}`);
       }
       for (const entry of slice.frank_chat ?? [])
-        if (entry.pays_fact === id) parts.push(`paid by chat:frank`);
+        if (entry.pays_fact === id) parts.push(`paid by ${CHAT_FRANK_ID}`);
       if (parts.length === 0) return `No source — nothing in the case produces this fact.`;
       return `${parts.join('; also ')}.`;
     }
@@ -152,13 +153,14 @@ export function unlockSentence(id: string, kind: NodeKind, slice: CaseSlice): st
       return `Visible from the start.`;
     }
     case 'conversation': {
-      if (id === 'chat:frank') return `Chat entries appear as their Needs facts land on the board.`;
-      const call = (slice.calls ?? []).find((c) => `call:${c.contact_id}` === id);
+      if (id === CHAT_FRANK_ID)
+        return `Chat entries appear as their Needs facts land on the board.`;
+      const call = (slice.calls ?? []).find((c) => callId(c.contact_id) === id);
       if (call?.gate) return `Callable once ${predText(call.gate, slice)}.`;
       return `Callable from the start; exchanges unlock on played cards.`;
     }
     case 'recipe': {
-      const recipe = (slice.recipes ?? []).find((r) => `${r.pair[0]} + ${r.pair[1]}` === id);
+      const recipe = (slice.recipes ?? []).find((r) => recipeId(r.pair) === id);
       if (!recipe) return '';
       return `Craftable once ${nameOf(recipe.pair[0], slice)} and ${nameOf(recipe.pair[1], slice)} are both lifted.`;
     }

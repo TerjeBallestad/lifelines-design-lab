@@ -39,6 +39,14 @@ export const COVERAGE_REGISTRY: CoverageRegistry = {
 /** Ordered rows, in CaseSlice declaration order (registry literal order). */
 export const COVERAGE_KEYS = Object.keys(COVERAGE_REGISTRY) as CoverageKey[];
 
+/** Styling hook per status — keyed, so rewording a status phrase cannot
+ *  silently detach its color rule in the page CSS. */
+const STATUS_CLASS: Record<SurfaceStatus, string> = {
+  'player surface': 'cov-ok',
+  'fallback JSON': 'cov-json',
+  'no player surface yet': 'cov-none',
+};
+
 /** Count of this kind in the loaded case: array length, or 0/1 for the
  *  scalar pair lines. Derived, never authored. */
 export function countFor(key: CoverageKey, slice: CaseSlice): number {
@@ -60,7 +68,7 @@ export function coverageSurface(result: CompileResult): Surface {
         ${COVERAGE_KEYS.map((key) => {
           const row = COVERAGE_REGISTRY[key];
           const count = countFor(key, slice);
-          return html`<div class="cov-row cov-${row.status.replace(/ /g, '-')}">
+          return html`<div class="cov-row ${STATUS_CLASS[row.status]}">
             <span class="cov-label">${row.label}</span>
             <span class="cov-count">${count}</span>
             <span class="cov-status">${row.status}</span>

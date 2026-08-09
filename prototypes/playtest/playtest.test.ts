@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 // SB-061 Task 2 — the Playtest lens boot smoke. Real main.ts against the
-// page's host skeleton: the index populates with every kind group, the
-// surface host boots to the empty surface (SB-082: lit owns the host from
-// boot), and a selection renders a player surface, not fallback JSON.
+// real index.html body (canvas probe-smoke idiom — a hand-copied skeleton
+// would drift): the index populates with every kind group, the lit-owned
+// surface host boots to the Task 3 coverage panel, and a selection renders a
+// player surface, not fallback JSON.
 // ## Verified red-green: 2026-08-09 (asserted `.idx-group` count against a
 // broken buildIndex returning [], watched the boot assertions fail, restored)
 import { readFileSync } from 'node:fs';
@@ -14,29 +15,11 @@ import { buildIndex, entitySurface } from './model.ts';
 const ROOT = process.cwd();
 const result = compileCase(readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8'));
 
-// The host skeleton from index.html that main.ts wires against.
-const PAGE_SKELETON = `
-  <div id="app">
-    <div id="topbar">
-      <select id="case-picker" class="file"></select>
-      <span class="tabs">
-        <a href="../script-editor/">Script</a>
-        <a href="../canvas/">Canvas</a>
-        <span class="active">Playtest</span>
-      </span>
-      <span id="case-note"></span>
-    </div>
-    <div id="index"></div>
-    <div id="reading">
-      <div class="read-head" id="surface-title">GAME SURFACE</div>
-      <div id="surface" class="surface"></div>
-    </div>
-  </div>
-  <div id="doc-lightbox"></div>`;
-
 describe('playtest page boot', () => {
   beforeAll(async () => {
-    document.body.innerHTML = PAGE_SKELETON;
+    const pageHtml = readFileSync(`${ROOT}/prototypes/playtest/index.html`, 'utf8');
+    const body = pageHtml.slice(pageHtml.indexOf('<body>') + 6, pageHtml.indexOf('</body>'));
+    document.body.innerHTML = body.replace(/<script[^]*?<\/script>/g, '');
     await import('./main.ts');
   });
 

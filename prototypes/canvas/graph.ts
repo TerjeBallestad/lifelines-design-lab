@@ -9,6 +9,8 @@ import type { PredicateSpec } from '../../src/compiler/condition.ts';
 import type { EffectSpec } from '../../src/compiler/effects.ts';
 
 import type { NodeKind } from '../shared/node-kind.ts';
+import { plainTitle } from '../shared/plain-title.ts';
+import { CHAT_FRANK_ID, callId, recipeId } from '../shared/weave-ids.ts';
 
 export type { NodeKind };
 
@@ -54,15 +56,6 @@ const KIND_OF_PREFIX: Record<string, NodeKind> = {
 export function stubKindOf(id: string): NodeKind | null {
   const match = id.match(ID_RE);
   return match ? KIND_OF_PREFIX[match[1]] : null;
-}
-
-/** In-game icon markup in titles: coin renders as ¤ (mockup 1a), the rest drop. */
-function plainTitle(text: string): string {
-  return text
-    .replace(/\[icon=coin\]/g, '¤')
-    .replace(/\[icon=[^\]]+\]/g, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
 }
 
 /** Every entity id referenced anywhere inside a predicate tree. */
@@ -181,7 +174,7 @@ export function buildGraph(slice: CaseSlice): CaseGraph {
   // the node cross-jumps to the block's span in the script lens.
   for (const call of slice.calls ?? [])
     nodes.push({
-      id: `call:${call.contact_id}`,
+      id: callId(call.contact_id),
       kind: 'conversation',
       title: `call: ${call.contact_id}`,
       sub: `${call.exchanges.length} utvekslinger`,
@@ -190,7 +183,7 @@ export function buildGraph(slice: CaseSlice): CaseGraph {
     });
   if ((slice.frank_chat ?? []).length > 0)
     nodes.push({
-      id: 'chat:frank',
+      id: CHAT_FRANK_ID,
       kind: 'conversation',
       title: 'chat: frank',
       sub: `${slice.frank_chat!.length} oppslag`,
@@ -199,9 +192,9 @@ export function buildGraph(slice: CaseSlice): CaseGraph {
     });
   for (const recipe of slice.recipes ?? [])
     nodes.push({
-      id: `${recipe.pair[0]} + ${recipe.pair[1]}`,
+      id: recipeId(recipe.pair),
       kind: 'recipe',
-      title: `${recipe.pair[0]} + ${recipe.pair[1]}`,
+      title: recipeId(recipe.pair),
       sub: `åpner ${recipe.question_id}`,
       x: 0,
       y: 0,
@@ -271,22 +264,23 @@ export function buildGraph(slice: CaseSlice): CaseGraph {
   // SB-046: fact edges in both directions on the weave nodes — needs in,
   // pays_fact / inline fact anchors out (the SB-037 ruling's exact wording).
   for (const call of slice.calls ?? []) {
-    const callId = `call:${call.contact_id}`;
-    for (const id of idsInPredicate(call.gate)) addEdge(id, callId, 'gate');
-    for (const line of call.opening) if (line.fact_id) addEdge(callId, line.fact_id, 'pays');
+    const weaveCallId = callId(call.contact_id);
+    for (const id of idsInPredicate(call.gate)) addEdge(id, weaveCallId, 'gate');
+    for (const line of call.opening) if (line.fact_id) addEdge(weaveCallId, line.fact_id, 'pays');
     for (const exchange of call.exchanges) {
-      addEdge(exchange.card_id, callId, 'needs');
-      for (const line of exchange.reply) if (line.fact_id) addEdge(callId, line.fact_id, 'pays');
+      addEdge(exchange.card_id, weaveCallId, 'needs');
+      for (const line of exchange.reply)
+        if (line.fact_id) addEdge(weaveCallId, line.fact_id, 'pays');
     }
   }
   for (const entry of slice.frank_chat ?? []) {
-    for (const id of entry.needs) addEdge(id, 'chat:frank', 'needs');
-    if (entry.pays_fact) addEdge('chat:frank', entry.pays_fact, 'pays');
+    for (const id of entry.needs) addEdge(id, CHAT_FRANK_ID, 'needs');
+    if (entry.pays_fact) addEdge(CHAT_FRANK_ID, entry.pays_fact, 'pays');
   }
   for (const recipe of slice.recipes ?? []) {
-    const recipeId = `${recipe.pair[0]} + ${recipe.pair[1]}`;
-    for (const id of recipe.pair) addEdge(id, recipeId, 'needs');
-    addEdge(recipeId, recipe.question_id, 'opens');
+    const weaveRecipeId = recipeId(recipe.pair);
+    for (const id of recipe.pair) addEdge(id, weaveRecipeId, 'needs');
+    addEdge(weaveRecipeId, recipe.question_id, 'opens');
   }
   for (const proposal of slice.frank_proposals ?? [])
     for (const id of proposal.relevant_fact_ids ?? []) addEdge(id, proposal.handbok_id, 'needs');

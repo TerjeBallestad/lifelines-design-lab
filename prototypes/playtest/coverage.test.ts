@@ -48,8 +48,13 @@ describe('coverage registry', () => {
 
   it('keeps every `player surface` claim honest against the real renderers', () => {
     const groups = buildIndex(result);
+    const scalarKeys = new Set(['pair_soft_reject_line', 'pair_already_set_line']);
     for (const key of COVERAGE_KEYS) {
+      if (scalarKeys.has(key)) continue;
       const group = groups.find((g) => g.key === key);
+      // Every array-valued registry kind must have an index group — a group
+      // rename must fail here, not silently skip the honesty check.
+      expect(group, `index group for ${key}`).toBeDefined();
       if (!group || group.entries.length === 0) continue;
       const host = document.createElement('div');
       render(entitySurface(group.entries[0], result).template, host);

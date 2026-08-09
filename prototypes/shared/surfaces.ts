@@ -14,6 +14,7 @@ import type { TemplateResult } from 'lit-html';
 import type { CompileResult, EffectSpec } from '../../src/compiler/index.ts';
 import { buildDocPreviewHtml } from './doc-preview.ts';
 import type { NodeKind } from './node-kind.ts';
+import { CHAT_FRANK_ID, callContactOf, callId, recipeId } from './weave-ids.ts';
 
 export interface Surface {
   title: string;
@@ -278,7 +279,7 @@ function chatTranscript(result: CompileResult): Surface {
  *  exchanges keyed by card_id — static display, never interactive. */
 function callTranscript(contactId: string, result: CompileResult): Surface {
   const call = (result.slice.calls ?? []).find((c) => c.contact_id === contactId);
-  if (!call) return fallbackJsonSurface(`call:${contactId}`, 'conversation', result);
+  if (!call) return fallbackJsonSurface(callId(contactId), 'conversation', result);
   const line = (l: { who?: string; text: string; fact_id?: string }) =>
     html`<div class="call-line">
       ${l.who ? html`<span class="call-who">${l.who}:</span>` : nothing}
@@ -308,20 +309,21 @@ function callTranscript(contactId: string, result: CompileResult): Surface {
 }
 
 export function conversationSurface(id: string, result: CompileResult): Surface {
-  if (id === 'chat:frank') return chatTranscript(result);
-  if (id.startsWith('call:')) return callTranscript(id.slice('call:'.length), result);
+  if (id === CHAT_FRANK_ID) return chatTranscript(result);
+  const contactId = callContactOf(id);
+  if (contactId !== null) return callTranscript(contactId, result);
   return fallbackJsonSurface(id, 'conversation', result);
 }
 
 export function recipeSurface(id: string, result: CompileResult): Surface {
-  const recipe = (result.slice.recipes ?? []).find((r) => `${r.pair[0]} + ${r.pair[1]}` === id);
+  const recipe = (result.slice.recipes ?? []).find((r) => recipeId(r.pair) === id);
   if (!recipe) return fallbackJsonSurface(id, 'recipe', result);
   return {
     title: `GAME SURFACE — ${id.toUpperCase()}`,
     template: html`<div class="surface-label">recipe — two facts crafted on the canvas</div>
       ${detailPanel({
         kind: 'KOBLING',
-        title: `${recipe.pair[0]} + ${recipe.pair[1]}`,
+        title: recipeId(recipe.pair),
         meta: `åpner ${recipe.question_id}`,
         quote: recipe.reading,
       })}
@@ -358,7 +360,14 @@ export function beatSurface(id: string, result: CompileResult): Surface {
   };
 }
 
-export function fallbackJsonSurface(id: string, kind: string, result: CompileResult): Surface {
+/** The optional `node` skips the pool search — for kinds whose entities the
+ *  caller already holds (event deltas have no id field to find them by). */
+export function fallbackJsonSurface(
+  id: string,
+  kind: string,
+  result: CompileResult,
+  presetNode?: unknown,
+): Surface {
   const { slice, labContent } = result;
   const pools = [
     slice.tiltak,
@@ -368,21 +377,18 @@ export function fallbackJsonSurface(id: string, kind: string, result: CompileRes
     slice.recipes ?? [],
     slice.frank_proposals ?? [],
   ] as unknown as Array<Array<Record<string, unknown>>>;
-  let node: unknown = null;
+  let node: unknown = presetNode ?? null;
   for (const pool of pools) {
+    if (node) break;
     node =
       pool.find((n) => n.id === id) ??
       pool.find((n) => n.handbok_id === id) ??
-      pool.find(
-        (n) =>
-          Array.isArray(n.pair) && `${(n.pair as string[])[0]} + ${(n.pair as string[])[1]}` === id,
-      ) ??
+      pool.find((n) => Array.isArray(n.pair) && recipeId(n.pair as [string, string]) === id) ??
       null;
-    if (node) break;
   }
-  if (!node && id.startsWith('call:'))
-    node = (slice.calls ?? []).find((c) => `call:${c.contact_id}` === id) ?? null;
-  if (!node && id === 'chat:frank') node = slice.frank_chat ?? null;
+  if (!node && callContactOf(id) !== null)
+    node = (slice.calls ?? []).find((c) => callId(c.contact_id) === id) ?? null;
+  if (!node && id === CHAT_FRANK_ID) node = slice.frank_chat ?? null;
   if (!node) node = labContent.facts[id] ?? null;
   // The json div is white-space: pre-wrap — the interpolation must stay the
   // element's only content, with no template indentation around it.
