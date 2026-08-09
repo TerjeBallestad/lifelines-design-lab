@@ -43,6 +43,63 @@ export interface PlayState {
   log: string[];
 }
 
+// The Set-valued PlayState keys, for the serializer. Typed against PlayState
+// so a new set cannot silently fall out of the lens-switch survival.
+const SET_KEYS = [
+  'factsLifted',
+  'questionsRevealed',
+  'hypothesesChosen',
+  'tiltakOpened',
+  'dispatchesOpened',
+  'chatAsked',
+  'callsMade',
+  'cardsPlayed',
+  'dispatchesRun',
+  'tiltakTaken',
+  'recipesCrafted',
+  'eventsFired',
+  'beatsFired',
+  'documentsArrived',
+] as const satisfies ReadonlyArray<
+  { [K in keyof PlayState]: PlayState[K] extends Set<string> ? K : never }[keyof PlayState]
+>;
+
+/** SB-063 amendment: the run survives a lens switch. Sets become arrays. */
+export function serializePlayState(state: PlayState): string {
+  const out: Record<string, unknown> = {
+    day: state.day,
+    stage: state.stage,
+    pendingDocuments: state.pendingDocuments,
+    log: state.log,
+  };
+  for (const key of SET_KEYS) out[key] = [...state[key]];
+  return JSON.stringify(out);
+}
+
+/** The stored run back as a PlayState, or null when the shape is off. Stale
+ *  ids from a since-edited case stay in the sets and simply never match. */
+export function deserializePlayState(json: string): PlayState | null {
+  try {
+    const raw = JSON.parse(json) as Record<string, unknown>;
+    if (typeof raw.day !== 'number' || typeof raw.stage !== 'number') return null;
+    if (!Array.isArray(raw.log) || !Array.isArray(raw.pendingDocuments)) return null;
+    const state = {
+      day: raw.day,
+      stage: raw.stage,
+      pendingDocuments: raw.pendingDocuments as PendingDocument[],
+      log: raw.log as string[],
+    } as PlayState;
+    for (const key of SET_KEYS) {
+      const values = raw[key];
+      if (!Array.isArray(values)) return null;
+      state[key] = new Set(values as string[]);
+    }
+    return state;
+  } catch {
+    return null;
+  }
+}
+
 /** Document ids some effect queues — they are NOT in the opening stack. */
 function queuedDocumentIds(slice: CaseSlice): Set<string> {
   const queued = new Set<string>();

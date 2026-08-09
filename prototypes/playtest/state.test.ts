@@ -12,6 +12,7 @@ import {
   chooseHypothesis,
   craftRecipe,
   createPlayState,
+  deserializePlayState,
   diffSnapshots,
   entityStatus,
   fireEvent,
@@ -21,6 +22,7 @@ import {
   openActionsLeft,
   playCard,
   predHolds,
+  serializePlayState,
   snapshot,
 } from './state.ts';
 import type { StatusRow } from './state.ts';
@@ -211,6 +213,26 @@ describe('frontier status + delta', () => {
     const state = createPlayState(slice);
     expect(openActionsLeft(state, slice)).toBeGreaterThan(0);
     expect(futureContentLeft(state, slice)).toBeGreaterThan(0);
+  });
+});
+
+describe('serialize round trip (lens-switch survival)', () => {
+  it('restores a mutated run exactly', () => {
+    const state = createPlayState(slice);
+    liftFact(state, slice, slice.facts[0].id);
+    advanceDay(state, slice);
+    applyEffects(state, [
+      { op: 'queue_pending_document', args: { document_id: 'doc_rt', delay_days: 3 } },
+    ]);
+    const restored = deserializePlayState(serializePlayState(state))!;
+    expect(restored).not.toBeNull();
+    expect(restored).toEqual(state);
+  });
+
+  it('rejects a stored shape that is off', () => {
+    expect(deserializePlayState('not json')).toBeNull();
+    expect(deserializePlayState('{"day":1}')).toBeNull();
+    expect(deserializePlayState('{"day":1,"stage":0,"log":[],"pendingDocuments":[]}')).toBeNull();
   });
 });
 

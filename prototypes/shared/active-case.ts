@@ -39,6 +39,9 @@ export const draftKey = (path: string): string => `kildeverket-draft:${path}`;
 export const posKey = (path: string): string => `kildeverket-canvas-pos:${path}`;
 export const modeKey = (path: string): string => `kildeverket-canvas-mode:${path}`;
 export const pinKey = (path: string): string => `kildeverket-canvas-pins:${path}`;
+/** SB-063 amendment: the playtest run survives a lens switch. The store is
+ *  sessionStorage (per tab), so a fresh tab still starts a clean run. */
+export const playKey = (path: string): string => `kildeverket-playtest:${path}`;
 
 /** Save target for the active case — vite.config.ts validates the path. */
 export const saveCaseUrl = `/__save-case?path=${encodeURIComponent(activeCasePath)}`;

@@ -2,13 +2,14 @@
 // the compiled case as a frontier the player walks (SB-062 ruling 3). Locked
 // rows grey out but stay readable with their unlock sentence, every
 // effect-carrying entity is triggerable with instant effects, and each action
-// prints its opened/still-closed delta. No persistence — one reset (SB-058).
+// prints its opened/still-closed delta. The run survives a lens switch via
+// sessionStorage (SB-063 amendment); a fresh tab starts clean — one reset.
 import { html, render as litRender, nothing } from 'lit-html';
 import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import '../shared/surfaces.css';
 import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
-import { activeCasePath, resolveBootText, wireCaseChrome } from '../shared/active-case.ts';
+import { activeCasePath, playKey, resolveBootText, wireCaseChrome } from '../shared/active-case.ts';
 import { injectEditorFonts } from '../shared/doc-preview.ts';
 import { buildIndex } from './model.ts';
 import { coverageSurface } from './coverage.ts';
@@ -21,6 +22,7 @@ import {
   chooseHypothesis,
   craftRecipe,
   createPlayState,
+  deserializePlayState,
   diffSnapshots,
   entityStatus,
   fireEvent,
@@ -30,6 +32,7 @@ import {
   openActionsLeft,
   playCard,
   runDispatch,
+  serializePlayState,
   setStage,
   snapshot,
   takeTiltak,
@@ -57,9 +60,18 @@ const statusRows: StatusRow[] = groups.flatMap((group) =>
   group.entries.map((entry) => ({ id: entry.id, kind: statusKind(entry), label: entry.label })),
 );
 
-let state: PlayState = createPlayState(result.slice);
+// SB-063 amendment: the run survives a lens switch (sessionStorage, per case
+// and per tab — a fresh tab still starts clean; RESET stays the one wipe).
+const PLAY_STORE = playKey(activeCasePath);
+const stored = sessionStorage.getItem(PLAY_STORE);
+let state: PlayState =
+  (stored ? deserializePlayState(stored) : null) ?? createPlayState(result.slice);
 let selected: IndexEntry | null = null;
 let lastDelta: FrontierDelta | null = null;
+
+function saveState(): void {
+  sessionStorage.setItem(PLAY_STORE, serializePlayState(state));
+}
 
 const lightbox = createLightbox($('doc-lightbox'), (factId, ev) => runClick(factId, ev));
 
@@ -86,6 +98,7 @@ function act(mutate: () => void): void {
   const before = snapshot(state, result.slice, statusRows);
   mutate();
   lastDelta = diffSnapshots(before, snapshot(state, result.slice, statusRows));
+  saveState();
   renderAll();
 }
 
@@ -225,6 +238,7 @@ function renderAll(): void {
 }
 
 function reset(): void {
+  sessionStorage.removeItem(PLAY_STORE);
   state = createPlayState(result.slice);
   lastDelta = null;
   renderAll();
