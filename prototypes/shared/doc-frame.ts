@@ -23,8 +23,20 @@ export interface DocFrameOpts {
 
 // Re-render guard: under lit the iframe element survives a re-render, so a
 // recompile that produces the same sheet must not reload it (the reload
-// re-runs fonts + fit and flashes). Keyed on the wired html + focus fact.
-const wired = new WeakMap<HTMLIFrameElement, { html: string; focus: string | null }>();
+// re-runs fonts + fit and flashes). The map also carries the CURRENT wiring
+// for the ONE load listener each iframe ever gets — a rewire to a new sheet
+// must never stack a second listener, or one run click fires onJump once per
+// sheet ever shown in this iframe (the SB-063 lift-then-jump bug).
+interface WiredEntry {
+  html: string;
+  focus: string | null;
+  wrap: HTMLElement;
+  width: number;
+  scale: DocScale;
+  opts: DocFrameOpts;
+  loadWired: boolean;
+}
+const wired = new WeakMap<HTMLIFrameElement, WiredEntry>();
 
 export function wireDocFrame(
   iframe: HTMLIFrameElement,
@@ -36,45 +48,62 @@ export function wireDocFrame(
   const focusFact = opts.focusFact ?? null;
   const scale = opts.scale ?? 'fit';
   const prev = wired.get(iframe);
+  wired.set(iframe, {
+    html,
+    focus: focusFact,
+    wrap,
+    width,
+    scale,
+    opts,
+    loadWired: prev?.loadWired ?? false,
+  });
   if (prev && prev.html === html) {
     // Same sheet — at most the focused fact changed; swap the class in place.
     if (prev.focus !== focusFact) {
       const idoc = iframe.contentDocument;
       idoc?.querySelector('.focus')?.classList.remove('focus');
       if (focusFact) idoc?.querySelector(`[data-fact-id="${focusFact}"]`)?.classList.add('focus');
-      wired.set(iframe, { html, focus: focusFact });
     }
     return;
   }
-  wired.set(iframe, { html, focus: focusFact });
   iframe.style.width = `${width}px`;
-  iframe.addEventListener('load', () => {
-    const idoc = iframe.contentDocument;
-    if (!idoc) return;
-    const focus = wired.get(iframe)?.focus ?? null;
-    if (focus) idoc.querySelector(`[data-fact-id="${focus}"]`)?.classList.add('focus');
-    if (opts.onPageClick) idoc.body.style.cursor = 'zoom-in';
-    idoc.addEventListener('click', (ev) => {
-      const el = (ev.target as HTMLElement).closest('[data-fact-id]');
-      const factId = el?.getAttribute('data-fact-id');
-      if (factId) {
-        opts.onJump?.(factId, ev as MouseEvent);
-      } else if (opts.onPageClick) {
-        opts.onPageClick();
-      }
-    });
-    const fit = () => {
-      const h = idoc.body?.scrollHeight ?? 0;
-      const s = scale === 'fit' ? Math.min(1, wrap.clientWidth / width) : 1;
-      iframe.style.height = `${h}px`;
-      iframe.style.transform = `scale(${s})`;
-      wrap.style.height = `${h * s}px`;
-    };
-    fit();
-    // refit once webfonts finish loading (reflow changes page height)
-    idoc.fonts?.ready.then(fit).catch(() => {});
-  });
+  if (!prev?.loadWired) {
+    wired.get(iframe)!.loadWired = true;
+    iframe.addEventListener('load', () => onFrameLoad(iframe));
+  }
   iframe.srcdoc = html;
+}
+
+/** Runs once per actual load, reading the LATEST wiring from the map — so a
+ *  rewire between loads (sheet A → sheet B) hooks the fresh document exactly
+ *  once, with the current callbacks. */
+function onFrameLoad(iframe: HTMLIFrameElement): void {
+  const entry = wired.get(iframe);
+  const idoc = iframe.contentDocument;
+  if (!entry || !idoc) return;
+  if (entry.focus) idoc.querySelector(`[data-fact-id="${entry.focus}"]`)?.classList.add('focus');
+  if (entry.opts.onPageClick) idoc.body.style.cursor = 'zoom-in';
+  idoc.addEventListener('click', (ev) => {
+    const opts = wired.get(iframe)?.opts ?? entry.opts;
+    const el = (ev.target as HTMLElement).closest('[data-fact-id]');
+    const factId = el?.getAttribute('data-fact-id');
+    if (factId) {
+      opts.onJump?.(factId, ev as MouseEvent);
+    } else if (opts.onPageClick) {
+      opts.onPageClick();
+    }
+  });
+  const fit = () => {
+    const { wrap, width, scale } = wired.get(iframe) ?? entry;
+    const h = idoc.body?.scrollHeight ?? 0;
+    const s = scale === 'fit' ? Math.min(1, wrap.clientWidth / width) : 1;
+    iframe.style.height = `${h}px`;
+    iframe.style.transform = `scale(${s})`;
+    wrap.style.height = `${h * s}px`;
+  };
+  fit();
+  // refit once webfonts finish loading (reflow changes page height)
+  idoc.fonts?.ready.then(fit).catch(() => {});
 }
 
 export interface Lightbox {
