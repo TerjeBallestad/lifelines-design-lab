@@ -28,7 +28,7 @@ export function initPreview(deps: PreviewDeps): PreviewApi {
   const { host, titleEl } = deps;
   const lightbox = createLightbox(deps.lightbox, deps.onJump);
 
-  return {
+  const api: PreviewApi = {
     show(id, kind) {
       // surfaceFor never reads the result for the empty surface — the pane
       // is showable before the first rebuild assigns one.
@@ -50,4 +50,9 @@ export function initPreview(deps: PreviewDeps): PreviewApi {
       }
     },
   };
+  // The host boots empty in markup; render the empty surface so lit owns the
+  // container from the first frame (static children would sit above lit's
+  // part forever).
+  api.show(null, null);
+  return api;
 }
