@@ -1,4 +1,4 @@
-// SB-063 probe — the play layer over the SB-082 surfaces: a lock banner with
+// The play layer (SB-063) over the SB-082 surfaces: a lock banner with
 // the unlock sentence on locked entities (content stays visible, SB-062
 // ruling 3), an action bar on open ones, and interactive chat/call surfaces —
 // the two kinds the static transcript cannot serve per-entry.

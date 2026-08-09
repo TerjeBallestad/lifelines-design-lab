@@ -1,4 +1,4 @@
-// SB-061 probe — the Playtest lens; SB-063 adds the traversal loop on top:
+// The Playtest lens (SB-061); SB-063 adds the traversal loop on top:
 // the compiled case as a frontier the player walks (SB-062 ruling 3). Locked
 // rows grey out but stay readable with their unlock sentence, every
 // effect-carrying entity is triggerable with instant effects, and each action
@@ -96,16 +96,31 @@ function saveState(): void {
   sessionStorage.setItem(PLAY_STORE, serializePlayState(state));
 }
 
-const lightbox = createLightbox($('doc-lightbox'), (factId, ev) => runClick(factId, ev));
+/** The topbar case-note tracks the draft state: set at boot, refreshed by
+ *  every draft write and by the commit tail (SB-088 — it went stale before). */
+function renderCaseNote(hasDraft: boolean): void {
+  caseNote.textContent = hasDraft ? `${activeCasePath} · unsaved draft` : activeCasePath;
+}
+
+// A lift inside the lightbox keeps the sheet up and repaints its runs; a
+// jump (cmd/ctrl or already-lifted) closes and navigates as before (SB-088).
+const lightboxEl = $('doc-lightbox');
+const lightbox = createLightbox(lightboxEl, (factId, ev) => {
+  if (runClick(factId, ev) === 'jumped') return;
+  const iframe = lightboxEl.querySelector('iframe');
+  if (iframe) markLiftedRuns(iframe);
+  return 'stay';
+});
 
 /** SB-063 play verb inside the sheet: a click on a run lifts its fact;
  *  cmd/ctrl-click (or a click on an already-lifted run) jumps to the fact. */
-function runClick(factId: string, ev: MouseEvent): void {
+function runClick(factId: string, ev: MouseEvent): 'lifted' | 'jumped' {
   if (ev.metaKey || ev.ctrlKey || state.factsLifted.has(factId)) {
     selectById(factId);
-    return;
+    return 'jumped';
   }
   actions.lift(factId);
+  return 'lifted';
 }
 
 /** Paint the lifted state onto the sheet's runs (green solid underline). */
@@ -325,6 +340,7 @@ function mountDrawerLens(): ScriptLensHandle {
       // The SB-025 draft law: every keystroke survives a reload.
       lensDraftTimer = setTimeout(() => {
         localStorage.setItem(DRAFT_STORE, drawerLens!.getText());
+        renderCaseNote(true);
       }, 300);
     },
     onSaveRequested: () => {
@@ -420,6 +436,7 @@ async function commitCase(newText: string): Promise<void> {
     clearTimeout(draftTimer);
     clearTimeout(lensDraftTimer);
     localStorage.removeItem(DRAFT_STORE);
+    renderCaseNote(false);
     // A fields commit reaches the lens as a minimal external replacement —
     // cursor and undo history survive, and onDocChanged skips the echo.
     if (drawerLens && drawerLens.getText() !== newText) drawerLens.setText(newText);
@@ -434,6 +451,7 @@ async function commitCase(newText: string): Promise<void> {
     edStatus.textContent = `saved · ${errors} errors · ${warnings} warnings`;
   } catch (err) {
     localStorage.setItem(DRAFT_STORE, newText);
+    renderCaseNote(true);
     edStatus.textContent = `save failed — draft kept · ${err instanceof Error ? err.message : String(err)}`;
   }
 }
@@ -457,7 +475,10 @@ function stashDrawerField(key: string, value: string): void {
   draftTimer = setTimeout(() => {
     try {
       const patched = patchField(caseText, active.id, key, oneLine(value));
-      if (patched !== caseText) localStorage.setItem(DRAFT_STORE, patched);
+      if (patched !== caseText) {
+        localStorage.setItem(DRAFT_STORE, patched);
+        renderCaseNote(true);
+      }
     } catch {
       // Unpatchable while typing — the commit surfaces it (canvas law).
     }
@@ -490,5 +511,5 @@ $('ed-save').addEventListener('click', saveDrawerScript);
 $('ed-close').addEventListener('click', closeDrawer);
 
 wireCaseChrome();
-caseNote.textContent = draftRestored ? `${activeCasePath} · unsaved draft` : activeCasePath;
+renderCaseNote(draftRestored);
 renderAll();

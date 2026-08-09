@@ -1,4 +1,4 @@
-// SB-063 probe — the traversal layer: a pure PlayState over the compiled
+// The traversal layer (SB-063): a pure PlayState over the compiled
 // slice. The lens runs DATA, never code (SB-058): predHolds mirrors the three
 // predicate leaves that survive emit (unlock.ts predText is the template);
 // applyEffects covers the whole emitted effect vocabulary and logs every op

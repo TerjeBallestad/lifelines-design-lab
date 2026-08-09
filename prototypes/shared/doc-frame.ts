@@ -112,10 +112,12 @@ export interface Lightbox {
 }
 
 /** Readable full-size document view over the page. Esc / backdrop click
- *  closes. One per page, bound to the page's #doc-lightbox element. */
+ *  closes. One per page, bound to the page's #doc-lightbox element.
+ *  A run click closes by default (a jump leaves the sheet); the callback
+ *  returns 'stay' to keep the sheet up (playtest lift, SB-088). */
 export function createLightbox(
   el: HTMLElement,
-  onJump?: (factId: string, ev: MouseEvent) => void,
+  onJump?: (factId: string, ev: MouseEvent) => void | 'stay',
 ): Lightbox {
   function open(html: string, width: number, focusFact: string | null): void {
     el.innerHTML = `<div class="lb-inner"><iframe title="document"></iframe></div>`;
@@ -133,8 +135,8 @@ export function createLightbox(
     wireDocFrame(iframe, inner, html, width, {
       focusFact,
       onJump: (id, ev) => {
+        if (onJump?.(id, ev) === 'stay') return;
         close();
-        onJump?.(id, ev);
       },
     });
   }
