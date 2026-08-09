@@ -79,9 +79,10 @@
       .ed-foot {
         grid-row: 3;
       }
-      /* SB-063: FIELDS (canvas inspector form) and RAW share the middle row */
+      /* SB-063: FIELDS (canvas inspector form) and SCRIPT (canvas script
+         pane) share the middle row */
       #ed-form,
-      #ed-text {
+      #ed-script {
         grid-row: 2;
         grid-column: 1;
         min-height: 0;
@@ -94,9 +95,22 @@
       #editdrawer.mode-fields #ed-form {
         display: block;
       }
-      #editdrawer.mode-fields #ed-text,
+      #editdrawer.mode-fields #ed-script,
       #editdrawer.mode-fields #ed-save {
         display: none;
+      }
+      /* the CodeMirror host — canvas #script-pane styling */
+      #ed-script {
+        position: relative;
+        background: var(--surface-code, var(--bg));
+        overflow: hidden;
+        min-width: 0;
+      }
+      #ed-script .cm-editor {
+        height: 100%;
+      }
+      #ed-script .cm-editor.cm-focused {
+        outline: none;
       }
       #ed-form .field {
         display: block;
@@ -123,18 +137,6 @@
       }
       #ed-form .fval:focus {
         outline: 1px solid var(--accent);
-      }
-      #ed-text {
-        border: none;
-        outline: none;
-        resize: none;
-        background: var(--bg);
-        color: var(--text);
-        font: 500 11.5px var(--mono);
-        line-height: 1.55;
-        padding: 10px 12px;
-        white-space: pre;
-        overflow: auto;
       }
       .ed-foot {
         display: flex;
@@ -455,12 +457,14 @@
             <button id="ed-mode-fields" class="pb-mini" title="field form (canvas inspector)">
               FIELDS
             </button>
-            <button id="ed-mode-raw" class="pb-mini" title="raw block lines">RAW</button>
+            <button id="ed-mode-script" class="pb-mini" title="script lens (canvas pane)">
+              SCRIPT
+            </button>
           </span>
           <button id="ed-close" class="pb-mini" title="close drawer">✕</button>
         </div>
         <div id="ed-form"></div>
-        <textarea id="ed-text" spellcheck="false"></textarea>
+        <div id="ed-script"></div>
         <div class="ed-foot">
           <button id="ed-save" class="play-btn" title="save to disk (⌘S)">SAVE</button>
           <span id="ed-status"></span>

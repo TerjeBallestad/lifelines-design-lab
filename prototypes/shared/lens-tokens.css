@@ -1,0 +1,117 @@
+/* SB-063: the lens token classes — one source for every page that mounts
+   mountScriptLens (script editor, canvas, playtest drawer). Extracted from
+   the twin inline copies (script-editor/index.html + canvas/index.html);
+   the SB-060 drift lesson says a third copy was never an option. Colors come
+   from the page's token layer (surfaces.css / page vars). */
+.tok-h-doc {
+  color: var(--blue);
+  font-weight: 600;
+}
+.tok-h-fact {
+  color: var(--accent);
+  font-weight: 600;
+}
+.tok-h-question {
+  color: var(--yellow);
+  font-weight: 600;
+}
+.tok-h-hypothesis {
+  color: var(--purple);
+  font-weight: 600;
+}
+.tok-h-tiltak {
+  color: var(--green);
+  font-weight: 600;
+}
+.tok-h-dispatch {
+  color: var(--orange);
+  font-weight: 600;
+}
+.tok-h-clock {
+  color: var(--gold);
+  font-weight: 600;
+}
+.tok-h-case {
+  color: var(--text);
+  font-weight: 600;
+}
+.tok-key {
+  color: var(--text-3);
+}
+.tok-key-gate {
+  color: var(--yellow);
+}
+.tok-key-needs {
+  color: var(--purple);
+}
+.tok-key-opens {
+  color: var(--green);
+}
+.tok-id-doc {
+  color: var(--blue);
+}
+.tok-id-fact {
+  color: var(--accent);
+}
+.tok-id-question {
+  color: var(--yellow);
+}
+.tok-id-hypothesis {
+  color: var(--purple);
+}
+.tok-id-tiltak {
+  color: var(--green);
+}
+.tok-id-dispatch {
+  color: var(--orange);
+}
+.tok-id-clock {
+  color: var(--gold);
+}
+.tok-anchor-text {
+  background: var(--tint-accent);
+  border-radius: 3px;
+}
+.tok-anchor-ref {
+  color: var(--accent);
+}
+.tok-quote {
+  color: var(--text-2);
+  font-style: italic;
+}
+.tok-comment {
+  color: var(--text-4);
+  font-style: italic;
+}
+.tok-effect {
+  color: var(--green);
+  font-weight: 600;
+}
+.tok-weave {
+  color: var(--purple);
+  font-weight: 600;
+}
+.tok-guard {
+  color: var(--yellow);
+}
+.tok-kw {
+  color: var(--text-2);
+  font-weight: 600;
+}
+.tok-icon {
+  color: var(--gold);
+}
+.tok-todo {
+  background: var(--tint-orange);
+}
+.tok-todo,
+.tok-todo * {
+  color: var(--orange);
+}
+
+/* ⌘ held: ids advertise goto-definition */
+body.goto-mode [class*='tok-id-'] {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}

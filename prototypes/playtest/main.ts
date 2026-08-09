@@ -17,8 +17,12 @@ import {
   saveCaseUrl,
   wireCaseChrome,
 } from '../shared/active-case.ts';
-import { findSourceBlock, spliceSourceBlock } from './source-block.ts';
+import { findSourceBlock } from './source-block.ts';
 import type { SourceBlock } from './source-block.ts';
+import { mountScriptLens, indexHeadings } from '../script-editor/lens.ts';
+import type { ScriptLensHandle } from '../script-editor/lens.ts';
+import { buildSymbols } from '../script-editor/symbols.ts';
+import '../shared/lens-tokens.css';
 import { parseCaseText } from '../../src/compiler/parse.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
@@ -265,24 +269,73 @@ function reset(): void {
 }
 
 // ---- SB-063 amendment 3: the source drawer — tweak the selected entity's
-// ---- authored block without leaving the run. FIELDS mode renders the SAME
-// ---- form as the canvas inspector (shared/field-form.ts) and commits
-// ---- through the compiler patch layer; RAW mode edits the block's lines.
-// ---- Either way a commit saves to disk and recompiles the lens in place;
-// ---- in-flight edits land in the shared draft seam.
+// ---- authored source without leaving the run. SCRIPT mode mounts the SAME
+// ---- CodeMirror lens as the canvas script pane (token highlighting,
+// ---- folding, autocomplete, live recompile), jumped to the entity's block.
+// ---- FIELDS mode renders the canvas inspector form (shared/field-form.ts)
+// ---- over the compiler patch layer. Either way edits land in the shared
+// ---- draft seam and a save recompiles the lens in place.
 
 const appEl = $('app');
 const drawerEl = $('editdrawer');
 const editBtn = $('edit-btn') as HTMLButtonElement;
-const edText = $('ed-text') as HTMLTextAreaElement;
+const edScript = $('ed-script');
 const edForm = $('ed-form');
 const edTitle = $('ed-title');
 const edStatus = $('ed-status');
 const edModeFields = $('ed-mode-fields') as HTMLButtonElement;
-const edModeRaw = $('ed-mode-raw') as HTMLButtonElement;
+const edModeScript = $('ed-mode-script') as HTMLButtonElement;
 const DRAFT_STORE = draftKey(activeCasePath);
-let drawer: { id: string; kind: string; block: SourceBlock; mode: 'fields' | 'raw' } | null = null;
+let drawer: { id: string; kind: string; block: SourceBlock; mode: 'fields' | 'script' } | null =
+  null;
 let draftTimer: ReturnType<typeof setTimeout> | undefined;
+
+// The drawer's script lens — mounted once, on first SCRIPT-mode open, and
+// holding the WHOLE case text like the canvas pane (the block jump is a
+// scroll, not a slice — symbols, goto and autocomplete need the full doc).
+let drawerLens: ScriptLensHandle | null = null;
+let lensCompileTimer: ReturnType<typeof setTimeout> | undefined;
+let lensDraftTimer: ReturnType<typeof setTimeout> | undefined;
+
+function updateLensContext(): void {
+  if (!drawerLens) return;
+  const headings = indexHeadings(caseText.split('\n'));
+  drawerLens.update({
+    headings,
+    symbols: buildSymbols(result, headings),
+    diagnostics: result.diagnostics,
+  });
+}
+
+function mountDrawerLens(): ScriptLensHandle {
+  if (drawerLens) return drawerLens;
+  drawerLens = mountScriptLens({
+    parent: edScript,
+    doc: caseText,
+    onDocChanged: ({ external }) => {
+      if (external) return; // a fields-commit round-trip — already compiled
+      edStatus.textContent = 'unsaved — draft kept';
+      clearTimeout(lensCompileTimer);
+      // The canvas idiom: live recompile-in-place while typing (150 ms).
+      lensCompileTimer = setTimeout(() => {
+        lensCompileTimer = undefined;
+        rebuild(drawerLens!.getText());
+      }, 150);
+      clearTimeout(lensDraftTimer);
+      // The SB-025 draft law: every keystroke survives a reload.
+      lensDraftTimer = setTimeout(() => {
+        localStorage.setItem(DRAFT_STORE, drawerLens!.getText());
+      }, 300);
+    },
+    onSaveRequested: () => {
+      clearTimeout(lensCompileTimer);
+      lensCompileTimer = undefined;
+      void commitCase(drawerLens!.getText());
+    },
+  });
+  updateLensContext();
+  return drawerLens;
+}
 
 /** The parsed block behind an entry — the field form's data source. Only the
  *  NodeKind entries with FORM_FIELDS rows have one worth showing. */
@@ -299,11 +352,13 @@ function hasFieldForm(entry: { id: string; kind: string }): boolean {
 function openDrawer(entry: IndexEntry): void {
   const block = findSourceBlock(caseText, entry.id, entry.kind);
   if (!block) return;
-  const mode = hasFieldForm(entry) ? 'fields' : 'raw';
-  drawer = { id: entry.id, kind: entry.kind, block, mode };
+  // SCRIPT is the resting mode (the canvas slice, Terje's ruling); FIELDS
+  // stays one click away where the kind has a form.
+  drawer = { id: entry.id, kind: entry.kind, block, mode: 'script' };
   edStatus.textContent = '';
   appEl.classList.add('drawer-open');
   renderDrawer();
+  mountDrawerLens().jumpToLine(block.startLine);
 }
 
 function closeDrawer(): void {
@@ -316,14 +371,14 @@ function renderDrawer(): void {
   edTitle.textContent = `SOURCE · lines ${drawer.block.startLine}–${drawer.block.endLine}`;
   const fieldsAvailable = hasFieldForm(drawer);
   edModeFields.hidden = !fieldsAvailable;
-  edModeRaw.hidden = !fieldsAvailable; // no toggle when raw is the only mode
+  edModeScript.hidden = !fieldsAvailable; // no toggle when script is the only mode
   drawerEl.classList.toggle('mode-fields', drawer.mode === 'fields');
   edModeFields.classList.toggle('current', drawer.mode === 'fields');
-  edModeRaw.classList.toggle('current', drawer.mode === 'raw');
+  edModeScript.classList.toggle('current', drawer.mode === 'script');
   if (drawer.mode === 'fields') {
     const block = parsedBlockFor(drawer.id);
     if (!block) {
-      drawer.mode = 'raw';
+      drawer.mode = 'script';
       renderDrawer();
       return;
     }
@@ -335,7 +390,7 @@ function renderDrawer(): void {
       edForm,
     );
   } else {
-    edText.value = drawer.block.text;
+    mountDrawerLens();
   }
 }
 
@@ -352,6 +407,7 @@ function rebuild(newText: string): void {
       groups.flatMap((g) => g.entries).find((e) => e.id === stay.id && e.kind === stay.kind) ??
       null;
   }
+  updateLensContext();
   renderAll();
 }
 
@@ -362,7 +418,11 @@ async function commitCase(newText: string): Promise<void> {
     const res = await fetch(saveCaseUrl, { method: 'POST', body: newText });
     if (!res.ok) throw new Error(await res.text());
     clearTimeout(draftTimer);
+    clearTimeout(lensDraftTimer);
     localStorage.removeItem(DRAFT_STORE);
+    // A fields commit reaches the lens as a minimal external replacement —
+    // cursor and undo history survive, and onDocChanged skips the echo.
+    if (drawerLens && drawerLens.getText() !== newText) drawerLens.setText(newText);
     rebuild(newText);
     if (drawer) {
       const block = findSourceBlock(caseText, drawer.id, drawer.kind);
@@ -404,27 +464,13 @@ function stashDrawerField(key: string, value: string): void {
   }, 300);
 }
 
-function saveDrawerRaw(): void {
-  if (!drawer) return;
-  void commitCase(spliceSourceBlock(caseText, drawer.block, edText.value));
+function saveDrawerScript(): void {
+  if (!drawerLens) return;
+  clearTimeout(lensCompileTimer);
+  lensCompileTimer = undefined;
+  void commitCase(drawerLens.getText());
 }
 
-edText.addEventListener('input', () => {
-  if (!drawer) return;
-  edStatus.textContent = 'unsaved — draft kept';
-  clearTimeout(draftTimer);
-  // The SB-025 draft law: every edit survives a reload, from the first keystroke.
-  const active = drawer;
-  draftTimer = setTimeout(() => {
-    localStorage.setItem(DRAFT_STORE, spliceSourceBlock(caseText, active.block, edText.value));
-  }, 300);
-});
-edText.addEventListener('keydown', (ev) => {
-  if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') {
-    ev.preventDefault();
-    saveDrawerRaw();
-  }
-});
 editBtn.addEventListener('click', () => {
   if (selected) openDrawer(selected);
 });
@@ -434,13 +480,13 @@ edModeFields.addEventListener('click', () => {
     renderDrawer();
   }
 });
-edModeRaw.addEventListener('click', () => {
+edModeScript.addEventListener('click', () => {
   if (drawer) {
-    drawer.mode = 'raw';
+    drawer.mode = 'script';
     renderDrawer();
   }
 });
-$('ed-save').addEventListener('click', saveDrawerRaw);
+$('ed-save').addEventListener('click', saveDrawerScript);
 $('ed-close').addEventListener('click', closeDrawer);
 
 wireCaseChrome();

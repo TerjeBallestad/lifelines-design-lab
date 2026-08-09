@@ -8,6 +8,7 @@ import { compileCase } from '../../src/compiler/index.ts';
 import type { CompileResult } from '../../src/compiler/index.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
 import '../shared/surfaces.css';
+import '../shared/lens-tokens.css';
 import { funnCard } from '../shared/surfaces.ts';
 import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
 import {
