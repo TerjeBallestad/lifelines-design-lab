@@ -24,11 +24,13 @@
       }
       #app {
         display: grid;
-        grid-template-rows: 44px 1fr;
+        grid-template-rows: 44px 36px 1fr 150px;
         grid-template-columns: 300px 1fr;
         grid-template-areas:
           'top top'
-          'index reading';
+          'play play'
+          'index reading'
+          'log reading';
         height: 100vh;
       }
 
@@ -83,6 +85,104 @@
         color: var(--text-3);
       }
 
+      /* SB-063: the playbar — day, stage, frontier count, the two run verbs */
+      #playbar {
+        grid-area: play;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-side);
+        overflow: hidden;
+      }
+      .pb-stat {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.05em;
+        color: var(--text-2);
+        white-space: nowrap;
+      }
+      .pb-mini {
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 4px;
+        color: var(--text-3);
+        font: 600 10px var(--mono);
+        width: 18px;
+        cursor: pointer;
+      }
+      .pb-delta {
+        font: 500 10.5px var(--mono);
+        color: var(--text-3);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-left: auto;
+      }
+      .pb-exhausted {
+        font: 600 10.5px var(--mono);
+        color: var(--orange);
+        white-space: nowrap;
+      }
+      .play-btn {
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 6px;
+        padding: 3px 10px;
+        font: 600 10px var(--mono);
+        letter-spacing: 0.06em;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .play-btn:hover {
+        background: var(--panel-hover);
+      }
+      .play-btn.debug {
+        color: var(--orange);
+      }
+
+      /* SB-063: play state on surfaces */
+      .action-bar {
+        display: flex;
+        gap: 8px;
+        margin: 8px 0;
+      }
+      .lock-banner {
+        border: 1px dashed var(--input-border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        margin: 6px 0;
+        font: 500 11px var(--sans);
+        color: var(--text-3);
+      }
+      .done-banner {
+        font: 600 10.5px var(--mono);
+        color: var(--green);
+        margin: 6px 0;
+      }
+      .play-locked {
+        opacity: 0.45;
+      }
+      .play-done .chat-question {
+        color: var(--text-3);
+      }
+
+      /* SB-063: the run log */
+      #log {
+        grid-area: log;
+        background: var(--bg-side);
+        border-right: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        overflow-y: auto;
+        padding: 8px 12px;
+      }
+      .log-line {
+        font: 500 10px var(--mono);
+        color: var(--text-3);
+        padding: 1px 0;
+        white-space: normal;
+      }
+
       /* entity index — every emitted entity, grouped by kind */
       #index {
         grid-area: index;
@@ -132,6 +232,12 @@
         background: var(--panel-hover);
         color: var(--text);
         font-weight: 600;
+      }
+      #index .idx-item.st-locked {
+        opacity: 0.4;
+      }
+      #index .idx-item.st-done {
+        color: var(--green);
       }
 
       /* reading pane — the player surface at full reading size */
@@ -205,7 +311,9 @@
         </span>
         <span id="case-note"></span>
       </div>
+      <div id="playbar"></div>
       <div id="index"></div>
+      <div id="log"></div>
       <div id="reading">
         <div class="read-head" id="surface-title">GAME SURFACE</div>
         <!-- SB-082 lesson: lit owns this host from boot — it stays empty here -->
