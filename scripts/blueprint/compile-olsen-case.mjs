@@ -28,7 +28,12 @@ export function defaultPaths(cwd = process.cwd()) {
  * formatting law — the shipped tiny_olsen_slice.json is tab-indented).
  */
 export function serializeSliceJson(slice) {
-  return `${JSON.stringify(slice, null, '\t')}\n`;
+  const stamped = {
+    _generated:
+      'DO NOT HAND-EDIT. Compiled from lifelines-design-lab content/cases/olsen/tiny-olsen.case.md — edit that file and run `npm run gen:olsen` there. Hand edits are overwritten by the next compile.',
+    ...slice,
+  };
+  return `${JSON.stringify(stamped, null, '\t')}\n`;
 }
 
 export function compileTinyOlsen(caseText) {
