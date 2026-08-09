@@ -10,7 +10,8 @@ import caseText from './fixtures/proposals.case.md?raw';
 // ../lifelines-core-loop/resources/cases/olsen/source/tiny_olsen_slice.json.
 // scripts/compiler/provenance.test.mjs re-asserts that copy against the live
 // shipped file whenever the core-loop checkout is present.
-// proposals.case.md authors all 24 shipped proposals in shipped file order
+// proposals.case.md authors every shipped proposal in shipped file order
+// (24 at the SB-024 heal; `depositum` deleted by live authoring 2026-08-09).
 // (ruling C: order = file order; no Order: field exists).
 
 const result = compileCase(caseText);
@@ -18,8 +19,8 @@ const slice = result.slice;
 
 const MINIMAL_HEADER = ['# Case: c_x', 'Title: X', ''];
 
-describe('# Proposal: golden — all 24 shipped proposals (SB-028 rulings A–D)', () => {
-  it('emits frank_proposals deep-equal to the shipped array, order 0–23, sparse fields omitted', () => {
+describe('# Proposal: golden — the shipped proposal corpus (SB-028 rulings A–D)', () => {
+  it('emits frank_proposals deep-equal to the shipped array, in file order, sparse fields omitted', () => {
     // toStrictEqual: entries without Categories: must NOT carry a
     // relevant_categories key at all (sparse-field law, ruling B).
     expect(slice.frank_proposals).toStrictEqual(fragments.frank_proposals);

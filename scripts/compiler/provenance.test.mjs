@@ -75,7 +75,9 @@ describe('healed 0.2 tiny-olsen.case.md (SB-024 back-port) compiles clean', () =
     ]);
     expect(out.slice.day_script_beats).toHaveLength(6);
     expect(out.slice.frank_chat).toHaveLength(8);
-    expect(out.slice.frank_proposals).toHaveLength(24);
+    // 24 at the SB-024 heal; Terje deleted `depositum` on 2026-08-09 (live
+    // authoring after the SB-055 verdict) — the inventory follows the content.
+    expect(out.slice.frank_proposals).toHaveLength(23);
     expect(out.slice.recipes).toHaveLength(2);
     expect(out.slice.calls?.map((c) => c.contact_id)).toEqual(['grete']);
     // The healed file is warning-free — only §9 advisory lints remain.

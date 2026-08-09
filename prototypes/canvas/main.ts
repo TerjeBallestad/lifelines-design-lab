@@ -23,6 +23,7 @@ import { RELATION, birthKinds as relationBirthKinds } from './relations.ts';
 import * as model from './model.ts';
 import * as layout from './layout-modes.ts';
 import type { LayoutMode } from './layout-modes.ts';
+import { forceEngine, setForceEngine, dragReheat } from './force.ts';
 import * as render from './render.ts';
 import * as editing from './editing.ts';
 import * as inspector from './inspector.ts';
@@ -536,7 +537,7 @@ window.addEventListener('pointermove', (event) => {
       sn.x = node.x;
       sn.y = node.y;
     }
-    sim.reheat(0.3);
+    sim.reheat(dragReheat());
     layout.startSimLoop();
   }
   render.syncPositions();
@@ -561,7 +562,7 @@ window.addEventListener('pointerup', () => {
     render.nodeEls.get(id)?.classList.add('pinned');
     layout.persistPins();
   }
-  sim.reheat(0.3);
+  sim.reheat(dragReheat());
   layout.startSimLoop();
 });
 
@@ -574,7 +575,7 @@ function unpin(id: string): void {
   sn.pinned = false;
   render.nodeEls.get(id)?.classList.remove('pinned');
   layout.persistPins();
-  sim.reheat(0.3);
+  sim.reheat(dragReheat());
   layout.startSimLoop();
 }
 
@@ -607,6 +608,23 @@ $('z-layout')?.addEventListener('click', relayout);
   document.getElementById(`m-${mode}`)?.addEventListener('click', () => setLayoutMode(mode));
 });
 reflectModeButtons();
+// SB-080 A/B: swap the force engine under the current cloud. The live sim's
+// positions seed the next one (applyLayout), so the board holds still and
+// only the motion character changes — that is the thing under judgment.
+const engineBtn = document.getElementById('f-engine');
+function reflectEngineButton(): void {
+  if (engineBtn) engineBtn.textContent = forceEngine === 'd3' ? 'sim: d3' : 'sim: old';
+}
+engineBtn?.addEventListener('click', () => {
+  setForceEngine(forceEngine === 'd3' ? 'legacy' : 'd3');
+  reflectEngineButton();
+  if (layout.layoutMode !== 'hand') {
+    layout.applyLayout();
+    render.renderWorld();
+    applySelectionStyles();
+  }
+});
+reflectEngineButton();
 document.addEventListener('keydown', (event) => {
   // Esc while typing — inspector field OR the script lens — must not clear
   // the canvas selection mid-thought (SB-041); Esc on the canvas side clears.
