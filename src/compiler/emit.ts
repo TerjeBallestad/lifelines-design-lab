@@ -59,6 +59,7 @@ export interface QuestionOut {
   prompt: string;
   teaser?: string;
   card_title?: string;
+  frank_response?: string;
   reveal_when?: PredicateSpec;
   leads?: LeadOut[];
 }
@@ -730,11 +731,15 @@ export function emitCase(
       titleForLab: titleValue,
     });
 
+    // SB-057: card_frank_response falls through to the question when a
+    // question card is played — same reader as the fact field.
+    const frank = fields.find('Frank');
     const question: QuestionOut = {
       id: block.id,
       prompt,
       ...(teaser ? { teaser: teaser.value } : {}),
       ...(cardTitle !== undefined ? { card_title: cardTitle } : {}),
+      ...(frank ? { frank_response: stripGuillemets(frank.value) } : {}),
       ...(condition.predicate ? { reveal_when: condition.predicate } : {}),
       ...(leads.length > 0 ? { leads } : {}),
     };

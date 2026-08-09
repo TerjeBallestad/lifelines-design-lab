@@ -94,6 +94,24 @@ describe('§4 questions', () => {
     expect(byId(slice.questions, 'q_baering')).toEqual(fragments.questions.q_baering);
   });
 
+  it('Frank: «…» → frank_response, omitted when unset (SB-057)', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Question: q_a',
+      'Title: Q?',
+      'Frank: «Svaret hans.»',
+      '',
+      '# Question: q_b',
+      'Title: Q2?',
+      '',
+    ].join('\n');
+    const out = compileCase(text);
+    expect(byId(out.slice.questions, 'q_a').frank_response).toBe('Svaret hans.');
+    expect('frank_response' in byId(out.slice.questions, 'q_b')).toBe(false);
+  });
+
   it('single-term when: emits a bare fact_lifted predicate', () => {
     expect(byId(slice.questions, 'q_kollaps')).toEqual(fragments.questions.q_kollaps);
   });

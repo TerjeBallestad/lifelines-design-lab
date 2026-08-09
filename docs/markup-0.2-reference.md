@@ -453,5 +453,14 @@ chat entries gain `answer_lines`/`followups` (the Godot model treats
 `answer_lines` (the two shipped entries whose hand-written `answer` had
 drifted from their own lines now match the lines).
 
+### Compiler extension recorded by SB-057 (question `Frank:`)
+
+A question block accepts `Frank: «…»` → `frank_response`, mirroring the
+§10 fact field. The reader already exists: `case_engine.card_frank_response`
+falls through fact → question when a card is played, and
+`tiny_olsen_pack_generator` reads `frank_response` on both kinds. Sparse-field
+law applies — no `Frank:` line, no emitted field. The shipped slice authors
+none, so emitted JSON is unchanged until a question authors one.
+
 Also: `.case.md` files are prettier-ignored — §8 weave indentation and `*`
 branch sigils are semantic, and prettier rewrites them into `-` lists.
