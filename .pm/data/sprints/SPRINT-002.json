@@ -81,6 +81,12 @@
       "author": "wayfinder",
       "text": "Session log (wayfinder, 2026-08-09): claimed SB-061 (content display milestone). Read the SB-060/082/083 resolutions and the SB-058/062 rulings, traced surfaces.ts, emit.ts, weave.ts, active-case.ts. Track gate: Mixed — planned the V substrate only, feel rides on SB-063. Filed PLAN-005 (TASK-023 renderers for eight uncovered kinds, TASK-024 Playtest lens page, TASK-025 computed coverage list). SB-061 stays open until the plan executes; claim released.",
       "createdAt": "2026-08-09T15:55:25.141Z"
+    },
+    {
+      "id": "c1786294423363",
+      "author": "claude",
+      "text": "Session (wayfinder, 2026-08-09): claimed the destination probe (first playthrough). Loaded two-track, built the SB-062 ruling-3 traversal layer as three light tasks (state.ts, play-surfaces.ts, lens wiring) — committed, 26 playtest tests green, full typecheck/lint green, browser-verified via cmux. Probe stays open: Terje plays, findings graduate the fog. Side finding filed as SB-087 (provenance test red on main — vendored fragments vs regenerated core artifact, pre-existing).",
+      "createdAt": "2026-08-09T16:53:43.363Z"
     }
   ],
   "status": "active",
