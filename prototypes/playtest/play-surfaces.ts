@@ -218,11 +218,20 @@ export function playSurface(
   }
   const status = entityStatus(state, result.slice, entry.id, statusKind(entry));
   const base = entitySurface(entry, result);
+  const isDoc = entry.kind === 'document';
   return {
     ...base,
     template: html`${status === 'locked' ? lockBanner(lockSentenceFor(entry, result)) : nothing}
       ${status === 'done' ? html`<div class="done-banner">✓ done</div>` : nothing}
       ${actionBar(entry, status, actions)}
-      <div class=${status === 'locked' ? 'play-locked' : ''}>${base.template}</div>`,
+      <div class="${status === 'locked' ? 'play-locked' : ''} ${isDoc ? 'play-doc' : ''}">
+        ${base.template}
+      </div>
+      ${isDoc
+        ? html`<div class="lb-hint">
+            click a highlight to lift its fact · ⌘-click follows it to the canvas card · click the
+            page to read full size
+          </div>`
+        : nothing}`,
   };
 }

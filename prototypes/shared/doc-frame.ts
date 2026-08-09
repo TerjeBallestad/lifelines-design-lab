@@ -14,8 +14,9 @@ export interface DocFrameOpts {
   focusFact?: string | null;
   /** 'fit' scales the sheet down to the wrap width; 'full' keeps it 1:1. */
   scale?: DocScale;
-  /** A click on a [data-fact-id] span inside the sheet. */
-  onJump?: (factId: string) => void;
+  /** A click on a [data-fact-id] span inside the sheet. The event rides
+   *  along so a lens can split plain click from cmd/ctrl-click (SB-063). */
+  onJump?: (factId: string, ev: MouseEvent) => void;
   /** A click anywhere else on the page (rail: open the lightbox). */
   onPageClick?: (() => void) | null;
 }
@@ -57,7 +58,7 @@ export function wireDocFrame(
       const el = (ev.target as HTMLElement).closest('[data-fact-id]');
       const factId = el?.getAttribute('data-fact-id');
       if (factId) {
-        opts.onJump?.(factId);
+        opts.onJump?.(factId, ev as MouseEvent);
       } else if (opts.onPageClick) {
         opts.onPageClick();
       }
@@ -83,7 +84,10 @@ export interface Lightbox {
 
 /** Readable full-size document view over the page. Esc / backdrop click
  *  closes. One per page, bound to the page's #doc-lightbox element. */
-export function createLightbox(el: HTMLElement, onJump?: (factId: string) => void): Lightbox {
+export function createLightbox(
+  el: HTMLElement,
+  onJump?: (factId: string, ev: MouseEvent) => void,
+): Lightbox {
   function open(html: string, width: number, focusFact: string | null): void {
     el.innerHTML = `<div class="lb-inner"><iframe title="document"></iframe></div>`;
     el.classList.add('open');
@@ -99,9 +103,9 @@ export function createLightbox(el: HTMLElement, onJump?: (factId: string) => voi
     });
     wireDocFrame(iframe, inner, html, width, {
       focusFact,
-      onJump: (id) => {
+      onJump: (id, ev) => {
         close();
-        onJump?.(id);
+        onJump?.(id, ev);
       },
     });
   }

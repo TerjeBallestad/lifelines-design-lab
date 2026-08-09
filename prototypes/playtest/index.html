@@ -167,6 +167,12 @@
         color: var(--text-3);
       }
 
+      /* SB-063: the sheet's own hint lies in this lens — the play wrapper
+         hides it and appends the lift-verb hint instead */
+      .play-doc .lb-hint {
+        display: none;
+      }
+
       /* SB-063: the run log */
       #log {
         grid-area: log;

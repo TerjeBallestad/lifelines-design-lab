@@ -61,7 +61,25 @@ let state: PlayState = createPlayState(result.slice);
 let selected: IndexEntry | null = null;
 let lastDelta: FrontierDelta | null = null;
 
-const lightbox = createLightbox($('doc-lightbox'), (factId) => selectById(factId));
+const lightbox = createLightbox($('doc-lightbox'), (factId, ev) => runClick(factId, ev));
+
+/** SB-063 play verb inside the sheet: a click on a run lifts its fact;
+ *  cmd/ctrl-click (or a click on an already-lifted run) jumps to the fact. */
+function runClick(factId: string, ev: MouseEvent): void {
+  if (ev.metaKey || ev.ctrlKey || state.factsLifted.has(factId)) {
+    selectById(factId);
+    return;
+  }
+  actions.lift(factId);
+}
+
+/** Paint the lifted state onto the sheet's runs (green solid underline). */
+function markLiftedRuns(iframe: HTMLIFrameElement): void {
+  const idoc = iframe.contentDocument;
+  if (!idoc) return;
+  for (const el of idoc.querySelectorAll('[data-fact-id]'))
+    el.classList.toggle('lifted', state.factsLifted.has(el.getAttribute('data-fact-id') ?? ''));
+}
 
 /** Every verb runs through here: snapshot → mutate → snapshot → delta. */
 function act(mutate: () => void): void {
@@ -104,12 +122,17 @@ function renderSurface(): void {
   if (surface.doc) {
     const iframe = surfaceHost.querySelector<HTMLIFrameElement>('iframe.doc-frame');
     const wrap = surfaceHost.querySelector<HTMLElement>('.doc-frame-wrap');
-    if (iframe && wrap)
+    if (iframe && wrap) {
       wireDocFrame(iframe, wrap, surface.doc.html, surface.doc.width, {
         scale: 'full',
-        onJump: (factId) => selectById(factId),
+        onJump: runClick,
         onPageClick: () => lightbox.open(surface.doc!.html, surface.doc!.width, null),
       });
+      // Marks apply now (re-render, iframe already live) and again on load
+      // (first wire — the srcdoc document does not exist yet).
+      markLiftedRuns(iframe);
+      iframe.addEventListener('load', () => markLiftedRuns(iframe), { once: true });
+    }
   }
 }
 

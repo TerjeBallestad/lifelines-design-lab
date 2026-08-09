@@ -40,6 +40,10 @@ const PREVIEW_CSS = `
 }
 [data-fact-id]:hover { background: rgba(200, 154, 46, 0.32); }
 [data-fact-id].focus { background: #fff8b0; outline: 1.5px solid #c89a2e; }
+[data-fact-id].lifted {
+  background: rgba(96, 156, 96, 0.16);
+  border-bottom: 1.5px solid rgba(96, 156, 96, 0.75);
+}
 html, body { overflow: hidden; }
 `;
 
