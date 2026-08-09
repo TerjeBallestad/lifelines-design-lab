@@ -10,7 +10,6 @@ import { forceSimulation, forceManyBody, forceLink, forceX, forceY } from 'd3-fo
 import type { Simulation, SimulationLinkDatum } from 'd3-force';
 import type { CaseGraph } from './graph.ts';
 import { NODE_W, NODE_H } from './graph.ts';
-import { createLegacySim } from './force-legacy.ts';
 
 export interface SimNode {
   id: string;
@@ -38,29 +37,9 @@ export interface Sim {
 
 export const SETTLED = 0.005;
 
-// ---- engine toggle (SB-080 A/B) --------------------------------------------
-// Same Sim surface, two engines: the d3-force adapter below vs the SB-051
-// hand-rolled sim in force-legacy.ts. The flag persists so a reload keeps the
-// engine under judgment. Guarded: the module stays importable headless.
-export type ForceEngine = 'd3' | 'legacy';
-const ENGINE_KEY = 'kildeverket-canvas-force-engine';
-
-export let forceEngine: ForceEngine = (() => {
-  if (typeof localStorage === 'undefined') return 'd3';
-  return localStorage.getItem(ENGINE_KEY) === 'legacy' ? 'legacy' : 'd3';
-})();
-
-export function setForceEngine(engine: ForceEngine): void {
-  forceEngine = engine;
-  if (typeof localStorage !== 'undefined') localStorage.setItem(ENGINE_KEY, engine);
-}
-
-/** Per-frame drag reheat. Alpha is global in d3-force — a hot drag stirs the
- *  whole cloud — so the adapter runs colder. The legacy sim keeps the 0.3 it
- *  was judged with, so the A/B compares each engine at its own best. */
-export function dragReheat(): number {
-  return forceEngine === 'legacy' ? 0.3 : 0.08;
-}
+/** Drag/drop reheat. Alpha is global in d3-force — a hot pulse stirs the
+ *  whole cloud — so drags and drops run cold and stay local (SB-080). */
+export const DRAG_REHEAT = 0.08;
 
 // Feel knobs. The old hand-rolled sim squeezed dx in its distance metric so
 // the wide cards spread further on x; the elliptical collide below carries
@@ -123,10 +102,6 @@ function ellipseCollide(nodes: SimNode[], rx: number, ry: number, strength: numb
  * `pinned` ids keep their seed position until dragged.
  */
 export function createSim(graph: CaseGraph, pinned: ReadonlySet<string>): Sim {
-  return forceEngine === 'legacy' ? createLegacySim(graph, pinned) : createD3Sim(graph, pinned);
-}
-
-export function createD3Sim(graph: CaseGraph, pinned: ReadonlySet<string>): Sim {
   const nodes: SimNode[] = graph.nodes.map((n) => ({
     id: n.id,
     x: n.x,

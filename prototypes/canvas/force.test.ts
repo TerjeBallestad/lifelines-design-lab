@@ -1,9 +1,8 @@
-// SB-080 — both force engines are pure, so the SB-051 invariants run
-// headless against each: it settles, it never produces NaN, springs pull
+// SB-080 — the d3-force adapter is pure, so the SB-051 invariants stay
+// testable headless: it settles, it never produces NaN, springs pull
 // neighbours together, and a pinned node does not move.
 import { describe, it, expect } from 'vitest';
-import { createD3Sim, SETTLED } from './force.ts';
-import { createLegacySim } from './force-legacy.ts';
+import { createSim, SETTLED } from './force.ts';
 import type { CaseGraph, GraphNode } from './graph.ts';
 
 const node = (id: string, x: number, y: number): GraphNode => ({
@@ -21,17 +20,14 @@ const graph = (nodes: GraphNode[], edges: Array<[string, string]>): CaseGraph =>
   arrivals: new Map(),
 });
 
-const run = (sim: ReturnType<typeof createD3Sim>, ticks = 400) => {
+const run = (sim: ReturnType<typeof createSim>, ticks = 400) => {
   for (let i = 0; i < ticks && sim.alpha > SETTLED; i++) sim.tick();
 };
 
 const dist = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y);
 
-describe.each([
-  ['d3', createD3Sim],
-  ['legacy', createLegacySim],
-] as const)('force sim (SB-080 A/B, %s engine)', (_engine, createSim) => {
+describe('force sim (SB-080, d3-force adapter)', () => {
   it('settles with finite positions', () => {
     const sim = createSim(
       graph(
