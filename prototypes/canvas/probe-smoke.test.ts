@@ -199,13 +199,25 @@ describe('canvas inspector editing (SB-032)', () => {
 
 // ---- SB-033: edge authoring — drag to connect, delete to disconnect -------
 
-/** Simulate a port drag from one node to another (window-level pointer flow). */
-function dragConnect(fromId: string, toId: string): void {
+/** A MouseEvent whose .view d3-drag can hang its window listeners on.
+ *  jsdom's brand check rejects vitest's proxied global, so the view is
+ *  grafted on after construction. */
+function mouse(type: string, clientX: number, clientY: number): MouseEvent {
+  const event = new MouseEvent(type, { bubbles: true, clientX, clientY });
+  Object.defineProperty(event, 'view', { value: window });
+  return event;
+}
+
+/** Simulate a port drag from one node to another. SB-081: d3-drag owns the
+ *  gesture — mouse events, and a timer flush afterwards so d3's post-drag
+ *  click suppression disarms before the test clicks anything. */
+async function dragConnect(fromId: string, toId: string): Promise<void> {
   const port = document.querySelector<HTMLElement>(`.node[data-id="${fromId}"] .port`)!;
-  port.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10 }));
-  window.dispatchEvent(new MouseEvent('pointermove', { clientX: 120, clientY: 80 }));
+  port.dispatchEvent(mouse('mousedown', 10, 10));
+  window.dispatchEvent(mouse('mousemove', 120, 80));
   const target = document.querySelector<HTMLElement>(`.node[data-id="${toId}"]`)!;
-  target.dispatchEvent(new MouseEvent('pointerup', { bubbles: true, clientX: 200, clientY: 90 }));
+  target.dispatchEvent(mouse('mouseup', 200, 90));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe('canvas edge authoring (SB-033)', () => {
@@ -218,7 +230,7 @@ describe('canvas edge authoring (SB-033)', () => {
     // Precondition: the field exists un-appended. Anchor one line only —
     // authoring may add fields (About/Discuss) between Supports and Frank.
     expect(probe.getCaseText()).toContain('Supports: q_grete_dor\n');
-    dragConnect('f_grete_syk', 'q_okonomi');
+    await dragConnect('f_grete_syk', 'q_okonomi');
 
     // The case text gained the Supports entry…
     expect(probe.getCaseText()).toContain('Supports: q_grete_dor, q_okonomi');
@@ -243,7 +255,7 @@ describe('canvas edge authoring (SB-033)', () => {
 
     const doc = probe.graph.nodes.find((n) => n.kind === 'document')!;
     const tiltak = probe.graph.nodes.find((n) => n.kind === 'tiltak')!;
-    dragConnect(doc.id, tiltak.id);
+    await dragConnect(doc.id, tiltak.id);
 
     expect(probe.getCaseText()).toBe(before); // byte-identical — nothing written
     expect(fetchMock).not.toHaveBeenCalled();
@@ -264,7 +276,7 @@ describe('canvas edge authoring (SB-033)', () => {
       compileCase(text).diagnostics.filter((d) => d.code === 'cond-parse-error');
 
     // fact→hypothesis appends an and-term to the hypothesis's needs:.
-    dragConnect('f_post', 'h_gd_system');
+    await dragConnect('f_post', 'h_gd_system');
     expect(probe.getCaseText()).toContain('needs: f_smart_gutt and f_ingen_matkjop and f_post');
     expect(noCondErrors(probe.getCaseText())).toEqual([]);
     expect(
@@ -296,14 +308,14 @@ describe('canvas edge authoring (SB-033)', () => {
 
 // ---- SB-042: drag-wire-to-empty create ------------------------------------
 
-/** Drag from a node's port and release on empty canvas at (300, 200). */
-function dragToEmpty(fromId: string): void {
+/** Drag from a node's port and release on empty canvas at (300, 200).
+ *  Same d3-drag mouse flow + suppression flush as dragConnect (SB-081). */
+async function dragToEmpty(fromId: string): Promise<void> {
   const port = document.querySelector<HTMLElement>(`.node[data-id="${fromId}"] .port`)!;
-  port.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10 }));
-  window.dispatchEvent(new MouseEvent('pointermove', { clientX: 300, clientY: 200 }));
-  document
-    .getElementById('viewport')!
-    .dispatchEvent(new MouseEvent('pointerup', { bubbles: true, clientX: 300, clientY: 200 }));
+  port.dispatchEvent(mouse('mousedown', 10, 10));
+  window.dispatchEvent(mouse('mousemove', 300, 200));
+  document.getElementById('viewport')!.dispatchEvent(mouse('mouseup', 300, 200));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe('canvas drag-wire-to-empty create (SB-042)', () => {
@@ -314,7 +326,7 @@ describe('canvas drag-wire-to-empty create (SB-042)', () => {
 
     const fact = document.querySelector<HTMLElement>('.node[data-id="f_grete_syk"]')!;
     expect(fact).not.toBeNull();
-    dragToEmpty('f_grete_syk');
+    await dragToEmpty('f_grete_syk');
 
     const menu = document.getElementById('create-menu')!;
     expect(menu.classList.contains('show')).toBe(true);
@@ -331,7 +343,7 @@ describe('canvas drag-wire-to-empty create (SB-042)', () => {
     const probe = await bootProbe();
     const before = new Map(probe.graph.nodes.map((n) => [n.id, { x: n.x, y: n.y }]));
 
-    dragToEmpty('f_grete_syk');
+    await dragToEmpty('f_grete_syk');
     document
       .querySelector<HTMLElement>('#create-menu [data-mk="question"]')!
       .dispatchEvent(new MouseEvent('click', { bubbles: true }));
@@ -365,7 +377,7 @@ describe('canvas drag-wire-to-empty create (SB-042)', () => {
     const probe = await bootProbe();
     const doc = probe.graph.nodes.find((n) => n.kind === 'document')!;
 
-    dragToEmpty(doc.id);
+    await dragToEmpty(doc.id);
     const menu = document.getElementById('create-menu')!;
     const offered = [...menu.querySelectorAll<HTMLElement>('[data-mk]')].map((b) => b.dataset.mk);
     expect(offered).toEqual(['fact']);
@@ -391,7 +403,7 @@ describe('canvas drag-wire-to-empty create (SB-042)', () => {
     const beforeText = probe.getCaseText();
 
     const tiltak = probe.graph.nodes.find((n) => n.kind === 'tiltak')!;
-    dragToEmpty(tiltak.id);
+    await dragToEmpty(tiltak.id);
 
     expect(document.getElementById('create-menu')!.classList.contains('show')).toBe(false);
     const tipEl = document.getElementById('cursor-tip')!;
@@ -1098,6 +1110,79 @@ describe('canvas select-to-lift (SB-043)', () => {
     const res = probe.liftAsFact('f_grete_syk', 'noe tekst');
     expect(res.ok).toBe(false);
     expect(probe.getCaseText()).toBe(before);
+    localStorage.clear();
+  });
+});
+
+// ---- SB-081: zoom / drag arbitration ---------------------------------------
+//
+// d3-zoom (viewport) and d3-drag (#nodes) must not fight: a grab on a node
+// body moves the node and never pans, a grab on a port draws the rubber band
+// and never pans, and a grab on empty canvas pans and moves no node.
+
+describe('canvas zoom/drag arbitration (SB-081)', () => {
+  it('a node-body grab moves the node — the camera stays put', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    const world = document.getElementById('world')!;
+    const before = world.style.transform;
+
+    const el = document.querySelector<HTMLElement>('.node[data-id="f_grete_syk"]')!;
+    const node = probe.graph.nodes.find((n) => n.id === 'f_grete_syk')!;
+    const { x, y } = node;
+    el.dispatchEvent(mouse('mousedown', 50, 50));
+    window.dispatchEvent(mouse('mousemove', 80, 65));
+    window.dispatchEvent(mouse('mouseup', 80, 65));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(node.x).toBe(x + 30);
+    expect(node.y).toBe(y + 15);
+    expect(world.style.transform).toBe(before);
+    localStorage.clear();
+  });
+
+  it('a port grab draws the rubber band — no pan, no node move', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    const world = document.getElementById('world')!;
+    const before = world.style.transform;
+    const node = probe.graph.nodes.find((n) => n.id === 'f_grete_syk')!;
+    const { x, y } = node;
+
+    const port = document.querySelector<HTMLElement>('.node[data-id="f_grete_syk"] .port')!;
+    port.dispatchEvent(mouse('mousedown', 50, 50));
+    window.dispatchEvent(mouse('mousemove', 150, 120));
+    expect(document.querySelector('#edges path.rubber')).not.toBeNull();
+
+    window.dispatchEvent(mouse('mouseup', 150, 120));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(document.querySelector('#edges path.rubber')).toBeNull();
+    expect(node.x).toBe(x);
+    expect(node.y).toBe(y);
+    expect(world.style.transform).toBe(before);
+    localStorage.clear();
+  });
+
+  it('an empty-canvas grab pans the camera and moves no node', async () => {
+    localStorage.clear();
+    globalThis.fetch = vi.fn(async () => ({ ok: true, text: async () => 'ok' })) as never;
+    const probe = await bootProbe();
+    const world = document.getElementById('world')!;
+    const positions = probe.graph.nodes.map((n) => ({ x: n.x, y: n.y }));
+
+    const viewport = document.getElementById('viewport')!;
+    viewport.dispatchEvent(mouse('mousedown', 400, 300));
+    window.dispatchEvent(mouse('mousemove', 430, 320));
+    window.dispatchEvent(mouse('mouseup', 430, 320));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(world.style.transform).toContain('translate(30px, 20px)');
+    probe.graph.nodes.forEach((n, i) => {
+      expect(n.x).toBe(positions[i].x);
+      expect(n.y).toBe(positions[i].y);
+    });
     localStorage.clear();
   });
 });

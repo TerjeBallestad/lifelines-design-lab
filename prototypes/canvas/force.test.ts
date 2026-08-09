@@ -86,10 +86,7 @@ describe('force sim (SB-080, d3-force adapter)', () => {
   });
 
   it('a held node stays where the pointer put it', () => {
-    const sim = createSim(
-      graph([node('a', 0, 0), node('b', 40, 10)], [['a', 'b']]),
-      new Set(),
-    );
+    const sim = createSim(graph([node('a', 0, 0), node('b', 40, 10)], [['a', 'b']]), new Set());
     const a = sim.byId.get('a')!;
     a.held = true;
     a.x = 777;

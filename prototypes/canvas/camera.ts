@@ -1,6 +1,12 @@
-// The camera: pan, zoom, fit, and the screen→world transform. A factory —
-// main owns the viewport/world elements and wires the background-click
-// deselect; everything transform-shaped lives here.
+// The camera: pan, zoom, fit, and the screen→world transform. SB-081 put
+// d3-zoom underneath — it owns the wheel/drag gestures and the transform
+// state (viewport.__zoom); this factory keeps the old surface. Arbitration
+// with the node/port drags: the filter below rejects pointer-downs on nodes
+// and chrome, and the d3-drag behavior in main stops propagation before the
+// viewport sees them.
+import { select } from 'd3-selection';
+import { zoom as zoomBehavior, zoomIdentity, zoomTransform } from 'd3-zoom';
+import type { D3ZoomEvent, ZoomTransform } from 'd3-zoom';
 import { NODE_W, NODE_H } from './graph.ts';
 import type { GraphNode } from './graph.ts';
 
@@ -13,6 +19,11 @@ export interface Camera {
   zoomOut(): void;
 }
 
+export const ZOOM_MIN = 0.12;
+export const ZOOM_MAX = 2.5;
+/** Matches the old exp(-deltaY·0.0016) wheel factor (d3 scales by 2^delta). */
+const WHEEL_FACTOR = 0.0016 / Math.LN2;
+
 export function createCamera(opts: {
   viewport: HTMLElement;
   world: HTMLElement;
@@ -23,23 +34,55 @@ export function createCamera(opts: {
   onBackgroundClick(): void;
 }): Camera {
   const { viewport, world, zoomLabel } = opts;
-  let tx = 0;
-  let ty = 0;
-  let zoom = 1;
 
-  function applyTransform(): void {
-    world.style.transform = `translate(${tx}px, ${ty}px) scale(${zoom})`;
-    zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
-  }
+  const behavior = zoomBehavior<HTMLElement, unknown>()
+    .scaleExtent([ZOOM_MIN, ZOOM_MAX])
+    .wheelDelta((event) => -event.deltaY * WHEEL_FACTOR)
+    // Wheel zooms anywhere (over nodes too — the old board did). Drag-pan
+    // must not start on a node, the zoombar, or the legend.
+    .filter((event: WheelEvent | MouseEvent) => {
+      if (event.type === 'wheel') return true;
+      if (event.button !== 0) return false;
+      const target = event.target instanceof Element ? event.target : null;
+      return !target?.closest('.node, #zoombar, #legend');
+    })
+    // A pan under 4px still counts as a click (the deselect below); beyond
+    // it d3 swallows the click — same threshold the old machine used.
+    .clickDistance(4)
+    .on('start', (event: D3ZoomEvent<HTMLElement, unknown>) => {
+      if (event.sourceEvent?.type === 'mousedown') viewport.classList.add('panning');
+    })
+    .on('zoom', (event: D3ZoomEvent<HTMLElement, unknown>) => {
+      const t = event.transform;
+      world.style.transform = `translate(${t.x}px, ${t.y}px) scale(${t.k})`;
+      zoomLabel.textContent = `${Math.round(t.k * 100)}%`;
+    })
+    .on('end', () => viewport.classList.remove('panning'));
+
+  const sel = select(viewport);
+  sel.call(behavior).on('dblclick.zoom', null); // dblclick is unpin, not zoom
+
+  const current = (): ZoomTransform => zoomTransform(viewport);
+  const setTransform = (t: ZoomTransform): void => {
+    sel.call(behavior.transform, t);
+  };
+
+  // Still click on empty canvas → deselect. Only the background layers count
+  // — overlays inside the viewport (zoombar, legend, worklist) bubble their
+  // clicks here too. d3 suppresses the click ending a real pan (clickDistance).
+  viewport.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target !== viewport && target !== world && target.id !== 'edges' && target.id !== 'nodes')
+      return;
+    opts.onBackgroundClick();
+  });
 
   function fit(): void {
     const vw = viewport.clientWidth;
     const vh = viewport.clientHeight;
     const nodes = opts.getNodes();
-    if (vw === 0 || vh === 0 || nodes.length === 0) {
-      applyTransform();
-      return;
-    }
+    if (vw === 0 || vh === 0 || nodes.length === 0) return;
     // Live bounds, not the layout extent — force-mode nodes roam freely
     // (including into negative coordinates; the edges svg overflows visibly).
     let minX = Infinity;
@@ -54,75 +97,42 @@ export function createCamera(opts: {
     }
     const w = Math.max(1, maxX - minX);
     const h = Math.max(1, maxY - minY);
-    zoom = Math.min((vw - 60) / w, (vh - 60) / h, 1.4);
-    tx = (vw - w * zoom) / 2 - minX * zoom;
-    ty = (vh - h * zoom) / 2 - minY * zoom;
-    applyTransform();
+    const k = Math.min((vw - 60) / w, (vh - 60) / h, 1.4);
+    setTransform(
+      zoomIdentity.translate((vw - w * k) / 2 - minX * k, (vh - h * k) / 2 - minY * k).scale(k),
+    );
   }
 
   function centerOn(id: string): void {
     const node = opts.getNode(id);
     if (!node) return;
-    tx = viewport.clientWidth / 2 - (node.x + NODE_W / 2) * zoom;
-    ty = viewport.clientHeight / 2 - (node.y + NODE_H / 2) * zoom;
-    applyTransform();
+    const k = current().k;
+    setTransform(
+      zoomIdentity
+        .translate(
+          viewport.clientWidth / 2 - (node.x + NODE_W / 2) * k,
+          viewport.clientHeight / 2 - (node.y + NODE_H / 2) * k,
+        )
+        .scale(k),
+    );
   }
-
-  viewport.addEventListener(
-    'wheel',
-    (event) => {
-      event.preventDefault();
-      const rect = viewport.getBoundingClientRect();
-      const px = event.clientX - rect.left;
-      const py = event.clientY - rect.top;
-      const factor = Math.exp(-event.deltaY * 0.0016);
-      const next = Math.min(2.5, Math.max(0.12, zoom * factor));
-      tx = px - ((px - tx) / zoom) * next;
-      ty = py - ((py - ty) / zoom) * next;
-      zoom = next;
-      applyTransform();
-    },
-    { passive: false },
-  );
-
-  let panFrom: { x: number; y: number; tx: number; ty: number } | null = null;
-  viewport.addEventListener('pointerdown', (event) => {
-    if ((event.target as HTMLElement).closest('.node, #zoombar, #legend')) return;
-    panFrom = { x: event.clientX, y: event.clientY, tx, ty };
-    viewport.classList.add('panning');
-    viewport.setPointerCapture(event.pointerId);
-  });
-  viewport.addEventListener('pointermove', (event) => {
-    if (!panFrom) return;
-    tx = panFrom.tx + (event.clientX - panFrom.x);
-    ty = panFrom.ty + (event.clientY - panFrom.y);
-    applyTransform();
-  });
-  viewport.addEventListener('pointerup', (event) => {
-    const moved = panFrom && Math.hypot(event.clientX - panFrom.x, event.clientY - panFrom.y) > 4;
-    if (panFrom && !moved && !(event.target as HTMLElement).closest('.node, #zoombar, #legend'))
-      opts.onBackgroundClick();
-    panFrom = null;
-    viewport.classList.remove('panning');
-  });
 
   return {
     get zoom() {
-      return zoom;
+      return current().k;
     },
     fit,
     centerOn,
     toWorldPoint(clientX: number, clientY: number) {
       const rect = viewport.getBoundingClientRect();
-      return { x: (clientX - rect.left - tx) / zoom, y: (clientY - rect.top - ty) / zoom };
+      const [x, y] = current().invert([clientX - rect.left, clientY - rect.top]);
+      return { x, y };
     },
     zoomIn() {
-      zoom = Math.min(2.5, zoom * 1.2);
-      applyTransform();
+      behavior.scaleBy(sel, 1.2);
     },
     zoomOut() {
-      zoom = Math.max(0.12, zoom / 1.2);
-      applyTransform();
+      behavior.scaleBy(sel, 1 / 1.2);
     },
   };
 }

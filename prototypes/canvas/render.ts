@@ -10,14 +10,13 @@ import * as layout from './layout-modes.ts';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// SB-081: move/link drags start in main's d3-drag behavior (delegated on
+// #nodes), not here — pointerdown listeners on the node would swallow the
+// mouse events d3-drag rides on. This renderer only raises click gestures.
 export interface RenderHandlers {
   onSelectNode(id: string): void;
   onSelectEdge(key: string): void;
-  onStartMove(id: string, clientX: number, clientY: number): void;
-  onStartLink(id: string, clientX: number, clientY: number): void;
   onUnpin(id: string): void;
-  /** True consumes a post-drag click — placement, not selection (SB-051). */
-  consumeSuppressedClick(): boolean;
   edgeKeyOf(edge: GraphEdge): string;
   selectedEdgeKey(): string | null;
 }
@@ -126,28 +125,16 @@ export function renderWorld(): void {
     <div class="nsub">${escapeHtml(node.sub)}</div>`;
     el.addEventListener('click', (event) => {
       event.stopPropagation();
-      // A drag that moved the node ends in a click — placement, not selection.
-      if (handlers.consumeSuppressedClick()) return;
+      // A drag that moved the node ends in a click — d3-drag's clickDistance
+      // suppresses it before it lands here (placement, not selection).
       handlers.onSelectNode(node.id);
-    });
-    // SB-051: drag the node body to place it (hand: sticks; pin: pins;
-    // gravity: stirs). The port child stops propagation, so edge drags win.
-    el.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0) return;
-      event.stopPropagation();
-      el.setPointerCapture(event.pointerId);
-      handlers.onStartMove(node.id, event.clientX, event.clientY);
     });
     el.addEventListener('dblclick', () => handlers.onUnpin(node.id));
     // SB-033: the port — drag from here to a legal target to author an edge.
+    // The drag itself starts in main's d3-drag behavior (SB-081).
     const port = document.createElement('div');
     port.className = 'port';
     port.title = 'drag from port for a new edge';
-    port.addEventListener('pointerdown', (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      handlers.onStartLink(node.id, event.clientX, event.clientY);
-    });
     el.append(port);
     nodesHost.append(el);
     nodeEls.set(node.id, el);

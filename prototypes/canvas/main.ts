@@ -17,6 +17,9 @@
 // tests drive.
 import { action, autorun, observable, reaction } from 'mobx';
 import { html, render as litRender, nothing } from 'lit-html';
+import { drag as dragBehavior } from 'd3-drag';
+import type { D3DragEvent } from 'd3-drag';
+import { select as d3select } from 'd3-selection';
 import { NODE_W, NODE_H } from './graph.ts';
 import type { GraphEdge, NodeKind, NodePos } from './graph.ts';
 import { KIND_LABEL, KIND_VAR, EDGE_VAR, cssVar } from './kinds.ts';
@@ -455,122 +458,150 @@ function showTip(text: string, x: number, y: number): void {
   tipTimer = setTimeout(() => tip.classList.remove('show'), 2600);
 }
 
-let linkDrag: { fromId: string; rubber: SVGPathElement } | null = null;
+// SB-081: both drag machines ride one d3-drag behavior, delegated on the
+// #nodes host (survives every renderWorld rebuild). The start target picks
+// the machine: a .port begins a link drag (rubber band), the node body a
+// move drag. d3 owns the gesture plumbing — window listeners, text-select
+// suppression, and the swallow-the-click-after-a-real-drag rule
+// (clickDistance 4 = the old screen-space threshold). Its mousedown handler
+// stops propagation, so the viewport's zoom behavior never sees node grabs.
+type NodeGesture =
+  | {
+      mode: 'move';
+      id: string;
+      startX: number;
+      startY: number;
+      lastX: number;
+      lastY: number;
+      moved: boolean;
+    }
+  | { mode: 'link'; fromId: string; rubber: SVGPathElement };
 
-function startLink(fromId: string, clientX: number, clientY: number): void {
-  const rubber = document.createElementNS(SVG_NS, 'path');
-  rubber.setAttribute('class', 'rubber');
-  edgesSvg.append(rubber);
-  linkDrag = { fromId, rubber };
-  updateLink(clientX, clientY);
-}
+let gesture: NodeGesture | null = null;
 
 function updateLink(clientX: number, clientY: number): void {
-  if (!linkDrag) return;
-  const from = model.state.nodeById.get(linkDrag.fromId);
+  if (gesture?.mode !== 'link') return;
+  const from = model.state.nodeById.get(gesture.fromId);
   if (!from) return;
   const sx = from.x + NODE_W;
   const sy = from.y + NODE_H / 2;
   const { x, y } = camera.toWorldPoint(clientX, clientY);
   const reach = Math.max(Math.abs(x - sx) / 2, 44) * (x >= sx ? 1 : -1);
-  linkDrag.rubber.setAttribute(
+  gesture.rubber.setAttribute(
     'd',
     `M ${sx} ${sy} C ${sx + reach} ${sy}, ${x - reach} ${y}, ${x} ${y}`,
   );
 }
 
-window.addEventListener('pointermove', (event) => {
-  if (linkDrag) updateLink(event.clientX, event.clientY);
-});
+type NodeDragEvent = D3DragEvent<HTMLElement, unknown, unknown>;
 
-window.addEventListener('pointerup', (event) => {
-  if (!linkDrag) return;
-  const drag = linkDrag;
-  linkDrag = null;
-  drag.rubber.remove();
-  const targetEl =
-    event.target instanceof Element ? event.target.closest<HTMLElement>('.node') : null;
-  const toId = targetEl?.dataset.id;
-  if (!toId) {
-    // SB-042: released on empty canvas → the filtered create menu.
-    const onCanvas = event.target instanceof Element && event.target.closest('#viewport');
-    if (onCanvas) openDropCreateMenu(drag.fromId, event.clientX, event.clientY);
-    return;
-  }
-  if (toId === drag.fromId) return;
-  const res = editing.connect(drag.fromId, toId);
-  if (!res.ok && res.reason) showTip(res.reason, event.clientX, event.clientY);
-});
+const nodeDrag = dragBehavior<HTMLElement, unknown>()
+  .filter(
+    (event: MouseEvent) =>
+      event.button === 0 &&
+      event.target instanceof Element &&
+      event.target.closest('.node') !== null,
+  )
+  .clickDistance(4)
+  .on('start', (event: NodeDragEvent) => {
+    const src = event.sourceEvent as MouseEvent;
+    const target = src.target as Element;
+    const id = target.closest<HTMLElement>('.node')?.dataset.id;
+    if (!id) return;
+    if (target.closest('.port')) {
+      const rubber = document.createElementNS(SVG_NS, 'path');
+      rubber.setAttribute('class', 'rubber');
+      edgesSvg.append(rubber);
+      gesture = { mode: 'link', fromId: id, rubber };
+      updateLink(src.clientX, src.clientY);
+    } else {
+      gesture = {
+        mode: 'move',
+        id,
+        startX: src.clientX,
+        startY: src.clientY,
+        lastX: src.clientX,
+        lastY: src.clientY,
+        moved: false,
+      };
+    }
+  })
+  .on('drag', (event: NodeDragEvent) => {
+    const src = event.sourceEvent as MouseEvent;
+    if (gesture?.mode === 'link') {
+      updateLink(src.clientX, src.clientY);
+      return;
+    }
+    if (gesture?.mode !== 'move') return;
+    const node = model.state.nodeById.get(gesture.id);
+    if (!node) {
+      gesture = null;
+      return;
+    }
+    if (!gesture.moved) {
+      // 4px threshold in screen space: below it this is a click, not a drag.
+      if (Math.hypot(src.clientX - gesture.startX, src.clientY - gesture.startY) <= 4) return;
+      gesture.moved = true;
+    }
+    node.x += (src.clientX - gesture.lastX) / camera.zoom;
+    node.y += (src.clientY - gesture.lastY) / camera.zoom;
+    gesture.lastX = src.clientX;
+    gesture.lastY = src.clientY;
+    const sim = layout.getSim();
+    if (sim) {
+      const sn = sim.byId.get(gesture.id);
+      if (sn) {
+        sn.held = true;
+        sn.x = node.x;
+        sn.y = node.y;
+      }
+      sim.reheat(DRAG_REHEAT);
+      layout.startSimLoop();
+    }
+    render.syncPositions();
+  })
+  .on('end', (event: NodeDragEvent) => {
+    if (gesture === null) return;
+    const done = gesture;
+    gesture = null;
+    const src = event.sourceEvent as MouseEvent;
 
-// ---- node move drag (SB-051) ----------------------------------------------
+    if (done.mode === 'link') {
+      done.rubber.remove();
+      const targetEl =
+        src.target instanceof Element ? src.target.closest<HTMLElement>('.node') : null;
+      const toId = targetEl?.dataset.id;
+      if (!toId) {
+        // SB-042: released on empty canvas → the filtered create menu.
+        const onCanvas = src.target instanceof Element && src.target.closest('#viewport');
+        if (onCanvas) openDropCreateMenu(done.fromId, src.clientX, src.clientY);
+        return;
+      }
+      if (toId === done.fromId) return;
+      const res = editing.connect(done.fromId, toId);
+      if (!res.ok && res.reason) showTip(res.reason, src.clientX, src.clientY);
+      return;
+    }
 
-let moveDrag: {
-  id: string;
-  startX: number;
-  startY: number;
-  lastX: number;
-  lastY: number;
-  moved: boolean;
-} | null = null;
-/** Set when a drag moved the node — the click that follows must not select. */
-let suppressNextClick = false;
-
-function startMove(id: string, clientX: number, clientY: number): void {
-  moveDrag = { id, startX: clientX, startY: clientY, lastX: clientX, lastY: clientY, moved: false };
-}
-
-window.addEventListener('pointermove', (event) => {
-  if (!moveDrag) return;
-  const node = model.state.nodeById.get(moveDrag.id);
-  if (!node) {
-    moveDrag = null;
-    return;
-  }
-  if (!moveDrag.moved) {
-    // 4px threshold in screen space: below it this is a click, not a drag.
-    if (Math.hypot(event.clientX - moveDrag.startX, event.clientY - moveDrag.startY) <= 4) return;
-    moveDrag.moved = true;
-  }
-  node.x += (event.clientX - moveDrag.lastX) / camera.zoom;
-  node.y += (event.clientY - moveDrag.lastY) / camera.zoom;
-  moveDrag.lastX = event.clientX;
-  moveDrag.lastY = event.clientY;
-  const sim = layout.getSim();
-  if (sim) {
-    const sn = sim.byId.get(moveDrag.id);
-    if (sn) {
-      sn.held = true;
-      sn.x = node.x;
-      sn.y = node.y;
+    if (!done.moved) return;
+    if (layout.layoutMode === 'hand') {
+      layout.savePositions();
+      return;
+    }
+    const sim = layout.getSim();
+    const sn = sim?.byId.get(done.id);
+    if (!sim || !sn) return;
+    sn.held = false;
+    if (layout.layoutMode === 'pin') {
+      sn.pinned = true;
+      render.nodeEls.get(done.id)?.classList.add('pinned');
+      layout.persistPins();
     }
     sim.reheat(DRAG_REHEAT);
     layout.startSimLoop();
-  }
-  render.syncPositions();
-});
+  });
 
-window.addEventListener('pointerup', () => {
-  if (!moveDrag) return;
-  const { id, moved } = moveDrag;
-  moveDrag = null;
-  if (!moved) return;
-  suppressNextClick = true;
-  if (layout.layoutMode === 'hand') {
-    layout.savePositions();
-    return;
-  }
-  const sim = layout.getSim();
-  const sn = sim?.byId.get(id);
-  if (!sim || !sn) return;
-  sn.held = false;
-  if (layout.layoutMode === 'pin') {
-    sn.pinned = true;
-    render.nodeEls.get(id)?.classList.add('pinned');
-    layout.persistPins();
-  }
-  sim.reheat(DRAG_REHEAT);
-  layout.startSimLoop();
-});
+d3select(nodesHost).call(nodeDrag);
 
 /** Pin mode: double-click a pinned node to let it float again. */
 function unpin(id: string): void {
@@ -750,16 +781,7 @@ render.initRenderer({
   handlers: {
     onSelectNode: select,
     onSelectEdge: selectEdge,
-    onStartMove: startMove,
-    onStartLink: startLink,
     onUnpin: unpin,
-    consumeSuppressedClick: () => {
-      if (suppressNextClick) {
-        suppressNextClick = false;
-        return true;
-      }
-      return false;
-    },
     edgeKeyOf,
     selectedEdgeKey: () => model.ui.selectedEdgeKey,
   },
