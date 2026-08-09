@@ -126,7 +126,7 @@ when: f_bok and f_utklipp
 
 Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
 Teaser:
-when: f_elling_tlf and f_avstand and f_ingen_tjenester
+when: f_elling_tlf and f_avstand
 
 # Question: q_kollaps
 

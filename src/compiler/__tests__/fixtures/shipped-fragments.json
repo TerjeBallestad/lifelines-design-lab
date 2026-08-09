@@ -152,12 +152,6 @@
             "args": {
               "fact_id": "f_avstand"
             }
-          },
-          {
-            "op": "fact_lifted",
-            "args": {
-              "fact_id": "f_ingen_tjenester"
-            }
           }
         ]
       }
@@ -513,7 +507,7 @@
           ]
         },
         {
-          "card_id": "f_aldri_alene",
+          "card_id": "f_klarer_seg",
           "ask": "Kan jeg få hilse på Elling?",
           "reply": [
             {
@@ -624,13 +618,13 @@
     {
       "handbok_id": "kartlegging",
       "line": "Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.",
-      "relevant_fact_ids": ["f_aldri_alene", "f_ingen_plan"],
+      "relevant_fact_ids": ["f_ingen_plan"],
       "order": 9
     },
     {
       "handbok_id": "oppfolging",
       "line": "Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.",
-      "relevant_fact_ids": ["f_ingen_tjenester", "f_ingen_plan"],
+      "relevant_fact_ids": ["f_ingen_plan"],
       "order": 10
     },
     {
@@ -654,19 +648,19 @@
     {
       "handbok_id": "besoksvenn",
       "line": "Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.",
-      "relevant_fact_ids": ["f_avstand", "f_aldri_alene"],
+      "relevant_fact_ids": ["f_avstand"],
       "order": 14
     },
     {
       "handbok_id": "dagsenter",
       "line": "Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.",
-      "relevant_fact_ids": ["f_avstand", "f_ingen_tjenester"],
+      "relevant_fact_ids": ["f_avstand"],
       "order": 15
     },
     {
       "handbok_id": "folgetjeneste",
       "line": "Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.",
-      "relevant_fact_ids": ["f_elling_tlf", "f_ingen_tjenester"],
+      "relevant_fact_ids": ["f_elling_tlf"],
       "order": 16
     },
     {
@@ -684,7 +678,7 @@
     {
       "handbok_id": "tt",
       "line": "TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.",
-      "relevant_fact_ids": ["f_avstand", "f_ingen_tjenester"],
+      "relevant_fact_ids": ["f_avstand"],
       "order": 19
     },
     {

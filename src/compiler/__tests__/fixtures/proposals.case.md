@@ -52,12 +52,12 @@ Line: «Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er e
 
 # Proposal: kartlegging
 
-Relevant: f_aldri_alene, f_ingen_plan
+Relevant: f_ingen_plan
 Line: «Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.»
 
 # Proposal: oppfolging
 
-Relevant: f_ingen_tjenester, f_ingen_plan
+Relevant: f_ingen_plan
 Line: «Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.»
 
 # Proposal: samtaler
@@ -77,17 +77,17 @@ Line: «Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye tryk
 
 # Proposal: besoksvenn
 
-Relevant: f_avstand, f_aldri_alene
+Relevant: f_avstand
 Line: «Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.»
 
 # Proposal: dagsenter
 
-Relevant: f_avstand, f_ingen_tjenester
+Relevant: f_avstand
 Line: «Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.»
 
 # Proposal: folgetjeneste
 
-Relevant: f_elling_tlf, f_ingen_tjenester
+Relevant: f_elling_tlf
 Line: «Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.»
 
 # Proposal: hverdagsrehab
@@ -102,7 +102,7 @@ Line: «Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne let
 
 # Proposal: tt
 
-Relevant: f_avstand, f_ingen_tjenester
+Relevant: f_avstand
 Line: «TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.»
 
 # Proposal: alarm

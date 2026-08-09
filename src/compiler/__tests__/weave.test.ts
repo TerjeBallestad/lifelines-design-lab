@@ -29,7 +29,7 @@ du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 
 * f_grete_baerer: Hvem overtar hvis du skulle bli innlagt?
     [… (det blir stille i den andre enden)](fact:f_ingen_plan)
-* f_aldri_alene: Kan jeg få hilse på Elling?
+* f_klarer_seg: Kan jeg få hilse på Elling?
     [Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.](fact:f_elling_tlf)
 * f_saarbar: Vi vil gjerne komme på hjemmebesøk.
     [Betyr dette at noen kommer til å ta ham fra leiligheten?](fact:f_grete_redd)
