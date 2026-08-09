@@ -75,6 +75,12 @@
       "author": "claude",
       "text": "Session (wayfinder): SB-062 loop-skeleton grill resolved. Mid-grill reframe from Terje: the wireframes carried too much weight — they are inspiration only, and the probe maps content edges rather than plays a game. Final skeleton: frontier traversal with greyed locked content + unlock sentences, all effects triggerable and instant, delta shown per action. Fog graduated: show-or-hide locked doors → core-loop design, added to Out of scope. SB-063 (first playthrough probe) now waits only on SB-061.",
       "createdAt": "2026-08-09T15:36:25.140Z"
+    },
+    {
+      "id": "c1786290925141",
+      "author": "wayfinder",
+      "text": "Session log (wayfinder, 2026-08-09): claimed SB-061 (content display milestone). Read the SB-060/082/083 resolutions and the SB-058/062 rulings, traced surfaces.ts, emit.ts, weave.ts, active-case.ts. Track gate: Mixed — planned the V substrate only, feel rides on SB-063. Filed PLAN-005 (TASK-023 renderers for eight uncovered kinds, TASK-024 Playtest lens page, TASK-025 computed coverage list). SB-061 stays open until the plan executes; claim released.",
+      "createdAt": "2026-08-09T15:55:25.141Z"
     }
   ],
   "status": "active",

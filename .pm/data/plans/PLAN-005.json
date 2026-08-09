@@ -1,0 +1,85 @@
+{
+  "id": "PLAN-005",
+  "title": "PLAN — SB-061 content display milestone: every emitted entity kind renders, with a coverage list",
+  "sddId": null,
+  "stage": "planned",
+  "sprintId": "SPRINT-002",
+  "context": {
+    "setupNotes": "## What this plan builds\nThe display milestone for SPRINT-002: a third lens page (Playtest) where the loaded case renders every emitted entity kind in its player surface, plus new shared renderers for the kinds that today fall to fallbackJsonSurface, plus a computed coverage list. SB-063 (the playthrough probe) later adds the frontier-traversal loop ON TOP of these surfaces — this plan builds NO verbs, NO predicate evaluation, NO effects, NO day loop. Display only.\n\n## Laws from the map (binding)\n- SB-058 ruling 1: the lens runs data, never code. Clocks render as DEAD DIALS — labels and both segments visible, needle never moves.\n- SB-058 ruling 4: no persistence of play state (the existing per-case draft/save seam is editor state and stays).\n- SB-062 amended ruling 1 + pinned lab rule: wireframes are inspiration only. The lens is a content-edge mapper — it represents the data and its relationships. Never remake the game.\n- SB-062 ruling 2 (demoted to render inspiration): frank_chat renders in a chat-transcript idiom (question chips, answer lines, followups). calls render in a card-keyed exchange idiom (opening lines, exchanges keyed by card_id). Idiom = layout inspiration for a static display, not interactive structure.\n- Editor chrome is English; case content and in-game stamps stay Norwegian (FUNN, FAKTUM, SPØRSMÅL, TILTAK).\n\n## Facts the executor needs\n- CaseSlice (src/compiler/emit.ts:162) entity kinds: documents, facts, questions, hypotheses, tiltak, dispatches, clocks, event_delta_specs, day_script_beats, frank_chat?, frank_proposals?, recipes?, calls? (plus two scalar pair_*_line strings — not entities).\n- Surfaces exist for fact, document, hypothesis, question (prototypes/shared/surfaces.ts, from SB-082). surfaceFor dispatches on NodeKind; tiltak, dispatch, clock, conversation, recipe, proposal fall to fallbackJsonSurface. day_script_beats and event_delta_specs have NO NodeKind at all — the canvas graph never shows them. Do not add kinds to the NodeKind union unless the canvas genuinely needs them; the Playtest lens may call renderers directly or use its own wider dispatcher.\n- Renderers are pure (id, CompileResult) -> { title, template } lit TemplateResults. lit escapes by construction — no escape helpers. The node-json pre-wrap rule: interpolation must stay the element's only content.\n- Document sheets: documentSurface returns Surface.doc; the lens must call wireDocFrame after render (prototypes/shared/doc-frame.ts, scale 'fit' rail / 'full' playtest) and createLightbox once per page.\n- Case seam: prototypes/shared/active-case.ts owns discovery, ?case= resolution, localStorage keys, wireCaseChrome (picker + cross-links carrying the case). The new page must join this seam.\n- Lens shell idiom: each probe is its own vite page directory under prototypes/ with plain-anchor lens tabs in the topbar. Canvas and script-editor both ship a dead <span>Playtest</span> (canvas/index.html:1054, script-editor/index.html:535). tsconfig.app.json already includes prototypes/.\n- SB-082 browser lesson: lit renders AFTER existing children — boot hosts empty, never with a static placeholder div inside a lit-managed host.\n\n## Implementation slices\nSlice 1 — shared renderers (Task 1). Evidence: focused vitest red-green + full suite.\nSlice 2 — the Playtest lens page (Task 2). Evidence: real browser screenshot.\nSlice 3 — the coverage list (Task 3). Evidence: registry-vs-CaseSlice test + screenshot.\n\n## Cautions\n- Never edit files under .pm/ directly; PM writes go through the pm CLI from the main checkout.\n- Do not hot-edit while Terje has a lens page open with unsaved work (no-hot-edits law); this plan is AFK build work, keep it to the working tree + commits.\n- Chrome extension may be offline — fall back to `cmux browser` for the screenshot rung (jsdom misses render bugs).",
+    "relevantFiles": [
+      "prototypes/shared/surfaces.ts",
+      "prototypes/shared/surfaces.css",
+      "prototypes/shared/surfaces.test.ts",
+      "prototypes/shared/node-kind.ts",
+      "prototypes/shared/doc-frame.ts",
+      "prototypes/shared/active-case.ts",
+      "prototypes/shared/unlock.ts",
+      "prototypes/canvas/index.html",
+      "prototypes/script-editor/index.html",
+      "src/compiler/emit.ts",
+      "src/compiler/weave.ts"
+    ],
+    "designDecisions": [
+      "SB-058: lens runs data never code; clocks are dead dials; no persistence.",
+      "SB-062: content-edge mapper, fresh composition; wireframes are per-surface render inspiration only.",
+      "SB-062 ruling 2: chat-transcript idiom for frank_chat, card-keyed exchange idiom for calls — as static display here.",
+      "SB-061 scope: display milestone only; verbs and traversal belong to SB-063.",
+      "Coverage list is computed from the slice type, never hand-maintained."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-023",
+      "title": "Task 1: Player-surface renderers for the eight uncovered kinds",
+      "description": "Extend prototypes/shared/surfaces.ts (+ surfaces.css, surfaces.test.ts) with pure renderers so tiltak, dispatch, clock, chat conversation, call conversation, recipe, proposal, and day-script beat each render a player-shaped surface instead of fallback JSON. Outcome: clicking any such node in ANY lens shows a readable card, not a JSON dump. Each renderer follows the existing pattern — pure (id, CompileResult) -> Surface, detailPanel/funnCard reuse where it fits, kind stamps in Norwegian (TILTAK etc.), body text straight from the slice. Clock = dead dial: label, question, good/bad segment labels and sizes visible, no needle movement. Chat = transcript idiom: entry question, answer_lines, followups (with tanke sting when present), needs/pays_fact shown as data, not evaluated. Call = card-keyed exchange idiom: opening lines, soft_reject when present, exchanges grouped by card_id with ask + reply lines and their fact_id tags. Dispatch shows title, description, activity/duration/channel meta, and its effects as data lines. Recipe shows the pair, reading, and frank_lines. Proposal shows line, relevant facts/categories, order. Beat shows day, text, effects. surfaceFor (or a wider playtest-facing dispatcher — executor's choice) routes the six NodeKind kinds; beats and any non-NodeKind kinds get direct renderer entry points. Constraint: canvas and script-lens behavior may only change by these kinds now rendering cards — no graph, layout, or NodeKind churn beyond what the routing genuinely needs. fallbackJsonSurface stays, for stubs and future kinds.",
+      "steps": [
+        "Write focused vitest cases first: for each new kind, assert the surface renders the named fields from a minimal CompileResult fixture and does NOT use the fallback label; confirm they fail red against current surfaces.ts.",
+        "Implement the renderers and their surfaces.css rules; keep the pre-wrap and lit-escaping conventions.",
+        "Route them in the dispatcher(s); run red-green; run the full suite and lint."
+      ],
+      "verification": "judge: test. command: npx vitest run prototypes/shared/surfaces.test.ts && npm test && npm run lint. proves: every named kind produces player-shaped markup from slice data, escaped by lit, without disturbing the existing four surfaces. fake_evidence: a green suite where a named kind still routes to fallbackJsonSurface (tests must assert the fallback label is absent), or fixture fields the renderer never actually reads.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-024",
+      "title": "Task 2: The Playtest lens page — the loaded case, browsable by kind",
+      "description": "New vite page prototypes/playtest/ (index.html + main.ts + page CSS) joining the shared seams: active-case.ts for load/picker/cross-links, the shared surfaces + surfaces.css for rendering, wireDocFrame with scale 'full' plus one lightbox for documents. Outcome: opening /prototypes/playtest/ shows the compiled active case as an entity index grouped by kind (every emitted entity listed with its title/label and count per kind), and selecting any entity renders its player surface in a reading pane at full reading size. Topbar follows the lens idiom: logo, name, case picker, tabs with Script and Canvas as live anchors and Playtest active. Replace the dead Playtest spans in canvas/index.html and script-editor/index.html with live anchors that carry the active case (extend wireCaseChrome if that is where cross-links live). Boot the surface host empty (SB-082 lesson). English chrome, Norwegian content. No verbs, no state, no persistence — a reader, not a game.",
+      "steps": [
+        "Build the page shell on the topbar + two-pane idiom; wire the case seam and the kind-grouped index from the compiled slice.",
+        "Wire selection -> surface render -> wireDocFrame('full') + lightbox for documents.",
+        "Turn the two dead Playtest spans into case-carrying anchors; add a jsdom smoke test for the page boot (index populated, empty surface rendered).",
+        "Eye-check in a real browser: olsen and the stub case, a document sheet, a FUNN card, one of each new Task 1 surface, the lightbox, zero console errors."
+      ],
+      "verification": "judge: screenshot. command: npm run dev, then claude-in-chrome (or `cmux browser` if the extension is offline) on /prototypes/playtest/ — screenshot the index + a document surface + at least two new-kind surfaces, on both cases via the picker. proves: the lens boots and renders real compiled content in a real browser. fake_evidence: a green jsdom smoke with a blank page live (lit-after-existing-children class of bug), or screenshots of only the four pre-existing surfaces.",
+      "blockedBy": [
+        "TASK-023"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-025",
+      "title": "Task 3: Computed coverage list — every emitted kind, honest status",
+      "description": "A visible coverage panel in the Playtest lens enumerating EVERY CaseSlice entity kind (documents, facts, questions, hypotheses, tiltak, dispatches, clocks, event_delta_specs, day_script_beats, frank_chat, frank_proposals, recipes, calls) with its count in the loaded case and its surface status: player surface, fallback JSON, or no surface yet. The list is computed from a typed registry that the compiler checks against keyof CaseSlice — adding a new emitted kind must fail the typecheck or a test until the registry names it. event_delta_specs and the pair_*_line scalars may honestly carry 'no player surface yet' status; the point is that the list says so, not that everything gets a card. Outcome: Terje opens the lens and reads, in one glance, what of the emitted case still has no player surface.",
+      "steps": [
+        "Define the registry typed against CaseSlice keys; add a vitest case proving an unnamed kind breaks it (type-level assertion or exhaustiveness test), red-green.",
+        "Render the panel in the lens from registry + loaded slice counts.",
+        "Screenshot the panel on olsen; confirm counts match `npm run case:check` reality."
+      ],
+      "verification": "judge: test. command: npx vitest run prototypes/playtest/coverage.test.ts (or the file the executor names) && npm run lint, plus a browser screenshot of the panel. proves: the coverage list derives from the slice type and the loaded data, and stays honest when emit.ts grows. fake_evidence: a hand-typed array that happens to match today's CaseSlice, with no exhaustiveness guard.",
+      "blockedBy": [
+        "TASK-024"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-09T15:55:00.857Z",
+  "updatedAt": "2026-08-09T15:55:00.857Z"
+}
