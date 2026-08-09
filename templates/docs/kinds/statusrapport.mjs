@@ -21,15 +21,10 @@ export const styleCss = `
   margin-top: 6px; font-size: 10px;
 }
 .doc--statusrapport .status-strip .stamp { font-size: 10px; }
-.doc--statusrapport .status-sub { margin: 12px 0 0; font-size: 15px; }
 .doc--statusrapport .status-body {
   margin-top: 16px; font-size: 15px; line-height: 1.68;
   font-family: 'Special Elite', 'Courier New', monospace;
 }
-.doc--statusrapport .status-sign {
-  margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; width: 52%;
-}
-.doc--statusrapport .status-sign .stamp { font-size: 10px; }
 `;
 
 export function render(ctx) {
@@ -38,16 +33,11 @@ export function render(ctx) {
 <div class="page">
   ${art}
   <div class="status-head">
-    <h1 class="kind-title">Statusrapport</h1>
+    <h1 class="kind-title">${title}</h1>
     <div class="status-strip">
       <span class="stamp">${meta}</span>
-      <span class="stamp">Saksdokument</span>
     </div>
   </div>
-  <p class="status-sub subtitle">${title}</p>
   <div class="status-body body-copy">${runsHtml}</div>
-  <div class="status-sign">
-    <span class="stamp">Saksbehandler</span>
-  </div>
 </div>`;
 }

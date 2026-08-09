@@ -15,7 +15,6 @@ export const styleCss = `
   margin: 0; font-size: 22px; letter-spacing: 0.05em;
 }
 .doc--feltnotat .note-head .stamp { font-size: 11px; display: block; margin-top: 4px; }
-.doc--feltnotat .note-sub { margin: 2px 0 0 22px; font-size: 14px; }
 .doc--feltnotat .note-body {
   margin-top: 22px;
   font-family: 'Caveat', 'Fraunces', cursive;
@@ -40,10 +39,9 @@ export function render(ctx) {
 <div class="page">
   ${art}
   <div class="note-head">
-    <h1 class="kind-title">Feltnotat</h1>
+    <h1 class="kind-title">${title}</h1>
     <span class="stamp">${meta}</span>
   </div>
-  <p class="note-sub subtitle">${title}</p>
   <div class="note-body body-copy">${runsHtml}</div>
 </div>`;
 }

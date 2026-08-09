@@ -19,15 +19,10 @@ export const styleCss = `
   margin-top: 8px; font-size: 11px;
 }
 .doc--rapport .report-strip .stamp { font-size: 11px; }
-.doc--rapport .report-sub { margin: 16px 0 0; font-size: 16px; }
 .doc--rapport .report-body {
   margin-top: 20px; font-size: 16px; line-height: 1.72;
   font-family: 'Special Elite', 'Courier New', monospace;
 }
-.doc--rapport .report-sign {
-  margin-top: 34px; border-top: 1px solid var(--rule); padding-top: 10px; width: 52%;
-}
-.doc--rapport .report-sign .stamp { font-size: 11px; }
 `;
 
 export function render(ctx) {
@@ -36,16 +31,11 @@ export function render(ctx) {
 <div class="page">
   ${art}
   <div class="report-head">
-    <h1 class="kind-title">Rapport</h1>
+    <h1 class="kind-title">${title}</h1>
     <div class="report-strip">
       <span class="stamp">${meta}</span>
-      <span class="stamp">Saksdokument</span>
     </div>
   </div>
-  <p class="report-sub subtitle">${title}</p>
   <div class="report-body body-copy">${runsHtml}</div>
-  <div class="report-sign">
-    <span class="stamp">Saksbehandler</span>
-  </div>
 </div>`;
 }

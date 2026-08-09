@@ -43,7 +43,6 @@ export function render(ctx) {
   ${art}
   <div class="day-head">
     <h1 class="kind-title">Dagsrapport</h1>
-    <span class="stamp">Sosialkontoret · 4012</span>
   </div>
   <div class="day-fields">
     <span class="label">Dato</span><span class="rule"></span>

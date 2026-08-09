@@ -100,7 +100,7 @@ Supports: q_grete_dor
 
 Kind: ØKONOMISK OVERSIKT · Register: notat
 Title: Frank · papirene i leiligheten
-Peek: «Skoesken sto der hun forlot den.»
+Peek: Skoesken sto der hun forlot den.
 Meta: PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET
 
 Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.

@@ -19,17 +19,11 @@ export const styleCss = `
   color: var(--warn);
 }
 .doc--melding .notice-head .stamp { display: block; margin-top: 6px; font-size: 10px; }
-.doc--melding .notice-sub { text-align: center; margin: 8px 0 0; font-size: 14px; }
 .doc--melding .notice-body {
   margin-top: 16px; font-size: 15px; line-height: 1.66;
   font-family: 'Special Elite', 'Courier New', monospace;
   max-width: 94%; margin-left: auto; margin-right: auto;
 }
-.doc--melding .notice-foot {
-  margin-top: 20px; text-align: center;
-  border-top: 1px solid var(--rule); padding-top: 9px;
-}
-.doc--melding .notice-foot .stamp { font-size: 11px; }
 `;
 
 export function render(ctx) {
@@ -38,13 +32,9 @@ export function render(ctx) {
 <div class="page">
   ${art}
   <div class="notice-head">
-    <h1 class="kind-title">Melding</h1>
+    <h1 class="kind-title">${title}</h1>
     <span class="stamp">${meta}</span>
   </div>
-  <p class="notice-sub subtitle">${title}</p>
   <div class="notice-body body-copy">${runsHtml}</div>
-  <div class="notice-foot">
-    <span class="stamp">Sosialmedisinsk enhet · OUS</span>
-  </div>
 </div>`;
 }

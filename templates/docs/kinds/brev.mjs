@@ -26,14 +26,6 @@ export const styleCss = `
   color: #2a2016;
 }
 .doc--brev .letter-body [data-fact-id] { background: transparent; }
-.doc--brev .letter-rule {
-  margin: 34px 0 0; border: 0; border-top: 1px solid var(--rule);
-  width: 46%; margin-left: auto;
-}
-.doc--brev .letter-foot {
-  margin-top: 10px; text-align: right;
-}
-.doc--brev .letter-foot .stamp { font-size: 10px; }
 `;
 
 export function render(ctx) {
@@ -45,9 +37,5 @@ export function render(ctx) {
     <span class="stamp">${meta}</span>
   </div>
   <div class="letter-body body-copy">${runsHtml}</div>
-  <hr class="letter-rule" />
-  <div class="letter-foot">
-    <span class="stamp">Håndskrevet · levert i postkassen</span>
-  </div>
 </div>`;
 }

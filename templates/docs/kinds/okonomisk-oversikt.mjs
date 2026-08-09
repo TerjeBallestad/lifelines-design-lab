@@ -17,9 +17,6 @@ export const styleCss = `
   margin: 0; font-size: 26px; letter-spacing: 0.06em;
 }
 .doc--okonomisk-oversikt .ledger-head .stamp { font-size: 11px; text-align: right; max-width: 44%; }
-.doc--okonomisk-oversikt .ledger-sub {
-  margin: 8px 0 0; font-size: 15px;
-}
 .doc--okonomisk-oversikt .ledger-body {
   margin-top: 26px;
   font-size: 15px;
@@ -40,9 +37,6 @@ export const styleCss = `
   font-family: 'Special Elite', 'Courier New', monospace;
   font-size: 0.94em; color: #7c5e17;
 }
-.doc--okonomisk-oversikt .ledger-foot {
-  margin-top: 30px; border-top: 1px solid var(--rule); padding-top: 10px;
-}
 `;
 
 export function render(ctx) {
@@ -51,13 +45,9 @@ export function render(ctx) {
 <div class="page">
   ${art}
   <div class="ledger-head">
-    <h1 class="kind-title">Økonomisk oversikt</h1>
+    <h1 class="kind-title">${title}</h1>
     <span class="stamp">${meta}</span>
   </div>
-  <p class="ledger-sub subtitle">${title}</p>
   <div class="ledger-body body-copy">${runsHtml}</div>
-  <div class="ledger-foot">
-    <span class="stamp">Gjennomgått · sosialkontoret</span>
-  </div>
 </div>`;
 }
