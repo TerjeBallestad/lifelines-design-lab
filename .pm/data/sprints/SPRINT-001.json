@@ -147,6 +147,12 @@
       "author": "claude",
       "text": "Wayfinder session 2026-08-09: claimed and closed SB-057 (question Frank: field). One AFK task ticket, D0 inline. Reader verified live in core-loop before adding the field — the alternative ruling (sim read dead) is off the table. No fog graduated: the change is a pure mirror of the fact field, byte-identical emit. Frontier is now all probes (SB-045, SB-047, SB-051, SB-055) — every remaining ticket needs Terje at the keyboard.",
       "createdAt": "2026-08-09T12:02:25.364Z"
+    },
+    {
+      "id": "c1786277992138",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-09: claimed SB-055 (field provenance probe) and built it. The canvas right rail now renders the game surfaces (FUNN card, FAKTUM/TOLKNING detail panels, bake-template doc sheets) for the selected node, live against the buffer, and the inspector leads with a computed 'what opens this?' sentence per node. 288 tests green, build uncommitted pending sequencing with the concurrent SB-051 session (same files). Ticket stays open for Terje's play verdict — the probe question is his to answer.",
+      "createdAt": "2026-08-09T12:19:52.138Z"
     }
   ],
   "status": "active",

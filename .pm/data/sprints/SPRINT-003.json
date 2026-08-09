@@ -1,0 +1,17 @@
+{
+  "id": "SPRINT-003",
+  "name": "Kildeverket for the sim — SDD-130 build map",
+  "problemStatement": "All in-game text travels the Kildeverket road: compiler emits every SDD-130 shape, Godot loaders read generated .tres, editors have the new sub-views with previews, every placeholder family is migrated as marked stubs, and Terje's gate session has ruled on the previews. Stub count zero is NOT the bar — rewriting is Terje's ongoing work.",
+  "body": "## Decisions so far\n\n- SDD-130 (core-loop store) rules that the Kildeverket pipeline is the one authoring road for all in-game text. Block kinds, emit shapes, loader deltas, and editor views are locked there — this map only sequences them.\n- SB-602 (core-loop) went green 2026-08-07. The hygiene prereq is met, so the frontier starts at the compiler.\n- Destination bar (Terje, 2026-08-09): the map is done when the road is built, every placeholder text family travels it as marked stubs, and the gate session has ruled on the previews. Rewriting stubs to zero is Terje's ongoing writing, outside the map.\n- Map store (Terje, 2026-08-09): the map lives in the design-lab store. Core-loop work is ticketed here and marked \"Repo: core-loop\" in the ticket body.\n\n## Out of scope\n\n- Numeric config tuning — separate SDD, per SDD-130 non-goals.\n- Prose rewriting of stub text — Terje's own writing sessions, no agent voice work.\n- A second parser — Godot reads only generated JSON/.tres.\n- SB-505 (core-loop) cadence probe re-run — it unblocks once real tanker lines exist; tracked on that ticket, not here.\n",
+  "comments": [
+    {
+      "id": "c1786278319241",
+      "author": "claude",
+      "text": "Charting session 2026-08-09 (wayfinder Mode 1). Facts that reshaped the SDD sequence: SB-602 (core-loop) is DONE since 2026-08-07, so the frontier opens at the compiler. Terje rulings this session: destination bar is road-built-stubs-allowed (not stub count zero), and the map lives in this design-lab store with core-loop work marked per ticket. Ten tickets, edges wired. Frontier: SB-064 (inventory research), SB-065 (DD filing), SB-066 (compiler). Charting only — nothing resolved.",
+      "createdAt": "2026-08-09T12:25:19.241Z"
+    }
+  ],
+  "status": "active",
+  "createdAt": "2026-08-09T12:24:05.141Z",
+  "completedAt": null
+}
