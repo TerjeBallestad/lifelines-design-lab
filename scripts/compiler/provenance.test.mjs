@@ -80,8 +80,13 @@ describe('healed 0.2 tiny-olsen.case.md (SB-024 back-port) compiles clean', () =
     expect(out.slice.frank_proposals).toHaveLength(23);
     expect(out.slice.recipes).toHaveLength(2);
     expect(out.slice.calls?.map((c) => c.contact_id)).toEqual(['grete']);
-    // The healed file is warning-free — only §9 advisory lints remain.
+    // The healed file is warning-free — only §9 advisory lints remain, plus
+    // the SB-085 engine-mismatch lints, which fire on legal shipped authoring
+    // by design (they report engine facts, not authoring errors).
+    const mismatchCodes = new Set(['effect-open-conversation-noop', 'deliver-clock-id-dead']);
     expect(out.diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
-    expect(out.diagnostics.filter((d) => d.severity === 'warning')).toEqual([]);
+    expect(
+      out.diagnostics.filter((d) => d.severity === 'warning' && !mismatchCodes.has(d.code)),
+    ).toEqual([]);
   });
 });

@@ -9,6 +9,7 @@ import {
   factIdsInCondition,
   hypothesisIdsInCondition,
   parseCondition,
+  warnIfGateDropped,
 } from './condition.ts';
 import type { EffectSpec } from './effects.ts';
 import { deliverEffect, emitEffects, parseEffectLine } from './effects.ts';
@@ -431,7 +432,9 @@ function bindCondition(
     }
     return { ast: null, predicate: null };
   }
-  return { ast, predicate: emitPredicate(ast, diag, ownerId, where) };
+  const predicate = emitPredicate(ast, diag, ownerId, where);
+  warnIfGateDropped(ast, predicate, diag, ownerId, where);
+  return { ast, predicate };
 }
 
 /**
@@ -546,8 +549,18 @@ export function emitCase(
           documentId: block.id,
           where: span(arrives.line),
         });
-        if (match[2])
+        if (match[2]) {
           refs.push({ id: match[2], kind: 'clock', where: span(arrives.line), ownerId: block.id });
+          // SB-085 lint 5: queue_pending_document.clock_id is a dead bucket
+          // key — the engine's arrival sweep keys on available_day only.
+          diag.add(
+            codes.DELIVER_CLOCK_ID_DEAD,
+            'warning',
+            `"on ${match[2]}" is a dead bucket key — the engine's arrival sweep keys on available_day only; the clock reference does nothing.`,
+            span(arrives.line),
+            [block.id, match[2]],
+          );
+        }
       } else {
         diag.add(
           codes.LINE_UNPARSED,
@@ -851,6 +864,15 @@ export function emitCase(
             }
           }
           conversations.push(source);
+          // SB-085 lint 3: open_conversation is an engine no-op
+          // (effect_spec.gd:60) — the opening source emits but does nothing.
+          diag.add(
+            codes.EFFECT_OPEN_CONVERSATION_NOOP,
+            'warning',
+            `Opens ${targetId}: open_conversation is an engine no-op (effect_spec.gd:60) — choosing this hypothesis never opens the conversation.`,
+            span(opensField.line),
+            [block.id, targetId],
+          );
         } else {
           diag.add(
             codes.LINE_UNPARSED,
@@ -887,6 +909,18 @@ export function emitCase(
       needsFactIds: factIdsInCondition(condition.ast),
       opensTiltak,
     });
+
+    // SB-085 lint 4: the engine reads availability as advisory strong-basis
+    // metadata only — it never blocks choosing the hypothesis.
+    if (condition.predicate) {
+      diag.add(
+        codes.HYPOTHESIS_AVAILABILITY_ADVISORY,
+        'info',
+        `needs: on ${block.id} compiles to hypothesis.availability, which never blocks — the engine reads it as advisory strong-basis metadata only.`,
+        span(needsField?.line ?? block.startLine),
+        [block.id],
+      );
+    }
 
     const hypothesis: HypothesisOut = {
       id: block.id,

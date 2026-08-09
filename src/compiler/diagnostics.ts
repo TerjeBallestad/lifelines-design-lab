@@ -92,6 +92,14 @@ export const codes = {
   FIXIT_PAYS_FACT: 'fixit-pays-fact',
   // SB-050 field cull (SB-054): a dead field parses, warns, and emits nothing.
   FIXIT_FIELD_CULLED: 'fixit-field-culled',
+  // SB-085 engine-mismatch lints (SB-058 fact-finding): places where the
+  // compiled slice and case_engine.gd disagree. The engine is the spec
+  // (SB-058 ruling 2) — these tell the author what the engine actually does.
+  COND_GATE_DROPPED: 'cond-gate-dropped',
+  COND_HYPOTHESIS_GATE_DEAD: 'cond-hypothesis-gate-dead',
+  EFFECT_OPEN_CONVERSATION_NOOP: 'effect-open-conversation-noop',
+  HYPOTHESIS_AVAILABILITY_ADVISORY: 'hypothesis-availability-advisory',
+  DELIVER_CLOCK_ID_DEAD: 'deliver-clock-id-dead',
   // §9 graph lints (TASK-017 — always advisory, computed on the compiled
   // case graph; exact reachability definitions live in
   // docs/markup-0.2-reference.md "Compiler extensions recorded by TASK-017")

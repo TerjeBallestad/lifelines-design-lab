@@ -72,6 +72,17 @@ export function emitEffects(
   for (const { ast, span } of lines) {
     switch (ast.kind) {
       case 'deliver':
+        // SB-085 lint 5: queue_pending_document.clock_id is a dead bucket
+        // key — the engine's arrival sweep keys on available_day only.
+        if (ast.clockId) {
+          diag.add(
+            codes.DELIVER_CLOCK_ID_DEAD,
+            'warning',
+            `"on ${ast.clockId}" is a dead bucket key — the engine's arrival sweep keys on available_day only; the clock reference does nothing.`,
+            span,
+            [ast.clockId, ownerId],
+          );
+        }
         out.push(deliverEffect(ast.documentId, ast.delayDays, ast.clockId));
         break;
       case 'open': {

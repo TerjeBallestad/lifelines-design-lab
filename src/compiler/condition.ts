@@ -296,6 +296,15 @@ export function emitPredicate(
         case 'fact':
           return { op: 'fact_lifted', args: { fact_id: ast.id } };
         case 'hypothesis':
+          // SB-085 lint 2: no shipped game surface ever sets a hypothesis, so
+          // hypothesis_chosen stays false in a real playthrough.
+          diag.add(
+            codes.COND_HYPOTHESIS_GATE_DEAD,
+            'warning',
+            `"${ast.id}" gates on hypothesis_chosen, but no game surface calls set_forelopig_tolkning / lock_arbeidshypotese — the gate never opens in a real playthrough.`,
+            where,
+            [ast.id, ownerId],
+          );
           return { op: 'hypothesis_chosen', args: { hypothesis_id: ast.id } };
         case 'stage':
           return { op: 'scenario_stage_at_least', args: { stage: ast.value ?? 0 } };
@@ -315,6 +324,29 @@ export function emitPredicate(
       }
     }
   }
+}
+
+/**
+ * SB-085 lint 1: a gate authored purely from unsupported terms compiles to NO
+ * predicate — always-true at runtime — while the engine defaults unknown ops
+ * to false. The per-term drop warnings say a term is gone; this one says the
+ * whole gate is gone.
+ */
+export function warnIfGateDropped(
+  ast: CondNode | null,
+  predicate: PredicateSpec | null,
+  diag: DiagnosticBag,
+  ownerId: string,
+  where: Span,
+): void {
+  if (ast === null || predicate !== null) return;
+  diag.add(
+    codes.COND_GATE_DROPPED,
+    'warning',
+    `The whole gate on ${ownerId} is dropped — every term is unsupported, so the compiled gate is always true. The engine would read these terms as false. The gate is gone, not narrowed.`,
+    where,
+    [ownerId],
+  );
 }
 
 /** All fact ids a condition AST references (for stub checks and labContent). */

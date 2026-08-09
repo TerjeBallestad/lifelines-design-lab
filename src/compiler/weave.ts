@@ -10,7 +10,12 @@
 import type { DiagnosticBag, Span } from './diagnostics.ts';
 import { codes, span } from './diagnostics.ts';
 import type { CondNode, PredicateSpec } from './condition.ts';
-import { emitPredicate, factIdsInCondition, parseCondition } from './condition.ts';
+import {
+  emitPredicate,
+  factIdsInCondition,
+  parseCondition,
+  warnIfGateDropped,
+} from './condition.ts';
 import { parseEffectLine } from './effects.ts';
 import { parseHeaderMeta } from './parse.ts';
 import type { RawBlock, RawProse } from './parse.ts';
@@ -479,6 +484,7 @@ function compileCall(
           }
         } else {
           gate = emitPredicate(ast, diag, ownerId, where) ?? undefined;
+          warnIfGateDropped(ast, gate ?? null, diag, ownerId, where);
           for (const factId of factIdsInCondition(ast)) refs.push({ id: factId, where, ownerId });
         }
         continue;
