@@ -19,6 +19,12 @@ import {
 } from '../shared/active-case.ts';
 import { findSourceBlock, spliceSourceBlock } from './source-block.ts';
 import type { SourceBlock } from './source-block.ts';
+import { parseCaseText } from '../../src/compiler/parse.ts';
+import type { RawBlock } from '../../src/compiler/parse.ts';
+import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
+import { patchField } from '../../src/compiler/patch.ts';
+import { FORM_FIELDS, fieldRows, oneLine } from '../shared/field-form.ts';
+import type { NodeKind } from '../shared/node-kind.ts';
 import { injectEditorFonts } from '../shared/doc-preview.ts';
 import { buildIndex } from './model.ts';
 import { coverageSurface } from './coverage.ts';
@@ -259,33 +265,78 @@ function reset(): void {
 }
 
 // ---- SB-063 amendment 3: the source drawer — tweak the selected entity's
-// ---- authored block without leaving the run. A save recompiles in place;
-// ---- edits land in the shared draft seam, so nothing is ever lost (the
-// ---- Script lens boots from the same draft).
+// ---- authored block without leaving the run. FIELDS mode renders the SAME
+// ---- form as the canvas inspector (shared/field-form.ts) and commits
+// ---- through the compiler patch layer; RAW mode edits the block's lines.
+// ---- Either way a commit saves to disk and recompiles the lens in place;
+// ---- in-flight edits land in the shared draft seam.
 
 const appEl = $('app');
+const drawerEl = $('editdrawer');
 const editBtn = $('edit-btn') as HTMLButtonElement;
 const edText = $('ed-text') as HTMLTextAreaElement;
+const edForm = $('ed-form');
 const edTitle = $('ed-title');
 const edStatus = $('ed-status');
+const edModeFields = $('ed-mode-fields') as HTMLButtonElement;
+const edModeRaw = $('ed-mode-raw') as HTMLButtonElement;
 const DRAFT_STORE = draftKey(activeCasePath);
-let drawer: { id: string; kind: string; block: SourceBlock } | null = null;
+let drawer: { id: string; kind: string; block: SourceBlock; mode: 'fields' | 'raw' } | null = null;
 let draftTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** The parsed block behind an entry — the field form's data source. Only the
+ *  NodeKind entries with FORM_FIELDS rows have one worth showing. */
+function parsedBlockFor(id: string): RawBlock | null {
+  const parsed = parseCaseText(caseText, new DiagnosticBag());
+  return parsed.blocks.find((b) => b.id === id) ?? null;
+}
+
+function hasFieldForm(entry: { id: string; kind: string }): boolean {
+  const specs = FORM_FIELDS[entry.kind as NodeKind];
+  return Array.isArray(specs) && specs.length > 0 && parsedBlockFor(entry.id) !== null;
+}
 
 function openDrawer(entry: IndexEntry): void {
   const block = findSourceBlock(caseText, entry.id, entry.kind);
   if (!block) return;
-  drawer = { id: entry.id, kind: entry.kind, block };
-  edTitle.textContent = `SOURCE · lines ${block.startLine}–${block.endLine}`;
-  edText.value = block.text;
+  const mode = hasFieldForm(entry) ? 'fields' : 'raw';
+  drawer = { id: entry.id, kind: entry.kind, block, mode };
   edStatus.textContent = '';
   appEl.classList.add('drawer-open');
-  edText.focus();
+  renderDrawer();
 }
 
 function closeDrawer(): void {
   drawer = null;
   appEl.classList.remove('drawer-open');
+}
+
+function renderDrawer(): void {
+  if (!drawer) return;
+  edTitle.textContent = `SOURCE · lines ${drawer.block.startLine}–${drawer.block.endLine}`;
+  const fieldsAvailable = hasFieldForm(drawer);
+  edModeFields.hidden = !fieldsAvailable;
+  edModeRaw.hidden = !fieldsAvailable; // no toggle when raw is the only mode
+  drawerEl.classList.toggle('mode-fields', drawer.mode === 'fields');
+  edModeFields.classList.toggle('current', drawer.mode === 'fields');
+  edModeRaw.classList.toggle('current', drawer.mode === 'raw');
+  if (drawer.mode === 'fields') {
+    const block = parsedBlockFor(drawer.id);
+    if (!block) {
+      drawer.mode = 'raw';
+      renderDrawer();
+      return;
+    }
+    litRender(
+      html`${fieldRows(drawer.kind as NodeKind, block, {
+        commit: (key, value) => commitDrawerField(key, value),
+        stash: (key, value) => stashDrawerField(key, value),
+      })}`,
+      edForm,
+    );
+  } else {
+    edText.value = drawer.block.text;
+  }
 }
 
 /** Recompile the whole lens over new case text; the run state stays (stale
@@ -304,21 +355,19 @@ function rebuild(newText: string): void {
   renderAll();
 }
 
-async function saveDrawer(): Promise<void> {
-  if (!drawer) return;
-  const active = drawer;
-  const newText = spliceSourceBlock(caseText, active.block, edText.value);
+/** The shared commit tail: save to disk, recompile in place, re-anchor the
+ *  drawer, report the compile. A failed save keeps the text as a draft. */
+async function commitCase(newText: string): Promise<void> {
   try {
     const res = await fetch(saveCaseUrl, { method: 'POST', body: newText });
     if (!res.ok) throw new Error(await res.text());
     clearTimeout(draftTimer);
     localStorage.removeItem(DRAFT_STORE);
     rebuild(newText);
-    // Lines may have shifted — re-anchor the open block.
-    const block = findSourceBlock(caseText, active.id, active.kind);
-    if (block) {
-      active.block = block;
-      edTitle.textContent = `SOURCE · lines ${block.startLine}–${block.endLine}`;
+    if (drawer) {
+      const block = findSourceBlock(caseText, drawer.id, drawer.kind);
+      if (block) drawer.block = block;
+      renderDrawer();
     }
     const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
     const warnings = result.diagnostics.filter((d) => d.severity === 'warning').length;
@@ -327,6 +376,37 @@ async function saveDrawer(): Promise<void> {
     localStorage.setItem(DRAFT_STORE, newText);
     edStatus.textContent = `save failed — draft kept · ${err instanceof Error ? err.message : String(err)}`;
   }
+}
+
+function commitDrawerField(key: string, value: string): void {
+  if (!drawer) return;
+  try {
+    const patched = patchField(caseText, drawer.id, key, oneLine(value));
+    if (patched === caseText) return;
+    void commitCase(patched);
+  } catch (err) {
+    edStatus.textContent = err instanceof Error ? err.message : String(err);
+  }
+}
+
+function stashDrawerField(key: string, value: string): void {
+  if (!drawer) return;
+  edStatus.textContent = 'unsaved — draft kept';
+  clearTimeout(draftTimer);
+  const active = drawer;
+  draftTimer = setTimeout(() => {
+    try {
+      const patched = patchField(caseText, active.id, key, oneLine(value));
+      if (patched !== caseText) localStorage.setItem(DRAFT_STORE, patched);
+    } catch {
+      // Unpatchable while typing — the commit surfaces it (canvas law).
+    }
+  }, 300);
+}
+
+function saveDrawerRaw(): void {
+  if (!drawer) return;
+  void commitCase(spliceSourceBlock(caseText, drawer.block, edText.value));
 }
 
 edText.addEventListener('input', () => {
@@ -342,13 +422,25 @@ edText.addEventListener('input', () => {
 edText.addEventListener('keydown', (ev) => {
   if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') {
     ev.preventDefault();
-    void saveDrawer();
+    saveDrawerRaw();
   }
 });
 editBtn.addEventListener('click', () => {
   if (selected) openDrawer(selected);
 });
-$('ed-save').addEventListener('click', () => void saveDrawer());
+edModeFields.addEventListener('click', () => {
+  if (drawer) {
+    drawer.mode = 'fields';
+    renderDrawer();
+  }
+});
+edModeRaw.addEventListener('click', () => {
+  if (drawer) {
+    drawer.mode = 'raw';
+    renderDrawer();
+  }
+});
+$('ed-save').addEventListener('click', saveDrawerRaw);
 $('ed-close').addEventListener('click', closeDrawer);
 
 wireCaseChrome();

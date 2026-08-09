@@ -9,12 +9,12 @@
 // recompile re-render — focus survives without the old activeKey hack.
 import { html, render, nothing } from 'lit-html';
 import type { TemplateResult } from 'lit-html';
-import { live } from 'lit-html/directives/live.js';
 import type { RawBlock } from '../../src/compiler/parse.ts';
 import type { GraphNode, GraphEdge, NodeKind } from './graph.ts';
-import { KIND_LABEL, KIND_VAR, FORM_FIELDS } from './kinds.ts';
+import { KIND_LABEL, KIND_VAR } from './kinds.ts';
 import * as model from './model.ts';
 import * as editing from './editing.ts';
+import { fieldRows } from '../shared/field-form.ts';
 import { unlockSentence } from '../shared/unlock.ts';
 
 // SB-078: non-reactive concerns only — DOM host, preview handle, camera,
@@ -56,36 +56,11 @@ function formTemplate(node: GraphNode, block: RawBlock): TemplateResult {
       Prose/weave block — edit it in the script pane (click jumped there already).
     </div>`;
   }
-  const rows = (FORM_FIELDS[node.kind] ?? []).map((spec) => {
-    const key = spec.keys.find((k) => block.fields.some((f) => f.key === k)) ?? spec.keys[0];
-    const value = block.fields.find((f) => f.key === key)?.value ?? '';
-    const commit = (event: Event) =>
-      editing.commitField(node.id, key, (event.target as HTMLInputElement).value);
-    const stash = (event: Event) =>
-      editing.stashDraft(node.id, key, (event.target as HTMLInputElement).value);
-    const blurOnEnter = (event: KeyboardEvent) => {
-      if (event.key === 'Enter') (event.target as HTMLElement).blur();
-    };
-    const control = spec.multiline
-      ? html`<textarea
-          class="fval"
-          data-key="${key}"
-          rows="3"
-          placeholder=${spec.placeholder ?? ''}
-          .value=${live(value)}
-          @change=${commit}
-          @input=${stash}
-        ></textarea>`
-      : html`<input
-          class="fval"
-          data-key="${key}"
-          placeholder=${spec.placeholder ?? ''}
-          .value=${live(value)}
-          @change=${commit}
-          @input=${stash}
-          @keydown=${blurOnEnter}
-        />`;
-    return html`<label class="field"><span class="fkey">${key}</span>${control}</label>`;
+  // SB-063: the rows render via the shared field form — the playtest drawer
+  // shows the same form; only the commit tail is canvas-specific.
+  const rows = fieldRows(node.kind, block, {
+    commit: (key, value) => editing.commitField(node.id, key, value),
+    stash: (key, value) => editing.stashDraft(node.id, key, value),
   });
   return html`<div class="sect">FIELDS</div>
     ${rows}

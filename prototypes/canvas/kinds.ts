@@ -57,61 +57,10 @@ export const ID_PREFIX: Record<NodeKind, string> = {
   proposal: 'prop_',
 };
 
-// Markup field per form row. `keys` are candidates in preference order; the
-// first key the block already carries wins (questions write Title unless the
-// block uses an explicit Prompt line). Multiline fields render as textareas
-// but stay single markup lines — newlines collapse to spaces on commit.
-export interface FieldSpec {
-  keys: string[];
-  multiline?: boolean;
-  /** Empty-form guidance (SB-039): example text from a real Olsen block. */
-  placeholder?: string;
-}
-export const FORM_FIELDS: Record<NodeKind, FieldSpec[]> = {
-  document: [{ keys: ['Title'] }, { keys: ['Peek'] }, { keys: ['Meta'] }],
-  fact: [
-    { keys: ['Label'], placeholder: 'short name — e.g. Ellings uføretrygd' },
-    {
-      keys: ['Summary'],
-      multiline: true,
-      placeholder: 'what the player learns — e.g. Ellings uføretrygd: 2 [icon=coin] i måneden.',
-    },
-    { keys: ['Category'], placeholder: 'e.g. Økonomi' },
-    {
-      keys: ['Quote'],
-      multiline: true,
-      placeholder: 'source line, verbatim — e.g. «Det er en dør på gløtt.»',
-    },
-  ],
-  question: [
-    { keys: ['Prompt', 'Title'], multiline: true },
-    { keys: ['Teaser'], multiline: true },
-    { keys: ['Card title'] },
-  ],
-  hypothesis: [
-    { keys: ['Title'], multiline: true },
-    { keys: ['Summary'], multiline: true },
-  ],
-  tiltak: [
-    { keys: ['Title'] },
-    { keys: ['Slot'] },
-    { keys: ['Cost'] },
-    { keys: ['Description'], multiline: true },
-  ],
-  dispatch: [
-    { keys: ['Title'] },
-    { keys: ['Activity'] },
-    { keys: ['Channel'] },
-    { keys: ['Delay'] },
-    { keys: ['Description'], multiline: true },
-  ],
-  clock: [{ keys: ['Label'] }, { keys: ['Question'] }, { keys: ['Good'] }, { keys: ['Bad'] }],
-  // SB-046 (SB-037 ruling): weave blocks never grow canvas forms — editing
-  // routes to the script surface via the click cross-jump.
-  conversation: [],
-  recipe: [],
-  proposal: [],
-};
+// SB-063: the field specs moved to shared/field-form.ts (the drawer renders
+// the same form). Re-exported here so canvas imports keep one source.
+export type { FieldSpec } from '../shared/field-form.ts';
+export { FORM_FIELDS } from '../shared/field-form.ts';
 
 export function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
