@@ -47,7 +47,7 @@ describe('(a) no-op patches are byte-identical', () => {
   });
 
   it('listFieldAdd of an already-listed entry returns the same text', () => {
-    expect(listFieldAdd(olsen, 'f_aldri_alene', 'Supports', 'q_evner')).toBe(olsen);
+    expect(listFieldAdd(olsen, 'f_trygd', 'Supports', 'q_okonomi')).toBe(olsen);
   });
 
   it('listFieldAdd matches an entry that carries a bracket payload', () => {

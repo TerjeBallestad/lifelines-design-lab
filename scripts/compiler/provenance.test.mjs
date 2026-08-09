@@ -62,7 +62,8 @@ describe('healed 0.2 tiny-olsen.case.md (SB-024 back-port) compiles clean', () =
     );
     const out = compileCase(text);
     expect(out.slice.documents).toHaveLength(9);
-    expect(out.slice.facts).toHaveLength(27);
+    // 27 at the SB-024 heal; SB-602 retired f_aldri_alene + f_ingen_tjenester.
+    expect(out.slice.facts).toHaveLength(25);
     expect(out.slice.questions).toHaveLength(8);
     expect(out.slice.hypotheses).toHaveLength(23);
     expect(out.slice.tiltak).toHaveLength(9);

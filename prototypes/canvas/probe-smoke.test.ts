@@ -24,7 +24,7 @@ describe('canvas graph derivation', () => {
 
     const byKind = (kind: string) => graph.nodes.filter((n) => n.kind === kind).length;
     expect(byKind('document')).toBe(9);
-    expect(byKind('fact')).toBe(27);
+    expect(byKind('fact')).toBe(25);
     expect(byKind('question')).toBe(8);
     expect(byKind('hypothesis')).toBe(23);
     expect(byKind('tiltak')).toBe(9);
