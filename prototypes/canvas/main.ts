@@ -16,9 +16,10 @@
 // status bar, wiring, and boot. It re-exports the probe surface the smoke
 // tests drive.
 import { action, autorun, observable, reaction } from 'mobx';
+import { html, render as litRender, nothing } from 'lit-html';
 import { NODE_W, NODE_H } from './graph.ts';
 import type { GraphEdge, NodeKind, NodePos } from './graph.ts';
-import { KIND_LABEL, KIND_VAR, EDGE_VAR, cssVar, escapeHtml } from './kinds.ts';
+import { KIND_LABEL, KIND_VAR, EDGE_VAR, cssVar } from './kinds.ts';
 import { RELATION, birthKinds as relationBirthKinds } from './relations.ts';
 import * as model from './model.ts';
 import * as layout from './layout-modes.ts';
@@ -365,7 +366,7 @@ document.body.append(createMenu);
 
 export function closeCreateMenu(): void {
   createMenu.classList.remove('show');
-  createMenu.innerHTML = '';
+  litRender(nothing, createMenu);
 }
 
 /** Create + wire + focus, per the menu pick. Exported for the smoke test. */
@@ -401,24 +402,29 @@ export function openDropCreateMenu(fromId: string, clientX: number, clientY: num
     return;
   }
   const at = camera.toWorldPoint(clientX, clientY);
-  createMenu.innerHTML =
-    `<div class="cm-head">NEW FROM ${escapeHtml(fromId.toUpperCase())}</div>` +
-    kinds
-      .map(
+  const pick = (kind: NodeKind) => {
+    closeCreateMenu();
+    const res = dropCreate(fromId, kind, at);
+    if (!res.ok && res.reason) showTip(res.reason, clientX, clientY);
+  };
+  litRender(
+    html`<div class="cm-head">NEW FROM ${fromId.toUpperCase()}</div>
+      ${kinds.map(
         (kind) =>
-          `<button class="cm-item" data-mk="${kind}" style="color:var(${KIND_VAR[kind]})">${KIND_LABEL[kind]}</button>`,
-      )
-      .join('');
+          html`<button
+            class="cm-item"
+            data-mk="${kind}"
+            style="color:var(${KIND_VAR[kind]})"
+            @click=${() => pick(kind)}
+          >
+            ${KIND_LABEL[kind]}
+          </button>`,
+      )}`,
+    createMenu,
+  );
   createMenu.style.left = `${clientX + 4}px`;
   createMenu.style.top = `${clientY + 4}px`;
   createMenu.classList.add('show');
-  createMenu.querySelectorAll<HTMLElement>('[data-mk]').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      closeCreateMenu();
-      const res = dropCreate(fromId, btn.dataset.mk as NodeKind, at);
-      if (!res.ok && res.reason) showTip(res.reason, clientX, clientY);
-    }),
-  );
 }
 
 // A pointerdown anywhere outside the menu dismisses it (the opening gesture
@@ -667,29 +673,25 @@ function renderWorklist(): void {
     }))
     .filter((g) => g.rows.length > 0);
 
-  worklistBody.innerHTML =
+  litRender(
     groups.length === 0
-      ? '<div class="empty">No loose ends — every thread is tied.</div>'
-      : groups
-          .map(
-            ({ group, rows }) =>
-              `<div class="sect">${GROUP_LABEL[group]} · ${rows.length}</div>` +
-              rows
-                .map(
-                  ({ entry, index }) =>
-                    `<div class="wl-row s-${entry.severity}" data-wi="${index}">
-                      <span class="dcode">${escapeHtml(entry.code)}</span>
-                      <span class="wmsg">${escapeHtml(entry.message)}</span>
-                    </div>`,
-                )
-                .join(''),
-          )
-          .join('');
-
-  worklistBody.querySelectorAll<HTMLElement>('[data-wi]').forEach((el) =>
-    el.addEventListener('click', () => {
-      jumpToWorklistEntry(worklist[Number(el.dataset.wi)]);
-    }),
+      ? html`<div class="empty">No loose ends — every thread is tied.</div>`
+      : groups.map(
+          ({ group, rows }) =>
+            html`<div class="sect">${GROUP_LABEL[group]} · ${rows.length}</div>
+              ${rows.map(
+                ({ entry, index }) =>
+                  html`<div
+                    class="wl-row s-${entry.severity}"
+                    data-wi="${index}"
+                    @click=${() => jumpToWorklistEntry(entry)}
+                  >
+                    <span class="dcode">${entry.code}</span>
+                    <span class="wmsg">${entry.message}</span>
+                  </div>`,
+              )}`,
+        ),
+    worklistBody,
   );
 }
 
@@ -703,23 +705,40 @@ function renderStatus(): void {
   const quietDays = quiet?.message.match(/quiet days?\s+([\d,\s]+\d)/i)?.[1].replace(/\s+/g, ' ');
 
   counts.textContent = `${model.state.graph.nodes.length} nodes · ${model.state.graph.edges.length} edges`;
-  statusbar.innerHTML = `
-  <span class="${errors ? 'warn-c' : 'ok'}">compiled ${ui.compileMs}ms${errors ? ` · ${errors} errors` : ''}</span>
-  <span>${model.state.graph.nodes.length} nodes · ${model.state.graph.edges.length} edges</span>
-  ${warnings ? `<span class="warn-c">${warnings} warnings</span>` : ''}
-  ${todos ? `<span class="warn-c">${todos} TODO</span>` : ''}
-  ${quietDays ? `<span class="pacing">pacing — day ${quietDays} quiet</span>` : ''}
-  ${model.state.draftRestored ? '<span class="warn-c">restored unsaved draft</span>' : ''}
-  ${editing.notes.save ? `<span class="${editing.notes.save.startsWith('saved') ? 'ok' : 'warn-c'}">${escapeHtml(editing.notes.save)}</span>` : ''}
-  ${editing.notes.lifecycle ? `<span class="warn-c">${escapeHtml(editing.notes.lifecycle)}</span>` : ''}
-  ${model.ui.selectedEdgeKey ? '<span class="warn-c">edge selected — delete removes the relation</span>' : ''}
-  <span class="hint">${
-    layout.layoutUi.mode === 'hand'
-      ? 'drag a node to place it · positions stick'
-      : layout.layoutUi.mode === 'gravity'
-        ? 'gravity — drag stirs, release floats'
-        : 'gravity + pin — a drag pins the node, double-click frees it'
-  } · drag port to empty space for new node · delete removes · esc clear</span>`;
+  litRender(
+    html`
+      <span class="${errors ? 'warn-c' : 'ok'}"
+        >compiled ${ui.compileMs}ms${errors ? ` · ${errors} errors` : ''}</span
+      >
+      <span>${model.state.graph.nodes.length} nodes · ${model.state.graph.edges.length} edges</span>
+      ${warnings ? html`<span class="warn-c">${warnings} warnings</span>` : nothing}
+      ${todos ? html`<span class="warn-c">${todos} TODO</span>` : nothing}
+      ${quietDays ? html`<span class="pacing">pacing — day ${quietDays} quiet</span>` : nothing}
+      ${model.state.draftRestored
+        ? html`<span class="warn-c">restored unsaved draft</span>`
+        : nothing}
+      ${editing.notes.save
+        ? html`<span class="${editing.notes.save.startsWith('saved') ? 'ok' : 'warn-c'}"
+            >${editing.notes.save}</span
+          >`
+        : nothing}
+      ${editing.notes.lifecycle
+        ? html`<span class="warn-c">${editing.notes.lifecycle}</span>`
+        : nothing}
+      ${model.ui.selectedEdgeKey
+        ? html`<span class="warn-c">edge selected — delete removes the relation</span>`
+        : nothing}
+      <span class="hint"
+        >${layout.layoutUi.mode === 'hand'
+          ? 'drag a node to place it · positions stick'
+          : layout.layoutUi.mode === 'gravity'
+            ? 'gravity — drag stirs, release floats'
+            : 'gravity + pin — a drag pins the node, double-click frees it'}
+        · drag port to empty space for new node · delete removes · esc clear</span
+      >
+    `,
+    statusbar,
+  );
 }
 
 // ---- wiring + boot --------------------------------------------------------
