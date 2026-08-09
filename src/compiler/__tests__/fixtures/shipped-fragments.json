@@ -14,7 +14,7 @@
       "register": "klinisk",
       "peek": "—",
       "meta": "ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999",
-      "body_bbcode": "MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. [url=fact:f_brevsprekken]Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS",
+      "body_bbcode": "MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [url=fact:f_brevsprekken]Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS",
       "runs": [
         {
           "id": "run_text_0",
@@ -28,12 +28,12 @@
         },
         {
           "id": "run_text_1",
-          "text": " Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ",
+          "text": " Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. ",
           "fact_id": ""
         },
         {
           "id": "run_brevsprekken",
-          "text": "Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.",
+          "text": "Beskjeden ble gitt gjennom brevsprekken.",
           "fact_id": "f_brevsprekken"
         },
         {

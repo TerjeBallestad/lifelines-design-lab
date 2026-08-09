@@ -127,7 +127,7 @@ async function bootProbe() {
 describe('canvas inspector editing (SB-032)', () => {
   it('edits a fact label through the form: patch, save POST, recompiled re-render', async () => {
     localStorage.clear();
-    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    const fetchMock = vi.fn(async (_url: string) => ({ ok: true, text: async () => 'ok' }));
     globalThis.fetch = fetchMock as never;
     const probe = await bootProbe();
 
@@ -211,11 +211,13 @@ function dragConnect(fromId: string, toId: string): void {
 describe('canvas edge authoring (SB-033)', () => {
   it('drag fact→question writes the Supports entry, recompiles, renders the edge', async () => {
     localStorage.clear();
-    const fetchMock = vi.fn(async () => ({ ok: true, text: async () => 'ok' }));
+    const fetchMock = vi.fn(async (_url: string) => ({ ok: true, text: async () => 'ok' }));
     globalThis.fetch = fetchMock as never;
     const probe = await bootProbe();
 
-    expect(probe.getCaseText()).toContain('Supports: q_grete_dor\nFrank: ««Kort');
+    // Precondition: the field exists un-appended. Anchor one line only —
+    // authoring may add fields (About/Discuss) between Supports and Frank.
+    expect(probe.getCaseText()).toContain('Supports: q_grete_dor\n');
     dragConnect('f_grete_syk', 'q_okonomi');
 
     // The case text gained the Supports entry…
@@ -551,10 +553,9 @@ describe('canvas stub nodes (SB-049)', () => {
   it('an unknown id in Supports becomes a wired stub node in buildGraph', async () => {
     const { compileCase } = await import('../../src/compiler/index.ts');
     const { buildGraph } = await import('./graph.ts');
-    const text = caseText.replace(
-      'Supports: q_grete_dor\nFrank: ««Kort',
-      'Supports: q_grete_dor, q_ukjent\nFrank: ««Kort',
-    );
+    // First-match line replace — the first `Supports: q_grete_dor` line is
+    // f_grete_syk's; a one-line anchor survives authoring around it.
+    const text = caseText.replace(/^Supports: q_grete_dor$/m, 'Supports: q_grete_dor, q_ukjent');
     expect(text).not.toBe(caseText);
     const { slice, diagnostics } = compileCase(text);
     // The compiler half of SB-040 ruling 2 already holds: a stub diagnostic.
@@ -604,10 +605,7 @@ describe('canvas stub nodes (SB-049)', () => {
     // Name an unknown question in the script — the draft path boots on it.
     localStorage.setItem(
       DRAFT_KEY,
-      caseText.replace(
-        'Supports: q_grete_dor\nFrank: ««Kort',
-        'Supports: q_grete_dor, q_ukjent\nFrank: ««Kort',
-      ),
+      caseText.replace(/^Supports: q_grete_dor$/m, 'Supports: q_grete_dor, q_ukjent'),
     );
     const probe = await bootProbe();
 

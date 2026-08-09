@@ -84,7 +84,7 @@ MELDING OM DØDSFALL
 
 Grete Olsen, f. 21.09.1927. [Dødsfall konstatert 15.02 kl. 04:12.](fact:f_dod)
 
-Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. [Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.](fact:f_brevsprekken)
+Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [Beskjeden ble gitt gjennom brevsprekken.](fact:f_brevsprekken)
 
 Saken overføres kommunen for videre oppfølging av gjenlevende.
 

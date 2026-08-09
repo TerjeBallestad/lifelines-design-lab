@@ -530,10 +530,10 @@ export const tinyOlsenDocuments = {
         id: 'doc_dodsfall_p3',
         runs: [
           {
-            text: 'Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ',
+            text: 'Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. ',
           },
           {
-            text: 'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
+            text: 'Beskjeden ble gitt gjennom brevsprekken.',
             factId: 'f_brevsprekken',
           },
         ],
@@ -810,9 +810,8 @@ export const tinyOlsenFacts = {
     id: 'f_brevsprekken',
     domain: 'Nettverk/sosialt',
     category: 'Dokument',
-    text: 'Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.',
-    quote:
-      'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
+    text: 'Han åpent ikke døren, men beskjeden ble levert i brevsprekken.',
+    quote: 'Beskjeden ble gitt gjennom brevsprekken.',
     supports: ['q_baering', 'q_kollaps'],
   },
 } satisfies Record<string, BlueprintFact>;
@@ -1527,7 +1526,7 @@ export const tinyOlsenGodotSource = {
       peek: '—',
       meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999',
       body_bbcode:
-        'MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. [url=fact:f_brevsprekken]Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS',
+        'MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [url=fact:f_brevsprekken]Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS',
       runs: [
         {
           id: 'run_text_0',
@@ -1541,12 +1540,12 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: ' Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. ',
+          text: ' Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. ',
           fact_id: '',
         },
         {
           id: 'run_brevsprekken',
-          text: 'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
+          text: 'Beskjeden ble gitt gjennom brevsprekken.',
           fact_id: 'f_brevsprekken',
         },
         {
@@ -1839,7 +1838,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'f_smart_gutt',
-      label: '«En smart gutt»',
+      label: 'En smart gutt',
       summary: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
       source_document_id: 'doc_frank_visit',
       domain: 'Nettverk/sosialt',
@@ -1891,12 +1890,11 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_brevsprekken',
       label: 'Beskjed gjennom brevsprekken',
-      summary: 'Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.',
+      summary: 'Han åpent ikke døren, men beskjeden ble levert i brevsprekken.',
       source_document_id: 'doc_dodsfall',
       domain: 'Nettverk/sosialt',
       category: 'Dokument',
-      quote:
-        'Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
+      quote: 'Beskjeden ble gitt gjennom brevsprekken.',
       supports_questions: ['q_baering', 'q_kollaps'],
       lift_effects: [],
     },

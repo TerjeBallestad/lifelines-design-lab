@@ -16,6 +16,18 @@ import {
   removeBlock,
 } from '../patch';
 
+/** 1-based line number of `needle` inside `blockId`'s section. The case is a
+ *  living document — absolute line numbers drift with every authoring pass,
+ *  so expectations compute them instead of hard-coding them. */
+function lineIn(text: string, blockId: string, needle: string): number {
+  const lines = text.split('\n');
+  const start = lines.findIndex((l) => l.startsWith('#') && l.endsWith(` ${blockId}`));
+  if (start === -1) throw new Error(`block not found: ${blockId}`);
+  const rel = lines.slice(start).findIndex((l) => l === needle);
+  if (rel === -1) throw new Error(`line not found in ${blockId}: ${needle}`);
+  return start + rel + 1;
+}
+
 /** Lines that differ between two texts, as [lineNo, before, after]. */
 function changedLines(before: string, after: string): Array<[number, string, string]> {
   const a = before.split('\n');
@@ -65,14 +77,23 @@ describe('(b) patch→compile equals editing the field by hand', () => {
   it('patchField(when) rewrites a condition expression', () => {
     const patched = patchField(olsen, 'q_kollaps', 'when', 'f_dod and f_brevsprekken');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[401, 'when: f_dod', 'when: f_dod and f_brevsprekken']]);
+    expect(diff).toEqual([
+      [lineIn(olsen, 'q_kollaps', 'when: f_dod'), 'when: f_dod', 'when: f_dod and f_brevsprekken'],
+    ]);
     expect(compileCase(patched).diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
   });
 
   it('patchField inserts a missing field after the last field line', () => {
     const patched = patchField(olsen, 'f_trygd', 'Card', '«Trygden — 2 i måneden.»');
     const diff = changedLines(olsen, patched);
-    expect(diff[0]).toEqual([85, '', 'Card: «Trygden — 2 i måneden.»']);
+    expect(diff[0].slice(1)).toEqual(['', 'Card: «Trygden — 2 i måneden.»']);
+    // Placement: the new field line lands inside the f_trygd block.
+    const lines = patched.split('\n');
+    const heading = lines
+      .slice(0, diff[0][0])
+      .reverse()
+      .find((l) => l.startsWith('#'));
+    expect(heading).toBe('## f_trygd');
     const fact = compileCase(patched).slice.facts.find((f: { id: string }) => f.id === 'f_trygd');
     expect(fact).toBeTruthy();
   });
@@ -94,13 +115,21 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldAdd appends to the existing line without reformatting it', () => {
     const patched = listFieldAdd(olsen, 'f_bok', 'Supports', 'q_liv');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[251, 'Supports: q_evner', 'Supports: q_evner, q_liv']]);
+    expect(diff).toEqual([
+      [
+        lineIn(olsen, 'f_bok', 'Supports: q_evner'),
+        'Supports: q_evner',
+        'Supports: q_evner, q_liv',
+      ],
+    ]);
   });
 
   it('listFieldAdd fills an empty list field in place', () => {
     const patched = listFieldAdd(olsen, 'h_ev_ukjent', 'Needs', 'f_aldri_alene');
     const diff = changedLines(olsen, patched);
-    expect(diff).toEqual([[454, 'Needs:', 'Needs: f_aldri_alene']]);
+    expect(diff).toEqual([
+      [lineIn(olsen, 'h_ev_ukjent', 'Needs:'), 'Needs:', 'Needs: f_aldri_alene'],
+    ]);
   });
 
   it('listFieldRemove keeps the order of the remaining entries', () => {
@@ -108,7 +137,7 @@ describe('(c) list ops preserve line order and formatting', () => {
     const diff = changedLines(olsen, patched);
     expect(diff).toEqual([
       [
-        423,
+        lineIn(olsen, 'h_gd_infra', 'Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang'),
         'Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang',
         'Opens: t_hjemmehjelp, t_dokgjennomgang',
       ],
@@ -125,7 +154,9 @@ describe('(c) list ops preserve line order and formatting', () => {
   it('listFieldRemove of the last entry leaves the bare key line', () => {
     const once = listFieldRemove(olsen, 'f_bok', 'Supports', 'q_evner');
     const diff = changedLines(olsen, once);
-    expect(diff).toEqual([[251, 'Supports: q_evner', 'Supports:']]);
+    expect(diff).toEqual([
+      [lineIn(olsen, 'f_bok', 'Supports: q_evner'), 'Supports: q_evner', 'Supports:'],
+    ]);
   });
 });
 

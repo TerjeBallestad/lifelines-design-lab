@@ -273,8 +273,7 @@ Supports: q_baering
 Quote: «han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.»
 
 ## f_smart_gutt
-
-Label: «En smart gutt»
+Label: En smart gutt
 Summary: Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_grete_dor, q_evner
@@ -319,7 +318,7 @@ MELDING OM DØDSFALL
 
 Grete Olsen, f. 21.09.1927. [Dødsfall konstatert 15.02 kl. 04:12.](fact:f_dod)
 
-Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. [Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.](fact:f_brevsprekken)
+Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [Beskjeden ble gitt gjennom brevsprekken.](fact:f_brevsprekken)
 
 Saken overføres kommunen for videre oppfølging av gjenlevende.
 
@@ -336,7 +335,7 @@ Supports: q_kollaps
 ## f_brevsprekken
 
 Label: Beskjed gjennom brevsprekken
-Summary: Dødsbudskapet ble gitt gjennom brevsprekken. Døren forble lukket.
+Summary: Han åpent ikke døren, men beskjeden ble levert i brevsprekken.
 Domain: Nettverk/sosialt · Category: Dokument
 Supports: q_baering, q_kollaps
 

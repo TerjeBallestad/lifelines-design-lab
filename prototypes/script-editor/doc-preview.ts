@@ -1,9 +1,8 @@
 // Browser bridge to the real bake templates (templates/docs/*) — the same
 // HTML+CSS the Playwright bake screenshots into core-loop textures. Fonts load
 // as vite asset URLs here instead of the bake's base64 embedding.
-// @ts-expect-error — plain .mjs module without type declarations
+// Typed via templates-docs.d.ts — the modules themselves are plain .mjs.
 import { templateForKind, hasTemplate } from '../../templates/docs/registry.mjs';
-// @ts-expect-error — plain .mjs module without type declarations
 import {
   renderRuns,
   pageShell,
@@ -90,8 +89,8 @@ export function buildDocPreviewHtml(docId: string, doc: LabDoc): DocPreviewBuild
     overrideCss: override.css + PREVIEW_CSS,
     bodyHtml,
     fontCss: browserFontCss,
-  }) as string;
-  const size = sizeForKind(kindUsed) as { width: number; minHeight: number };
+  });
+  const size = sizeForKind(kindUsed);
   return { html, width: size.width, minHeight: size.minHeight, kindUsed, fallback };
 }
 
