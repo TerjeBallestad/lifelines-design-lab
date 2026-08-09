@@ -187,6 +187,159 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+/* SB-061: compiled effects and gates shown as data lines — never evaluated */
+.surface .effect-list {
+  background: var(--surface-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 11px;
+}
+.surface .effect-line {
+  font: 400 10.5px/1.7 var(--mono);
+  color: var(--text-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.surface .gate-line {
+  font: 400 9.5px/1.6 var(--mono);
+  color: var(--text-3);
+  margin-top: 6px;
+  word-break: break-word;
+}
+/* SB-061: the clock as a DEAD DIAL (SB-058 ruling 1) — segments visible,
+   needle absent by construction */
+.surface .clock-dial {
+  background: var(--panel);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.surface .clock-dial .clock-label {
+  font: 700 13px var(--sans);
+  color: var(--text);
+}
+.surface .clock-dial .clock-question {
+  font: 400 italic 11.5px/1.5 var(--sans);
+  color: var(--text-2);
+  margin-top: 4px;
+}
+.surface .clock-dial .clock-track {
+  display: flex;
+  gap: 3px;
+  margin-top: 10px;
+}
+.surface .clock-dial .clock-seg {
+  flex-basis: 0;
+  min-width: 0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.surface .clock-dial .clock-seg-good {
+  background: rgba(70, 194, 136, 0.12);
+  border: 1px solid rgba(70, 194, 136, 0.35);
+}
+.surface .clock-dial .clock-seg-bad {
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.3);
+}
+.surface .clock-dial .seg-label {
+  font: 600 9.5px var(--sans);
+  color: var(--text-2);
+}
+.surface .clock-dial .seg-size {
+  font: 400 10px var(--mono);
+  color: var(--text-3);
+}
+.surface .clock-dial .clock-meta {
+  font: 400 9.5px var(--mono);
+  color: var(--text-4);
+  margin-top: 6px;
+}
+/* SB-061: the chat transcript idiom (SB-062 ruling 2, static display) */
+.surface .chat-entry {
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+}
+.surface .chat-entry:first-of-type {
+  border-top: 0;
+}
+.surface .chat-question {
+  font: 600 11.5px var(--sans);
+  color: var(--text);
+  background: var(--panel-hover);
+  border: 1px solid var(--border-2);
+  border-radius: 8px 8px 2px 8px;
+  padding: 7px 11px;
+  margin-left: 24px;
+  margin-bottom: 6px;
+}
+.surface .chat-answer {
+  font: 400 11.5px/1.55 var(--sans);
+  color: var(--text-2);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 8px 2px;
+  padding: 7px 11px;
+  margin-right: 24px;
+  margin-top: 4px;
+}
+.surface .chat-followup {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-2);
+}
+.surface .chat-followup-label {
+  font: 600 9.5px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.surface .chat-tanke {
+  font: 400 italic 11px/1.5 var(--sans);
+  color: var(--gold);
+  margin-top: 4px;
+}
+/* SB-061: the call exchange idiom (SB-062 ruling 2, static display) */
+.surface .call-block {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 11px;
+}
+.surface .call-line {
+  font: 400 11.5px/1.55 var(--sans);
+  color: var(--text-2);
+  margin-top: 3px;
+}
+.surface .call-line:first-child {
+  margin-top: 0;
+}
+.surface .call-who {
+  font-weight: 600;
+  color: var(--text);
+}
+.surface .fact-tag {
+  font: 500 9px var(--mono);
+  color: var(--green);
+  background: rgba(70, 194, 136, 0.1);
+  border: 1px solid rgba(70, 194, 136, 0.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+.surface .call-exchange {
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+  padding-top: 8px;
+}
+.surface .call-exchange > .fact-tag {
+  display: inline-block;
+  margin-left: 0;
+  margin-bottom: 5px;
+}
 /* readable full-size document view (click the page to open) */
 #doc-lightbox {
   position: fixed;
