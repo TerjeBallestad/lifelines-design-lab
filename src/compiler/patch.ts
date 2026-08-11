@@ -47,8 +47,9 @@ export const DEFAULT_TEMPLATES: Partial<Record<BlockType, string>> = {
   phone: 'Answer: \nClose: \nStub: yes',
 };
 
-// Mirrors parse.ts exactly: which keys may follow a ` · ` separator, and the
-// `Key: value` line shape. Keep in sync — a drift here mispatches lines.
+// Mirrors parse.ts exactly: which keys may follow a ` · ` separator, the
+// `Key: value` line shape, and the id-shaped strings-table key shape.
+// Keep in sync — a drift here mispatches lines.
 const COMPOSITE_FOLLOW_KEYS = /^(Register|Category|Cost|Weight|Bad|Delay|Duration|Occupies):\s/;
 const FIELD_RE = /^([A-Za-zÆØÅæøå][A-Za-zÆØÅæøå ]*?):\s?(.*)$/;
 const STRINGS_FIELD_RE = /^([A-Za-z0-9ÆØÅæøå_.-]+):\s?(.*)$/;

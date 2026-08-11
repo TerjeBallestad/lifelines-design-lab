@@ -2,10 +2,16 @@
 // per-character sim-content object written to
 // resources/characters/source/<id>_sim_content.json.
 
-import type { DiagnosticBag, Span } from './diagnostics.ts';
-import { codes, span } from './diagnostics.ts';
-import { stripGuillemets } from './emit.ts';
-import type { ParsedCharacter, RawBlock, RawField } from './parse.ts';
+import type { DiagnosticBag } from './diagnostics.ts';
+import { codes } from './diagnostics.ts';
+import {
+  FieldMap,
+  blockSpan,
+  readStubMarker,
+  stripGuillemets,
+  warnLeftovers,
+} from './emit-shared.ts';
+import type { ParsedCharacter, RawBlock } from './parse.ts';
 
 /** One `# Thoughts:` pool — mirrors the ThoughtLine .tres fields. */
 export interface ThoughtPoolOut {
@@ -51,44 +57,6 @@ const THOUGHT_KEY_TYPES = new Set([
   'relational',
   'dagsform',
 ]);
-
-function blockSpan(block: RawBlock): Span {
-  return span(block.startLine, block.endLine);
-}
-
-function findField(fields: RawField[], key: string): RawField | undefined {
-  return fields.find((field) => field.key.toLowerCase() === key.toLowerCase());
-}
-
-function readStub(block: RawBlock, diag: DiagnosticBag): boolean {
-  const field = findField(block.fields, 'Stub');
-  if (!field) return false;
-  if (field.value.trim() !== 'yes') {
-    diag.add(
-      codes.LINE_UNPARSED,
-      'warning',
-      `Stub takes only "yes", got: "${field.value}" — the marker is ignored.`,
-      span(field.line),
-      [block.id],
-    );
-    return false;
-  }
-  return true;
-}
-
-function warnUnknownFields(block: RawBlock, knownKeys: string[], diag: DiagnosticBag): void {
-  const lower = new Set(knownKeys.map((key) => key.toLowerCase()));
-  for (const field of block.fields) {
-    if (lower.has(field.key.toLowerCase())) continue;
-    diag.add(
-      codes.FIELD_UNKNOWN,
-      'warning',
-      `Unknown field "${field.key}:" on ${block.id}`,
-      span(field.line),
-      [block.id],
-    );
-  }
-}
 
 export function emitCharacter(
   parsed: ParsedCharacter,
@@ -172,34 +140,37 @@ export function emitCharacter(
         );
         continue;
       }
-      const icon = findField(block.fields, 'Icon');
-      warnUnknownFields(block, ['Icon', 'Stub'], diag);
+      const fields = new FieldMap(block.fields);
+      const icon = fields.find('Icon');
       thoughts.push({
         character: key.character,
         key_type: key.keyType,
         key: key.key,
         lines: bulletTexts(block),
         ...(icon?.value ? { icon_key: icon.value } : {}),
-        ...(readStub(block, diag) ? { stub: true as const } : {}),
+        ...(readStubMarker(fields.find('Stub'), block.id, diag) ? { stub: true as const } : {}),
       });
+      warnLeftovers(fields, diag, block.id);
       continue;
     }
 
     if (block.type === 'barks') {
       if (checkOwner(block, block.id)) continue;
-      warnUnknownFields(block, ['Stub'], diag);
+      const fields = new FieldMap(block.fields);
       barks = {
         character: block.id,
         lines: bulletTexts(block),
-        ...(readStub(block, diag) ? { stub: true as const } : {}),
+        ...(readStubMarker(fields.find('Stub'), block.id, diag) ? { stub: true as const } : {}),
       };
+      warnLeftovers(fields, diag, block.id);
       continue;
     }
 
     if (block.type === 'phone') {
       if (checkOwner(block, block.id)) continue;
-      const answer = findField(block.fields, 'Answer');
-      const close = findField(block.fields, 'Close');
+      const fields = new FieldMap(block.fields);
+      const answer = fields.find('Answer');
+      const close = fields.find('Close');
       for (const [name, field] of [
         ['Answer', answer],
         ['Close', close],
@@ -214,13 +185,13 @@ export function emitCharacter(
           );
         }
       }
-      warnUnknownFields(block, ['Answer', 'Close', 'Stub'], diag);
       phone = {
         character: block.id,
         answer: answer ? stripGuillemets(answer.value) : '',
         close: close ? stripGuillemets(close.value) : '',
-        ...(readStub(block, diag) ? { stub: true as const } : {}),
+        ...(readStubMarker(fields.find('Stub'), block.id, diag) ? { stub: true as const } : {}),
       };
+      warnLeftovers(fields, diag, block.id);
       continue;
     }
   }

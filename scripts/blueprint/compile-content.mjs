@@ -131,8 +131,10 @@ function printDiagnostics(diagnostics) {
   }
 }
 
-export async function writeTinyOlsenArtifacts(paths = defaultPaths()) {
-  const artifacts = await buildTinyOlsenArtifacts(paths);
+export async function writeTinyOlsenArtifacts(paths = defaultPaths(), prebuilt = null) {
+  // The CLI passes its already-built (and diagnostic-printed) artifacts so
+  // the written bytes come from the same compile — one build, one truth.
+  const artifacts = prebuilt ?? (await buildTinyOlsenArtifacts(paths));
   await mkdir(dirname(paths.generatedModulePath), { recursive: true });
   await assertWritableDirectory(
     dirname(paths.coreSourcePath),
@@ -147,22 +149,21 @@ export async function writeTinyOlsenArtifacts(paths = defaultPaths()) {
   return artifacts;
 }
 
-export async function writeCharacterArtifacts(paths = defaultPaths()) {
-  const sources = await discoverCharacterSources(paths);
-  if (sources.length === 0) return [];
+export async function writeCharacterArtifacts(paths = defaultPaths(), prebuilt = null) {
+  const artifacts =
+    prebuilt ??
+    (await Promise.all((await discoverCharacterSources(paths)).map(buildCharacterArtifact)));
+  if (artifacts.length === 0) return [];
   await mkdir(paths.coreCharactersDir, { recursive: true });
   await assertWritableDirectory(paths.coreCharactersDir, 'core-loop character source directory');
-  const built = [];
-  for (const source of sources) {
-    const artifact = await buildCharacterArtifact(source);
+  for (const artifact of artifacts) {
     await writeFile(
-      source.outPath,
-      serializeCharacterJson(artifact.content, basename(source.sourcePath)),
+      artifact.source.outPath,
+      serializeCharacterJson(artifact.content, basename(artifact.source.sourcePath)),
       'utf8',
     );
-    built.push(artifact);
   }
-  return built;
+  return artifacts;
 }
 
 async function assertWritableDirectory(path, label) {
@@ -237,10 +238,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     console.log('generated content artifacts are up to date');
   } else {
-    await writeTinyOlsenArtifacts(paths);
+    await writeTinyOlsenArtifacts(paths, artifacts);
     console.log(`wrote ${paths.generatedModulePath}`);
     console.log(`wrote ${paths.coreSourcePath}`);
-    const written = await writeCharacterArtifacts(paths);
+    const written = await writeCharacterArtifacts(paths, characters);
     for (const artifact of written) console.log(`wrote ${artifact.source.outPath}`);
   }
 }

@@ -39,7 +39,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { chromium } from 'playwright';
-// compile-olsen-case.mjs is the 0.2-compiler CLI; serializeSliceJson is the
+// compile-content.mjs is the 0.2-compiler CLI; serializeSliceJson is the
 // same tab-indented stable serialization case-format.mjs used to provide.
 import {
   buildTinyOlsenArtifacts,

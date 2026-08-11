@@ -371,7 +371,7 @@ pay them.
    normal stub machinery; the question's `when:` owns its reveal.
 3. Canonical core-JSON serialization is TAB indentation with a trailing
    newline (`JSON.stringify(slice, null, '\t')` — SB-313/SB-486 law),
-   implemented in `scripts/blueprint/compile-olsen-case.mjs`
+   implemented in `scripts/blueprint/compile-content.mjs` (né compile-olsen-case.mjs)
    (`serializeSliceJson`). `gen:olsen` / `gen:olsen:check` / `case:check`
    keep their names but run the 0.2 compiler; the 0.1 generator
    (`generate-tiny-olsen-case.mjs`) survives solely as the

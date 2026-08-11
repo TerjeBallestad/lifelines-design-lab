@@ -14,7 +14,19 @@ import {
 import type { EffectSpec } from './effects.ts';
 import { deliverEffect, emitEffects, parseEffectLine } from './effects.ts';
 import type { ParsedCase, RawBlock, RawField } from './parse.ts';
-import { parseHeaderMeta } from './parse.ts';
+import { FieldMap, blockSpan, stripGuillemets, warnLeftovers } from './emit-shared.ts';
+import { emitSimContent } from './emit-visit.ts';
+import type { StringTableOut, VisitSceneOut } from './emit-visit.ts';
+
+export { stripGuillemets } from './emit-shared.ts';
+export type {
+  VisitLineStepOut,
+  VisitUrgentStepOut,
+  VisitQueueStepOut,
+  VisitStepOut,
+  VisitSceneOut,
+  StringTableOut,
+} from './emit-visit.ts';
 import type { CallOut, ChatEntryOut } from './weave.ts';
 import { emitConversations } from './weave.ts';
 import type { GateSite } from './lints.ts';
@@ -160,66 +172,6 @@ export interface BeatOut {
   effects: EffectSpec[];
 }
 
-// ---- SDD-130 `# Visit:` — choreography played by SocialVisitDirector.
-// Step payloads mirror the OPPDRAG_BEATS tables verbatim
-// (core-loop scripts/simulation/social_visit_director.gd).
-
-export interface VisitLineStepOut {
-  id: string;
-  kind: 'line';
-  speaker: string;
-  line: string;
-  /** Sim-minutes the visit dwells after the line. Omitted when unauthored. */
-  dwell?: number;
-  /** fired_beats key for the report register. Omitted when unauthored. */
-  beat?: string;
-  /** `{condition}` guard (weave grammar). Omitted when unguarded. */
-  when?: PredicateSpec;
-}
-
-export interface VisitUrgentStepOut {
-  id: string;
-  kind: 'urgent';
-  actor: string;
-  label: string;
-  room: string;
-  duration: number;
-  no_wait?: true;
-  when?: PredicateSpec;
-}
-
-export interface VisitQueueStepOut {
-  id: string;
-  /** DD-120: queue an activity on Elling; his decision engine picks it up. */
-  kind: 'queue_elling';
-  room: string;
-  duration: number;
-  beat?: string;
-  when?: PredicateSpec;
-}
-
-export type VisitStepOut = VisitLineStepOut | VisitUrgentStepOut | VisitQueueStepOut;
-
-/** One `# Visit:` block — the Oppdrag catalog entry + its ordered steps. */
-export interface VisitSceneOut {
-  id: string;
-  name: string;
-  blurb: string;
-  /** Frank's in-call offer line. Omitted when unauthored. */
-  offer_line?: string;
-  /** The question card that unlocks this visit. Omitted when unauthored. */
-  unlocks_question?: string;
-  steps: VisitStepOut[];
-  stub?: true;
-}
-
-/** One `# Strings:` block — flat id-keyed table (SDD-130; DD-004 scopes the families). */
-export interface StringTableOut {
-  id: string;
-  entries: Record<string, string>;
-  stub?: true;
-}
-
 export interface CaseSlice {
   id: string;
   title: string;
@@ -310,36 +262,6 @@ export interface LabContent {
   dispatches: Record<string, { id: string; title: string; description: string }>;
 }
 
-class FieldMap {
-  private readonly used = new Set<RawField>();
-  private readonly fields: RawField[];
-  constructor(fields: RawField[]) {
-    this.fields = fields;
-  }
-
-  find(...keys: string[]): RawField | undefined {
-    const lower = keys.map((key) => key.toLowerCase());
-    const found = this.fields.find((field) => lower.includes(field.key.toLowerCase()));
-    if (found) this.used.add(found);
-    return found;
-  }
-
-  all(...keys: string[]): RawField[] {
-    const lower = keys.map((key) => key.toLowerCase());
-    const found = this.fields.filter((field) => lower.includes(field.key.toLowerCase()));
-    for (const field of found) this.used.add(field);
-    return found;
-  }
-
-  value(...keys: string[]): string | undefined {
-    return this.find(...keys)?.value;
-  }
-
-  leftovers(): RawField[] {
-    return this.fields.filter((field) => !this.used.has(field));
-  }
-}
-
 interface Ref {
   id: string;
   kind:
@@ -353,10 +275,6 @@ interface Ref {
     | 'lead-target';
   where: Span;
   ownerId: string;
-}
-
-function blockSpan(block: RawBlock): Span {
-  return span(block.startLine, block.endLine);
 }
 
 function collapseWhitespace(value: string): string {
@@ -418,11 +336,6 @@ function parseDocumentRuns(
 
 function evidenceMarkdownToBbcode(markdown: string): string {
   return markdown.replace(new RegExp(ANCHOR_RE.source, 'g'), '[url=fact:$2]$1[/url]').trim();
-}
-
-export function stripGuillemets(value: string): string {
-  if (value.startsWith('«') && value.endsWith('»')) return value.slice(1, -1);
-  return value;
 }
 
 function listValue(value: string | undefined): string[] {
@@ -519,18 +432,6 @@ function cullField(
       codes.FIXIT_FIELD_CULLED,
       'warning',
       `"${key}:" is culled (SB-050) — ${why}; delete the line.`,
-      span(field.line),
-      [ownerId],
-    );
-  }
-}
-
-function warnLeftovers(fieldMap: FieldMap, diag: DiagnosticBag, ownerId: string): void {
-  for (const field of fieldMap.leftovers()) {
-    diag.add(
-      codes.FIELD_UNKNOWN,
-      'warning',
-      `Unknown field "${field.key}:" on ${ownerId}`,
       span(field.line),
       [ownerId],
     );
@@ -1443,224 +1344,13 @@ export function emitCase(
     return out;
   });
 
-  // ---- SDD-130 `# Visit:` / `# Strings:` ----------------------------------
-  const readStubField = (fields: FieldMap, ownerId: string): boolean => {
-    const field = fields.find('Stub');
-    if (!field) return false;
-    if (field.value.trim() !== 'yes') {
-      diag.add(
-        codes.LINE_UNPARSED,
-        'warning',
-        `Stub takes only "yes", got: "${field.value}" — the marker is ignored.`,
-        span(field.line),
-        [ownerId],
-      );
-      return false;
-    }
-    return true;
-  };
-
-  const stepNumber = (
-    meta: Record<string, string>,
-    key: string,
-    ownerId: string,
-    where: Span,
-  ): number | undefined => {
-    if (!(key in meta)) return undefined;
-    const value = Number(meta[key]);
-    if (!Number.isFinite(value)) {
-      diag.add(
-        codes.LINE_UNPARSED,
-        'warning',
-        `${key}= takes a number, got: "${meta[key]}"`,
-        where,
-        [ownerId],
-      );
-      return undefined;
-    }
-    return value;
-  };
-
-  const parseVisitStep = (
-    visitId: string,
-    bullet: { text: string; line: number },
-    stepIndex: number,
-  ): VisitStepOut | null => {
-    const where = span(bullet.line);
-    let rest = bullet.text.trim();
-
-    // `{condition}` guard prefix — the weave/§6 grammar, via condition.ts.
-    let when: PredicateSpec | undefined;
-    if (rest.startsWith('{')) {
-      const close = rest.indexOf('}');
-      if (close > 0) {
-        const inner = rest.slice(1, close);
-        rest = rest.slice(close + 1).trim();
-        const { ast, error } = parseCondition(inner);
-        if (error !== null || ast === null) {
-          diag.add(
-            codes.COND_PARSE_ERROR,
-            'error',
-            `Cannot parse visit-step guard "{${inner}}": ${error ?? 'empty condition'}`,
-            where,
-            [visitId],
-          );
-        } else {
-          const predicate = emitPredicate(ast, diag, visitId, where);
-          warnIfGateDropped(ast, predicate, diag, visitId, where);
-          gateSites.push({ ownerId: visitId, ast, where });
-          if (predicate) when = predicate;
-        }
-      }
-    }
-
-    // Trailing `[k=v …]` payload (parseHeaderMeta; bare tokens are flags).
-    let meta: Record<string, string> = {};
-    const payload = rest.match(/\s*\[([^[\]]+)\]$/);
-    if (payload) {
-      meta = parseHeaderMeta(payload[1]);
-      rest = rest.slice(0, rest.length - payload[0].length).trim();
-    }
-    // Steps without an authored id get a stable positional one.
-    const id = meta.id ?? `${visitId}_s${stepIndex + 1}`;
-
-    const urgent = rest.match(/^!\s*(\S+)\s*:\s*(.+?)\s*@\s*(\S+)$/);
-    if (urgent) {
-      return {
-        id,
-        kind: 'urgent',
-        actor: urgent[1],
-        label: urgent[2],
-        room: urgent[3],
-        duration: stepNumber(meta, 'duration', visitId, where) ?? 0,
-        ...('no_wait' in meta ? { no_wait: true as const } : {}),
-        ...(when ? { when } : {}),
-      };
-    }
-
-    const queue = rest.match(/^\?\s*(\S+)\s*@\s*(\S+)$/);
-    if (queue) {
-      if (queue[1] !== 'elling') {
-        // DD-120: the queue step kind exists only for Elling.
-        diag.add(
-          codes.LINE_UNPARSED,
-          'warning',
-          `Queue steps take only elling ("? elling @ room"), got "${queue[1]}"; the step is skipped.`,
-          where,
-          [visitId],
-        );
-        return null;
-      }
-      const beat = meta.beat;
-      return {
-        id,
-        kind: 'queue_elling',
-        room: queue[2],
-        duration: stepNumber(meta, 'duration', visitId, where) ?? 0,
-        ...(beat ? { beat } : {}),
-        ...(when ? { when } : {}),
-      };
-    }
-
-    const line = rest.match(/^(\S+)\s*:\s*(.+)$/);
-    if (line) {
-      const dwell = stepNumber(meta, 'dwell', visitId, where);
-      return {
-        id,
-        kind: 'line',
-        speaker: line[1],
-        line: stripGuillemets(line[2]),
-        ...(dwell !== undefined ? { dwell } : {}),
-        ...(meta.beat ? { beat: meta.beat } : {}),
-        ...(when ? { when } : {}),
-      };
-    }
-
-    diag.add(
-      codes.LINE_UNPARSED,
-      'warning',
-      `Expected a visit step ("speaker: «…»", "! actor: label @ room" or "? elling @ room") in visit ${visitId}, got: "${bullet.text.trim()}"`,
-      where,
-      [visitId],
-    );
-    return null;
-  };
-
-  const visits: VisitSceneOut[] = byType('visit').map((block) => {
-    const fields = new FieldMap(block.fields);
-    const unlocksField = fields.find('Unlocks');
-    if (unlocksField?.value) {
-      refs.push({
-        id: unlocksField.value,
-        kind: 'question',
-        where: span(unlocksField.line),
-        ownerId: block.id,
-      });
-    }
-    const offerField = fields.find('Offer');
-    const stub = readStubField(fields, block.id);
-    const seenSteps = new Map<string, number>();
-    const steps: VisitStepOut[] = [];
-    (block.bullets ?? []).forEach((bullet, index) => {
-      const step = parseVisitStep(block.id, bullet, index);
-      if (!step) return;
-      const previous = seenSteps.get(step.id);
-      if (previous !== undefined) {
-        diag.add(
-          codes.DUPLICATE_ID,
-          'error',
-          `Duplicate step id "${step.id}" in visit ${block.id} (first on line ${previous})`,
-          span(bullet.line),
-          [block.id, step.id],
-        );
-        return;
-      }
-      seenSteps.set(step.id, bullet.line);
-      steps.push(step);
-    });
-    const out: VisitSceneOut = {
-      id: block.id,
-      name: fields.value('Title') ?? '',
-      blurb: fields.value('Blurb') ?? '',
-      ...(offerField ? { offer_line: stripGuillemets(offerField.value) } : {}),
-      ...(unlocksField?.value ? { unlocks_question: unlocksField.value } : {}),
-      steps,
-      ...(stub ? { stub: true as const } : {}),
-    };
-    warnLeftovers(fields, diag, block.id);
-    return out;
-  });
-
-  const stringTables: StringTableOut[] = byType('strings').map((block) => {
-    let stub = false;
-    const entries: Record<string, string> = {};
-    const seenKeys = new Map<string, number>();
-    for (const field of block.fields) {
-      if (field.key === 'Stub') {
-        const fieldMap = new FieldMap([field]);
-        stub = readStubField(fieldMap, block.id) || stub;
-        continue;
-      }
-      const previous = seenKeys.get(field.key);
-      if (previous !== undefined) {
-        diag.add(
-          codes.DUPLICATE_ID,
-          'error',
-          `Duplicate string key "${field.key}" in strings ${block.id} (first on line ${previous})`,
-          span(field.line),
-          [block.id, field.key],
-        );
-        continue;
-      }
-      seenKeys.set(field.key, field.line);
-      entries[field.key] = field.value;
-    }
-    return {
-      id: block.id,
-      entries,
-      ...(stub ? { stub: true as const } : {}),
-    };
-  });
+  // ---- SDD-130 `# Visit:` / `# Strings:` (emit-visit.ts) ------------------
+  const simContent = emitSimContent(byType('visit'), byType('strings'), diag);
+  for (const ref of simContent.questionRefs)
+    refs.push({ id: ref.id, kind: 'question', where: ref.where, ownerId: ref.ownerId });
+  gateSites.push(...simContent.gateSites);
+  const visits = simContent.visits;
+  const stringTables = simContent.strings;
 
   // ---- §8 conversation weave (calls + frank_chat) -------------------------
   const weave = emitConversations(byType('conversation'), diag);

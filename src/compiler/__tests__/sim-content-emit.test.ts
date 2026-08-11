@@ -141,6 +141,15 @@ describe('VisitSceneOut — the OPPDRAG_ALENE transcription round-trips lossless
     expect(result.diagnostics.some((d) => d.code === 'line-unparsed')).toBe(true);
   });
 
+  it('warns field-missing on an urgent/queue step without duration=', () => {
+    const result = compileCase(
+      '# Case: c_x\nTitle: X\n\n# Visit: opp_x\nTitle: T\nBlurb: B\n\n- ! grete: blir @ kitchen [id=s1]\n',
+    );
+    const warning = result.diagnostics.find((d) => d.code === 'field-missing');
+    expect(warning?.subjectIds).toEqual(['opp_x', 's1']);
+    expect(result.slice.visits?.[0]?.steps[0]).toMatchObject({ duration: 0 });
+  });
+
   it('marks stub: true on a Stub: yes visit and omits it otherwise', () => {
     const stubbed = compileCase(
       '# Case: c_x\nTitle: X\n\n# Visit: opp_x\nTitle: T\nBlurb: B\nStub: yes\n\n- frank: «Hei.» [id=s1]\n',
