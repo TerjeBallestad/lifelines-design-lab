@@ -6,6 +6,7 @@
 import { html, render as litRender, nothing } from 'lit-html';
 import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
 import type { CompileResult, CompileCharacterResult } from '../../src/compiler/index.ts';
+import type { VisitSceneOut } from '../../src/compiler/emit-visit.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
 import '../shared/surfaces.css';
 import '../shared/lens-tokens.css';
@@ -31,6 +32,7 @@ import {
   thoughtPoolKey,
   thoughtPreview,
 } from './character-views.ts';
+import { visitPreview } from './visit-views.ts';
 
 injectEditorFonts();
 
@@ -156,6 +158,17 @@ function renderOutline(currentLine: number) {
     { label: 'Dispatches', dot: 'var(--orange)', count: slice.dispatches.length },
     { label: 'Clocks', dot: 'var(--gold)', count: slice.clocks.length },
     { label: 'Day beats', dot: 'var(--yellow)', count: slice.day_script_beats.length },
+    // SB-070: `# Visit:` choreography blocks (SDD-130) — jumpable like docs.
+    {
+      label: 'Visits',
+      dot: 'var(--green)',
+      count: (result.slice.visits ?? []).length,
+      items: (result.slice.visits ?? []).map((v) => ({
+        id: v.id,
+        label: v.name || v.id,
+        kind: 'Visit',
+      })),
+    },
   ];
   const parts: string[] = [
     `<div class="head">${esc((result.slice.title || 'CASE').toUpperCase())}</div>`,
@@ -263,6 +276,13 @@ function renderPreview(line: number) {
   if (h.kind === 'Fact' && result.labContent.facts[h.id]) {
     renderFactCard(h.id);
     return;
+  }
+  if (h.kind === 'Visit') {
+    const visit = (result.slice.visits ?? []).find((v) => v.id === h.id);
+    if (visit) {
+      renderVisitPreview(visit);
+      return;
+    }
   }
   const doc = enclosingDocument(h);
   if (doc && result.labContent.documents[doc.id]) {
@@ -381,6 +401,26 @@ function renderDocPreview(docId: string, focusFact: string | null) {
 
 // Readable full-size view over the editor. Esc / backdrop click closes.
 const lightbox = createLightbox($('doc-lightbox'), (id) => lens.jumpToHeading('Fact', id));
+
+// Per-visit scrub time for the storyboard scrub control (SB-070). Keyed by
+// visit id so scrubbing one visit never moves another; kept across
+// recompiles (visitPreview clamps to the authored total).
+const scrubT = new Map<string, number>();
+function renderVisitPreview(visit: VisitSceneOut) {
+  previewTitle.textContent = `VISIT — ${visit.id.toUpperCase()}`;
+  litRender(
+    visitPreview(visit, scrubT.get(visit.id) ?? 0, (t) => {
+      scrubT.set(visit.id, t);
+      renderVisitPreview(visit);
+      // The strip scrolls horizontally — keep the card under the scrub time
+      // in view (guarded: jsdom has no scrollIntoView).
+      preview
+        .querySelector('.vv-active')
+        ?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    }),
+    preview,
+  );
+}
 
 // Per-pool variant cursor for the cycle-variants control (SB-069). Keyed by
 // pool identity so cycling one pool never moves another; kept across
@@ -513,7 +553,8 @@ function renderStatus() {
       s.hypotheses.length +
       s.tiltak.length +
       s.dispatches.length +
-      s.clocks.length;
+      s.clocks.length +
+      (s.visits?.length ?? 0);
   const stubIds = [...new Set(stubs.flatMap((d) => d.subjectIds))];
   const parts: string[] = [];
   parts.push(

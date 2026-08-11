@@ -483,6 +483,176 @@
         border-color: rgba(240, 136, 62, 0.35);
         background: var(--tint-orange);
       }
+      /* SB-070: Visit storyboard strip (doc-preview doctrine: honest about
+         speaker, room, timing — not a Godot render) */
+      #preview .vv-catalog {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+      }
+      #preview .vv-name {
+        font: 600 13px var(--sans);
+        color: var(--text);
+      }
+      #preview .vv-blurb {
+        font: 400 11px/1.5 var(--sans);
+        color: var(--text-2);
+        margin-top: 3px;
+      }
+      #preview .vv-offer {
+        font: 400 11px/1.5 var(--hand-1);
+        color: var(--text-2);
+        margin-top: 7px;
+      }
+      #preview .vv-offer-k {
+        font: 600 9px var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-4);
+        margin-right: 5px;
+      }
+      #preview .vv-unlocks {
+        font: 400 10px var(--mono);
+        color: var(--text-4);
+        margin-top: 6px;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+      #preview .vv-unlocks .fc-link {
+        display: inline;
+        border-bottom: none;
+        padding: 0;
+        color: var(--yellow);
+      }
+      #preview .vv-strip {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 6px 2px 10px;
+      }
+      #preview .vv-card {
+        flex: none;
+        width: 168px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      #preview .vv-card.vv-active {
+        border-color: var(--green);
+        box-shadow: 0 0 0 1px var(--green);
+      }
+      #preview .vv-card-head {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+      #preview .vv-speaker {
+        font: 600 10.5px var(--mono);
+        color: var(--text);
+      }
+      #preview .vv-time {
+        margin-left: auto;
+        font: 400 9px var(--mono);
+        color: var(--text-4);
+      }
+      #preview .vv-flag {
+        font: 500 8.5px var(--mono);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--orange);
+      }
+      #preview .vv-bubble {
+        margin-top: 7px;
+        padding: 7px 10px;
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 10px;
+        font: 400 11.5px/1.4 var(--hand-1);
+      }
+      #preview .vv-move-card {
+        background: var(--bg-side);
+        border-style: dashed;
+      }
+      #preview .vv-move-label {
+        margin-top: 7px;
+        font: 400 11px/1.4 var(--sans);
+        color: var(--text-2);
+        font-style: italic;
+      }
+      #preview .vv-rooms {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        font: 500 10px var(--mono);
+        color: var(--text-2);
+      }
+      #preview .vv-arrow {
+        color: var(--green);
+        font-size: 13px;
+      }
+      #preview .vv-card-foot {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 7px;
+      }
+      #preview .vv-dwell {
+        font: 400 9.5px var(--mono);
+        color: var(--text-3);
+      }
+      #preview .vv-beat {
+        margin-left: auto;
+        font: 500 9px var(--mono);
+        color: var(--gold);
+      }
+      #preview .vv-fork {
+        flex: none;
+        border-left: 2px solid var(--yellow);
+        border-radius: 4px;
+        padding: 4px 0 4px 8px;
+      }
+      #preview .vv-fork-guard {
+        font: 500 9.5px var(--mono);
+        color: var(--yellow);
+        margin-bottom: 5px;
+      }
+      #preview .vv-fork-lane {
+        display: flex;
+        gap: 8px;
+      }
+      #preview .vv-fork-skip {
+        margin-top: 5px;
+        font: 400 9px var(--mono);
+        color: var(--text-4);
+        font-style: italic;
+      }
+      #preview .vv-empty {
+        font: 400 11.5px var(--sans);
+        color: var(--text-4);
+        font-style: italic;
+        padding: 14px 4px;
+      }
+      #preview .vv-scrub {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      #preview .vv-scrub-range {
+        flex: 1 1 auto;
+        accent-color: var(--green);
+      }
+      #preview .vv-scrub-label {
+        flex: none;
+        font: 400 10px var(--mono);
+        color: var(--text-3);
+      }
       #preview .empty {
         font: 400 11.5px var(--sans);
         color: var(--text-4);

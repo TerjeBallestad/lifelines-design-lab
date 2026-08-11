@@ -83,6 +83,7 @@ export const KIND_COLOR: Record<string, string> = {
   Proposal: 'var(--purple)',
   Recipe: 'var(--green)',
   Event: 'var(--orange)',
+  Visit: 'var(--green)',
   Case: 'var(--text)',
 };
 
@@ -113,6 +114,7 @@ const HEAD_CLASS: Record<string, string> = {
   Proposal: 'tok-h-hypothesis',
   Recipe: 'tok-h-tiltak',
   Event: 'tok-h-dispatch',
+  Visit: 'tok-h-tiltak',
   Case: 'tok-h-case',
 };
 const ID_CLASS: Record<string, string> = {
