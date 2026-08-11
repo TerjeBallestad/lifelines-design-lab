@@ -27,6 +27,13 @@ export interface Diagnostic {
 export const codes = {
   // Structure
   CASE_MISSING_HEADER: 'case-missing-header',
+  // SDD-130 character `.sim.md` family
+  CHARACTER_MISSING_HEADER: 'character-missing-header',
+  /**
+   * SDD-110 #10 via SDD-130: Frank never thinks — a `# Thoughts: frank/...`
+   * block warns (advisory) and emits nothing.
+   */
+  THOUGHTS_FRANK_EXCLUDED: 'thoughts-frank-excluded',
   BLOCK_UNKNOWN: 'block-unknown',
   BLOCK_NOT_YET_SUPPORTED: 'block-not-yet-supported',
   DUPLICATE_ID: 'duplicate-id',

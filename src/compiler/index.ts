@@ -7,13 +7,20 @@
 
 import { DiagnosticBag, codes, span } from './diagnostics.ts';
 import type { Diagnostic } from './diagnostics.ts';
-import { parseCaseText } from './parse.ts';
+import { parseCaseText, parseCharacterText } from './parse.ts';
 import { emitCase } from './emit.ts';
 import type { CaseSlice, LabContent } from './emit.ts';
+import { emitCharacter } from './emit-character.ts';
+import type { CharacterContent } from './emit-character.ts';
 
 export interface CompileResult {
   slice: CaseSlice;
   labContent: LabContent;
+  diagnostics: Diagnostic[];
+}
+
+export interface CompileCharacterResult {
+  content: CharacterContent;
   diagnostics: Diagnostic[];
 }
 
@@ -53,9 +60,35 @@ export function compileCase(text: string): CompileResult {
   }
 }
 
+// Sibling entry for `content/characters/<id>.sim.md` (SDD-130 §2); same
+// never-throws law as compileCase.
+export function compileCharacter(text: string): CompileCharacterResult {
+  const diag = new DiagnosticBag();
+  try {
+    const parsed = parseCharacterText(text, diag);
+    const { content } = emitCharacter(parsed, diag);
+    return { content, diagnostics: diag.items };
+  } catch (err) {
+    diag.add(
+      'internal-error',
+      'error',
+      `Internal compiler error: ${err instanceof Error ? err.message : String(err)}`,
+      span(1),
+      [],
+    );
+    return { content: { id: '', thoughts: [] }, diagnostics: diag.items };
+  }
+}
+
 export { codes } from './diagnostics.ts';
 export type { Diagnostic, DiagnosticCode, Severity, Span } from './diagnostics.ts';
 export type { CaseSlice, LabContent, ProposalOut, RecipeOut } from './emit.ts';
+export type {
+  CharacterContent,
+  ThoughtPoolOut,
+  BarkPoolOut,
+  PhoneLinesOut,
+} from './emit-character.ts';
 export type { PredicateSpec } from './condition.ts';
 export type { EffectSpec } from './effects.ts';
 export type {
