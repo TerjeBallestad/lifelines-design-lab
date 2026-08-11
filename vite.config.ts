@@ -5,9 +5,9 @@ import react from '@vitejs/plugin-react';
 import { normalizePath } from 'vite';
 import { defineConfig, type Plugin } from 'vitest/config';
 
-// Dev-only write-back for the lens pages (SB-025, SB-083). ⌘S POSTs the
-// buffer to /__save-case?path=<relpath>; the target must be a .case.md
-// under content/cases/.
+// Dev-only write-back for the lens pages (SB-025, SB-083, SB-068). ⌘S POSTs
+// the buffer to /__save-case?path=<relpath>; the target must be a .case.md
+// under content/cases/ or a .sim.md under content/characters/.
 function caseSave(): Plugin {
   // Per-path body of the last save POST. The probes import the case files
   // with `?raw`, so our own write would otherwise trigger a full page reload
@@ -26,9 +26,12 @@ function caseSave(): Plugin {
         const rel = new URL(req.url || '/', 'http://localhost').searchParams.get('path') ?? '';
         const target = resolve(rel);
         const casesRoot = resolve('content/cases');
-        if (!rel.endsWith('.case.md') || !target.startsWith(casesRoot + sep)) {
+        const charactersRoot = resolve('content/characters');
+        const okCase = rel.endsWith('.case.md') && target.startsWith(casesRoot + sep);
+        const okSim = rel.endsWith('.sim.md') && target.startsWith(charactersRoot + sep);
+        if (!okCase && !okSim) {
           res.statusCode = 400;
-          res.end(`bad case path: ${rel}`);
+          res.end(`bad source path: ${rel}`);
           return;
         }
         let body = '';

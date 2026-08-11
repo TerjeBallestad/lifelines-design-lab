@@ -4,19 +4,20 @@
 // loop, outline, preview rail, problems drawer, draft persistence and ⌘S
 // save; the lens owns the editor view and its extensions.
 import { html, render as litRender, nothing } from 'lit-html';
-import { compileCase } from '../../src/compiler/index.ts';
-import type { CompileResult } from '../../src/compiler/index.ts';
+import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
+import type { CompileResult, CompileCharacterResult } from '../../src/compiler/index.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
 import '../shared/surfaces.css';
 import '../shared/lens-tokens.css';
 import { funnCard } from '../shared/surfaces.ts';
 import { wireDocFrame, createLightbox } from '../shared/doc-frame.ts';
 import {
-  activeCasePath,
-  activeCaseText as initialText,
+  activeSourcePath,
+  activeSourceText as initialText,
+  isCharacterPath,
   draftKey,
   resolveBootText,
-  saveCaseUrl,
+  saveSourceUrl,
   wireCaseChrome,
 } from '../shared/active-case.ts';
 import { mountScriptLens, indexHeadings, KIND_COLOR } from './lens.ts';
@@ -37,7 +38,15 @@ const saveState = $('save-state');
 
 // ---- compile state ------------------------------------------------------
 
-let result: CompileResult = compileCase(initialText);
+// SB-068: the editor opens any source file. A `.sim.md` buffer compiles
+// through compileCharacter; the case-shaped outline/preview degrade to a
+// heading list + compiled-JSON cards until SB-069/070/071 land real views.
+const characterMode = isCharacterPath(activeSourcePath);
+let result: CompileResult = compileCase(characterMode ? '' : initialText);
+let charResult: CompileCharacterResult | null = characterMode
+  ? compileCharacter(initialText)
+  : null;
+const diags = () => (characterMode ? charResult!.diagnostics : result.diagnostics);
 let compileMs = 0;
 let headings: Heading[] = [];
 let symbols = new Map<string, ScriptSymbol>();
@@ -50,8 +59,8 @@ let compileTimer: ReturnType<typeof setTimeout> | undefined;
 // Draft persistence: the buffer survives page reloads (vite live-reload wiped
 // an unsaved buffer once — never again). Every edit lands in localStorage;
 // a successful ⌘S clears it. Boot resolution lives in the active-case seam.
-const DRAFT_KEY = draftKey(activeCasePath);
-const { text: bootText, draftRestored } = resolveBootText();
+const DRAFT_KEY = draftKey(activeSourcePath);
+const { text: bootText, draftRestored } = resolveBootText(activeSourcePath);
 let draftTimer: ReturnType<typeof setTimeout> | undefined;
 
 const lens = mountScriptLens({
@@ -100,6 +109,10 @@ function headingAt(line: number): Heading | null {
 }
 
 function renderOutline(currentLine: number) {
+  if (characterMode) {
+    renderCharacterOutline(currentLine);
+    return;
+  }
   const lc = result.labContent;
   const slice = result.slice as unknown as Record<string, unknown[]>;
   const docEntries = Object.entries(lc.documents);
@@ -157,6 +170,37 @@ function renderOutline(currentLine: number) {
   outline.innerHTML = parts.join('');
 }
 
+// Degraded outline for a `.sim.md` buffer: compiled-pool counts up top, then
+// every `# ` section as a line-jump item. The real character views are
+// SB-069/070/071.
+function renderCharacterOutline(currentLine: number) {
+  const c = charResult!.content;
+  const current = headingAt(currentLine);
+  const lines = lens.getText().split('\n');
+  const kinds = [
+    { label: 'Thoughts', dot: 'var(--purple)', count: c.thoughts.length },
+    { label: 'Barks', dot: 'var(--orange)', count: c.barks ? c.barks.lines.length : 0 },
+    { label: 'Phone', dot: 'var(--green)', count: c.phone ? 2 : 0 },
+  ];
+  const parts: string[] = [
+    `<div class="head">${esc((c.id || 'CHARACTER').toUpperCase())}</div>`,
+  ];
+  for (const k of kinds) {
+    parts.push(
+      `<div class="o-kind" data-kind="${k.label}"><span class="dot" style="background:${k.dot}"></span>${k.label}<span class="count">${k.count}</span></div>`,
+    );
+    for (const h of headings.filter((x) => x.kind === k.label)) {
+      const raw = lines[h.line - 1] ?? '';
+      const label = raw.replace(/^# [A-Za-z]+:\s*/, '') || h.id;
+      const cur = current && current.line === h.line ? ' current' : '';
+      parts.push(
+        `<div class="o-item${cur}" data-line="${h.line}">${esc(label)}</div>`,
+      );
+    }
+  }
+  outline.innerHTML = parts.join('');
+}
+
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -164,7 +208,9 @@ function esc(s: string): string {
 outline.addEventListener('click', (e) => {
   const el = (e.target as HTMLElement).closest('.o-item, .o-kind') as HTMLElement | null;
   if (!el) return;
-  if (el.dataset.id) {
+  if (el.dataset.line) {
+    lens.jumpToLine(Number(el.dataset.line));
+  } else if (el.dataset.id) {
     lens.jumpToHeading(el.dataset.kind!, el.dataset.id);
   } else if (el.dataset.kind) {
     const first = headings.find(
@@ -193,6 +239,10 @@ function renderPreview(line: number) {
   if (!h) {
     previewTitle.textContent = 'PREVIEW';
     litRender(html`<div class="empty">Place the cursor in a section.</div>`, preview);
+    return;
+  }
+  if (characterMode) {
+    renderCharacterPreview(h);
     return;
   }
   if (h.kind === 'Fact' && result.labContent.facts[h.id]) {
@@ -317,6 +367,37 @@ function renderDocPreview(docId: string, focusFact: string | null) {
 // Readable full-size view over the editor. Esc / backdrop click closes.
 const lightbox = createLightbox($('doc-lightbox'), (id) => lens.jumpToHeading('Fact', id));
 
+// Character-mode preview: the compiled node for the cursor's section as a
+// JSON card. The bubble/storyboard previews are the SB-069/070 views.
+function renderCharacterPreview(h: Heading) {
+  const c = charResult!.content;
+  const raw = lens.getText().split('\n')[h.line - 1] ?? '';
+  let node: unknown = null;
+  if (h.kind === 'Thoughts') {
+    const key = raw.replace(/^# Thoughts:\s*/, '').trim();
+    node = c.thoughts.find((p) => `${p.character}/${p.key_type}/${p.key}` === key) ?? null;
+  } else if (h.kind === 'Barks') {
+    node = c.barks ?? null;
+  } else if (h.kind === 'Phone') {
+    node = c.phone ?? null;
+  } else if (h.kind === 'Character') {
+    node = c;
+  }
+  previewTitle.textContent = `PREVIEW — ${h.kind.toUpperCase()}`;
+  const color = KIND_COLOR[h.kind] ?? 'var(--text-2)';
+  const missing = `No compiled node for this section (${h.kind.toLowerCase()} — parsed but not emitted, or a stub).`;
+  litRender(
+    html`<div class="node-card">
+      <div class="node-kind" style="color:${color}">${h.kind.toUpperCase()} · COMPILED OUTPUT</div>
+      <div class="node-id">${raw.replace(/^# [A-Za-z]+:\s*/, '') || h.id || '—'}</div>
+      ${node
+        ? html`<div class="node-json">${JSON.stringify(node, null, 2)}</div>`
+        : html`<div class="node-json" style="color:var(--text-4)">${missing}</div>`}
+    </div>`,
+    preview,
+  );
+}
+
 function renderNodePreview(h: Heading) {
   previewTitle.textContent = `PREVIEW — ${h.id ? h.id.toUpperCase() : h.kind.toUpperCase()}`;
   const slice = result.slice as unknown as Record<string, Array<{ id?: string }>>;
@@ -356,7 +437,7 @@ preview.addEventListener('click', (e) => {
 // ---- problems + status --------------------------------------------------
 
 function renderProblems() {
-  const items = [...result.diagnostics].sort((a, b) => a.span.startLine - b.span.startLine);
+  const items = [...diags()].sort((a, b) => a.span.startLine - b.span.startLine);
   problemCount.textContent = `${items.length}`;
   problemList.innerHTML = items
     .map(
@@ -372,7 +453,7 @@ problemList.addEventListener('click', (e) => {
 });
 
 function renderStatus() {
-  const ds = result.diagnostics;
+  const ds = diags();
   const errors = ds.filter((d) => d.severity === 'error').length;
   const todos = ds.filter((d) => d.code === 'todo-line');
   const stubs = ds.filter((d) => d.code === 'stub-unresolved-id');
@@ -380,14 +461,16 @@ function renderStatus() {
   const advisories = ds.filter((d) => d.severity === 'advisory');
   const quiet = advisories.find((d) => d.code === 'lint-quiet-day');
   const s = result.slice;
-  const nodes =
-    s.documents.length +
-    s.facts.length +
-    s.questions.length +
-    s.hypotheses.length +
-    s.tiltak.length +
-    s.dispatches.length +
-    s.clocks.length;
+  const c = charResult?.content;
+  const nodes = characterMode
+    ? (c?.thoughts.length ?? 0) + (c?.barks ? 1 : 0) + (c?.phone ? 1 : 0)
+    : s.documents.length +
+      s.facts.length +
+      s.questions.length +
+      s.hypotheses.length +
+      s.tiltak.length +
+      s.dispatches.length +
+      s.clocks.length;
   const stubIds = [...new Set(stubs.flatMap((d) => d.subjectIds))];
   const parts: string[] = [];
   parts.push(
@@ -404,7 +487,7 @@ function renderStatus() {
   if (quiet) parts.push(`<span class="warn-c">${esc(quiet.message)}</span>`);
   else if (advisories.length)
     parts.push(`<span class="adv-c">${advisories.length} advisory</span>`);
-  parts.push(`<span class="hint">⌘S writes back to ${esc(activeCasePath)}</span>`);
+  parts.push(`<span class="hint">⌘S writes back to ${esc(activeSourcePath)}</span>`);
   statusbar.innerHTML = parts.join('');
 }
 
@@ -424,11 +507,12 @@ function onCursor() {
 function recompile() {
   const text = lens.getText();
   const t0 = performance.now();
-  result = compileCase(text);
+  if (characterMode) charResult = compileCharacter(text);
+  else result = compileCase(text);
   compileMs = performance.now() - t0;
   headings = indexHeadings(text.split('\n'));
-  symbols = buildSymbols(result, headings);
-  lens.update({ headings, symbols, diagnostics: result.diagnostics });
+  symbols = characterMode ? new Map() : buildSymbols(result, headings);
+  lens.update({ headings, symbols, diagnostics: diags() });
   renderProblems();
   renderStatus();
   lastCursorLine = -1;
@@ -437,7 +521,7 @@ function recompile() {
 
 async function save() {
   try {
-    const res = await fetch(saveCaseUrl, {
+    const res = await fetch(saveSourceUrl, {
       method: 'POST',
       body: lens.getText(),
     });
@@ -460,7 +544,7 @@ window.addEventListener('beforeunload', (e) => {
 
 // ---- boot ---------------------------------------------------------------
 
-wireCaseChrome();
+wireCaseChrome({ allSources: true });
 
 if (draftRestored) {
   recompile();
@@ -469,8 +553,8 @@ if (draftRestored) {
   saveState.classList.add('dirty');
 } else {
   headings = indexHeadings(initialText.split('\n'));
-  symbols = buildSymbols(result, headings);
-  lens.update({ headings, symbols, diagnostics: result.diagnostics });
+  symbols = characterMode ? new Map() : buildSymbols(result, headings);
+  lens.update({ headings, symbols, diagnostics: diags() });
   renderProblems();
   renderStatus();
 }

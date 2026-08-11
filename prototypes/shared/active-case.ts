@@ -1,12 +1,17 @@
-// SB-083: the active-case seam. One module owns which `.case.md` the lens
-// pages operate on: discovery over content/cases, the ?case URL param, the
-// boot text, the localStorage key builders, and the save target. The lens
-// pages import this instead of hard-wiring a case path.
+// SB-083: the active-case seam. One module owns which source file the lens
+// pages operate on: discovery over content/, the ?case / ?file URL params,
+// the boot text, the localStorage key builders, and the save target. The
+// lens pages import this instead of hard-wiring a source path.
+//
+// SB-068 widens the seam from case-only to the SDD-130 source-file list:
+// every `.case.md` under content/cases plus every `.sim.md` under
+// content/characters. The case exports keep their meaning — canvas and
+// playtest stay case lenses; the script editor rides the source exports.
 
-// Eager on purpose: the case files stay inside the vite module graph, so an
-// external edit still triggers the live reload the probes rely on. A fetch()
-// loader would lose that.
-const files = import.meta.glob('/content/cases/**/*.case.md', {
+// Eager on purpose: the source files stay inside the vite module graph, so
+// an external edit still triggers the live reload the probes rely on. A
+// fetch() loader would lose that.
+const files = import.meta.glob(['/content/cases/**/*.case.md', '/content/characters/*.sim.md'], {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -16,18 +21,48 @@ const files = import.meta.glob('/content/cases/**/*.case.md', {
  *  order. The first entry is the default case. */
 export const casePaths = Object.keys(files)
   .map((key) => key.slice(1))
+  .filter((path) => path.endsWith('.case.md'))
   .sort();
 
 if (casePaths.length === 0) throw new Error('no .case.md found under content/cases/');
 
-// Tests run model.ts under a node environment with no `location`; there the
-// default case is the answer, same as a lens page opened without ?case.
-const param =
-  typeof location !== 'undefined' ? new URLSearchParams(location.search).get('case') : null;
+/** Every editable source file: cases first, then the character sim files. */
+export const sourcePaths = [
+  ...casePaths,
+  ...Object.keys(files)
+    .map((key) => key.slice(1))
+    .filter((path) => path.endsWith('.sim.md'))
+    .sort(),
+];
 
-/** The case this page operates on: ?case=<relpath> when it names a real
- *  case, else the default (first sorted path). */
-export const activeCasePath = param !== null && casePaths.includes(param) ? param : casePaths[0];
+/** True when the path is a `content/characters/*.sim.md` file. */
+export const isCharacterPath = (path: string): boolean => path.endsWith('.sim.md');
+
+// Tests run model.ts under a node environment with no `location`; there the
+// default case is the answer, same as a lens page opened without a param.
+const search =
+  typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
+const fileParam = search.get('file');
+const caseParam = search.get('case');
+
+/** The source file this page operates on: ?file=<relpath> when it names a
+ *  real source, else ?case=<relpath> (the legacy param), else the default
+ *  case (first sorted case path). */
+export const activeSourcePath =
+  fileParam !== null && sourcePaths.includes(fileParam)
+    ? fileParam
+    : caseParam !== null && sourcePaths.includes(caseParam)
+      ? caseParam
+      : casePaths[0];
+
+/** The active source text as it was on disk at module-graph build time. */
+export const activeSourceText = files[`/${activeSourcePath}`];
+
+/** The case this page operates on. When the active source is a character
+ *  file, the case lenses (canvas, playtest) fall back to the default case. */
+export const activeCasePath = isCharacterPath(activeSourcePath)
+  ? casePaths[0]
+  : activeSourcePath;
 
 /** The active case text as it was on disk at module-graph build time. */
 export const activeCaseText = files[`/${activeCasePath}`];
@@ -43,19 +78,30 @@ export const pinKey = (path: string): string => `kildeverket-canvas-pins:${path}
  *  sessionStorage (per tab), so a fresh tab still starts a clean run. */
 export const playKey = (path: string): string => `kildeverket-playtest:${path}`;
 
+/** Save target for a source file — vite.config.ts validates the path. */
+export const saveUrlFor = (path: string): string =>
+  `/__save-case?path=${encodeURIComponent(path)}`;
+
 /** Save target for the active case — vite.config.ts validates the path. */
-export const saveCaseUrl = `/__save-case?path=${encodeURIComponent(activeCasePath)}`;
+export const saveCaseUrl = saveUrlFor(activeCasePath);
+
+/** Save target for the active source file (script editor). */
+export const saveSourceUrl = saveUrlFor(activeSourcePath);
 
 /**
- * The active case's boot buffer (SB-025 rule: a reload must never wipe
+ * A source file's boot buffer (SB-025 rule: a reload must never wipe
  * unsaved work). A localStorage draft that differs from disk wins; a
- * successful save clears the draft again.
+ * successful save clears the draft again. Defaults to the active case —
+ * the case lenses call it bare; the script editor passes activeSourcePath.
  */
-export function resolveBootText(): { text: string; draftRestored: boolean } {
-  const draft = localStorage.getItem(draftKey(activeCasePath));
-  return draft !== null && draft !== activeCaseText
+export function resolveBootText(
+  path: string = activeCasePath,
+): { text: string; draftRestored: boolean } {
+  const diskText = files[`/${path}`];
+  const draft = localStorage.getItem(draftKey(path));
+  return draft !== null && draft !== diskText
     ? { text: draft, draftRestored: true }
-    : { text: activeCaseText, draftRestored: false };
+    : { text: diskText, draftRestored: false };
 }
 
 /** Picker label: the case block's Title field, else the file name. A full
@@ -68,20 +114,33 @@ export function caseTitle(path: string): string {
   return title || (path.split('/').pop() ?? path);
 }
 
-/** Wire the topbar chrome: fill the #case-picker select (a change navigates
- *  to ?case=<path>) and carry the active case across the lens cross-links. */
-export function wireCaseChrome(): void {
+/** Picker label for any source file: the case title, or the character id
+ *  from the `# Character:` header for a `.sim.md` file. */
+export function sourceLabel(path: string): string {
+  if (!isCharacterPath(path)) return caseTitle(path);
+  const id = (files[`/${path}`] ?? '').match(/^# Character:\s*([\wæøåÆØÅ_.-]+)/m)?.[1];
+  return `${id || (path.split('/').pop() ?? path)} · character`;
+}
+
+/** Wire the topbar chrome: fill the #case-picker select and carry the
+ *  active case across the lens cross-links. Case lenses call it bare (the
+ *  picker lists cases, navigates ?case=). The script editor passes
+ *  `{ allSources: true }`: the picker lists every source file and
+ *  navigates ?file=. */
+export function wireCaseChrome(opts: { allSources?: boolean } = {}): void {
   const picker = document.getElementById('case-picker') as HTMLSelectElement | null;
   if (picker) {
-    for (const path of casePaths) {
+    const paths = opts.allSources ? sourcePaths : casePaths;
+    const param = opts.allSources ? 'file' : 'case';
+    for (const path of paths) {
       const option = document.createElement('option');
       option.value = path;
-      option.textContent = caseTitle(path);
+      option.textContent = sourceLabel(path);
       picker.append(option);
     }
-    picker.value = activeCasePath;
+    picker.value = opts.allSources ? activeSourcePath : activeCasePath;
     picker.addEventListener('change', () => {
-      location.href = `?case=${encodeURIComponent(picker.value)}`;
+      location.href = `?${param}=${encodeURIComponent(picker.value)}`;
     });
   }
   for (const link of document.querySelectorAll<HTMLAnchorElement>('#topbar .tabs a')) {
