@@ -1,0 +1,65 @@
+// @vitest-environment jsdom
+// SB-071: the Strings sub-view — row derivation plus render checks over the
+// flat two-column id/text table template.
+import { render } from 'lit-html';
+import { describe, expect, it } from 'vitest';
+import type { StringTableOut } from '../../src/compiler/emit-visit.ts';
+import { emptyRowCount, stringRows, stringsPreview } from './strings-views.ts';
+
+const table = (over: Partial<StringTableOut> = {}): StringTableOut => ({
+  id: 'strings_notat',
+  entries: {
+    notat_intro: 'Elling har det bra i dag.',
+    notat_utro: 'Noe skurrer.',
+  },
+  ...over,
+});
+
+describe('stringRows', () => {
+  it('keeps authored order and flags empty values', () => {
+    const rows = stringRows(table({ entries: { a_key: 'Tekst.', b_key: '', c_key: '  ' } }));
+    expect(rows.map((r) => r.key)).toEqual(['a_key', 'b_key', 'c_key']);
+    expect(rows.map((r) => r.empty)).toEqual([false, true, true]);
+    expect(emptyRowCount(rows)).toBe(2);
+  });
+
+  it('yields no rows for an empty table', () => {
+    expect(stringRows(table({ entries: {} }))).toEqual([]);
+  });
+});
+
+describe('stringsPreview', () => {
+  const renderInto = (t: StringTableOut): HTMLElement => {
+    const host = document.createElement('div');
+    render(stringsPreview(t), host);
+    return host;
+  };
+
+  it('renders a two-column table: id column and verbatim Norwegian text', () => {
+    const host = renderInto(table());
+    const heads = [...host.querySelectorAll('th')].map((th) => th.textContent?.trim());
+    expect(heads).toEqual(['id', 'text']);
+    const keys = [...host.querySelectorAll('.sv-key')].map((td) => td.textContent?.trim());
+    expect(keys).toEqual(['notat_intro', 'notat_utro']);
+    expect(host.textContent).toContain('Elling har det bra i dag.');
+    expect(host.textContent?.replace(/\s+/g, ' ')).toContain('2 entries');
+    expect(host.querySelector('.tv-stub-chip')).toBeNull();
+  });
+
+  it('shows the stub chip on a Stub: yes table', () => {
+    const host = renderInto(table({ stub: true }));
+    expect(host.querySelector('.tv-stub-chip')?.textContent).toContain('stub');
+  });
+
+  it('marks empty values as visible holes and counts them', () => {
+    const host = renderInto(table({ entries: { a_key: '' } }));
+    expect(host.querySelector('.sv-row-empty')).not.toBeNull();
+    expect(host.querySelector('.sv-hole')?.textContent).toContain('no text yet');
+    expect(host.querySelector('.sv-count')?.textContent).toContain('1 empty');
+  });
+
+  it('says so when no entries are authored yet', () => {
+    const host = renderInto(table({ entries: {} }));
+    expect(host.querySelector('.sv-empty')?.textContent).toContain('no entries authored yet');
+  });
+});

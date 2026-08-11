@@ -6,7 +6,7 @@
 import { html, render as litRender, nothing } from 'lit-html';
 import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
 import type { CompileResult, CompileCharacterResult } from '../../src/compiler/index.ts';
-import type { VisitSceneOut } from '../../src/compiler/emit-visit.ts';
+import type { StringTableOut, VisitSceneOut } from '../../src/compiler/emit-visit.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
 import '../shared/surfaces.css';
 import '../shared/lens-tokens.css';
@@ -33,6 +33,7 @@ import {
   thoughtPreview,
 } from './character-views.ts';
 import { visitPreview } from './visit-views.ts';
+import { stringsPreview } from './strings-views.ts';
 
 injectEditorFonts();
 
@@ -169,6 +170,17 @@ function renderOutline(currentLine: number) {
         kind: 'Visit',
       })),
     },
+    // SB-071: `# Strings:` flat id-keyed tables (SDD-130) — jumpable.
+    {
+      label: 'Strings',
+      dot: 'var(--gold)',
+      count: (result.slice.strings ?? []).length,
+      items: (result.slice.strings ?? []).map((t) => ({
+        id: t.id,
+        label: t.id,
+        kind: 'Strings',
+      })),
+    },
   ];
   const parts: string[] = [
     `<div class="head">${esc((result.slice.title || 'CASE').toUpperCase())}</div>`,
@@ -281,6 +293,13 @@ function renderPreview(line: number) {
     const visit = (result.slice.visits ?? []).find((v) => v.id === h.id);
     if (visit) {
       renderVisitPreview(visit);
+      return;
+    }
+  }
+  if (h.kind === 'Strings') {
+    const table = (result.slice.strings ?? []).find((t) => t.id === h.id);
+    if (table) {
+      renderStringsPreview(table);
       return;
     }
   }
@@ -422,6 +441,12 @@ function renderVisitPreview(visit: VisitSceneOut) {
   );
 }
 
+// Strings preview (SB-071) — the flat two-column id/text table.
+function renderStringsPreview(table: StringTableOut) {
+  previewTitle.textContent = `STRINGS — ${table.id.toUpperCase()}`;
+  litRender(stringsPreview(table), preview);
+}
+
 // Per-pool variant cursor for the cycle-variants control (SB-069). Keyed by
 // pool identity so cycling one pool never moves another; kept across
 // recompiles (variantAt clamps by modulo when a pool shrinks).
@@ -554,7 +579,8 @@ function renderStatus() {
       s.tiltak.length +
       s.dispatches.length +
       s.clocks.length +
-      (s.visits?.length ?? 0);
+      (s.visits?.length ?? 0) +
+      (s.strings?.length ?? 0);
   const stubIds = [...new Set(stubs.flatMap((d) => d.subjectIds))];
   const parts: string[] = [];
   parts.push(
@@ -643,6 +669,10 @@ if (draftRestored) {
   renderStatus();
 }
 lens.foldAllSections();
+// SB-071: ?line= lands the lens on a block — the canvas stub worklist links
+// here for blocks that live in another source file.
+const lineParam = Number(new URLSearchParams(location.search).get('line'));
+if (Number.isInteger(lineParam) && lineParam > 0) lens.jumpToLine(lineParam);
 onCursor();
 
 export { view };

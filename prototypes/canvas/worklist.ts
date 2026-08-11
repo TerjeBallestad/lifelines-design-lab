@@ -7,9 +7,16 @@
 //   empty-field — required fields a block kind still leaves blank
 //   diagnostic  — every other compiler diagnostic, unfiltered
 // The page renders it and owns the jump; this module owns only the data.
+// SB-071 adds the fourth group as its own cross-file list: every `Stub: yes`
+// block (SDD-130 stub marking) across all source files, so the placeholder
+// purge has one worklist. buildStubWorklist stays pure — the page passes the
+// source texts and owns the jump (in-lens for the active case, a script-
+// editor link for other files).
 import { codes } from '../../src/compiler/diagnostics.ts';
 import type { Diagnostic, Severity } from '../../src/compiler/diagnostics.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
+import { findStubBlocks } from '../../src/compiler/stubs.ts';
+import type { StubBlockRef } from '../../src/compiler/stubs.ts';
 
 export type WorklistGroup = 'stub' | 'empty-field' | 'diagnostic';
 
@@ -92,4 +99,29 @@ export function buildWorklist(diagnostics: Diagnostic[], blocks: RawBlock[]): Wo
       });
 
   return entries;
+}
+
+// ---- SB-071 stub worklist (cross-file) ------------------------------------
+
+/** One `Stub: yes` block, addressed by its source file for the jump. */
+export interface StubWorklistEntry {
+  /** Repo-relative source path (active-case seam vocabulary). */
+  path: string;
+  ref: StubBlockRef;
+}
+
+/**
+ * Every `Stub: yes` block across the given source texts, in source order —
+ * files as passed (the seam's sorted sourcePaths), blocks in file order.
+ * Family by extension, matching the active-case seam's isCharacterPath.
+ */
+export function buildStubWorklist(
+  sources: Array<{ path: string; text: string }>,
+): StubWorklistEntry[] {
+  return sources.flatMap(({ path, text }) =>
+    findStubBlocks(text, path.endsWith('.sim.md') ? 'character' : 'case').map((ref) => ({
+      path,
+      ref,
+    })),
+  );
 }

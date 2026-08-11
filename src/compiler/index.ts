@@ -81,6 +81,8 @@ export function compileCharacter(text: string): CompileCharacterResult {
 }
 
 export { codes } from './diagnostics.ts';
+export { findStubBlocks, isStubBlock } from './stubs.ts';
+export type { StubBlockRef } from './stubs.ts';
 export type { Diagnostic, DiagnosticCode, Severity, Span } from './diagnostics.ts';
 export type { CaseSlice, LabContent, ProposalOut, RecipeOut } from './emit.ts';
 export type {

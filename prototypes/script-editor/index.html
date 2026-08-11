@@ -653,6 +653,63 @@
         font: 400 10px var(--mono);
         color: var(--text-3);
       }
+      /* SB-071: Strings flat two-column id/text table (SDD-130 §3) */
+      #preview .sv-table-wrap {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow-x: auto;
+      }
+      #preview .sv-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      #preview .sv-table th {
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        text-align: left;
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      #preview .sv-table td {
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      #preview .sv-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      #preview .sv-key {
+        font: 400 10.5px var(--mono);
+        color: var(--gold);
+        white-space: nowrap;
+      }
+      #preview .sv-text {
+        font: 400 11.5px/1.5 var(--sans);
+        color: var(--text);
+      }
+      #preview .sv-row-empty .sv-key {
+        color: var(--text-4);
+      }
+      #preview .sv-hole {
+        font: 400 10.5px var(--mono);
+        color: var(--orange);
+      }
+      #preview .sv-empty {
+        font: 400 11.5px var(--sans);
+        color: var(--text-4);
+        padding: 14px 4px;
+      }
+      #preview .sv-count {
+        margin-top: 8px;
+        font: 400 10px var(--mono);
+        color: var(--text-3);
+      }
+      #preview .sv-count-empty {
+        color: var(--orange);
+      }
       #preview .empty {
         font: 400 11.5px var(--sans);
         color: var(--text-4);

@@ -84,6 +84,7 @@ export const KIND_COLOR: Record<string, string> = {
   Recipe: 'var(--green)',
   Event: 'var(--orange)',
   Visit: 'var(--green)',
+  Strings: 'var(--gold)',
   Case: 'var(--text)',
 };
 
@@ -115,6 +116,7 @@ const HEAD_CLASS: Record<string, string> = {
   Recipe: 'tok-h-tiltak',
   Event: 'tok-h-dispatch',
   Visit: 'tok-h-tiltak',
+  Strings: 'tok-h-clock',
   Case: 'tok-h-case',
 };
 const ID_CLASS: Record<string, string> = {

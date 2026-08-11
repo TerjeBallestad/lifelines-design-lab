@@ -9,7 +9,7 @@ import { access, readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
-import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
+import { compileCase, compileCharacter, findStubBlocks } from '../../src/compiler/index.ts';
 
 export function defaultPaths(cwd = process.cwd()) {
   const designLabRoot = resolve(cwd);
@@ -121,6 +121,39 @@ export async function formatGeneratedBlueprintModule(artifacts) {
   });
 }
 
+/**
+ * SB-071 stub-count lint (SDD-130 §2: "a lint counts stubs — the placeholder
+ * purge is done when the count is zero"). Counts every `Stub: yes` block
+ * across the case file and each character source. Never fatal — stubs are
+ * the expected state until the purge lands; the count makes it measurable.
+ */
+export async function countStubs(paths = defaultPaths()) {
+  const perFile = [];
+  const caseText = await readFile(paths.casePath, 'utf8');
+  perFile.push({
+    file: basename(paths.casePath),
+    count: findStubBlocks(caseText, 'case').length,
+  });
+  for (const source of await discoverCharacterSources(paths)) {
+    const text = await readFile(source.sourcePath, 'utf8');
+    perFile.push({
+      file: basename(source.sourcePath),
+      count: findStubBlocks(text, 'character').length,
+    });
+  }
+  return { total: perFile.reduce((sum, entry) => sum + entry.count, 0), perFile };
+}
+
+export function formatStubCount({ total, perFile }) {
+  const breakdown = perFile
+    .filter((entry) => entry.count > 0)
+    .map((entry) => `${entry.file} ${entry.count}`)
+    .join(' · ');
+  return total === 0
+    ? 'stub count: 0 — the placeholder purge is done'
+    : `stub count: ${total} (Stub: yes blocks awaiting rewrite) — ${breakdown}`;
+}
+
 function printDiagnostics(diagnostics) {
   for (const diagnostic of diagnostics) {
     const where =
@@ -188,6 +221,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const moduleSource = await formatGeneratedBlueprintModule(artifacts);
   const jsonSource = serializeSliceJson(artifacts.slice);
+  // SB-071: the stub-count lint runs in both modes — check output is where
+  // the placeholder purge gets measured (gen:content:check / case:check).
+  console.log(formatStubCount(await countStubs(paths)));
   if (check) {
     let stale = false;
     const checkFile = async (path, expected, label, { skipMissing = false } = {}) => {

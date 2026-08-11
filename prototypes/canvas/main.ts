@@ -36,11 +36,16 @@ import { mountScriptLens } from '../script-editor/lens.ts';
 import { buildSymbols } from '../script-editor/symbols.ts';
 import { initPreview } from './preview.ts';
 import { initJump } from './jump.ts';
-import { buildWorklist } from './worklist.ts';
-import { wireCaseChrome } from '../shared/active-case.ts';
+import { buildWorklist, buildStubWorklist } from './worklist.ts';
+import {
+  activeCasePath,
+  resolveBootText,
+  sourcePaths,
+  wireCaseChrome,
+} from '../shared/active-case.ts';
 import '../shared/surfaces.css';
 import '../shared/lens-tokens.css';
-import type { WorklistEntry, WorklistGroup } from './worklist.ts';
+import type { StubWorklistEntry, WorklistEntry, WorklistGroup } from './worklist.ts';
 
 // ---- the probe surface the smoke tests drive ------------------------------
 
@@ -679,6 +684,7 @@ const worklistPanel = $('worklist');
 const worklistBody = $('worklist-body');
 const worklistToggle = $('toggle-worklist');
 export let worklist: WorklistEntry[] = [];
+export let stubWorklist: StubWorklistEntry[] = [];
 
 const GROUP_LABEL: Record<WorklistGroup, string> = {
   stub: 'STUBS',
@@ -708,10 +714,34 @@ export function jumpToWorklistEntry(entry: WorklistEntry): void {
   );
 }
 
+/**
+ * SB-071: jump to a `Stub: yes` block. In the active case the script lens
+ * scrolls to the block; a block in another source file opens the script
+ * editor on that file and line (the stub worklist is cross-file, the canvas
+ * lens is not).
+ */
+export function jumpToStubEntry(entry: StubWorklistEntry): void {
+  if (entry.path === activeCasePath) {
+    suppressCursorEcho = true;
+    scriptLens.scrollToLine(entry.ref.line);
+    return;
+  }
+  location.href = `../script-editor/?file=${encodeURIComponent(entry.path)}&line=${entry.ref.line}`;
+}
+
 function renderWorklist(): void {
   worklist = buildWorklist(model.state.result.diagnostics, [...model.state.blockById.values()]);
-  worklistToggle.textContent = `loose ends · ${worklist.length}`;
-  worklistToggle.classList.toggle('has-loose', worklist.length > 0);
+  // The stub list is cross-file: the active case reads from the live buffer,
+  // every other source file from its draft-aware boot text (the seam).
+  stubWorklist = buildStubWorklist(
+    sourcePaths.map((path) => ({
+      path,
+      text: path === activeCasePath ? model.getCaseText() : resolveBootText(path).text,
+    })),
+  );
+  const looseCount = worklist.length + stubWorklist.length;
+  worklistToggle.textContent = `loose ends · ${looseCount}`;
+  worklistToggle.classList.toggle('has-loose', looseCount > 0);
 
   const groups = (Object.keys(GROUP_LABEL) as WorklistGroup[])
     .map((group) => ({
@@ -722,10 +752,37 @@ function renderWorklist(): void {
     }))
     .filter((g) => g.rows.length > 0);
 
+  // SB-071: `Stub: yes` blocks lead the panel — the placeholder-purge
+  // worklist (SDD-130 stub marking). Rows in other files jump via the
+  // script editor and carry the ↗ marker.
+  const fileOf = (path: string) => path.split('/').pop() ?? path;
+  const stubSection =
+    stubWorklist.length === 0
+      ? nothing
+      : html`<div class="sect">STUB: YES · ${stubWorklist.length}</div>
+          ${stubWorklist.map(
+            (entry, index) =>
+              html`<div
+                class="wl-row s-warning"
+                data-si="${index}"
+                title=${entry.path === activeCasePath
+                  ? 'jump the script lens to the block'
+                  : `open the script editor on ${entry.path}`}
+                @click=${() => jumpToStubEntry(entry)}
+              >
+                <span class="dcode">${fileOf(entry.path)}</span>
+                <span class="wmsg"
+                  >${entry.ref.blockType}
+                  ${entry.ref.label}${entry.path === activeCasePath ? '' : ' ↗'}</span
+                >
+              </div>`,
+          )}`;
+
   litRender(
-    groups.length === 0
+    groups.length === 0 && stubWorklist.length === 0
       ? html`<div class="empty">No loose ends — every thread is tied.</div>`
-      : groups.map(
+      : html`${stubSection}
+        ${groups.map(
           ({ group, rows }) =>
             html`<div class="sect">${GROUP_LABEL[group]} · ${rows.length}</div>
               ${rows.map(
@@ -739,7 +796,7 @@ function renderWorklist(): void {
                     <span class="wmsg">${entry.message}</span>
                   </div>`,
               )}`,
-        ),
+        )}`,
     worklistBody,
   );
 }

@@ -6,7 +6,7 @@ import { compileCase } from '../../src/compiler/index.ts';
 import { parseCaseText } from '../../src/compiler/parse.ts';
 import { DiagnosticBag } from '../../src/compiler/diagnostics.ts';
 import type { RawBlock } from '../../src/compiler/parse.ts';
-import { buildWorklist } from './worklist.ts';
+import { buildStubWorklist, buildWorklist } from './worklist.ts';
 
 const ROOT = process.cwd();
 const olsenText = readFileSync(`${ROOT}/content/cases/olsen/tiny-olsen.case.md`, 'utf8');
@@ -116,5 +116,69 @@ describe('SB-044 worklist derivation', () => {
     expect(entries.filter((e) => e.group === 'diagnostic').length).toBe(
       diagnostics.filter((d) => d.code !== 'stub-unresolved-id').length,
     );
+  });
+});
+
+// SB-071 — the cross-file stub worklist: `Stub: yes` blocks across every
+// source file, addressed by path for the jump.
+describe('buildStubWorklist', () => {
+  const caseText = `# Case: case_x
+
+Title: X
+
+# Visit: opp_alene
+
+Title: Klarer han seg alene?
+Stub: yes
+
+- frank: «Hei.»
+
+# Strings: strings_notat
+
+notat_intro: Ferdig tekst.
+`;
+  const simText = `# Character: elling
+
+# Barks: elling
+
+Stub: yes
+
+- Fint vær.
+`;
+
+  it('collects stub blocks per file, in source order, family by extension', () => {
+    const entries = buildStubWorklist([
+      { path: 'content/cases/olsen/tiny-olsen.case.md', text: caseText },
+      { path: 'content/characters/elling.sim.md', text: simText },
+    ]);
+    expect(entries.length).toBe(2);
+    expect(entries[0].path).toBe('content/cases/olsen/tiny-olsen.case.md');
+    expect(entries[0].ref).toMatchObject({
+      blockId: 'opp_alene',
+      blockType: 'visit',
+      label: 'Klarer han seg alene?',
+    });
+    expect(entries[1].path).toBe('content/characters/elling.sim.md');
+    expect(entries[1].ref).toMatchObject({ blockId: 'elling', blockType: 'barks' });
+  });
+
+  it('is empty when no block carries the marker', () => {
+    expect(
+      buildStubWorklist([{ path: 'content/cases/olsen/tiny-olsen.case.md', text: '# Case: c\n' }]),
+    ).toEqual([]);
+  });
+
+  it('the real character sources each surface their seed stubs', () => {
+    const paths = [
+      'content/characters/elling.sim.md',
+      'content/characters/frank.sim.md',
+      'content/characters/grete.sim.md',
+    ];
+    const entries = buildStubWorklist(
+      paths.map((path) => ({ path, text: readFileSync(`${ROOT}/${path}`, 'utf8') })),
+    );
+    // The seed skeletons mark every block Stub: yes (SB-072 owns the purge).
+    expect(entries.length).toBeGreaterThan(0);
+    for (const entry of entries) expect(paths).toContain(entry.path);
   });
 });

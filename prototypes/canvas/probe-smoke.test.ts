@@ -872,7 +872,11 @@ describe('canvas loose-end worklist (SB-044)', () => {
     const probe = await bootProbe();
 
     const toggle = document.getElementById('toggle-worklist')!;
-    expect(toggle.textContent).toBe(`loose ends · ${probe.worklist.length}`);
+    // SB-071: the counter carries diagnostics-derived entries PLUS the
+    // cross-file `Stub: yes` list.
+    expect(toggle.textContent).toBe(
+      `loose ends · ${probe.worklist.length + probe.stubWorklist.length}`,
+    );
 
     const panel = document.getElementById('worklist')!;
     expect(panel.classList.contains('show')).toBe(false);
@@ -881,6 +885,11 @@ describe('canvas loose-end worklist (SB-044)', () => {
     expect(document.querySelectorAll('#worklist-body [data-wi]').length).toBe(
       probe.worklist.length,
     );
+    // The seed .sim.md skeletons are all Stub: yes — the cross-file rows show.
+    expect(document.querySelectorAll('#worklist-body [data-si]').length).toBe(
+      probe.stubWorklist.length,
+    );
+    expect(probe.stubWorklist.length).toBeGreaterThan(0);
     localStorage.clear();
   });
 
@@ -906,7 +915,7 @@ describe('canvas loose-end worklist (SB-044)', () => {
     expect(stubs.some((e) => e.subjectIds.includes('q_finnes_ikke'))).toBe(true);
     expect(probe.worklist.length).toBeGreaterThan(countBefore);
     expect(document.getElementById('toggle-worklist')!.textContent).toBe(
-      `loose ends · ${probe.worklist.length}`,
+      `loose ends · ${probe.worklist.length + probe.stubWorklist.length}`,
     );
     localStorage.clear();
   });
