@@ -48,7 +48,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_bekymring_p2',
         runs: [
           {
-            text: 'Med hilsen\nJørgen Haug\nspes. allmennmedisin',
+            text: 'Jørgen Haug\nspes. allmennmedisin',
           },
         ],
       },
@@ -57,10 +57,10 @@ export const tinyOlsenDocuments = {
   doc_konto: {
     id: 'doc_konto',
     kind: 'ØKONOMISK OVERSIKT',
-    title: 'Frank · husholdets økonomi',
+    title: 'Økonomisk gjennomgang',
     register: 'notat',
-    peek: '«Regnestykket går opp — med henne.»',
-    meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+    peek: 'Økonomisk oversikt',
+    meta: 'Frank Åsli.',
     blocks: [
       {
         id: 'doc_konto_p1',
@@ -77,11 +77,18 @@ export const tinyOlsenDocuments = {
             text: 'Inn: ',
           },
           {
-            text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
+            text: 'Trygden hans er 22 [icon=coin] i måneden',
             factId: 'f_trygd',
           },
           {
-            text: ' Pensjonen hennes: 3 [icon=coin].',
+            text: '. Men det er ',
+          },
+          {
+            text: 'Grete som står som verge',
+            factId: 'f_alt_via_grete',
+          },
+          {
+            text: ' for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].',
           },
         ],
       },
@@ -89,14 +96,11 @@ export const tinyOlsenDocuments = {
         id: 'doc_konto_p3',
         runs: [
           {
-            text: 'Ut: ',
-          },
-          {
-            text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
+            text: 'Husleien er 30 [icon=coin]',
             factId: 'f_husleie',
           },
           {
-            text: ' Strøm, mat og resten: 2 [icon=coin] til sammen.',
+            text: '. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.',
           },
         ],
       },
@@ -104,11 +108,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_konto_p4',
         runs: [
           {
-            text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
-            factId: 'f_alt_via_grete',
-          },
-          {
-            text: ' Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.',
+            text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan ',
           },
         ],
       },
@@ -116,11 +116,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_konto_p5',
         runs: [
           {
-            text: 'Jeg gikk gjennom kvitteringene. ',
-          },
-          {
-            text: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
-            factId: 'f_ingen_matkjop',
+            text: 'Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.',
           },
         ],
       },
@@ -128,8 +124,11 @@ export const tinyOlsenDocuments = {
         id: 'doc_konto_p6',
         runs: [
           {
-            text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
+            text: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
             factId: 'f_gap',
+          },
+          {
+            text: '.',
           },
         ],
       },
@@ -138,9 +137,9 @@ export const tinyOlsenDocuments = {
   doc_papirer: {
     id: 'doc_papirer',
     kind: 'ØKONOMISK OVERSIKT',
-    title: 'Frank · papirene i leiligheten',
+    title: 'Økonomisk oversikt',
     register: 'notat',
-    peek: '«Skoesken sto der hun forlot den.»',
+    peek: 'Skoesken sto der hun forlot den.',
     meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
     blocks: [
       {
@@ -155,14 +154,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_papirer_p2',
         runs: [
           {
-            text: 'Inn: ',
-          },
-          {
-            text: 'trygden hans — 2 [icon=coin] i måneden.',
-            factId: 'f_trygd',
-          },
-          {
-            text: ' Pensjonen hennes er opphørt.',
+            text: '[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.',
           },
         ],
       },
@@ -170,10 +162,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_papirer_p3',
         runs: [
           {
-            text: 'Ut: ',
-          },
-          {
-            text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
+            text: 'husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
             factId: 'f_husleie',
           },
         ],
@@ -622,7 +611,7 @@ export const tinyOlsenFacts = {
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
-    quote: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
+    quote: 'Trygden hans er 22 [icon=coin] i måneden',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_alt_via_grete: {
@@ -630,7 +619,7 @@ export const tinyOlsenFacts = {
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.',
-    quote: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
+    quote: 'Grete som står som verge',
     supports: ['q_okonomi'],
   },
   f_husleie: {
@@ -638,7 +627,7 @@ export const tinyOlsenFacts = {
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Husleien er 3 [icon=coin] og betales av Grete.',
-    quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
+    quote: 'Husleien er 30 [icon=coin]',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_gap: {
@@ -646,7 +635,7 @@ export const tinyOlsenFacts = {
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
-    quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
+    quote: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_ingen_matkjop: {
@@ -654,7 +643,7 @@ export const tinyOlsenFacts = {
     domain: 'Hverdag/rutine',
     category: 'Økonomi',
     text: 'Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.',
-    quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
+    quote: 'Ikke ett kjøp i kvitteringene er hans.',
     supports: ['q_grete_dor'],
   },
   f_leie_stoppet: {
@@ -1126,7 +1115,7 @@ export const tinyOlsenGodotSource = {
       peek: 'Bekymringsmelding Dr. J. Haug',
       meta: 'LEGESENTERET DR. J. HAUG, 11.02.1999',
       body_bbcode:
-        'Under behandling av pasient Grete Olsen (f. 1927) for en [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url] kommer det frem at hun er [url=fact:f_saarbar]primær omsorgsperson[/url] for sin sønn Elling Olsen (f. 14.03.1964). [url=fact:f_grete_baerer]Omfanget er ikke kartlagt[/url], men han kan ha behov for støtte ved mors bortfall. \n\nMed hilsen\nJørgen Haug\nspes. allmennmedisin',
+        'Under behandling av pasient Grete Olsen (f. 1927) for en [url=fact:f_grete_syk]sykdom med kort forventet forløp[/url] kommer det frem at hun er [url=fact:f_saarbar]primær omsorgsperson[/url] for sin sønn Elling Olsen (f. 14.03.1964). [url=fact:f_grete_baerer]Omfanget er ikke kartlagt[/url], men han kan ha behov for støtte ved mors bortfall. \n\nJørgen Haug\nspes. allmennmedisin',
       runs: [
         {
           id: 'run_text_0',
@@ -1160,7 +1149,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_3',
-          text: ', men han kan ha behov for støtte ved mors bortfall. Med hilsen Jørgen Haug spes. allmennmedisin',
+          text: ', men han kan ha behov for støtte ved mors bortfall. Jørgen Haug spes. allmennmedisin',
           fact_id: '',
         },
       ],
@@ -1168,12 +1157,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_konto',
       kind: 'ØKONOMISK OVERSIKT',
-      title: 'Frank · husholdets økonomi',
+      title: 'Økonomisk gjennomgang',
       register: 'notat',
-      peek: '«Regnestykket går opp — med henne.»',
-      meta: 'ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
+      peek: 'Økonomisk oversikt',
+      meta: 'Frank Åsli.',
       body_bbcode:
-        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.[/url] Pensjonen hennes: 3 [icon=coin].\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.[/url] Strøm, mat og resten: 2 [icon=coin] til sammen.\n\n[url=fact:f_alt_via_grete]Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.[/url] Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.\n\nJeg gikk gjennom kvitteringene. [url=fact:f_ingen_matkjop]Jeg fant ikke ett kjøp som var hans. Ikke ett.[/url]\n\n[url=fact:f_gap]Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.[/url]',
+        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]Trygden hans er 22 [icon=coin] i måneden[/url]. Men det er [url=fact:f_alt_via_grete]Grete som står som verge[/url] for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].\n\n[url=fact:f_husleie]Husleien er 30 [icon=coin][/url]. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.\n\nAlle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan \n\nJeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.\n\n[url=fact:f_gap]Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned[/url].',
       runs: [
         {
           id: 'run_text_0',
@@ -1182,83 +1171,68 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_trygd',
-          text: 'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
+          text: 'Trygden hans er 22 [icon=coin] i måneden',
           fact_id: 'f_trygd',
         },
         {
           id: 'run_text_1',
-          text: ' Pensjonen hennes: 3 [icon=coin]. Ut: ',
-          fact_id: '',
-        },
-        {
-          id: 'run_husleie',
-          text: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
-          fact_id: 'f_husleie',
-        },
-        {
-          id: 'run_text_2',
-          text: ' Strøm, mat og resten: 2 [icon=coin] til sammen. ',
+          text: '. Men det er ',
           fact_id: '',
         },
         {
           id: 'run_alt_via_grete',
-          text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
+          text: 'Grete som står som verge',
           fact_id: 'f_alt_via_grete',
         },
         {
-          id: 'run_text_3',
-          text: ' Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort. Jeg gikk gjennom kvitteringene. ',
+          id: 'run_text_2',
+          text: ' for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin]. ',
           fact_id: '',
         },
         {
-          id: 'run_ingen_matkjop',
-          text: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
-          fact_id: 'f_ingen_matkjop',
+          id: 'run_husleie',
+          text: 'Husleien er 30 [icon=coin]',
+          fact_id: 'f_husleie',
         },
         {
-          id: 'run_text_4',
-          text: ' ',
+          id: 'run_text_3',
+          text: '. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen. Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett. ',
           fact_id: '',
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
+          text: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
           fact_id: 'f_gap',
+        },
+        {
+          id: 'run_text_4',
+          text: '.',
+          fact_id: '',
         },
       ],
     },
     {
       id: 'doc_papirer',
       kind: 'ØKONOMISK OVERSIKT',
-      title: 'Frank · papirene i leiligheten',
+      title: 'Økonomisk oversikt',
       register: 'notat',
-      peek: '«Skoesken sto der hun forlot den.»',
+      peek: 'Skoesken sto der hun forlot den.',
       meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
       body_bbcode:
-        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\nInn: [url=fact:f_trygd]trygden hans — 2 [icon=coin] i måneden.[/url] Pensjonen hennes er opphørt.\n\nUt: [url=fact:f_husleie]husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\n[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.\n\n[url=fact:f_husleie]husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
       runs: [
         {
           id: 'run_text_0',
-          text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. Inn: ',
-          fact_id: '',
-        },
-        {
-          id: 'run_trygd',
-          text: 'trygden hans — 2 [icon=coin] i måneden.',
-          fact_id: 'f_trygd',
-        },
-        {
-          id: 'run_text_1',
-          text: ' Pensjonen hennes er opphørt. Ut: ',
+          text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. [trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt. ',
           fact_id: '',
         },
         {
           id: 'run_husleie',
-          text: 'husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
+          text: 'husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
           fact_id: 'f_husleie',
         },
         {
-          id: 'run_text_2',
+          id: 'run_text_1',
           text: ' ',
           fact_id: '',
         },
@@ -1268,7 +1242,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_alt_via_grete',
         },
         {
-          id: 'run_text_3',
+          id: 'run_text_2',
           text: ' ',
           fact_id: '',
         },
@@ -1278,7 +1252,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_ingen_matkjop',
         },
         {
-          id: 'run_text_4',
+          id: 'run_text_3',
           text: ' ',
           fact_id: '',
         },
@@ -1288,7 +1262,7 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_gap',
         },
         {
-          id: 'run_text_5',
+          id: 'run_text_4',
           text: ' Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
           fact_id: '',
         },
@@ -1604,19 +1578,18 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote:
-        'trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.',
+      quote: 'Trygden hans er 22 [icon=coin] i måneden',
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
     {
       id: 'f_alt_via_grete',
-      label: 'Alt går via Grete',
+      label: 'Grete er øknomisk verge',
       summary: 'Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
+      quote: 'Grete som står som verge',
       supports_questions: ['q_okonomi'],
       lift_effects: [],
     },
@@ -1627,7 +1600,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.',
+      quote: 'Husleien er 30 [icon=coin]',
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1638,7 +1611,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.',
+      quote: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1649,7 +1622,7 @@ export const tinyOlsenGodotSource = {
       source_document_id: 'doc_konto',
       domain: 'Hverdag/rutine',
       category: 'Økonomi',
-      quote: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
+      quote: 'Ikke ett kjøp i kvitteringene er hans.',
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },

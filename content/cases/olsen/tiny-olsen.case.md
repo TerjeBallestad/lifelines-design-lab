@@ -15,7 +15,6 @@ Meta: LEGESENTERET DR. J. HAUG, 11.02.1999
 
 Under behandling av pasient Grete Olsen (f. 1927) for en [sykdom med kort forventet forløp](fact:f_grete_syk) kommer det frem at hun er [primær omsorgsperson](fact:f_saarbar) for sin sønn Elling Olsen (f. 14.03.1964). [Omfanget er ikke kartlagt](fact:f_grete_baerer), men han kan ha behov for støtte ved mors bortfall. 
 
-Med hilsen
 Jørgen Haug
 spes. allmennmedisin
 
@@ -45,21 +44,21 @@ Frank: «Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak p�
 # Document: doc_konto
 
 Kind: ØKONOMISK OVERSIKT · Register: notat
-Title: Frank · husholdets økonomi
-Peek: «Regnestykket går opp — med henne.»
-Meta: ØKONOMISK OVERSIKT · 4012 F. ÅSLI · GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET
+Title: Økonomisk gjennomgang
+Peek: Økonomisk oversikt
+Meta: Frank Åsli. 
 
 Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.
 
-Inn: [trygden hans — 2 [icon=coin] i måneden. Den kommer den første, og den går rett videre.](fact:f_trygd) Pensjonen hennes: 3 [icon=coin].
+Inn: [Trygden hans er 22 [icon=coin] i måneden](fact:f_trygd). Men det er [Grete som står som verge](fact:f_alt_via_grete) for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].
 
-Ut: [husleien — 3 [icon=coin]. Den betales kontant til huseieren, av Grete, den første.](fact:f_husleie) Strøm, mat og resten: 2 [icon=coin] til sammen.
+[Husleien er 30 [icon=coin]](fact:f_husleie). Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.
 
-[Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.](fact:f_alt_via_grete) Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort.
+Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan 
 
-Jeg gikk gjennom kvitteringene. [Jeg fant ikke ett kjøp som var hans. Ikke ett.](fact:f_ingen_matkjop)
+Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.
 
-[Regnestykket går opp — med henne. Uten henne mangler det 2 [icon=coin]. Hver måned.](fact:f_gap)
+[Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned](fact:f_gap).
 
 ## f_trygd
 
@@ -70,7 +69,7 @@ Supports: q_okonomi, q_bolig
 
 ## f_alt_via_grete
 
-Label: Alt går via Grete
+Label: Grete er øknomisk verge
 Summary: Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi
@@ -99,15 +98,15 @@ Supports: q_grete_dor
 # Document: doc_papirer
 
 Kind: ØKONOMISK OVERSIKT · Register: notat
-Title: Frank · papirene i leiligheten
+Title: Økonomisk oversikt
 Peek: Skoesken sto der hun forlot den.
 Meta: PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET
 
 Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.
 
-Inn: [trygden hans — 2 [icon=coin] i måneden.](fact:f_trygd) Pensjonen hennes er opphørt.
+[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.
 
-Ut: [husleien — 3 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.](fact:f_husleie)
+[husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.](fact:f_husleie)
 
 [Alle avtaler står i Gretes navn.](fact:f_alt_via_grete) [Ikke ett kjøp i kvitteringene er hans.](fact:f_ingen_matkjop)
 
