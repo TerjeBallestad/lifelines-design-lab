@@ -131,6 +131,9 @@ export function parseHeaderMeta(payload: string): Record<string, string> {
     if (!part) continue;
     const eq = part.indexOf('=');
     if (eq > 0) meta[part.slice(0, eq)] = part.slice(eq + 1);
+    // Bare flag token (`[... no_wait ...]`, visit steps) → present with an
+    // empty value. Pre-SDD-130 payloads never used bare tokens.
+    else meta[part] = '';
   }
   return meta;
 }

@@ -34,6 +34,9 @@ export const COVERAGE_REGISTRY: CoverageRegistry = {
   pair_already_set_line: { label: 'Pair already-set line', status: 'no player surface yet' },
   recipes: { label: 'Recipes', status: 'player surface' },
   calls: { label: 'Calls', status: 'player surface' },
+  // SDD-130 sim-content blocks — editor sub-views arrive with SB-068..070.
+  visits: { label: 'Visits', status: 'no player surface yet' },
+  strings: { label: 'String tables', status: 'no player surface yet' },
 };
 
 /** Ordered rows, in CaseSlice declaration order (registry literal order). */

@@ -7,3 +7,6 @@ coverage
 # weave indentation is semantic — prettier rewrites * branches into - lists
 content/cases/**/*.case.md
 src/compiler/__tests__/fixtures/*.case.md
+# sim.md shares the law: the grammar (wildcard keys, «» fields) is not markdown-normalizable
+content/characters/*.sim.md
+src/compiler/__tests__/fixtures/*.sim.md

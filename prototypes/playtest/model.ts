@@ -20,7 +20,7 @@ export type IndexGroupKey = Exclude<CoverageKey, 'pair_soft_reject_line' | 'pair
 export interface IndexEntry {
   id: string;
   label: string;
-  kind: NodeKind | 'day_script_beat' | 'event_delta';
+  kind: NodeKind | 'day_script_beat' | 'event_delta' | 'visit' | 'string_table';
 }
 
 export interface IndexGroup {
@@ -155,6 +155,24 @@ export function buildIndex(result: CompileResult): IndexGroup[] {
         kind: 'conversation' as const,
       })),
     },
+    {
+      key: 'visits',
+      label: 'Visits',
+      entries: (slice.visits ?? []).map((visit) => ({
+        id: visit.id,
+        label: plainTitle(visit.name) || visit.id,
+        kind: 'visit' as const,
+      })),
+    },
+    {
+      key: 'strings',
+      label: 'String tables',
+      entries: (slice.strings ?? []).map((table) => ({
+        id: table.id,
+        label: table.id,
+        kind: 'string_table' as const,
+      })),
+    },
   ];
 }
 
@@ -169,6 +187,14 @@ export function entitySurface(entry: IndexEntry, result: CompileResult): Surface
       // the node rides along; the JSON surface stays the honest one.
       const delta = result.slice.event_delta_specs.find((e) => e.event_type === entry.id);
       return fallbackJsonSurface(entry.id, 'event_delta', result, delta ?? null);
+    }
+    case 'visit': {
+      const visit = result.slice.visits?.find((v) => v.id === entry.id);
+      return fallbackJsonSurface(entry.id, 'visit', result, visit ?? null);
+    }
+    case 'string_table': {
+      const table = result.slice.strings?.find((t) => t.id === entry.id);
+      return fallbackJsonSurface(entry.id, 'string_table', result, table ?? null);
     }
     case 'conversation':
       return surfaceFor(
