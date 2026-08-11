@@ -1,5 +1,7 @@
 // Block parser for Kildeverket markup 0.2 (with 0.1 compat reads).
 // Produces a raw block model; emit.ts binds fields and builds the slice.
+// SDD-130 sim-content grammar (visit/strings/character blocks): see
+// docs/markup-0.2-reference.md Appendix A.
 
 import type { DiagnosticBag } from './diagnostics.ts';
 import { codes, span } from './diagnostics.ts';

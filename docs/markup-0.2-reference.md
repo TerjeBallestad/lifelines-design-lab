@@ -464,3 +464,96 @@ none, so emitted JSON is unchanged until a question authors one.
 
 Also: `.case.md` files are prettier-ignored — §8 weave indentation and `*`
 branch sigils are semantic, and prettier rewrites them into `-` lists.
+
+## Appendix A · SDD-130 sim-content blocks (PLAN-006)
+
+Two source families, one language. The case file gains `# Visit:` and
+`# Strings:`; character files (`content/characters/<id>.sim.md`, opened by a
+`# Character: <id>` header) carry `# Thoughts:`, `# Barks:`, `# Phone:`.
+`npm run gen:content` compiles all of it: the case artifacts as before, plus
+`../lifelines-core-loop/resources/characters/source/<id>_sim_content.json`
+per character (tab-JSON, `_generated` stamp, cross-repo write guard). The
+sparse-field law holds throughout; `Stub: yes` on any block emits
+`stub: true` on its Out shape (omitted otherwise). `.sim.md` files are
+prettier-ignored for the same reason as `.case.md` (the wildcard `*` in a
+thoughts header is not markdown-normalizable).
+
+### Character family
+
+```
+# Character: elling
+
+# Thoughts: elling/need/Hunger        ← <char>/<key_type>/<key>, `*` = wildcard key
+
+Icon: icon_hunger                     ← optional; ThoughtLine icon_key
+Stub: yes
+
+- Sulten. Kjøleskapet er langt unna.  ← one bullet per text variant
+- Burde spise noe snart.
+
+# Barks: elling                       ← ambient pool (BARK_TEXTS successor)
+
+- Fint vær i dag.
+
+# Phone: elling                       ← in-sim answer/close lines
+
+Answer: «hallo? ... ja. det er her.»
+Close: «ja. nei. jo. — ha det.»
+```
+
+Emitted shapes → `ThoughtPoolOut { character, key_type, key, lines[], icon_key?, stub? }`
+(key_type ∈ need/activity/aversion/want/relational/dagsform, mirroring
+ThoughtLine), `BarkPoolOut { character, lines[], stub? }`,
+`PhoneLinesOut { character, answer, close, stub? }`, gathered into
+`CharacterContent { id, thoughts[], barks?, phone? }`. A
+`# Thoughts: frank/...` block warns (advisory `thoughts-frank-excluded`,
+SDD-110 #10) and emits nothing. A block naming another character than the
+file's own warns and emits nothing — the sibling file owns it.
+
+### Case-file additions
+
+```
+# Visit: opp_alene                    ← the Oppdrag catalog entry + choreography
+
+Title: Klarer han seg alene?          ← → name
+Blurb: Se på Elling.                  ← → blurb
+Offer: «Vil du at jeg skal se…»       ← → offer_line (Frank's in-call offer)
+Unlocks: q_evner                      ← → unlocks_question (dangling id warns)
+
+- ! grete: blir i stua @ living_room [duration=18 no_wait id=opp_a_hold]
+- ? elling @ living_room [duration=8 beat=a6 id=opp_a6]
+- frank: «Er det Nansen du leser om?» [dwell=4 beat=a2 id=opp_a2]
+- {f_klarer} grete: «Han har det fint her.» [dwell=4 beat=a5 id=opp_a5]
+
+# Strings: notat_glue                 ← flat id-keyed table (DD-004 scopes families)
+
+Stub: yes
+notat_intro: Frank noterer.
+```
+
+Visit steps are ordered `- ` bullets, kept verbatim by the parser and bound
+by the emitter. Three step kinds, payloads verbatim per the OPPDRAG_BEATS
+tables (`social_visit_director.gd`):
+
+- **line** — `speaker: «text» [dwell=N beat=x id=s]` →
+  `{ id, kind: 'line', speaker, line, dwell?, beat?, when? }`
+- **urgent** — `! actor: label @ room [duration=N no_wait id=s]` →
+  `{ id, kind: 'urgent', actor, label, room, duration, no_wait?, when? }`
+  (`no_wait` is a bare payload flag)
+- **queue** — `? elling @ room [duration=N beat=x id=s]` →
+  `{ id, kind: 'queue_elling', room, duration, beat?, when? }` (DD-120:
+  elling only; any other actor warns and the step is skipped)
+
+A `{condition}` prefix on a step reuses the §6 grammar through condition.ts
+unchanged and emits a sparse `when` PredicateSpec. A step without `[id=…]`
+gets a stable positional id (`<visit_id>_sN`). Duplicate step ids and
+duplicate string keys are `duplicate-id` errors (first wins).
+
+Emit destinations: `VisitSceneOut[]` as a sparse `visits` key and
+`StringTableOut[]` (`{ id, entries, stub? }`) as a sparse `strings` key on
+CaseSlice — both omitted when the case authors none, so the shipped slice is
+byte-stable. The patch layer (SB-031) speaks all five kinds: appendBlock
+templates, field patches (strings keys are id-shaped, no `·` composite
+split), and `bulletAdd`/`bulletEdit`/`bulletRemove` for variants and visit
+steps; a shared character id (`# Barks: elling` vs `# Phone: elling`) is
+disambiguated by the optional `kind` argument.

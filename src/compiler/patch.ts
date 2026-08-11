@@ -4,7 +4,7 @@
 // Untouched lines are never reformatted; a no-op patch is byte-identical.
 
 import type { RawBlock, BlockType } from './parse.ts';
-import { parseCaseText } from './parse.ts';
+import { parseCaseText, parseCharacterText } from './parse.ts';
 import { DiagnosticBag } from './diagnostics.ts';
 
 export class PatchError extends Error {}
@@ -20,6 +20,13 @@ const BLOCK_HEADERS: Partial<Record<BlockType, string>> = {
   conversation: 'Conversation',
   proposal: 'Proposal',
   recipe: 'Recipe',
+  // SDD-130 sim-content blocks (PLAN-006): visit/strings in case files,
+  // thoughts/barks/phone in character `.sim.md` files.
+  visit: 'Visit',
+  strings: 'Strings',
+  thoughts: 'Thoughts',
+  barks: 'Barks',
+  phone: 'Phone',
 };
 
 /** Minimal body templates per kind, used by appendBlock when none is given. */
@@ -33,12 +40,20 @@ export const DEFAULT_TEMPLATES: Partial<Record<BlockType, string>> = {
     'Title: \nSim hook: \nDescription: \nActivity: \nChannel: now · Delay: 0m · Duration: 1h · Occupies: 1h\nReception: 0\ngate: ',
   clock: 'Label: \nSim hook: \nQuestion: \nGood:  / 4 · Bad:  / 4',
   proposal: 'Relevant: \nLine: ',
+  visit: 'Title: \nBlurb: \nOffer: \nUnlocks: \nStub: yes',
+  strings: 'Stub: yes',
+  thoughts: 'Icon: \nStub: yes',
+  barks: 'Stub: yes',
+  phone: 'Answer: \nClose: \nStub: yes',
 };
 
 // Mirrors parse.ts exactly: which keys may follow a ` · ` separator, and the
 // `Key: value` line shape. Keep in sync — a drift here mispatches lines.
 const COMPOSITE_FOLLOW_KEYS = /^(Register|Category|Cost|Weight|Bad|Delay|Duration|Occupies):\s/;
 const FIELD_RE = /^([A-Za-zÆØÅæøå][A-Za-zÆØÅæøå ]*?):\s?(.*)$/;
+const STRINGS_FIELD_RE = /^([A-Za-z0-9ÆØÅæøå_.-]+):\s?(.*)$/;
+
+const BULLET_BLOCK_TYPES = new Set<BlockType>(['thoughts', 'barks', 'visit']);
 
 interface Parsed {
   lines: string[];
@@ -47,14 +62,32 @@ interface Parsed {
 }
 
 function parse(text: string): Parsed {
+  // Family sniff: only character `.sim.md` files open with `# Character:`
+  // (a case file with that header is a block-unknown warning, never valid),
+  // so the header decides which parser reads the text.
+  if (/^#\s+Character:/m.test(text)) {
+    const { characterBlock, blocks } = parseCharacterText(text, new DiagnosticBag());
+    return { lines: text.split('\n'), caseBlock: characterBlock, blocks };
+  }
   const { caseBlock, blocks } = parseCaseText(text, new DiagnosticBag());
   return { lines: text.split('\n'), caseBlock, blocks };
 }
 
-function findBlock(parsed: Parsed, blockId: string): RawBlock {
-  if (parsed.caseBlock?.id === blockId) return parsed.caseBlock;
-  const found = parsed.blocks.find((b) => b.id === blockId);
-  if (!found) throw new PatchError(`No block with id "${blockId}".`);
+function findBlock(parsed: Parsed, blockId: string, kind?: BlockType): RawBlock {
+  // Character files reuse the character id across kinds (`# Barks: elling`,
+  // `# Phone: elling`, the root) — `kind` disambiguates; without it the root
+  // and then the first block win (the case-family ids are unique anyway).
+  if (kind === undefined && parsed.caseBlock?.id === blockId) return parsed.caseBlock;
+  const found = parsed.blocks.find(
+    (b) => b.id === blockId && (kind === undefined || b.type === kind),
+  );
+  if (!found) {
+    throw new PatchError(
+      kind === undefined
+        ? `No block with id "${blockId}".`
+        : `No ${kind} block with id "${blockId}".`,
+    );
+  }
   return found;
 }
 
@@ -73,11 +106,20 @@ interface ValueSpan {
  * stripping and composite ` · ` splitting. Returns null when the line does
  * not carry that key.
  */
-function locateValue(line: string, key: string): ValueSpan | null {
+function locateValue(line: string, key: string, blockType?: BlockType): ValueSpan | null {
   let content = line.endsWith('\r') ? line.slice(0, -1) : line;
   if (/^\s*\/\//.test(content)) return null;
   const comment = content.match(/\s+\/\/.*$/);
   if (comment) content = content.slice(0, comment.index);
+
+  // Strings tables key on ids with no composite ` · ` splitting (parse.ts):
+  // locate the value with the same one-key-per-line rule.
+  if (blockType === 'strings') {
+    const m = content.match(STRINGS_FIELD_RE);
+    if (!m || m[1] !== key) return null;
+    const valueStart = content.length - m[2].length;
+    return { start: valueStart, end: content.length, raw: m[2] };
+  }
 
   // Walk the composite parts, tracking each part's start offset.
   const segments = content.split(' · ');
@@ -146,9 +188,15 @@ function fieldInsertLine(block: RawBlock): number {
  * block has no such field, inserts a `Key: value` line after its last field
  * (or the header). A patch to the current value returns the text unchanged.
  */
-export function patchField(text: string, blockId: string, key: string, value: string): string {
+export function patchField(
+  text: string,
+  blockId: string,
+  key: string,
+  value: string,
+  kind?: BlockType,
+): string {
   const parsed = parse(text);
-  const block = findBlock(parsed, blockId);
+  const block = findBlock(parsed, blockId, kind);
   assertFieldBearing(block);
   const field = findField(block, key);
   if (!field) {
@@ -157,7 +205,7 @@ export function patchField(text: string, blockId: string, key: string, value: st
     next.splice(at, 0, `${key}: ${value}`);
     return next.join('\n');
   }
-  const span = locateValue(parsed.lines[field.line - 1], key);
+  const span = locateValue(parsed.lines[field.line - 1], key, block.type);
   if (!span) throw new PatchError(`Could not locate "${key}" on line ${field.line}.`);
   if (span.raw.trim() === value.trim()) return text;
   return spliceLine(parsed.lines, field.line, span, value.trim()).join('\n');
@@ -180,9 +228,15 @@ function entryMatches(existing: string, entry: string): boolean {
  * Discuss, Relevant, …). Creates the field when absent. Adding an entry that
  * is already listed returns the text unchanged.
  */
-export function listFieldAdd(text: string, blockId: string, key: string, entry: string): string {
+export function listFieldAdd(
+  text: string,
+  blockId: string,
+  key: string,
+  entry: string,
+  kind?: BlockType,
+): string {
   const parsed = parse(text);
-  const block = findBlock(parsed, blockId);
+  const block = findBlock(parsed, blockId, kind);
   assertFieldBearing(block);
   const field = findField(block, key);
   if (!field) {
@@ -191,7 +245,7 @@ export function listFieldAdd(text: string, blockId: string, key: string, entry: 
     next.splice(at, 0, `${key}: ${entry}`);
     return next.join('\n');
   }
-  const span = locateValue(parsed.lines[field.line - 1], key);
+  const span = locateValue(parsed.lines[field.line - 1], key, block.type);
   if (!span) throw new PatchError(`Could not locate "${key}" on line ${field.line}.`);
   if (splitEntries(span.raw).some((e) => entryMatches(e, entry))) return text;
   const value = span.raw.trim() === '' ? entry : `${span.raw.trimEnd()}, ${entry}`;
@@ -204,13 +258,19 @@ export function listFieldAdd(text: string, blockId: string, key: string, entry: 
  * The remaining entries keep their order (joined with `, `); removing the
  * last entry leaves the bare `Key:` line. A miss returns the text unchanged.
  */
-export function listFieldRemove(text: string, blockId: string, key: string, entry: string): string {
+export function listFieldRemove(
+  text: string,
+  blockId: string,
+  key: string,
+  entry: string,
+  kind?: BlockType,
+): string {
   const parsed = parse(text);
-  const block = findBlock(parsed, blockId);
+  const block = findBlock(parsed, blockId, kind);
   assertFieldBearing(block);
   const field = findField(block, key);
   if (!field) return text;
-  const span = locateValue(parsed.lines[field.line - 1], key);
+  const span = locateValue(parsed.lines[field.line - 1], key, block.type);
   if (!span) throw new PatchError(`Could not locate "${key}" on line ${field.line}.`);
   const entries = splitEntries(span.raw);
   const kept = entries.filter((e) => !entryMatches(e, entry));
@@ -239,8 +299,10 @@ export function appendBlock(
   opts: AppendBlockOptions = {},
 ): string {
   const parsed = parse(text);
-  if (parsed.caseBlock?.id === id || parsed.blocks.some((b) => b.id === id)) {
-    throw new PatchError(`A block with id "${id}" already exists.`);
+  // Same-kind scope, mirroring the compiler's `type:id` duplicate key — a
+  // character file legitimately reuses its id across barks/phone/root.
+  if (parsed.blocks.some((b) => b.type === kind && b.id === id)) {
+    throw new PatchError(`A ${kind} block with id "${id}" already exists.`);
   }
   const template = opts.template ?? DEFAULT_TEMPLATES[kind] ?? '';
   const body = template === '' ? [] : template.split('\n');
@@ -362,6 +424,86 @@ export function removeBlock(text: string, blockId: string): string {
     while (next.length > 0 && next[next.length - 1].trim() === '') next.pop();
     if (endsWithNewline) next.push('');
   }
+  return next.join('\n');
+}
+
+function findBulletBlock(parsed: Parsed, blockId: string, kind?: BlockType): RawBlock {
+  if (kind !== undefined && !BULLET_BLOCK_TYPES.has(kind)) {
+    throw new PatchError(`A ${kind} block carries no "- " bullets.`);
+  }
+  const block =
+    kind !== undefined
+      ? findBlock(parsed, blockId, kind)
+      : (parsed.blocks.find((b) => b.id === blockId && BULLET_BLOCK_TYPES.has(b.type)) ??
+        findBlock(parsed, blockId));
+  if (!BULLET_BLOCK_TYPES.has(block.type)) {
+    throw new PatchError(`Block "${blockId}" is a ${block.type}; it carries no "- " bullets.`);
+  }
+  return block;
+}
+
+function bulletAt(block: RawBlock, index: number) {
+  const bullets = block.bullets ?? [];
+  const bullet = bullets[index];
+  if (!bullet) {
+    throw new PatchError(`Block "${block.id}" has ${bullets.length} bullet(s); no index ${index}.`);
+  }
+  return bullet;
+}
+
+/**
+ * Append one `- ` bullet (a thoughts/barks variant or a visit step) at the
+ * end of the block's bullet run — after the last bullet, or after the last
+ * field/header when the block has none yet. Bullet text is kept verbatim.
+ */
+export function bulletAdd(text: string, blockId: string, entry: string, kind?: BlockType): string {
+  const parsed = parse(text);
+  const block = findBulletBlock(parsed, blockId, kind);
+  const bullets = block.bullets ?? [];
+  const next = [...parsed.lines];
+  if (bullets.length > 0) {
+    next.splice(bullets[bullets.length - 1].line, 0, `- ${entry}`);
+    return next.join('\n');
+  }
+  const at = fieldInsertLine(block);
+  next.splice(at, 0, '', `- ${entry}`);
+  return next.join('\n');
+}
+
+/**
+ * Replace the bullet at `index` (0-based, block order). Only that one line
+ * changes; an edit to the current text is a byte no-op.
+ */
+export function bulletEdit(
+  text: string,
+  blockId: string,
+  index: number,
+  entry: string,
+  kind?: BlockType,
+): string {
+  const parsed = parse(text);
+  const block = findBulletBlock(parsed, blockId, kind);
+  const bullet = bulletAt(block, index);
+  if (bullet.text === entry) return text;
+  const next = [...parsed.lines];
+  const line = next[bullet.line - 1];
+  const start = line.indexOf('- ');
+  next[bullet.line - 1] = `${line.slice(0, start)}- ${entry}`;
+  return next.join('\n');
+}
+
+/** Remove the bullet at `index` (0-based). Only that one line disappears. */
+export function bulletRemove(
+  text: string,
+  blockId: string,
+  index: number,
+  kind?: BlockType,
+): string {
+  const parsed = parse(text);
+  const block = findBulletBlock(parsed, blockId, kind);
+  const bullet = bulletAt(block, index);
+  const next = [...parsed.lines];
+  next.splice(bullet.line - 1, 1);
   return next.join('\n');
 }
 
