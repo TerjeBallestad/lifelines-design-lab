@@ -24,6 +24,13 @@ import { mountScriptLens, indexHeadings, KIND_COLOR } from './lens.ts';
 import type { Heading, ScriptSymbol } from './lens.ts';
 import { buildSymbols } from './symbols.ts';
 import { buildDocPreviewHtml, injectEditorFonts } from '../shared/doc-preview.ts';
+import {
+  barkPreview,
+  groupThoughtHeadings,
+  nextVariant,
+  thoughtPoolKey,
+  thoughtPreview,
+} from './character-views.ts';
 
 injectEditorFonts();
 
@@ -170,32 +177,40 @@ function renderOutline(currentLine: number) {
   outline.innerHTML = parts.join('');
 }
 
-// Degraded outline for a `.sim.md` buffer: compiled-pool counts up top, then
-// every `# ` section as a line-jump item. The real character views are
-// SB-069/070/071.
+// Outline for a `.sim.md` buffer (SB-069): thought pools group by
+// character × key type (SDD-130 §3), barks and phone stay flat line-jump
+// items. Visit/strings views are SB-070/071.
 function renderCharacterOutline(currentLine: number) {
   const c = charResult!.content;
   const current = headingAt(currentLine);
   const lines = lens.getText().split('\n');
-  const kinds = [
-    { label: 'Thoughts', dot: 'var(--purple)', count: c.thoughts.length },
+  const lineTextAt = (line: number) => lines[line - 1] ?? '';
+  const parts: string[] = [`<div class="head">${esc((c.id || 'CHARACTER').toUpperCase())}</div>`];
+  const itemRow = (line: number, label: string) => {
+    const cur = current && current.line === line ? ' current' : '';
+    return `<div class="o-item${cur}" data-line="${line}">${esc(label)}</div>`;
+  };
+  // Thoughts — grouped.
+  parts.push(
+    `<div class="o-kind" data-kind="Thoughts"><span class="dot" style="background:var(--purple)"></span>Thoughts<span class="count">${c.thoughts.length}</span></div>`,
+  );
+  const thoughtHeads = headings.filter((h) => h.kind === 'Thoughts');
+  for (const group of groupThoughtHeadings(thoughtHeads, lineTextAt)) {
+    parts.push(`<div class="o-sub">${esc(group.character)} · ${esc(group.keyType)}</div>`);
+    for (const item of group.items) parts.push(itemRow(item.line, item.key));
+  }
+  // Barks + Phone — flat.
+  const flat = [
     { label: 'Barks', dot: 'var(--orange)', count: c.barks ? c.barks.lines.length : 0 },
     { label: 'Phone', dot: 'var(--green)', count: c.phone ? 2 : 0 },
   ];
-  const parts: string[] = [
-    `<div class="head">${esc((c.id || 'CHARACTER').toUpperCase())}</div>`,
-  ];
-  for (const k of kinds) {
+  for (const k of flat) {
     parts.push(
       `<div class="o-kind" data-kind="${k.label}"><span class="dot" style="background:${k.dot}"></span>${k.label}<span class="count">${k.count}</span></div>`,
     );
     for (const h of headings.filter((x) => x.kind === k.label)) {
-      const raw = lines[h.line - 1] ?? '';
-      const label = raw.replace(/^# [A-Za-z]+:\s*/, '') || h.id;
-      const cur = current && current.line === h.line ? ' current' : '';
-      parts.push(
-        `<div class="o-item${cur}" data-line="${h.line}">${esc(label)}</div>`,
-      );
+      const raw = lineTextAt(h.line);
+      parts.push(itemRow(h.line, raw.replace(/^# [A-Za-z]+:\s*/, '') || h.id));
     }
   }
   outline.innerHTML = parts.join('');
@@ -367,17 +382,45 @@ function renderDocPreview(docId: string, focusFact: string | null) {
 // Readable full-size view over the editor. Esc / backdrop click closes.
 const lightbox = createLightbox($('doc-lightbox'), (id) => lens.jumpToHeading('Fact', id));
 
-// Character-mode preview: the compiled node for the cursor's section as a
-// JSON card. The bubble/storyboard previews are the SB-069/070 views.
+// Per-pool variant cursor for the cycle-variants control (SB-069). Keyed by
+// pool identity so cycling one pool never moves another; kept across
+// recompiles (variantAt clamps by modulo when a pool shrinks).
+const variantIx = new Map<string, number>();
+function cycle(key: string, count: number) {
+  variantIx.set(key, nextVariant(variantIx.get(key) ?? 0, count));
+  renderPreview(lens.getCursorLine());
+}
+
+// Character-mode preview (SB-069): Thoughts and Barks render their in-game
+// forms; Phone and the Character header stay compiled-JSON cards until their
+// own views land.
 function renderCharacterPreview(h: Heading) {
   const c = charResult!.content;
   const raw = lens.getText().split('\n')[h.line - 1] ?? '';
   let node: unknown = null;
   if (h.kind === 'Thoughts') {
     const key = raw.replace(/^# Thoughts:\s*/, '').trim();
-    node = c.thoughts.find((p) => `${p.character}/${p.key_type}/${p.key}` === key) ?? null;
+    const pool = c.thoughts.find((p) => thoughtPoolKey(p) === key) ?? null;
+    if (pool) {
+      const poolKey = `thoughts:${thoughtPoolKey(pool)}`;
+      previewTitle.textContent = `THOUGHTS — ${key.toUpperCase()}`;
+      litRender(
+        thoughtPreview(pool, variantIx.get(poolKey) ?? 0, () => cycle(poolKey, pool.lines.length)),
+        preview,
+      );
+      return;
+    }
   } else if (h.kind === 'Barks') {
-    node = c.barks ?? null;
+    const pool = c.barks ?? null;
+    if (pool) {
+      const poolKey = `barks:${pool.character}`;
+      previewTitle.textContent = `BARKS — ${pool.character.toUpperCase()}`;
+      litRender(
+        barkPreview(pool, variantIx.get(poolKey) ?? 0, () => cycle(poolKey, pool.lines.length)),
+        preview,
+      );
+      return;
+    }
   } else if (h.kind === 'Phone') {
     node = c.phone ?? null;
   } else if (h.kind === 'Character') {

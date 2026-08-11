@@ -60,9 +60,7 @@ export const activeSourceText = files[`/${activeSourcePath}`];
 
 /** The case this page operates on. When the active source is a character
  *  file, the case lenses (canvas, playtest) fall back to the default case. */
-export const activeCasePath = isCharacterPath(activeSourcePath)
-  ? casePaths[0]
-  : activeSourcePath;
+export const activeCasePath = isCharacterPath(activeSourcePath) ? casePaths[0] : activeSourcePath;
 
 /** The active case text as it was on disk at module-graph build time. */
 export const activeCaseText = files[`/${activeCasePath}`];
@@ -79,8 +77,7 @@ export const pinKey = (path: string): string => `kildeverket-canvas-pins:${path}
 export const playKey = (path: string): string => `kildeverket-playtest:${path}`;
 
 /** Save target for a source file — vite.config.ts validates the path. */
-export const saveUrlFor = (path: string): string =>
-  `/__save-case?path=${encodeURIComponent(path)}`;
+export const saveUrlFor = (path: string): string => `/__save-case?path=${encodeURIComponent(path)}`;
 
 /** Save target for the active case — vite.config.ts validates the path. */
 export const saveCaseUrl = saveUrlFor(activeCasePath);
@@ -94,9 +91,10 @@ export const saveSourceUrl = saveUrlFor(activeSourcePath);
  * successful save clears the draft again. Defaults to the active case —
  * the case lenses call it bare; the script editor passes activeSourcePath.
  */
-export function resolveBootText(
-  path: string = activeCasePath,
-): { text: string; draftRestored: boolean } {
+export function resolveBootText(path: string = activeCasePath): {
+  text: string;
+  draftRestored: boolean;
+} {
   const diskText = files[`/${path}`];
   const draft = localStorage.getItem(draftKey(path));
   return draft !== null && draft !== diskText

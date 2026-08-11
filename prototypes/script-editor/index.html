@@ -168,6 +168,14 @@
         color: var(--text);
         font-weight: 600;
       }
+      /* SB-069: character × key-type group header inside the Thoughts kind */
+      .o-sub {
+        padding: 5px 8px 2px 14px;
+        font: 600 9.5px var(--mono);
+        letter-spacing: 0.06em;
+        color: var(--text-4);
+        text-transform: uppercase;
+      }
       #outline .legend {
         margin-top: auto;
         border-top: 1px solid var(--border);
@@ -314,6 +322,166 @@
         margin-top: 10px;
         white-space: pre-wrap;
         word-break: break-word;
+      }
+      /* SB-069: Thoughts/Barks in-game-form sketches (doc-preview doctrine:
+         honest about shape — icon, text, speaker — not Godot renders) */
+      #preview .tv-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 14px 10px 10px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+      #preview .tv-bubble {
+        max-width: 85%;
+        padding: 8px 14px;
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 14px;
+        font: 400 12.5px/1.45 var(--hand-1);
+        text-align: center;
+      }
+      #preview .tv-thought {
+        border-radius: 50% / 46%;
+        padding: 12px 20px;
+      }
+      #preview .tv-speech {
+        position: relative;
+        margin-bottom: 12px;
+      }
+      #preview .tv-speech::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        margin-left: -6px;
+        border: 6px solid transparent;
+        border-top-color: var(--paper);
+        border-bottom: none;
+      }
+      #preview .tv-icon {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.04em;
+        color: var(--ink-dim);
+        border: 1px dashed var(--ink-faint);
+        border-radius: 6px;
+        padding: 3px 7px;
+      }
+      #preview .tv-icon-fallback {
+        margin-left: 6px;
+        font: 500 8.5px var(--mono);
+        color: var(--hint-warn);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      #preview .tv-dots {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      #preview .tv-dots span {
+        border-radius: 50%;
+        background: var(--paper);
+      }
+      #preview .tv-dots span:first-child {
+        width: 8px;
+        height: 8px;
+      }
+      #preview .tv-dots span:last-child {
+        width: 5px;
+        height: 5px;
+      }
+      #preview .tv-figure {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 4px;
+      }
+      #preview .tv-figure-head {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--text-4);
+      }
+      #preview .tv-figure-body {
+        width: 46px;
+        height: 26px;
+        border-radius: 12px 12px 4px 4px;
+        background: var(--text-4);
+        margin-top: 2px;
+        opacity: 0.7;
+      }
+      #preview .tv-figure-name {
+        margin-top: 5px;
+        font: 500 10px var(--mono);
+        color: var(--text-3);
+      }
+      #preview .tv-feed-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 2px;
+        padding: 8px 10px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--purple);
+        border-radius: 8px;
+      }
+      #preview .tv-feed-icon {
+        flex: none;
+        font: 500 9px var(--mono);
+        color: var(--text-4);
+      }
+      #preview .tv-feed-text {
+        font: 400 12px/1.5 var(--sans);
+        color: var(--text);
+      }
+      #preview .tv-feed-meta {
+        margin-left: auto;
+        flex: none;
+        font: 400 9px var(--mono);
+        color: var(--text-4);
+      }
+      #preview .tv-feed-empty {
+        color: var(--text-4);
+        font-style: italic;
+      }
+      #preview .tv-cycle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      #preview .tv-cycle-btn {
+        font: 500 10.5px var(--sans);
+        color: var(--text-2);
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 7px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      #preview .tv-cycle-btn:hover:not(:disabled) {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #preview .tv-cycle-btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      #preview .tv-cycle-count {
+        font: 400 10px var(--mono);
+        color: var(--text-3);
+      }
+      #preview .tv-stub-chip {
+        margin-left: 8px;
+        color: var(--orange);
+        border-color: rgba(240, 136, 62, 0.35);
+        background: var(--tint-orange);
       }
       #preview .empty {
         font: 400 11.5px var(--sans);
