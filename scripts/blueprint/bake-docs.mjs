@@ -44,7 +44,7 @@ import { chromium } from 'playwright';
 import {
   buildTinyOlsenArtifacts,
   serializeSliceJson as stableStringify,
-} from './compile-olsen-case.mjs';
+} from './compile-content.mjs';
 import { buildDocHtml, buildStationeryHtml } from '../../templates/docs/render-doc.mjs';
 import { sizeForKind } from '../../templates/docs/shared.mjs';
 

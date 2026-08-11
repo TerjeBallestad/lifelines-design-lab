@@ -15,7 +15,12 @@
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { compileTinyOlsen, serializeSliceJson } from './compile-olsen-case.mjs';
+import {
+  compileTinyOlsen,
+  serializeCharacterJson,
+  serializeSliceJson,
+} from './compile-content.mjs';
+import { compileCharacter } from '../../src/compiler/index.ts';
 
 const root = resolve(process.cwd());
 const sources = [
@@ -55,5 +60,35 @@ describe('canonical serialization', () => {
     expect(emitted.replace(`${sentinelLine}\n`, '')).toBe(
       '{\n\t"id": "x",\n\t"documents": [\n\t\t{\n\t\t\t"id": "d"\n\t\t}\n\t]\n}\n',
     );
+  });
+});
+
+// PLAN-006 TASK-028: the determinism law extends to the character family.
+const characterSources = [
+  {
+    name: 'elling fixture (elling.sim.md)',
+    path: join(root, 'src/compiler/__tests__/fixtures/elling.sim.md'),
+  },
+  { name: 'elling seed', path: join(root, 'content/characters/elling.sim.md') },
+  { name: 'grete seed', path: join(root, 'content/characters/grete.sim.md') },
+  { name: 'frank seed', path: join(root, 'content/characters/frank.sim.md') },
+];
+
+describe.each(characterSources)('emit stability — $name', ({ path }) => {
+  it('compiling the same source twice yields byte-identical output', async () => {
+    const text = await readFile(path, 'utf8');
+    const first = compileCharacter(text);
+    const second = compileCharacter(text);
+    expect(serializeCharacterJson(second.content, 'x.sim.md')).toBe(
+      serializeCharacterJson(first.content, 'x.sim.md'),
+    );
+    expect(JSON.stringify(second.diagnostics)).toBe(JSON.stringify(first.diagnostics));
+  });
+
+  it('the tab serializer is a fixed point under JSON re-parse', async () => {
+    const text = await readFile(path, 'utf8');
+    const { content } = compileCharacter(text);
+    const emitted = serializeCharacterJson(content, 'x.sim.md');
+    expect(serializeCharacterJson(JSON.parse(emitted), 'x.sim.md')).toBe(emitted);
   });
 });
