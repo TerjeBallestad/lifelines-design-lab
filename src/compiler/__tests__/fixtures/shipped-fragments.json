@@ -688,16 +688,22 @@
       "order": 20
     },
     {
+      "handbok_id": "depositum",
+      "line": "Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.",
+      "relevant_fact_ids": ["f_leie_privat", "f_leie_stoppet"],
+      "order": 21
+    },
+    {
       "handbok_id": "kbolig",
       "line": "Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.",
       "relevant_fact_ids": ["f_leie_stoppet", "f_gap"],
-      "order": 21
+      "order": 22
     },
     {
       "handbok_id": "startlan",
       "line": "Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.",
       "relevant_fact_ids": ["f_trygd", "f_gap"],
-      "order": 22
+      "order": 23
     }
   ]
 }
