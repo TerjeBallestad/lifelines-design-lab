@@ -27,11 +27,27 @@ export function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
+// The shipped coin sprite, vendored from core-loop
+// (assets/sprites/ui/coin.aseprite, 16x16 RGB) and kept beside this file at
+// templates/docs/icons/coin.png. Inlined as a data URI, like the bake's fonts,
+// so the emitted page stays self-contained under a file:// goto. Re-vendor by
+// re-exporting the .aseprite frame to PNG and re-encoding it here — and keep
+// --coin-size equal to the source's native pixel size (see .coin below).
+const COIN_PNG =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAUdJ' +
+  'REFUOI2NkzFLw1AUhb9UaalEaCgtZAsiGcTNqZuLIkL/iWAXu7Zdu1jBX9FVkKBLxy4OBadiS4aC0FDiEAKtQxzCC+' +
+  '+lr8UDDy6He86993GvgQadVj/R8b1B28hzCiGEN3fXBPORkrieLvn8qmwZGbK4+/jAeDYhmI+onVwC7DQSJoYsfnl/' +
+  'AqB5dZ/FsrDk1rdMCiJhPJvsFAN8145YT5cAmRHAQafVT+SZQ8rEoa+I/TAC4Dj+ZVFIqJSLVJMVZ26zW2AP/DDi43' +
+  'WDHcQ4lqnN0RqIio5lUm1slDH+ZWAHcRY7lknJreOHkcLvNchXEmPocKgj8/Ne3BaBtAvHMtNuRAe9Qdvwnt+UxRGx' +
+  'jPV0mRnbQby9BwtvmAkX3hA/jJQnIMfkV7naSGctufVsafL/Ildn1zGdn/5oP2zvMemM8tCd8x9AIa1uFsX1BwAAAA' +
+  'BJRU5ErkJggg==';
+
 // [icon=coin] is a rich-icon markup token (core-loop RichIcons grammar), not prose.
-// Render it as a coin glyph so the ledger reads as money — copy stays verbatim.
+// Render it as the game's own coin sprite so the ledger reads as money and the
+// paper matches the desk — copy stays verbatim.
 function renderInlineTokens(escaped) {
   return escaped
-    .replace(/\[icon=coin\]/g, '<span class="coin" aria-label="mynt">&#164;</span>')
+    .replace(/\[icon=coin\]/g, `<img class="coin" src="${COIN_PNG}" alt="mynt">`)
     .replace(/\n/g, '<br>'); // labContent keeps authored single line breaks
 }
 
@@ -207,11 +223,28 @@ body {
 /* One .para per authored paragraph (labContent block). */
 .para { margin: 0 0 0.85em; }
 .para:last-child { margin-bottom: 0; }
+/* Coin sprite, drawn nearest-neighbour so it stays pixel-crisp. --coin-size is
+   the source PNG's native 16px, which makes every device scale a whole
+   multiple: 1:1 in the preview, 2x at deviceScaleFactor 2, 3x at the bake's 3.
+   A size that is not a whole multiple of the source hands some source pixels 2
+   device pixels and their neighbours 1 — a visibly lopsided rim, worst at
+   deviceScaleFactor 1. A kind template nudges --coin-size rather than setting
+   width/height, and any value it picks must stay a whole multiple of 16.
+
+   The coin follows a numeral ("22 [icon=coin]"), so it centres on the FIGURE
+   height, not the x-height that vertical-align: middle would use — cap height
+   runs ~0.7em across the doc faces, so 0.35em is its midpoint above the
+   baseline. vertical-align shifts the image's bottom edge, hence the
+   half-coin subtraction. */
+:root { --coin-size: 16px; }
 .coin {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 700;
-  color: #8a6a1f;
-  padding: 0 0.05em;
+  display: inline-block;
+  width: var(--coin-size);
+  height: var(--coin-size);
+  vertical-align: calc(0.35em - var(--coin-size) / 2);
+  margin: 0 0.06em;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 /* Fact spans are measurement anchors — visually neutral on baked paper. */
 [data-fact-id] { background: transparent; }

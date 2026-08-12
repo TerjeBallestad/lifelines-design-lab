@@ -1,6 +1,6 @@
 // TASK-916 — ØKONOMISK OVERSIKT kind template.
-// Ledger stationery: accounting-sheet ruled body, monospace-flavoured coin glyphs,
-// column-rule down the sheet. Consumes labContent runs verbatim.
+// Ledger stationery: accounting-sheet ruled body, typewriter figures beside the
+// shared coin sprite, column-rule down the sheet. Consumes labContent runs verbatim.
 
 export const kind = 'ØKONOMISK OVERSIKT';
 
@@ -33,10 +33,9 @@ export const styleCss = `
   padding-left: 26px;
   border-left: 2px solid var(--warn);
 }
-.doc--okonomisk-oversikt .coin {
-  font-family: 'Special Elite', 'Courier New', monospace;
-  font-size: 0.94em; color: #7c5e17;
-}
+/* The coin is the game sprite (shared.mjs), so font-family and color no longer
+   apply here. The shared --coin-size and vertical-align: middle already sit the
+   disc on the 15px typewriter figures, so this kind needs no coin override. */
 `;
 
 export function render(ctx) {
