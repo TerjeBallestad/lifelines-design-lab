@@ -98,6 +98,28 @@ Domain: Helse/risiko · Category: Dokument
 Supports: q_kollaps
 ~ open q_kollaps
 
+# Document: doc_tabell
+
+Kind: KONTOUTSKRIFT · Register: formell
+Title: Sparebanken · kontoutskrift
+Peek: —
+Meta: SPAREBANKEN · JANUAR 1999
+
+Utskrift for perioden 01.01–31.01.
+
+| DATO | TEKST | UT [icon=coin] |
+| --- | --- | ---: |
+| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_uttak_golden) | 30,00 |
+| 07.01 | MATSENTRALEN GABELS GT | 2,35 |
+
+KONTOEN DISPONERES AV VERGE.
+
+## f_uttak_golden
+
+Label: Kontantuttak i skranken
+Summary: Fast kontantuttak den 5. hver måned.
+Domain: Økonomi/bolig · Category: Dokument
+
 # Question: q_grete_dor
 
 Title: Den dagen Grete ikke kommer hjem — hva stopper?

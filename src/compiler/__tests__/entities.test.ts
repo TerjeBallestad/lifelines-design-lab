@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compileCase } from '../index';
+import { blockRuns, compileCase } from '../index';
 import fragments from './fixtures/shipped-fragments.json';
 import caseText from './fixtures/fragments.case.md?raw';
 
@@ -82,6 +82,52 @@ describe('§3 facts', () => {
 
   it('plain fact: sparse fields omitted, quote derived from the document anchor', () => {
     expect(byId(slice.facts, 'f_leie_stoppet')).toEqual(fragments.facts.f_leie_stoppet);
+  });
+});
+
+describe('§3 derived facts (SDD-011)', () => {
+  it('Derived: emits source_document_id "" + derived_from without the missing-source warning', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Document: doc_a',
+      'Kind: BREV · Register: formell',
+      'Title: T',
+      '',
+      '[Trygden](fact:f_a) og [husleien](fact:f_b).',
+      '',
+      '## f_a',
+      'Label: A',
+      'Summary: S',
+      'Domain: D · Category: C',
+      '',
+      '## f_b',
+      'Label: B',
+      'Summary: S',
+      'Domain: D · Category: C',
+      '',
+      '# Facts',
+      '',
+      '## f_gap',
+      'Label: G',
+      'Summary: S',
+      'Domain: D · Category: C',
+      'Derived: f_a, f_b',
+    ].join('\n');
+    const out = compileCase(text);
+    const gap = out.slice.facts.find((f) => f.id === 'f_gap')!;
+    expect(gap.source_document_id).toBe('');
+    expect(gap.derived_from).toEqual(['f_a', 'f_b']);
+    expect(
+      out.diagnostics.filter((d) => d.code === 'field-missing' && d.subjectIds.includes('f_gap')),
+    ).toEqual([]);
+    // §9 lint 1: a derived fact whose parents are payable counts as payable.
+    expect(
+      out.diagnostics.filter(
+        (d) => d.code === 'lint-fact-no-source-anchor' && d.subjectIds.includes('f_gap'),
+      ),
+    ).toEqual([]);
   });
 });
 
@@ -220,10 +266,103 @@ describe('labContent', () => {
     const out = compileCase(text);
     const blocks = out.labContent.documents.doc_brev.blocks;
     expect(blocks.length).toBe(2);
-    expect(blocks[1].runs[0].text).toBe('Med hilsen\nJørgen Haug\nspes. allmennmedisin');
+    expect(blockRuns(blocks[1])[0].text).toBe('Med hilsen\nJørgen Haug\nspes. allmennmedisin');
     // slice canon stays collapsed
     const sliceDoc = out.slice.documents.find((d) => d.id === 'doc_brev')!;
     expect(sliceDoc.runs.every((run) => !run.text.includes('\n'))).toBe(true);
+  });
+
+  // SDD-011 pipe tables. Verified red-green: 2026-08-12 (TABLE_LINE_RE broken
+  // → these 3 fail; restored → pass).
+  it('compiles a pipe table into a typed table block with header, align and cell runs', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Document: doc_utskrift',
+      'Kind: KONTOUTSKRIFT · Register: formell',
+      'Title: Kontoutskrift',
+      '',
+      'Utskrift for januar.',
+      '| DATO | TEKST | UT [icon=coin] |',
+      '| --- | --- | ---: |',
+      '| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_uttak) | 30,00 |',
+      '| 07.01 | MATSENTRALEN GABELS GT | 2,35 |',
+      '',
+      'Saldo pr. 31.01.',
+      '',
+      '## f_uttak',
+      'Label: L',
+      'Summary: S',
+      'Domain: D · Category: C',
+    ].join('\n');
+    const out = compileCase(text);
+    const blocks = out.labContent.documents.doc_utskrift.blocks;
+    expect(blocks.map((block) => block.type)).toEqual(['para', 'table', 'para']);
+    expect(blocks[0].id).toBe('doc_utskrift_p1');
+    expect(blocks[1].id).toBe('doc_utskrift_p2');
+    const table = blocks[1] as Extract<(typeof blocks)[number], { type: 'table' }>;
+    expect(table.align).toEqual(['left', 'left', 'right']);
+    expect(table.header.map((cell) => cell.map((run) => run.text).join(''))).toEqual([
+      'DATO',
+      'TEKST',
+      'UT [icon=coin]',
+    ]);
+    expect(table.rows.length).toBe(2);
+    const anchored = table.rows[0][1];
+    expect(anchored).toEqual([{ text: 'KONTANTUTTAK SKRANKE', factId: 'f_uttak' }]);
+    // slice canon: the anchor still lands in the flat runs (payability), and
+    // no pipe or separator debris reaches bbcode or runs.
+    const sliceDoc = out.slice.documents.find((d) => d.id === 'doc_utskrift')!;
+    expect(sliceDoc.runs.some((run) => run.fact_id === 'f_uttak')).toBe(true);
+    expect(sliceDoc.runs.every((run) => !run.text.includes('|'))).toBe(true);
+    expect(sliceDoc.runs.every((run) => !/-{3}/.test(run.text))).toBe(true);
+    expect(sliceDoc.body_bbcode).toContain('[table=3]');
+    expect(sliceDoc.body_bbcode).toContain('[cell]UT [icon=coin][/cell]');
+    expect(sliceDoc.body_bbcode).toContain(
+      '[cell][url=fact:f_uttak]KONTANTUTTAK SKRANKE[/url][/cell]',
+    );
+    expect(sliceDoc.body_bbcode).not.toContain('|');
+    expect(out.diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
+  });
+
+  it('warns DOC_TABLE_RAGGED (never errors) when a row disagrees with the header', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Document: doc_t',
+      'Kind: KONTOUTSKRIFT · Register: formell',
+      'Title: T',
+      '',
+      '| A | B |',
+      '| --- | --- |',
+      '| bare én celle |',
+    ].join('\n');
+    const out = compileCase(text);
+    const ragged = out.diagnostics.filter((d) => d.code === 'doc-table-ragged');
+    expect(ragged.length).toBe(1);
+    expect(ragged[0].severity).toBe('warning');
+    expect(out.diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
+  });
+
+  it('escaped \\| stays a literal pipe inside a cell', () => {
+    const text = [
+      '# Case: c_x',
+      'Title: X',
+      '',
+      '# Document: doc_t',
+      'Kind: KONTOUTSKRIFT · Register: formell',
+      'Title: T',
+      '',
+      '| TEKST |',
+      '| --- |',
+      '| A \\| B |',
+    ].join('\n');
+    const out = compileCase(text);
+    const blocks = out.labContent.documents.doc_t.blocks;
+    const table = blocks[0] as Extract<(typeof blocks)[number], { type: 'table' }>;
+    expect(table.rows[0][0][0].text).toBe('A | B');
   });
 
   it('mirrors the design-lab shapes from the same source', () => {
@@ -232,7 +371,7 @@ describe('labContent', () => {
     const blocks = result.labContent.documents.doc_dodsfall.blocks;
     expect(blocks.length).toBeGreaterThan(1);
     const flatText = blocks
-      .flatMap((block) => block.runs.map((run) => run.text))
+      .flatMap((block) => blockRuns(block).map((run) => run.text))
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim();
@@ -242,7 +381,7 @@ describe('labContent', () => {
       .replace(/\s+/g, ' ')
       .trim();
     expect(flatText).toBe(sliceText);
-    expect(blocks.flatMap((block) => block.runs.filter((run) => run.factId))).toEqual(
+    expect(blocks.flatMap((block) => blockRuns(block).filter((run) => run.factId))).toEqual(
       fragments.documents.doc_dodsfall.runs
         .filter((run) => run.fact_id)
         .map((run) => ({ text: run.text, factId: run.fact_id })),

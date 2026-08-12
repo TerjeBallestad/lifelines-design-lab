@@ -17,6 +17,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_bekymring_p1',
+        type: 'para',
         runs: [
           {
             text: 'Under behandling av pasient Grete Olsen (f. 1927) for en ',
@@ -46,9 +47,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_bekymring_p2',
+        type: 'para',
         runs: [
           {
-            text: 'Jørgen Haug\nspes. allmennmedisin',
+            text: 'Jørgen Haug\nspes. allmennmedisin ',
           },
         ],
       },
@@ -64,6 +66,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_konto_p1',
+        type: 'para',
         runs: [
           {
             text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.',
@@ -72,6 +75,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_konto_p2',
+        type: 'para',
         runs: [
           {
             text: 'Inn: ',
@@ -94,6 +98,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_konto_p3',
+        type: 'para',
         runs: [
           {
             text: 'Husleien er 30 [icon=coin]',
@@ -106,6 +111,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_konto_p4',
+        type: 'para',
         runs: [
           {
             text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan ',
@@ -114,6 +120,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_konto_p5',
+        type: 'para',
         runs: [
           {
             text: 'Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.',
@@ -122,13 +129,14 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_konto_p6',
+        type: 'para',
         runs: [
           {
             text: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
             factId: 'f_gap',
           },
           {
-            text: '.',
+            text: '. ',
           },
         ],
       },
@@ -144,6 +152,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_papirer_p1',
+        type: 'para',
         runs: [
           {
             text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.',
@@ -152,6 +161,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_papirer_p2',
+        type: 'para',
         runs: [
           {
             text: '[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.',
@@ -160,6 +170,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_papirer_p3',
+        type: 'para',
         runs: [
           {
             text: 'husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
@@ -169,6 +180,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_papirer_p4',
+        type: 'para',
         runs: [
           {
             text: 'Alle avtaler står i Gretes navn.',
@@ -185,6 +197,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_papirer_p5',
+        type: 'para',
         runs: [
           {
             text: 'Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.',
@@ -194,9 +207,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_papirer_p6',
+        type: 'para',
         runs: [
           {
-            text: 'Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+            text: 'Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen. ',
           },
         ],
       },
@@ -212,6 +226,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_huseier_p1',
+        type: 'para',
         runs: [
           {
             text: 'Til Elling Olsen.',
@@ -220,6 +235,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_huseier_p2',
+        type: 'para',
         runs: [
           {
             text: 'Jeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen.',
@@ -228,6 +244,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_huseier_p3',
+        type: 'para',
         runs: [
           {
             text: 'Jeg må likevel skrive om det praktiske. ',
@@ -250,6 +267,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_huseier_p4',
+        type: 'para',
         runs: [
           {
             text: 'Jeg vil ikke lage vanskeligheter. Men ',
@@ -262,9 +280,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_huseier_p5',
+        type: 'para',
         runs: [
           {
-            text: 'Vennlig hilsen\nT. Bakkerud',
+            text: 'Vennlig hilsen\nT. Bakkerud ',
           },
         ],
       },
@@ -280,6 +299,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_frank_tlf_p1',
+        type: 'para',
         runs: [
           {
             text: 'Ringte Grete 11:40. Hun tok den på andre forsøk.',
@@ -288,6 +308,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_tlf_p2',
+        type: 'para',
         runs: [
           {
             text: 'Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: ',
@@ -303,6 +324,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_tlf_p3',
+        type: 'para',
         runs: [
           {
             text: 'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.',
@@ -312,6 +334,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_tlf_p4',
+        type: 'para',
         runs: [
           {
             text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
@@ -321,6 +344,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_tlf_p5',
+        type: 'para',
         runs: [
           {
             text: 'Mot slutten ',
@@ -336,9 +360,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_tlf_p6',
+        type: 'para',
         runs: [
           {
-            text: 'Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
+            text: 'Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til. ',
           },
         ],
       },
@@ -354,6 +379,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_frank_visit_p1',
+        type: 'para',
         runs: [
           {
             text: 'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.',
@@ -362,6 +388,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_visit_p2',
+        type: 'para',
         runs: [
           {
             text: 'I gangen: ',
@@ -377,6 +404,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_visit_p3',
+        type: 'para',
         runs: [
           {
             text: 'Elling satt i stuen med ',
@@ -392,6 +420,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_visit_p4',
+        type: 'para',
         runs: [
           {
             text: 'Over skrivebordet hans: ',
@@ -407,6 +436,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_visit_p5',
+        type: 'para',
         runs: [
           {
             text: 'Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.',
@@ -419,6 +449,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_frank_visit_p6',
+        type: 'para',
         runs: [
           {
             text: 'Grete fulgte meg ut. I trappen sa hun: ',
@@ -428,7 +459,7 @@ export const tinyOlsenDocuments = {
             factId: 'f_smart_gutt',
           },
           {
-            text: ' Hun er 72. Han er 35. Gutt.',
+            text: ' Hun er 72. Han er 35. Gutt. ',
           },
         ],
       },
@@ -444,6 +475,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_innleggelse_p1',
+        type: 'para',
         runs: [
           {
             text: 'MELDING OM INNLEGGELSE',
@@ -452,6 +484,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_innleggelse_p2',
+        type: 'para',
         runs: [
           {
             text: 'Grete Olsen (f. 1927) ble ',
@@ -467,6 +500,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_innleggelse_p3',
+        type: 'para',
         runs: [
           {
             text: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
@@ -479,9 +513,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_innleggelse_p4',
+        type: 'para',
         runs: [
           {
-            text: 'SOSIALMEDISINSK ENHET · OUS',
+            text: 'SOSIALMEDISINSK ENHET · OUS ',
           },
         ],
       },
@@ -497,6 +532,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_dodsfall_p1',
+        type: 'para',
         runs: [
           {
             text: 'MELDING OM DØDSFALL',
@@ -505,6 +541,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_dodsfall_p2',
+        type: 'para',
         runs: [
           {
             text: 'Grete Olsen, f. 21.09.1927. ',
@@ -517,6 +554,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_dodsfall_p3',
+        type: 'para',
         runs: [
           {
             text: 'Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. ',
@@ -529,6 +567,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_dodsfall_p4',
+        type: 'para',
         runs: [
           {
             text: 'Saken overføres kommunen for videre oppfølging av gjenlevende.',
@@ -537,9 +576,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_dodsfall_p5',
+        type: 'para',
         runs: [
           {
-            text: 'SOSIALMEDISINSK ENHET · OUS',
+            text: 'SOSIALMEDISINSK ENHET · OUS ',
           },
         ],
       },
@@ -555,6 +595,7 @@ export const tinyOlsenDocuments = {
     blocks: [
       {
         id: 'doc_status_p1',
+        type: 'para',
         runs: [
           {
             text: 'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.',
@@ -563,6 +604,7 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_status_p2',
+        type: 'para',
         runs: [
           {
             text: 'Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.',
@@ -571,9 +613,10 @@ export const tinyOlsenDocuments = {
       },
       {
         id: 'doc_status_p3',
+        type: 'para',
         runs: [
           {
-            text: 'Bekymringsmeldingen var berettiget. Det er den fortsatt.',
+            text: 'Bekymringsmeldingen var berettiget. Det er den fortsatt. ',
           },
         ],
       },

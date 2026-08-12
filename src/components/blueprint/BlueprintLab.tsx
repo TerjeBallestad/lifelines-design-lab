@@ -31,6 +31,7 @@ import type {
   BlueprintTextRun,
   BlueprintTiltakSlot,
 } from '../../domain/blueprint';
+import { blockRuns } from '../../domain/blueprint';
 import { BlueprintStore } from '../../stores/BlueprintStore';
 
 const surfaces: Array<{ id: BlueprintSurface; label: string; icon: ReactNode }> = [
@@ -271,7 +272,7 @@ const DocumentReader = observer(function DocumentReader({ store }: { store: Blue
   const document = store.currentDocument;
   const [nudged, setNudged] = useState(false);
   const hasEvidence = Boolean(
-    document?.blocks.some((block) => block.runs.some((run) => Boolean(run.factId))),
+    document?.blocks.some((block) => blockRuns(block).some((run) => Boolean(run.factId))),
   );
   useEffect(() => {
     setNudged(false);
@@ -312,7 +313,7 @@ const DocumentReader = observer(function DocumentReader({ store }: { store: Blue
         <div className="grid gap-4 text-base leading-8">
           {document.blocks.map((block) => (
             <p key={block.id}>
-              <RunText runs={block.runs} store={store} nudged={nudged} />
+              <RunText runs={blockRuns(block)} store={store} nudged={nudged} />
             </p>
           ))}
         </div>
@@ -1003,7 +1004,7 @@ const FactDialog = observer(function FactDialog({ store }: { store: BlueprintSto
   const fact = store.selectedFact;
   if (!fact) return null;
   const source = store.documentEntries.find(({ document }) =>
-    document.blocks.some((block) => block.runs.some((run) => run.factId === fact.id)),
+    document.blocks.some((block) => blockRuns(block).some((run) => run.factId === fact.id)),
   );
 
   return (

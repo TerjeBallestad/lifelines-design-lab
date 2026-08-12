@@ -481,6 +481,7 @@ export function vedtakDocumentBlocks(
   const blocks: BlueprintDocumentBlock[] = [
     {
       id: 'vedtak-ingress',
+      type: 'para',
       runs: [
         {
           text: 'Vedtaket er journalført på saken. Dette er ikke en effekt i leiligheten; det er kommunens spor etter hva som ble valgt og hvilket grunnlag valget hvilte på.',
@@ -489,6 +490,7 @@ export function vedtakDocumentBlocks(
     },
     {
       id: 'vedtak-tiltak-heading',
+      type: 'para',
       runs: [{ text: 'Tiltak iverksatt i dette vedtaket:' }],
     },
   ];
@@ -498,6 +500,7 @@ export function vedtakDocumentBlocks(
     if (!tiltak) continue;
     blocks.push({
       id: `vedtak-tiltak-${tiltakId}`,
+      type: 'para',
       runs: [
         {
           text: `IVERKSATT: ${tiltak.title}. ${tiltak.description} Kostnad: ${tiltak.cost || 0} mynt.`,
@@ -508,12 +511,14 @@ export function vedtakDocumentBlocks(
 
   blocks.push({
     id: 'vedtak-hypothesis-heading',
+    type: 'para',
     runs: [{ text: 'Arbeidshypoteser lagt til grunn for tiltakspakken:' }],
   });
 
   if (!record.hypothesisIds.length) {
     blocks.push({
       id: 'vedtak-hypothesis-none',
+      type: 'para',
       runs: [
         {
           text: 'Arbeidshypotese lagt til grunn: Ingen valgt arbeidshypotese var registrert da vedtaket ble fattet.',
@@ -529,12 +534,14 @@ export function vedtakDocumentBlocks(
     if (!hypothesis) continue;
     blocks.push({
       id: `vedtak-hypothesis-${hypothesisId}`,
+      type: 'para',
       runs: [{ text: `Arbeidshypotese lagt til grunn: ${hypothesis.label}. ${hypothesis.note}` }],
     });
   }
 
   blocks.push({
     id: 'vedtak-stamp',
+    type: 'para',
     runs: [{ text: record.stampText }],
   });
   return blocks;
