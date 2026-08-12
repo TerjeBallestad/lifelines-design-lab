@@ -1185,7 +1185,7 @@ beat_11: "Jeg har ikke fortalt ham noe ennå. Han skal få vite det når jeg vet
 beat_12: "Hvis du vil, melder jeg fra til bydelen. Ikke noe mer enn det. Bare så noen vet."
 beat_13: "Grete tar på seg hanskene. Én finger om gangen."
 beat_14: "Dere får gjøre det dere må."
-beat_15: "Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet 'alvorlig'. Sender."
+beat_15: "Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet \"alvorlig\". Sender."
 beat_16: "MOTTATT - SOSIALKONTORET"
 stamp_end: "Meldingen ligger på pulten din."
 

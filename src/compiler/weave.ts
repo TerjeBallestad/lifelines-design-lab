@@ -513,7 +513,11 @@ function compileCall(
 
 function stripGuillemets(value: string): string {
   if (value.startsWith('«') && value.endsWith('»')) return value.slice(1, -1);
-  if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) return value.slice(1, -1);
+  if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+    // Unescape \" like emit-shared's stripper — no backslash reaches runtime
+    // text (PLAN-009 end-gate review).
+    return value.slice(1, -1).replaceAll('\\"', '"');
+  }
   return value;
 }
 

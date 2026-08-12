@@ -12,7 +12,12 @@ export function blockSpan(block: RawBlock): Span {
 
 export function stripGuillemets(value: string): string {
   if (value.startsWith('«') && value.endsWith('»')) return value.slice(1, -1);
-  if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) return value.slice(1, -1);
+  if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+    // Inner quotes may be authored either bare (the stripper only ever cuts
+    // the OUTER pair) or as \" — unescape so no backslash reaches runtime
+    // text (PLAN-009 end-gate review: literal \" leaked into 7 strings).
+    return value.slice(1, -1).replaceAll('\\"', '"');
+  }
   return value;
 }
 
