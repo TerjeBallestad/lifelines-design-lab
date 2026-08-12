@@ -45,6 +45,12 @@
       "author": "claude",
       "text": "Wayfinder session 2026-08-12: claimed frontier ticket SB-067 (Godot loaders), routed as [task] → D1 plan. Read SDD-130 §2, DD-127, the SB-066 emit shapes (emit-character.ts / emit-visit.ts) and the four core-loop loaders. Key finding: slice JSON has no visits key yet and sim-content thoughts are stub-only, so the plan separates machinery (this ticket) from content cutover (SB-072) via presence-guarded fallbacks named as gaps. Filed PLAN-008 (3 tasks); SB-067 stays open until /execute-plan PLAN-008 completes. Claim released.",
       "createdAt": "2026-08-12T11:31:55.437Z"
+    },
+    {
+      "id": "c1786550393055",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-12: claimed SB-072 (the last frontier ticket before the gate), routed as [task] → D1 plan PLAN-009 filed (7 tasks). No new fog graduated — the migration's own leftovers (anything still hardcoded) file as pm gaps from inside the plan's Task 7. Claim released; next session executes PLAN-009.",
+      "createdAt": "2026-08-12T15:59:53.055Z"
     }
   ],
   "status": "active",

@@ -1,0 +1,168 @@
+{
+  "id": "PLAN-009",
+  "title": "PLAN — SB-072: migration — every placeholder family onto the road as marked stubs",
+  "sddId": null,
+  "stage": "planned",
+  "sprintId": "SPRINT-003",
+  "context": {
+    "setupNotes": "Markup and compiler work happens in this checkout (design-lab). Godot code, generated .tres and GATH work happen in ../lifelines-core-loop. Run pm only from the design-lab checkout.\n\n## The migration law (applies to every task)\n1. Copy the legacy text VERBATIM into markup, block marked `Stub: yes`. Agents never author or improve prose — Terje rewrites the stubs later in the gate session (SB-073). Byte-identical means byte-identical: keep typos, casing, punctuation.\n2. Compile: `npm run gen:content` (design-lab) writes the slice JSON and per-character sim-content JSON into core-loop.\n3. Generate: `/Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop --script res://scripts/case_files/generate_sim_content.gd` (visits ride the case pack generator, see docs/case-content-runtime.md). Commit the generated .tres.\n4. Prove the round-trip: a GATH fixture test compares the generated resource text against the legacy literal captured BEFORE deletion (PLAN-006's OPPDRAG_BEATS verbatim fixture is the precedent). Red-green verify per tests/README.md.\n5. Delete the legacy const / hand-edited file / fallback path IN THE SAME STEP. Sparse-field law: presence of a generated resource = cutover, so a green suite with the const still present proves nothing — the fallback serves identical text. Every proof must assert (a) the generated resource exists, (b) the legacy source is gone, (c) text matches the fixture.\n6. GATH green: `/Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd`. Design-lab side: `npm run case:check` and `npm test`.\n\n## Scope rulings that bind this plan\n- DD-004: the UI-chrome/scene text layer stays OUT (own later SDD). Narrow exception: divergent duplicates that shadow a migrated family die in this wave — raw frank-action navn literals, the håndbok category words that live in 3 places, and the SI FRA vs HEVDE SEG class collapse to one source.\n- SB-072 amendments (ticket comment): sibling files are IN (frank_action_handlers, report_composer, tiltak_visit_director, tiltak_dawn_handlers, case_engine/case_host stray lines); the 20 dead prologue mail strings are DELETED, not migrated (household_object_manager discards the payload today — preserve that behavior).\n- Done-ness extent = the SB-064 inventory checklist (eight families + siblings, counts per family in that ticket's comment) with the three amendments.\n\n## Sequencing-law flip (planned, not a deviation)\nPLAN-008 deliberately kept `SimContentGenerator.regenerate_default()` from writing thought pools while the 15 hand-edited resources/thoughts/*.tres stayed production. Task 2 flips that: enable thoughts in the default run and delete the hand-edited files in the same step. PLAN-008's own comments name SB-072 as the owner of this flip.\n\n## Fallback-gap bookkeeping\nPLAN-008 intended each surviving fallback const as a named pm gap; none is visible in either store today. Task 7 hunts both pm stores and PLAN-008 task notes, and closes or files-and-closes whatever bookkeeping exists so no stale 'const survives' record outlives this plan.\n\n## Implementation slices\nSlice 1 — character content on the built road: Tasks 1–2 (barks/phone prove the recipe, then thoughts + MTG fold).\nSlice 2 — visit content: Task 3.\nSlice 3 — StringTable families (first runtime consumers get wired here): Tasks 4–6.\nSlice 4 — done-ness sweep: Task 7.\nTasks are chained serially: sim.md files recur across 1–2, tiny-olsen.case.md recurs across 3–6, and the one-family-per-step law wants settled ground between cutovers.",
+    "relevantFiles": [
+      "content/characters/elling.sim.md",
+      "content/characters/grete.sim.md",
+      "content/characters/frank.sim.md",
+      "content/cases/olsen/tiny-olsen.case.md",
+      "scripts/blueprint/compile-content.mjs",
+      "src/compiler/emit-visit.ts",
+      "../lifelines-core-loop/scripts/case_files/sim_content_generator.gd",
+      "../lifelines-core-loop/scripts/case_files/generate_sim_content.gd",
+      "../lifelines-core-loop/scripts/case_files/string_table.gd",
+      "../lifelines-core-loop/scripts/case_files/notat_composer.gd",
+      "../lifelines-core-loop/scripts/case_files/handbok_state.gd",
+      "../lifelines-core-loop/scripts/case_files/frank_action_handlers.gd",
+      "../lifelines-core-loop/scripts/case_files/report_composer.gd",
+      "../lifelines-core-loop/scripts/case_files/tiltak_dawn_handlers.gd",
+      "../lifelines-core-loop/scripts/case_files/case_engine.gd",
+      "../lifelines-core-loop/scripts/case_files/case_host.gd",
+      "../lifelines-core-loop/scripts/simulation/conversation_manager.gd",
+      "../lifelines-core-loop/scripts/simulation/phone_call_director.gd",
+      "../lifelines-core-loop/scripts/simulation/social_visit_director.gd",
+      "../lifelines-core-loop/scripts/simulation/tiltak_visit_director.gd",
+      "../lifelines-core-loop/scripts/simulation/thought_stream_manager.gd",
+      "../lifelines-core-loop/scripts/presentation/thought_bubble_manager.gd",
+      "../lifelines-core-loop/resources/thoughts/",
+      "../lifelines-core-loop/resources/handbok/",
+      "../lifelines-core-loop/resources/notat_fragments/",
+      "../lifelines-core-loop/scenes/prologue/20260707_legesenteret.gd",
+      "../lifelines-core-loop/scripts/data/prologue_mail_schedule.gd"
+    ],
+    "designDecisions": [
+      "Every migrated block carries `Stub: yes`; stub marking survives compile into the runtime resource (SDD-130 §2). The seed-skeleton demo blocks in the sim.md files (PLAN-006 TASK-028) are replaced by the real migrated content, not kept alongside it.",
+      "`# Strings:` blocks live in content/cases/olsen/tiny-olsen.case.md — that is the built road (CaseSlice sparse `strings` key → StringTable .tres under resources/cases/olsen/generated/strings/). One block per family id: notat, prologue, handbok, tiltak, frank_actions (executor may adjust ids; flat by design, no nesting).",
+      "StringTable becomes the SOLE runtime text home for notat/håndbok/prologue copy. The håndbok tiltak/frank_actions .tres keep their data fields (costs, krav predicates), but their text fields stop being authoritative — overlay-at-load from the StringTable or lookup-at-display, executor's choice, exactly ONE mechanism. Leaving live duplicate text fields in the .tres plants the drift this SDD exists to kill.",
+      "BARK_TEXTS is one global 8-line pool; BarkPool is per character. The 8 lines land verbatim in each conversation-capable character's `# Barks:` pool so every speaker's candidate set is unchanged (byte-identical extends to selection behavior).",
+      "Grete's thought-pool asymmetry (no need_hunger, need_social, relational_elling) migrates AS-IS. No new pools, no invented prose — missing pools are Terje's to write in the gate session.",
+      "MTG ambient fold (SDD-130 §4): the AMBIENT_POOLS icon keys move into wildcard `# Thoughts` pools per character according to color identity (Elling Blue/Green, Grete White), thought_bubble_manager reads pools instead of the const, and the const dies. SB-505's probe question about ambient icon fate stands — this migration moves the data home, it does not answer that question.",
+      "Visit lines that the VisitScene step grammar cannot carry (the scattered LINE_* groups, if any prove to be non-step lines) ride a `# Strings:` visit table instead of staying hardcoded — sim IOU rule: any behavior a director still hardcodes after the port is named debt (pm gap)."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-040",
+      "title": "Task 1: Barks and phone lines onto the road — recipe prover",
+      "description": "The two smallest families prove the full per-family recipe end to end. The 8 BARK_TEXTS lines (conversation_manager.gd:31-40) land verbatim as `# Barks:` blocks in each conversation-capable character's sim.md, and the 2 phone lines (phone_call_director.gd:26-27) land as `# Phone:` blocks on the responder character(s) — trace ConversationManager pairing and PhoneCallDirector's responder to know which characters need pools. Generated <id>_barks.tres / <id>_phone.tres appear under resources/characters/generated/, the consts and their fallback branches are deleted, and a GATH fixture proves the generated text byte-identical to the legacy literals. Outcome: bark and phone text is editable in the lab's Barks view and the road's cutover recipe is established for every later task.",
+      "steps": [
+        "Capture the legacy literals as GATH fixtures before touching anything.",
+        "Author the markup verbatim with Stub: yes, run gen:content, run the headless sim-content generator, commit the .tres.",
+        "Delete BARK_TEXTS, LINE_ANSWER/LINE_CLOSE and every fallback branch that reads them; red-green the fixture tests per tests/README.md."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: generated BarkPool/PhoneLines resources exist, carry byte-identical text, and are the only runtime source (consts gone, grep for BARK_TEXTS/LINE_ANSWER returns nothing). fake_evidence: a green GATH run with the consts still present — the fallback serves identical text, so nothing proves the road carried it.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-041",
+      "title": "Task 2: Thought pools migrate; MTG ambient icon pools fold in",
+      "description": "All 15 hand-edited resources/thoughts/*.tres pools (32 variant lines, Icon metadata included) move verbatim into `# Thoughts:` blocks in the sim.md files. Enable thought writing in SimContentGenerator.regenerate_default() (the planned PLAN-008 sequencing-law flip), generate pools into the generated thoughts dir, and delete the 15 hand-edited files in the same step — ThoughtStreamManager must not double-load. The Frank-exclusion and no-fact-id lints hold over generated pools. AMBIENT_POOLS (thought_bubble_manager.gd:13-18) folds into wildcard thought pools per the designDecisions entry and the const dies. Grete's missing pools stay missing. Outcome: every thought line is editable in the lab's Thoughts view; resources/thoughts/ is gone.",
+      "steps": [
+        "Fixture the 15 pools and AMBIENT_POOLS before deletion.",
+        "Migrate verbatim (Stub: yes), flip regenerate_default to include save_thought_pools, regenerate, delete the hand-edited files and the const.",
+        "Red-green the round-trip fixtures and the double-load guard."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: generated pools are the only thought source, byte-identical, lints hold, ambient icons resolve from pools. fake_evidence: green tests while resources/thoughts/*.tres still exist (directory scan silently serves the old files), or an ambient-icon test that never renders a wildcard pick.",
+      "blockedBy": [
+        "TASK-040"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-042",
+      "title": "Task 3: Visit lines and the Oppdrag catalog become case markup",
+      "description": "The 22 visit lines and the Oppdrag catalog (social_visit_director.gd: LINE_* groups, OPPDRAG_TITLES, OPPDRAG_OFFER_LINES, OPPDRAG_BEATS line steps and labels) move into `# Visit:` blocks in tiny-olsen.case.md — beats verbatim against PLAN-006's existing lossless fixture. The pack carries the VisitScenes, SocialVisitDirector's OPPDRAG_BEATS fallback and the catalog accessor's const fallback are deleted, and consumption call sites (handbok_ui_controller, phone_panel, case_engine per PLAN-008 Task 3) read only the pack. Any LINE_* line that is not a scene step rides a `# Strings:` visit table rather than staying hardcoded (see designDecisions; anything still hardcoded is a filed pm gap). Outcome: visits read as storyboards in the lab's Visit view; the director is a pure player.",
+      "steps": [
+        "Fixture every const group, migrate verbatim (Stub: yes), regenerate the case pack.",
+        "Delete the fallbacks and consts; red-green the fixtures and the director's GATH coverage."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: the pack is the only visit-text source, byte-identical, director behavior unchanged (step machinery GATH green). fake_evidence: green visit tests that ran against the fallback path because the pack fixture lacked a visits key.",
+      "blockedBy": [
+        "TASK-041"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-043",
+      "title": "Task 4: Notat glue and prologue scene ride StringTable; dead mail copy dies",
+      "description": "First real StringTable consumers. Notat glue (notat_composer.gd:19-51, inline :99, headers :170-174 — 21 strings) plus the 10 resources/notat_fragments/*.tres move into `# Strings:` blocks; notat_composer reads its StringTable resource. Prologue scene copy (scenes/prologue/20260707_legesenteret.gd BEATS — 17 strings) does the same. The 20 dead prologue mail strings (prologue_mail_schedule.gd) are DELETED, not migrated — household_object_manager discards the payload; keep the spawn behavior, shrink the schedule to what the consumer actually reads. Sync hazard: notat's BESOK_LINES beat keys must keep matching the beats now living in VisitScene data (Task 3) — guard it with a GATH assertion. Outcome: notat and prologue copy is editable in the lab's Strings view; the dead mail copy is gone from the repo.",
+      "steps": [
+        "Fixture the legacy strings, migrate verbatim (Stub: yes), regenerate strings .tres, wire the two consumers, delete legacy literals and fragment files.",
+        "Delete the dead mail copy after tracing household_object_manager's actual reads.",
+        "Red-green fixtures plus the beat-key sync assertion."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: notat and prologue render byte-identical text sourced only from StringTable; beat keys stay aligned with VisitScene beats; mail deletion changed no spawn behavior. fake_evidence: a notat test asserting composed output while the composer still holds the literals — the proof is the literals' absence plus the resource read.",
+      "blockedBy": [
+        "TASK-042"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-044",
+      "title": "Task 5: Håndbok copy — handbok_state templates and the .tres text fields",
+      "description": "The biggest family (~149 strings). handbok_state.gd's ~35 inline _log/_slip templates, 3 mission names and the why-string, plus the text fields across resources/handbok/tiltak/*.tres (24 navn + 24 ytelse_line + 24 dawn_line + 31 KravEntry.display_text) and resources/handbok/frank_actions/*.tres (6 navn + 1 gate_note) migrate into `# Strings:` blocks. Wire the one text mechanism from designDecisions: StringTable is the sole text home, .tres keep data only. Template strings with interpolation slots migrate with their placeholders intact — verbatim law covers the template text, not the interpolation machinery. Outcome: every håndbok string is editable in the lab's Strings view and no håndbok .tres text field is load-bearing.",
+      "steps": [
+        "Fixture all text fields and templates, migrate verbatim (Stub: yes) keyed per family id, regenerate.",
+        "Wire the overlay/lookup mechanism, blank or supersede the .tres text fields, delete the inline literals.",
+        "Red-green the fixtures across handbok GATH coverage."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: håndbok log/slip/dawn/krav text renders byte-identical from StringTable only; .tres text fields are no longer read. fake_evidence: green handbok tests that read the still-populated .tres text fields — the overlay must be proven by emptying/superseding the field and watching the test stay green.",
+      "blockedBy": [
+        "TASK-043"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-045",
+      "title": "Task 6: Sibling handlers and the duplicate kill",
+      "description": "The amendment scope: frank_action_handlers.gd (~15 dagslogg/slip lines + 3 action-name literals), tiltak_dawn_handlers.gd:33,45 (2 lines), report_composer.gd (~11 DAGSRAPPORT strings), tiltak_visit_director.gd:33-66 (13 beat labels), and the strays in case_engine.gd:86 and case_host.gd:610,630,644 all migrate into the StringTable families from Tasks 4–5 (or a sibling `# Strings:` block where no family fits). Then the duplicate kill (DD-004's narrow exception): the raw frank-action navn literals die in favor of the migrated navn, the håndbok category words collapse from 3 homes to 1, and the SI FRA vs HEVDE SEG divergence collapses to one source — where the surviving single source would itself be chrome-layer text, collapse to one literal home and file a pm gap referencing the chrome SDD rather than migrating chrome scope. Outcome: no raw literal shadows any migrated family; grep proves it.",
+      "steps": [
+        "Fixture, migrate verbatim (Stub: yes), wire each handler to its StringTable, delete literals.",
+        "Hunt each DD-004 duplicate class with grep, collapse to one source, red-green."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd. proves: handler output byte-identical from StringTable; grep for each killed duplicate literal returns only the single surviving home. fake_evidence: migrating the handler while its duplicate literal survives elsewhere — the kill clause is the requirement, not a nicety.",
+      "blockedBy": [
+        "TASK-044"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-046",
+      "title": "Task 7: Done-ness sweep — inventory exhausted, stub lint tells the whole story",
+      "description": "Prove SB-072's done condition against the SB-064 checklist plus amendments, family by family: every legacy site deleted (grep evidence per family), every migrated block on the road, both suites green, and `npm run gen:content` reporting a stub count that covers every migrated family. Close the bookkeeping: hunt both pm stores (and PLAN-008 task notes) for the intended fallback-const gaps and close or file-and-close them; file real gaps for anything genuinely left hardcoded (sim IOU rule). Designer-visible evidence: the lab's stub worklist lists the migrated families and click-jumps the lens — capture a screenshot. Write the resolution comment on SB-072 with the checklist table.",
+      "steps": [
+        "Walk the SB-064 table + amendments with grep per family; record the evidence table.",
+        "Run both suites and gen:content; capture stub-count output and a stub-worklist screenshot via the run skill / claude-in-chrome.",
+        "Close/file the gap bookkeeping; comment the evidence on SB-072."
+      ],
+      "verification": "judge: screenshot. command: npm run case:check && npm test && /Applications/Godot.app/Contents/MacOS/Godot --headless --path ../lifelines-core-loop -s tests/runner.gd, plus a browser screenshot of the canvas stub worklist showing the migrated families. proves: the purge is measurable (stub lint), visible (worklist), and complete (grep table vs SB-064). fake_evidence: a stub count quoted from the lint without the per-family grep table — the count proves stubs exist, not that the legacy sites died.",
+      "blockedBy": [
+        "TASK-045"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-12T15:59:12.479Z",
+  "updatedAt": "2026-08-12T15:59:12.479Z"
+}
