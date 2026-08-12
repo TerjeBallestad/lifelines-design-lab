@@ -48,7 +48,12 @@ export interface CharacterContent {
   phone?: PhoneLinesOut;
 }
 
-/** ThoughtLine.KEY_TYPES (core-loop scripts/simulation/thought_line.gd). */
+/**
+ * ThoughtLine.KEY_TYPES (core-loop scripts/simulation/thought_line.gd).
+ * `ambient` is the SB-072 MTG-fold pool: its bullets are ICON KEYS, not
+ * prose — ThoughtBubbleManager picks one per ambient tick; the stream's
+ * trigger map never fires it.
+ */
 const THOUGHT_KEY_TYPES = new Set([
   'need',
   'activity',
@@ -56,6 +61,7 @@ const THOUGHT_KEY_TYPES = new Set([
   'want',
   'relational',
   'dagsform',
+  'ambient',
 ]);
 
 export function emitCharacter(
