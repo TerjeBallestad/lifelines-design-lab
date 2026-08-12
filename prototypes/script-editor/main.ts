@@ -4,7 +4,8 @@
 // loop, outline, preview rail, problems drawer, draft persistence and ⌘S
 // save; the lens owns the editor view and its extensions.
 import { html, render as litRender, nothing } from 'lit-html';
-import { blockRuns, compileCase, compileCharacter } from '../../src/compiler/index.ts';
+import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
+import { blockRuns } from '../../src/domain/blueprint.ts';
 import type { CompileResult, CompileCharacterResult } from '../../src/compiler/index.ts';
 import type { StringTableOut, VisitSceneOut } from '../../src/compiler/emit-visit.ts';
 import { liftFact } from '../../src/compiler/patch.ts';

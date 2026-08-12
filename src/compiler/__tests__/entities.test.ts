@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { blockRuns, compileCase } from '../index';
+import { compileCase } from '../index';
+import { blockRuns } from '../../domain/blueprint';
 import fragments from './fixtures/shipped-fragments.json';
 import caseText from './fixtures/fragments.case.md?raw';
 

@@ -25,7 +25,7 @@ import type { GraphEdge, NodeKind, NodePos } from './graph.ts';
 import { KIND_LABEL, KIND_VAR, EDGE_VAR, cssVar } from './kinds.ts';
 import { RELATION, birthKinds as relationBirthKinds } from './relations.ts';
 import * as model from './model.ts';
-import { blockRuns } from '../../src/compiler/index.ts';
+import { blockRuns } from '../../src/domain/blueprint.ts';
 import * as layout from './layout-modes.ts';
 import type { LayoutMode } from './layout-modes.ts';
 import { DRAG_REHEAT } from './force.ts';

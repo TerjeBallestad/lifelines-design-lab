@@ -27,11 +27,13 @@ const EXPECTED_SHEET = {
 };
 
 describe('SDD-011 manifest coverage — the five economy facts', () => {
-  it('every document-anchored economy fact measures at least one UV rect on its sheet', async () => {
+  it('every document-anchored economy fact measures at least one UV rect on its sheet', async (ctx) => {
     try {
       await access(manifestPath);
     } catch {
-      console.warn(`Skipping manifest coverage; missing ${manifestPath}`);
+      // A checkout without the sibling core-loop repo cannot run the pin —
+      // report a visible skip, never a vacuous green.
+      ctx.skip(`missing ${manifestPath}`);
       return;
     }
     const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
