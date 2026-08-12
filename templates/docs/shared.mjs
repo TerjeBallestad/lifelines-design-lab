@@ -98,14 +98,77 @@ export function renderBlocks(blocks) {
 }
 
 // ---------------------------------------------------------------------------
-// Per-doc override hook (CAPABILITY only, unused in v1). A kind template renders
-// every doc of its kind identically; this returns an extra body class + optional
-// inline CSS/art selected by doc id, so bespoke per-doc treatment can be dropped in
-// later without touching the kind templates. No bespoke art ships in v1 — the map
-// is empty and every doc resolves to an empty override.
+// Per-doc override hook. A kind template renders every doc of its kind
+// identically; this returns an extra body class + optional inline CSS/art
+// selected by doc id, so bespoke per-doc treatment lands without touching the
+// kind templates.
+//
+// SDD-011 wear (Terje 2026-08-12): the raw economy papers carry per-sheet
+// wear — folds, stains, and INSTITUTIONAL stamps (KOPI, UBETALT), ported from
+// the design canvas. Frank's handwritten commentary (the Caveat margin notes,
+// the ballpoint circle) never prints: it bleeds the answers the player must
+// derive from the printed figures. Wear layers sit ABOVE the ink like the
+// shared grain wash; stamps rotate — the page itself stays axis-aligned.
 // ---------------------------------------------------------------------------
+const WEAR_LAYER = (background) =>
+  `<div class="wear" style="position: absolute; inset: 0; pointer-events: none; background-image: ${background};"></div>`;
+
+const STAMP = (text, style) =>
+  `<div class="doc-stamp" style="position: absolute; border-radius: 3px; pointer-events: none; ` +
+  `font-family: 'Archivo', sans-serif; font-weight: 700; ${style}">${text}</div>`;
+
 const DOC_OVERRIDES = Object.freeze({
-  // doc_bekymring: { className: 'ov-bekymring', css: '...', art: '<svg .../>' },
+  // 1a — Grete's statement: handled copy. Top-right stain, horizontal fold,
+  // diagonal crease, and the bank's KOPI stamp.
+  doc_konto_grete: {
+    className: 'ov-konto-grete',
+    art:
+      WEAR_LAYER(
+        'radial-gradient(ellipse 120px 90px at 78% 8%, rgba(120,80,30,0.18), rgba(120,80,30,0.05) 55%, transparent 70%), ' +
+          'radial-gradient(ellipse 80px 65px at 82% 6%, transparent 60%, rgba(110,70,25,0.22) 68%, transparent 75%), ' +
+          'linear-gradient(to bottom, transparent 49.7%, rgba(70,55,30,0.16) 50%, rgba(255,255,255,0.25) 50.3%, transparent 50.8%), ' +
+          'linear-gradient(105deg, transparent 32.7%, rgba(70,55,30,0.10) 33%, rgba(255,255,255,0.18) 33.2%, transparent 33.6%)',
+      ) +
+      STAMP(
+        'KOPI',
+        'top: 200px; right: 320px; transform: rotate(-11deg); border: 4px double rgba(140,40,30,0.55); ' +
+          'color: rgba(140,40,30,0.55); font-size: 26px; letter-spacing: 5px; padding: 6px 20px;',
+      ),
+  },
+  // 1b — Elling's årsutskrift: one fold, a stain along the bottom edge. The
+  // canvas's circle and margin note are Frank's commentary — excluded.
+  doc_konto_elling: {
+    className: 'ov-konto-elling',
+    art: WEAR_LAYER(
+      'linear-gradient(to bottom, transparent 49.7%, rgba(70,55,30,0.14) 50%, rgba(255,255,255,0.22) 50.3%, transparent 50.8%), ' +
+        'radial-gradient(ellipse 160px 55px at 50% 99%, rgba(80,60,30,0.12), transparent 70%)',
+    ),
+  },
+  // 1c — the strømregning: letter-fold thirds, a stain at the left edge, and
+  // the UBETALT stamp.
+  doc_strom: {
+    className: 'ov-strom',
+    art:
+      WEAR_LAYER(
+        'linear-gradient(to bottom, transparent 33%, rgba(70,55,30,0.13) 33.3%, rgba(255,255,255,0.22) 33.6%, transparent 34%), ' +
+          'linear-gradient(to bottom, transparent 66%, rgba(70,55,30,0.13) 66.3%, rgba(255,255,255,0.22) 66.6%, transparent 67%), ' +
+          'radial-gradient(ellipse 95px 80px at 8% 40%, rgba(110,75,30,0.14), transparent 70%)',
+      ) +
+      STAMP(
+        'UBETALT',
+        'top: 640px; right: 40px; transform: rotate(8deg); border: 4px double rgba(160,45,30,0.6); ' +
+          'color: rgba(160,45,30,0.6); font-size: 23px; letter-spacing: 4px; padding: 6px 18px;',
+      ),
+  },
+  // 1d — the kassalapp: a crease where it lay folded in the shoebox, a
+  // finger stain near the top edge.
+  doc_kassalapp: {
+    className: 'ov-kassalapp',
+    art: WEAR_LAYER(
+      'linear-gradient(to bottom, transparent 39.5%, rgba(70,55,30,0.13) 40%, rgba(255,255,255,0.2) 40.4%, transparent 41%), ' +
+        'radial-gradient(ellipse 50px 35px at 88% 20%, rgba(110,75,30,0.13), transparent 70%)',
+    ),
+  },
 });
 
 export function overrideForDoc(docId) {

@@ -23,7 +23,7 @@ export const styleCss = `
 .doc--kassalapp .page {
   border: none;
   clip-path: ${SAWTOOTH};
-  font-family: 'Special Elite', 'Courier New', monospace;
+  font-family: 'Courier Prime', 'Courier New', monospace;
   font-size: 12.5px;
   line-height: 1.5;
   color: #33301f;

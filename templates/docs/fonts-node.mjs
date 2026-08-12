@@ -63,6 +63,21 @@ export function fontFaceCss() {
   font-weight: 100 900;
   font-style: normal;
   src: url('${fontDataUri('Archivo[wdth,wght].ttf')}') format('truetype');
+}
+/* SDD-011 printed-ledger type (Terje 2026-08-12): the raw papers use the
+   design canvas's clean monospace, not the distressed Special Elite — and
+   the ruled SALDO row needs a real bold, which Special Elite lacks. */
+@font-face {
+  font-family: 'Courier Prime';
+  font-weight: 400;
+  font-style: normal;
+  src: url('${fontDataUri('CourierPrime-400.ttf')}') format('truetype');
+}
+@font-face {
+  font-family: 'Courier Prime';
+  font-weight: 700;
+  font-style: normal;
+  src: url('${fontDataUri('CourierPrime-700.ttf')}') format('truetype');
 }`;
   return _fontFaceCss;
 }

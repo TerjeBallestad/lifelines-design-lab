@@ -707,8 +707,14 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: ' INGEN ANDRE BEVEGELSER I PERIODEN. ',
+            text: ' INGEN ANDRE BEVEGELSER I PERIODEN.',
           },
+        ],
+      },
+      {
+        id: 'doc_konto_elling_p5',
+        type: 'para',
+        runs: [
           {
             text: 'KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.',
             factId: 'f_alt_via_grete',
@@ -2032,7 +2038,7 @@ export const tinyOlsenGodotSource = {
       peek: 'Årsutskrift. Elling Olsen.',
       meta: 'NR. 1/99 — ÅRSUTSKRIFT',
       body_bbcode:
-        'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.10[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][cell]02.10[/cell][cell][url=fact:f_trygd]UFØRETRYGD RTV[/url][/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.10[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.11[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.11[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.12[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.12[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]04.01[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]04.01[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][/table]\n\nINGEN ANDRE BEVEGELSER I PERIODEN.\n[url=fact:f_alt_via_grete]KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.[/url]',
+        'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.10[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][cell]02.10[/cell][cell][url=fact:f_trygd]UFØRETRYGD RTV[/url][/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.10[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.11[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.11[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.12[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.12[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]04.01[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]04.01[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][/table]\n\nINGEN ANDRE BEVEGELSER I PERIODEN.\n\n[url=fact:f_alt_via_grete]KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.[/url]',
       runs: [
         {
           id: 'run_text_0',

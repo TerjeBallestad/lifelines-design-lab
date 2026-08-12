@@ -21,30 +21,30 @@ export const styleCss = `
 }
 .doc--regning .co-ident { display: flex; align-items: center; gap: 12px; }
 .doc--regning .co-mark {
-  width: 44px; height: 44px;
+  width: 58px; height: 58px;
   background: #b8541e; color: #f1ece0;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 26px;
+  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 34px;
 }
 .doc--regning .co-name {
   font-family: 'Archivo', sans-serif;
-  font-weight: 700; font-size: 20px; letter-spacing: 0.06em;
+  font-weight: 700; font-size: 26px; letter-spacing: 0.06em;
 }
 .doc--regning .co-strap {
-  font-size: 10px; letter-spacing: 0.2em; font-variant: small-caps; color: #6b6250;
+  font-size: 13px; letter-spacing: 0.2em; font-variant: small-caps; color: #6b6250;
 }
 .doc--regning .doc-ref {
-  text-align: right; font-size: 11px; line-height: 1.5; color: #4a4335;
+  text-align: right; font-size: 14px; line-height: 1.5; color: #4a4335;
 }
 .doc--regning .invoice-body {
-  margin-top: 28px;
-  font-size: 13px;
+  margin-top: 34px;
+  font-size: 17px;
   line-height: 1.65;
   flex: 1 0 auto;
   display: flex; flex-direction: column;
 }
-.doc--regning .doc-table { font-size: 13px; }
-.doc--regning .doc-table th, .doc--regning .doc-table td { padding: 7px 10px; }
+.doc--regning .doc-table { font-size: 17px; }
+.doc--regning .doc-table th, .doc--regning .doc-table td { padding: 9px 13px; }
 .doc--regning .doc-table thead th {
   background: #26231c; color: #f1ece0;
   border-top: none; border-bottom: none;
@@ -61,8 +61,8 @@ export const styleCss = `
   border-top: 2px dashed #8f8672;
   padding: 26px 40px 32px;
   margin-left: -40px; margin-right: -40px; margin-bottom: 0;
-  font-family: 'Special Elite', 'Courier New', monospace;
-  font-size: 12px;
+  font-family: 'Courier Prime', 'Courier New', monospace;
+  font-size: 16px;
   position: relative;
 }
 .doc--regning .invoice-body > :last-child::before {
@@ -72,7 +72,7 @@ export const styleCss = `
   background: #f1ece0;
   padding: 0 8px;
   font-family: 'Archivo', sans-serif;
-  font-size: 9px; letter-spacing: 0.2em; color: #8f8672;
+  font-size: 12px; letter-spacing: 0.2em; color: #8f8672;
 }
 /* A lone tear line still prints on the empty stationery sheet. */
 .doc--regning .invoice-body:empty {
