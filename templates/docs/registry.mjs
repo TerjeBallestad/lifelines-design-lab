@@ -15,8 +15,12 @@ import * as rapport from './kinds/rapport.mjs';
 import * as melding from './kinds/melding.mjs';
 import * as statusrapport from './kinds/statusrapport.mjs';
 import * as dagsrapport from './kinds/dagsrapport.mjs';
+import * as kontoutskrift from './kinds/kontoutskrift.mjs';
+import * as regning from './kinds/regning.mjs';
+import * as kassalapp from './kinds/kassalapp.mjs';
 
-// The seven authored kinds baked from labContent documents.
+// The authored kinds baked from labContent documents (SDD-011 added
+// KONTOUTSKRIFT, REGNING, KASSALAPP — the raw economy papers).
 export const AUTHORED_KINDS = Object.freeze([
   'BEKYMRINGSMELDING',
   'ØKONOMISK OVERSIKT',
@@ -25,6 +29,9 @@ export const AUTHORED_KINDS = Object.freeze([
   'RAPPORT',
   'MELDING',
   'STATUSRAPPORT',
+  'KONTOUTSKRIFT',
+  'REGNING',
+  'KASSALAPP',
 ]);
 
 // Generated stationery kinds (no labContent doc; rendered empty).
@@ -39,6 +46,9 @@ const TEMPLATES = Object.freeze({
   MELDING: melding,
   STATUSRAPPORT: statusrapport,
   DAGSRAPPORT: dagsrapport,
+  KONTOUTSKRIFT: kontoutskrift,
+  REGNING: regning,
+  KASSALAPP: kassalapp,
 });
 
 export function hasTemplate(kind) {

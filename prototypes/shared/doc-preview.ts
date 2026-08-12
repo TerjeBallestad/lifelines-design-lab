@@ -15,8 +15,9 @@ import caveat400 from '../../templates/docs/fonts/Caveat-400.ttf?url';
 import specialElite400 from '../../templates/docs/fonts/SpecialElite-400.ttf?url';
 import architects400 from '../../templates/docs/fonts/ArchitectsDaughter-400.ttf?url';
 import kalam400 from '../../templates/docs/fonts/Kalam-400.ttf?url';
+import archivoVariable from '../../templates/docs/fonts/Archivo[wdth,wght].ttf?url';
 
-const face = (family: string, weight: number, url: string) =>
+const face = (family: string, weight: number | string, url: string) =>
   `@font-face { font-family: '${family}'; font-weight: ${weight}; font-style: normal; src: url('${url}') format('truetype'); }`;
 
 export const browserFontCss = [
@@ -26,6 +27,8 @@ export const browserFontCss = [
   face('Special Elite', 400, specialElite400),
   face('Architects Daughter', 400, architects400),
   face('Kalam', 400, kalam400),
+  // SDD-011: the variable Archivo covers the whole weight range in one file.
+  face('Archivo', '100 900', archivoVariable),
 ].join('\n');
 
 // The bake keeps fact spans visually neutral; the game overlays highlights at

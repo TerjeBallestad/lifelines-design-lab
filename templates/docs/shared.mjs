@@ -144,6 +144,11 @@ export const KIND_SIZES = Object.freeze({
   FELTNOTAT: { width: 640, minHeight: 460 }, // notepad index card
   STATUSRAPPORT: { width: 700, minHeight: 400 }, // typed half-sheet status memo
   MELDING: { width: 480, minHeight: 360 }, // phone-message lapp
+  // SDD-011 raw economy papers: full-A4 bank statements and invoice, a
+  // narrow till strip.
+  KONTOUTSKRIFT: { width: 800, minHeight: 1131 },
+  REGNING: { width: 800, minHeight: 1131 },
+  KASSALAPP: { width: 300, minHeight: 620 },
 });
 
 export function sizeForKind(kind) {
