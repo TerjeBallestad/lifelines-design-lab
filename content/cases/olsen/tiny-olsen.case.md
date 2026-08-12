@@ -1342,17 +1342,14 @@ besok_slip: "ingen svar på døra - hvem er hjemme, og tør de åpne?"
 besok_ok_samtykke: "døra åpnet. [kaffe på kjøkkenet]. han skrev under - samtykke."
 samtykke_boxes: "samtykke dokumentert → nye krav-bokser i håndboka"
 besok_ok_no_samtykke: "døra åpnet. ikke lett å snakke med. ikke samtykke - ennå. (tillit +1)"
-kartlegg_nm: "KARTLEGG FUNKSJON"
 kartlegg_ok: "kartleggeren gjennomførte hele runden. skjema fylt."
 kartlegg_boxes: "funksjonstap dokumentert → nye krav-bokser i håndboka"
 kartlegg_fail: "kartlegging avbrutt - %d av %d. kartleggeren dro."
 kartlegg_slip: "skjemaet ligger igjen halvfylt - nytt besøk dekker resten"
-maltid_nm: "FØLG MÅLTIDSVENN"
 maltid_ok: "Frank ble med [måltidsvennen] inn. Elling dekket på til tre."
 maltid_ok_samtykke: "over bordet skrev han under - samtykke."
 maltid_fail: "måltidet ble avbrutt - %d av %d."
 maltid_slip: "måltidsvennen kom, men måltidet glapp - prøv igjen"
-trening_nm: "TELEFONTRENING"
 trening_ok: "\"vi later som det ringer. ring, ring.\" - han tok røret. sa hallo."
 trening_fail: "treningen avbrutt - %d av %d. røret ble lagt på."
 trening_slip: "øvelsen stoppet halvveis - ny økt dekker resten"
@@ -1362,3 +1359,68 @@ dawn_hours_left: "%dt til overs - [papirarbeid på de ti andre]"
 mat_ok: "kassen kom inn - det ble mat i dag."
 mat_fail_prev: "ny kasse levert kl 11. den forrige står der fortsatt."
 mat_blocked: "ingen ny levering - kassen fra sist står fortsatt ute."
+
+// SB-072 migration (PLAN-009 Task 6): sibling handlers - frank_action_handlers,
+// tiltak_dawn_handlers, report_composer, tiltak_visit_director step labels,
+// case_engine/case_host strays. DD-004 duplicate kill rides the same step:
+// raw frank-action navn literals resolve from frank_actions.<id>.navn.
+
+# Strings: sim_text
+
+Stub: yes
+kartlegg_stopped: "han ble taus halvveis. skjemaet ligger igjen hos ham."
+kartlegg_stopped_slip: "stoppet ved spørsmålet om [matlaging] - hvorfor akkurat der?"
+kartlegg_no_answer: "ingen åpning for kartleggeren. skjemaet ble med tilbake."
+kartlegg_no_answer_slip: "ingen svar på døra - kartleggeren kom aldri inn"
+kartlegg_start: "kartleggeren er innenfor - Frank blir ved pulten."
+maltid_no_answer: "ingen åpnet for [måltidsvennen]. kassen med middag gikk tilbake."
+maltid_no_answer_slip: "ingen svar på døra - måltidsvennen kom aldri innenfor"
+maltid_toomany: "Elling åpnet, så de to, og lukket igjen."
+maltid_toomany_slip: "én gjest går kanskje - to var for mange"
+maltid_start: "måltidsvennen er innenfor - Frank følger til kjøkkenet."
+trening_start: "telefontreneren er innenfor - øvelsen starter ved telefonen."
+visit_not_started: "besøket kom ikke i gang - %s."
+reason_sim_unavailable: "sim utilgjengelig"
+reason_visit_running: "et besøk pågår allerede"
+reason_nobody_home: "ingen deltaker hjemme"
+reason_unknown_visit: "ukjent besøkstype"
+dawn_in_day: "iverksatt - løses i løpet av dagen."
+dawn_mekling: "sak opprettet hos forliksrådet - RING UTLEIER lagt til Franks handlinger."
+proposal_vet_ikke: "Vet ikke nok ennå. Vis meg flere funn først."
+npc_maltidsvenn: "Måltidsvenn"
+npc_kartlegger: "Kartlegger"
+npc_telefontrener: "Telefontrener"
+
+# Strings: dagsrapport
+
+Stub: yes
+sec_vedtak: "VEDTAK I VERK"
+vedtak_row: "• %s - i verk siden dag %d. [ingen endring observert]"
+vedtak_none: "• [ingen vedtak i verk]"
+sec_klokker: "KLOKKER RYKKET"
+clock_row: "• %s: %d → %d"
+sec_kanaler: "KANALER"
+channel_row: "• %s - kl %s"
+sec_observert: "OBSERVERT"
+observert_none: "• [intet å melde]"
+observert_row: "• %s"
+doc_title: "DAGSRAPPORT - DAG %d"
+doc_peek: "[kontorets samlerapport for dag %d]"
+doc_meta: "KONTORET - morgenen dag %d"
+
+# Strings: tiltak_visits
+
+Stub: yes
+kartlegging.spesialist_inn: "kartleggeren kommer inn"
+kartlegging.samtale: "innledende samtale"
+kartlegging.spesialist_kjokken: "kartleggeren følger til kjøkkenet"
+kartlegging.adl_skjema: "ADL-skjema del 1"
+kartlegging.kjokken_runde: "funksjon på kjøkkenet"
+kartlegging.spesialist_oppsummering: "kartleggeren finner fram skjemaet"
+kartlegging.oppsummering: "oppsummering og signatur"
+maltidsvenn.dekke_bord: "måltidsvennen dekker på"
+maltidsvenn.felles_maltid: "felles måltid"
+telefontrening.trener_inn: "treneren kommer inn"
+telefontrening.instruksjon: "instruksjon ved telefonen"
+telefontrening.ovelsesring: "øvelsesring - ring, ring"
+telefontrening.svar_ovelse: "ta røret og si hallo"
