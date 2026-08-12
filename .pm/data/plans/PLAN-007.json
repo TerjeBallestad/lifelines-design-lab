@@ -161,9 +161,14 @@
         "TASK-030",
         "TASK-033"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Atomic swap landed: 8643d64 (design-lab plan-007) + core-loop 5075eff6 (slice, 4 new textures, doc_konto/doc_papirer PNGs + .import sidecars deleted). Doc count 11; pending_konto_overfort gone from the slice; d_konto gates on f_grete_baerer and delivers both statements +1d; beat day 7 delivers doc_strom + doc_kassalapp; quiet-day advisory now names only days 9-10. Receipt changed to BANKKORT 2,35 matching Grete's 07.01 card line (three-way lock with KORT ER IKKE UTSTEDT). All four PNGs read cold: no sheet states the reading. Deviations recorded: (1) coin printed once per sheet in the UT/BELØP/TOTALT header cell per the design decision — INN and SALDO headers print bare; (2) kassalapp CSS right-aligns the last column of headerless receipt tables (the grammar has no align without a separator row); (3) case-file-driven tests repointed doc_konto→doc_konto_grete, canvas dangling-edge invariant exempts derived facts. Placement note: the kassalapp belongs in the shoebox with Frank at the table and moves onto a post-death hjemmebesøk dispatch if one ever lands. Suite 492/492, lint clean, bake fresh.",
+          "timestamp": "2026-08-12T12:26:33.878Z"
+        }
+      ]
     },
     {
       "id": "TASK-035",
@@ -179,9 +184,14 @@
       "blockedBy": [
         "TASK-034"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "assertFactCoverage in bake-docs.mjs runs per authored doc after measureFacts: any anchored fact with zero measured rects throws, naming doc+fact. manifest-coverage.test.mjs pins f_trygd+f_alt_via_grete→doc_konto_elling, f_husleie→doc_konto_grete, f_ingen_matkjop→doc_kassalapp against the committed manifest (each ≥1 rect, all rects nonzero w/h) and asserts f_gap absent from every doc (empty-array-reads-as-covered hole closed by asserting absence). Red-green both ways, stamped in the test header: manifest copy with emptied f_husleie rects → test red; measureFacts skipping td spans → bake throws. Suite 493/493, bake fresh. Commits: d9cbbd8 (plan-007); core-loop 42be1a2d adds Godot .import sidecars for the four new textures.",
+          "timestamp": "2026-08-12T12:30:36.547Z"
+        }
+      ]
     },
     {
       "id": "TASK-036",
@@ -204,5 +214,5 @@
   ],
   "comments": [],
   "createdAt": "2026-08-11T14:01:27.283Z",
-  "updatedAt": "2026-08-12T12:11:42.141Z"
+  "updatedAt": "2026-08-12T12:30:36.548Z"
 }
