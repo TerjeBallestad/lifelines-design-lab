@@ -1116,3 +1116,75 @@ gang_rydde: "Jeg har ikke rukket å rydde."
 rope_elling: "Elling! Frank er her."
 venter_elling: "Han kommer. Han liker ikke uventet besøk."
 sette_seg: "Jeg må bare sette meg litt."
+
+// SB-072 migration (PLAN-009 Task 4): notat glue (notat_composer consts +
+// doc header), the notat-fragment run texts, and the prologue scene copy
+// live here now, verbatim modulo the typography convention. Fact couplings,
+// beat keys, observable keys and run ids stay engine data in core-loop -
+// only the TEXT migrated.
+
+# Strings: notat
+
+Stub: yes
+opener_arrival_1: "Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin."
+opener_arrival_2: "I gangen: en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi. Grete flyttet bunken da hun så at jeg så."
+line_a2: "Elling satt i stuen med en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver."
+line_a3: "Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg."
+line_a5: "Jeg spurte Elling om han liker å bo her. Grete svarte for ham."
+line_a6: "Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss. Ikke demonstrativt. Bare slik det ble."
+line_p2: "Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall. Alle avtaler står i hennes navn."
+line_p4: "Jeg spurte om Elling visste hvor skoesken sto. Hun lo, kort."
+line_p6: "Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen."
+line_t3: "Hun sa at legen har gitt henne kort tid, og at Elling ikke vet det."
+line_t4: "Hun snakket om ham før. Skolen, venner. Hun snakket lenge."
+line_t5: "\"Jeg tenker på hva som skjer. Hele tiden.\""
+unseen_alene: "ham selv"
+unseen_okonomi: "papirene"
+unseen_tillit: "å bli sittende lenge nok til at hun snakket fritt"
+unseen_prefix: "Ikke undersøkt denne gangen: %s."
+closer: "I trappen sa hun: \"Du så hvordan han er. Han er en smart gutt.\" Hun er 72. Han er 35. Gutt."
+doc_kind: "HJEMMEBESØK"
+doc_title: "Frank - hjemmebesøk"
+doc_meta: "HJEMMEBESØK-NOTAT - 4012 F. ÅSLI - DAG %d"
+
+# Strings: notat_fragments
+
+Stub: yes
+nf_mess_tidy.run_0: "Over skrivebordet: "
+nf_mess_tidy.run_utklipp: "avisutklipp, sirlig montert. Det er ikke rot. Det er et arkiv."
+nf_mess_messy.run_0: "I gangen: "
+nf_mess_messy.run_post: "en bunke uåpnet post på skoskapet."
+nf_mess_decaying.run_post: "Posten vokser. Døren er lukket."
+nf_grete_present.run_0: "Grete var der. "
+nf_grete_present.run_smart_gutt: "\"Du så hvordan han er. Han er en smart gutt.\""
+nf_grete_absent.run_brevsprekken: "Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken."
+nf_tea_accepted.run_0: "Hun hadde dekket på med tre kopper. "
+nf_tea_accepted.run_smart_gutt: "\"Du så hvordan han er. Han er en smart gutt.\""
+nf_tea_declined.run_0: "Elling brukte ikke sin kopp. "
+nf_tea_declined.run_avstand: "Han flyttet seg slik at det alltid var et møbel mellom oss."
+nf_elling_withdrawn.run_avstand: "Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss."
+nf_elling_engaged.run_0: "Elling satt med "
+nf_elling_engaged.run_bok: "en bok om polarekspedisjoner. Han noterte i margen. Systematisk."
+nf_elling_engaged_b.run_0: "Over skrivebordet hans: "
+nf_elling_engaged_b.run_utklipp: "avisutklipp, sirlig montert. Årstall i hjørnene, hans håndskrift."
+
+# Strings: prologue
+
+Stub: yes
+beat_01: "LEGESENTERET - TIRSDAG I FEBRUAR 1999"
+beat_02: "Prøvesvarene er kommet. Det er som vi trodde."
+beat_03: "Ja."
+beat_04: "Det er stille en stund. Noen ler av noe i naborommet."
+beat_05: "Har du noen rundt deg? Fremover, mener jeg."
+beat_06: "Jeg har Elling."
+beat_07: "Grete. Det var Elling jeg ville snakke om."
+beat_08: "Han klarer seg. Han har alltid klart seg."
+beat_09: "Med deg."
+beat_10: "Grete ser ut vinduet. Det har begynt å snø - tunge, våte flak som ikke blir liggende."
+beat_11: "Jeg har ikke fortalt ham noe ennå. Han skal få vite det når jeg vet hvordan det skal sies."
+beat_12: "Hvis du vil, melder jeg fra til bydelen. Ikke noe mer enn det. Bare så noen vet."
+beat_13: "Grete tar på seg hanskene. Én finger om gangen."
+beat_14: "Dere får gjøre det dere må."
+beat_15: "Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet 'alvorlig'. Sender."
+beat_16: "MOTTATT - SOSIALKONTORET"
+stamp_end: "Meldingen ligger på pulten din."
