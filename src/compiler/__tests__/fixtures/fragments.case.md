@@ -137,8 +137,8 @@ Card title:
 
 # Hypothesis: h_ok_gap
 
-Title: Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.
-Summary: Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
+Title: Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.
+Summary: Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 needs: f_gap
 Opens: t_bostotte, t_huseier, d_konto, c_frank_okonomi [type=conversation category=frank actor=frank risk=okonomi sim=case.olsen.opening.conversation.frank_okonomi]

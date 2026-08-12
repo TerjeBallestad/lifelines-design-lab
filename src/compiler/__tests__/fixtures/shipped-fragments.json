@@ -172,8 +172,8 @@
   "hypotheses": {
     "h_ok_gap": {
       "id": "h_ok_gap",
-      "title": "Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.",
-      "summary": "Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.",
+      "title": "Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.",
+      "summary": "Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.",
       "question_id": "q_okonomi",
       "availability": {
         "op": "fact_lifted",
