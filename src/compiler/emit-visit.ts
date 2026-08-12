@@ -299,7 +299,8 @@ export function emitSimContent(
         continue;
       }
       seenKeys.set(field.key, field.line);
-      entries[field.key] = field.value;
+      // Quoted like Phone/Offer fields — the quotes are markup, not text.
+      entries[field.key] = stripGuillemets(field.value);
     }
     return {
       id: block.id,

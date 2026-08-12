@@ -1054,3 +1054,65 @@ du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 * f_saarbar: Vi vil gjerne komme på hjemmebesøk.
     [Betyr dette at noen kommer til å ta ham fra leiligheten?](fact:f_grete_redd)
     … Hvis det må til.
+
+// SB-072 migration (PLAN-009 Task 3): the SocialVisitDirector Oppdrag catalog
+// (OPPDRAG_TITLES, OPPDRAG_OFFER_LINES, OPPDRAG_UNLOCK_QUESTIONS,
+// OPPDRAG_BEATS) and the hosting-spine LINE_* literals live here now,
+// verbatim modulo the typography convention (straight quotes, hyphens).
+
+# Visit: oppdrag_alene
+
+Title: Klarer han seg alene?
+Blurb: Se på Elling. Hva klarer han, hva klarer han ikke.
+Offer: "Godt spørsmål. Vil du at jeg skal se på hva han faktisk klarer, ved neste besøk?"
+Unlocks: q_evner
+Stub: yes
+
+- ! grete: blir i stua @ living_room [id=opp_a_hold duration=18 no_wait]
+- ? elling @ living_room [id=opp_a6 beat=a6 duration=8]
+- frank: "Er det Nansen du leser om?" [id=opp_a2 beat=a2 dwell=4]
+- elling: "Nansen lot Fram fryse fast i isen. 1893. Det var planen hele tiden." [id=opp_a3 beat=a3 dwell=4]
+- frank: "Liker du å bo her, Elling?" [id=opp_a4 beat=a4 dwell=4]
+- grete: "Han har det fint her. Han har alt han trenger." [id=opp_a5 beat=a5 dwell=4]
+
+# Visit: oppdrag_okonomi
+
+Title: Se på økonomien
+Blurb: Papirene. Hvem betaler hva, og hvem vet hvordan.
+Offer: "Tallene, ja. Vil du at jeg skal se på økonomien ved neste besøk?"
+Unlocks: q_okonomi
+Stub: yes
+
+- ! grete: finner frem esken @ kitchen [id=opp_p1a duration=3]
+- ! grete: blir ved bordet @ kitchen [id=opp_p_hold duration=24 no_wait]
+- ? elling @ kitchen [id=opp_p6 beat=p6 duration=6]
+- ! frank: ser på papirene @ kitchen [id=opp_p1b duration=3]
+- grete: "Alt ligger i esken. Ferdig utfylt, sortert på forfall." [id=opp_p2 beat=p2 dwell=4]
+- frank: "Vet Elling hvor esken står?" [id=opp_p3 beat=p3 dwell=4]
+- grete: "Elling? Nei da." [id=opp_p4 beat=p4 dwell=4]
+
+# Visit: oppdrag_tillit
+
+Title: Ikke press. Bygg tillit.
+Blurb: Sitt. Ta kaffen. La henne snakke.
+Offer: "Skjønner. Ikke press. Vil du at jeg skal bygge tillit ved neste besøk?"
+Unlocks: q_grete_dor
+Stub: yes
+
+- ! grete: blir sittende @ living_room [id=opp_t_hold duration=17 no_wait]
+- grete: "Legen sier det er kort tid. Elling vet ikke." [id=opp_t3 beat=t3 dwell=5]
+- grete: "Han var ikke sånn før. Han var på skolen, han hadde venner." [id=opp_t4 beat=t4 dwell=5]
+- grete: "Jeg tenker på hva som skjer. Hele tiden." [id=opp_t5 beat=t5 dwell=5]
+
+# Strings: visit
+
+Stub: yes
+hallway_announced: "du ringte i sted - kom inn."
+hallway_unannounced: "frank? nå? ...vent litt, jeg rydder en stol."
+greet: "hei, Elling."
+sofa_talk: "han spiser lite om dagen."
+escort: "Du så hvordan han er. Han er en smart gutt."
+gang_rydde: "Jeg har ikke rukket å rydde."
+rope_elling: "Elling! Frank er her."
+venter_elling: "Han kommer. Han liker ikke uventet besøk."
+sette_seg: "Jeg må bare sette meg litt."
