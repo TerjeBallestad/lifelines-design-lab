@@ -176,10 +176,10 @@ describe('Blueprint v1 caseworker loop', () => {
     expect(store.progress.vedtakRecords[0]).toMatchObject({
       documentId: 'doc_vedtak_1',
       number: 1,
-      title: 'Vedtak 1 · tiltakspakke',
+      title: 'Vedtak 1 - tiltakspakke',
       peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
-      meta: 'DAG 1 · OSLO KOMMUNE',
-      stampText: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.',
+      meta: 'DAG 1 - OSLO KOMMUNE',
+      stampText: 'IVERKSATT - følges opp gjennom Frank og sakens videre dokumenter.',
     });
     const vedtak = store.documentById('doc_vedtak_1');
     const vedtakText = vedtak.blocks
@@ -189,7 +189,7 @@ describe('Blueprint v1 caseworker loop', () => {
           .join(' '),
       )
       .join(' ');
-    expect(vedtak.title).toBe('Vedtak 1 · tiltakspakke');
+    expect(vedtak.title).toBe('Vedtak 1 - tiltakspakke');
     expect(vedtakText).toContain('Tiltak iverksatt i dette vedtaket');
     expect(vedtakText).toContain('Arbeidshypoteser lagt til grunn for tiltakspakken');
     expect(vedtakText).toContain('Arbeidshypotese lagt til grunn');

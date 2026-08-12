@@ -1,7 +1,7 @@
 # Character: elling
 
 // Seed skeleton (PLAN-006 TASK-028). The real thought/bark migration is
-// SB-072 — do not port BARK_TEXTS or the .tres pools here.
+// SB-072 - do not port BARK_TEXTS or the .tres pools here.
 
 # Thoughts: elling/need/Hunger
 

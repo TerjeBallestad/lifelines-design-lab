@@ -54,22 +54,30 @@ export const styleCss = `
 .doc--regning .doc-table tbody tr:last-child td { border-bottom: none; }
 /* The giro payment slip: the final authored block sits on the darker band,
    under the perforated tear line. Full-bleed against the page padding and the
-   .page ink border (the band prints to the sheet edge). */
+   .page ink border (the band prints to the sheet edge). The tear line lives
+   INSIDE the band (SB-093, Terje 2026-08-12): dashes run the band width and
+   the label interrupts them with the band's own background — a label that
+   straddles the body/band boundary prints as a floating square. */
 .doc--regning .invoice-body > :last-child {
   margin-top: auto;
   background: #ddd3ba;
-  border-top: 2px dashed #8f8672;
-  padding: 26px 40px 32px;
+  padding: 40px 40px 32px;
   margin-left: -40px; margin-right: -40px; margin-bottom: 0;
   font-family: 'Courier Prime', 'Courier New', monospace;
   font-size: 16px;
   position: relative;
 }
 .doc--regning .invoice-body > :last-child::before {
-  content: 'RIV AV HER — GIROBLANKETT';
+  content: '';
   position: absolute;
-  top: -8px; left: 40px;
-  background: #f1ece0;
+  top: 12px; left: 14px; right: 14px;
+  border-top: 2px dashed #8f8672;
+}
+.doc--regning .invoice-body > :last-child::after {
+  content: 'RIV AV HER - GIROBLANKETT';
+  position: absolute;
+  top: 5px; left: 40px;
+  background: #ddd3ba;
   padding: 0 8px;
   font-family: 'Archivo', sans-serif;
   font-size: 12px; letter-spacing: 0.2em; color: #8f8672;

@@ -190,7 +190,7 @@ export const phoneActivityClocks: ActivityClock[] = [
     diceSlots: ['safe', 'safe', 'risky', 'risky', 'locked'],
     tone: 'practice',
     stages: [
-      'Frank står med mobilen til øret og sier «ring ring».',
+      'Frank står med mobilen til øret og sier "ring ring".',
       'Elling plukker opp, buser noe ut og legger på.',
       'Frank ringer fra mobilen mens han fortsatt er i rommet.',
       'Frank går på kjøkkenet og ringer hustelefonen.',
@@ -201,7 +201,7 @@ export const phoneActivityClocks: ActivityClock[] = [
     id: 'open_line_risk',
     label: 'Åpen linje: ny regning',
     description:
-      'Når telefonen virker, virker den også for alt annet. Framgang åpner verden — og en dyrere form for ensomhet.',
+      'Når telefonen virker, virker den også for alt annet. Framgang åpner verden - og en dyrere form for ensomhet.',
     segments: 4,
     filled: 0,
     diceSlots: ['empty', 'risky', 'risky', 'locked'],

@@ -39,7 +39,7 @@ du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 const FRANK_CHAT = `${HEADER}
 # Conversation: chat:frank
 
-* f_post: Posten i gangen — likegyldighet?
+* f_post: Posten i gangen - likegyldighet?
     Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.
     Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.
     * * Frykt for hva, helt konkret?
@@ -47,9 +47,9 @@ const FRANK_CHAT = `${HEADER}
         Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen.
     * * Hva gjør vi med bunken?
         Ikke ta den fra ham. Da tar du det siste han har kontroll på.
-        Åpne ett brev. Sammen. Det ufarligste først — strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.
+        Åpne ett brev. Sammen. Det ufarligste først - strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.
 
-* f_avstand: Møbelet mellom dere — hvor lang vei er det inn?
+* f_avstand: Møbelet mellom dere - hvor lang vei er det inn?
     Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne.
     Det er en dør på gløtt. Den lukkes hvis vi river i den.
     ~ pay f_dor_glott
@@ -60,7 +60,7 @@ const FRANK_CHAT = `${HEADER}
         Da lukkes den. Og jeg tror ikke den åpner for den neste som ringer på.
         Vi har én sjanse til å være de som ikke rev.
 
-* f_dor_glott: Døren på gløtt — hva holder den åpen? [answer=none]
+* f_dor_glott: Døren på gløtt - hva holder den åpen? [answer=none]
     At noen spør ham om noe han kan svare på. Det er hele mekanikken.
     Den tåler ikke omsorg ennå. Den tåler spørsmål.
 `;
@@ -68,7 +68,7 @@ const FRANK_CHAT = `${HEADER}
 describe('§8 weave → calls (golden: shipped Grete call)', () => {
   const out = compileCase(GRETE_CALL);
 
-  it('emits calls[0] deep-equal to the shipped call — gate, opening with speaker tag and fact lift, three exchanges, soft reject', () => {
+  it('emits calls[0] deep-equal to the shipped call - gate, opening with speaker tag and fact lift, three exchanges, soft reject', () => {
     expect(out.slice.calls).toHaveLength(1);
     expect(out.slice.calls?.[0]).toEqual(fragments.calls.grete);
   });
@@ -102,7 +102,7 @@ describe('§8 weave → frank_chat (goldens: c_post, c_avstand, c_dor_glott)', (
     expect(byId('c_dor_glott')).toEqual(fragments.frank_chat.c_dor_glott);
   });
 
-  it('entry ids derive from the key card (f_post → c_post) — no diagnostics beyond stubs and advisory lints', () => {
+  it('entry ids derive from the key card (f_post → c_post) - no diagnostics beyond stubs and advisory lints', () => {
     expect(entries.map((entry) => entry.id)).toEqual(['c_post', 'c_avstand', 'c_dor_glott']);
     const other = out.diagnostics.filter(
       (d) => d.code !== codes.STUB_UNRESOLVED_ID && !d.code.startsWith('lint-'),
@@ -114,12 +114,12 @@ describe('§8 weave → frank_chat (goldens: c_post, c_avstand, c_dor_glott)', (
 describe('§10 compat: Question/Answer/Needs triples compile as one-choice weaves', () => {
   it('a chat:<id> block with a triple and no branches emits a single entry', () => {
     const out = compileCase(
-      `${HEADER}\n# Conversation: chat:c_bok\nQuestion: Boken — hva betyr den?\nAnswer: Den betyr alt.\nNeeds: f_bok\n`,
+      `${HEADER}\n# Conversation: chat:c_bok\nQuestion: Boken - hva betyr den?\nAnswer: Den betyr alt.\nNeeds: f_bok\n`,
     );
     expect(out.slice.frank_chat).toEqual([
       {
         id: 'c_bok',
-        question: 'Boken — hva betyr den?',
+        question: 'Boken - hva betyr den?',
         answer: 'Den betyr alt.',
         needs: ['f_bok'],
         answer_lines: ['Den betyr alt.'],
@@ -130,12 +130,12 @@ describe('§10 compat: Question/Answer/Needs triples compile as one-choice weave
 
   it('a triple with "Pays fact:" emits pays_fact and a fixit-pays-fact naming the ~ pay replacement', () => {
     const out = compileCase(
-      `${HEADER}\n# Conversation: chat:c_bok\nQuestion: Boken — hva betyr den?\nAnswer: Den betyr alt.\nNeeds: f_bok\nPays fact: f_bok_notert\n`,
+      `${HEADER}\n# Conversation: chat:c_bok\nQuestion: Boken - hva betyr den?\nAnswer: Den betyr alt.\nNeeds: f_bok\nPays fact: f_bok_notert\n`,
     );
     expect(out.slice.frank_chat).toEqual([
       {
         id: 'c_bok',
-        question: 'Boken — hva betyr den?',
+        question: 'Boken - hva betyr den?',
         answer: 'Den betyr alt.',
         needs: ['f_bok'],
         pays_fact: 'f_bok_notert',
@@ -150,12 +150,12 @@ describe('§10 compat: Question/Answer/Needs triples compile as one-choice weave
 });
 
 // ---------------------------------------------------------------------------
-// Ruling 2 warn list — every unplayable construct parses, emits NOTHING for
+// Ruling 2 warn list - every unplayable construct parses, emits NOTHING for
 // that construct, and produces its stable diagnostic code (DD-002: the warning
 // list is the engine backlog).
 // ---------------------------------------------------------------------------
 
-describe('ruling 2 warn list — parses, warns, never emits', () => {
+describe('ruling 2 warn list - parses, warns, never emits', () => {
   it('nesting deeper than one (* * *) warns weave-nesting-too-deep and drops the deep node', () => {
     const out = compileCase(
       `${HEADER}\n# Conversation: chat:frank\n* f_a: Q?\n    L1\n    * * F1\n        FL1\n        * * * For dypt\n            Dyp linje\n`,

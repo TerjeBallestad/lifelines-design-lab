@@ -98,7 +98,8 @@ export async function renderHtmlToPng(html, outPngPath, opts = {}) {
     });
     await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: outPngPath, fullPage: true });
+    // Mirrors bake-docs.mjs: alpha for KASSALAPP's sawtooth tear.
+    await page.screenshot({ path: outPngPath, fullPage: true, omitBackground: true });
     const factCount = (await page.$$('[data-fact-id]')).length;
     return { htmlPath, pngPath: outPngPath, factCount };
   } finally {

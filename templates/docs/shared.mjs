@@ -104,7 +104,7 @@ export function renderBlocks(blocks) {
 // kind templates.
 //
 // SDD-011 wear (Terje 2026-08-12): the raw economy papers carry per-sheet
-// wear — folds, stains, and INSTITUTIONAL stamps (KOPI, UBETALT), ported from
+// wear — folds, stains, and INSTITUTIONAL stamps (KOPI), ported from
 // the design canvas. Frank's handwritten commentary (the Caveat margin notes,
 // the ballpoint circle) never prints: it bleeds the answers the player must
 // derive from the printed figures. Wear layers sit ABOVE the ink like the
@@ -144,21 +144,17 @@ const DOC_OVERRIDES = Object.freeze({
         'radial-gradient(ellipse 160px 55px at 50% 99%, rgba(80,60,30,0.12), transparent 70%)',
     ),
   },
-  // 1c — the strømregning: letter-fold thirds, a stain at the left edge, and
-  // the UBETALT stamp.
+  // 1c — the strømregning: letter-fold thirds, a stain at the left edge.
+  // No UBETALT stamp (SB-093, Terje 2026-08-12): nobody in the fiction can
+  // have stamped the household's own copy — the sender says "unpaid" by
+  // printing 2. GANGS VARSEL and the purregebyr line.
   doc_strom: {
     className: 'ov-strom',
-    art:
-      WEAR_LAYER(
-        'linear-gradient(to bottom, transparent 33%, rgba(70,55,30,0.13) 33.3%, rgba(255,255,255,0.22) 33.6%, transparent 34%), ' +
-          'linear-gradient(to bottom, transparent 66%, rgba(70,55,30,0.13) 66.3%, rgba(255,255,255,0.22) 66.6%, transparent 67%), ' +
-          'radial-gradient(ellipse 95px 80px at 8% 40%, rgba(110,75,30,0.14), transparent 70%)',
-      ) +
-      STAMP(
-        'UBETALT',
-        'top: 640px; right: 40px; transform: rotate(8deg); border: 4px double rgba(160,45,30,0.6); ' +
-          'color: rgba(160,45,30,0.6); font-size: 23px; letter-spacing: 4px; padding: 6px 18px;',
-      ),
+    art: WEAR_LAYER(
+      'linear-gradient(to bottom, transparent 33%, rgba(70,55,30,0.13) 33.3%, rgba(255,255,255,0.22) 33.6%, transparent 34%), ' +
+        'linear-gradient(to bottom, transparent 66%, rgba(70,55,30,0.13) 66.3%, rgba(255,255,255,0.22) 66.6%, transparent 67%), ' +
+        'radial-gradient(ellipse 95px 80px at 8% 40%, rgba(110,75,30,0.14), transparent 70%)',
+    ),
   },
   // 1d — the kassalapp: a crease where it lay folded in the shoebox, a
   // finger stain near the top edge.
@@ -229,17 +225,31 @@ export function kindSlug(kind) {
     .replace(/(^-|-$)/g, '');
 }
 
-// Paper grain (SB-427 — sakskart «ALT ER PAPIR» vocabulary, SakskartSkinB
-// grain_texture in core-loop): a tiny deterministic fractal-noise tile drawn ABOVE
-// the ink at low alpha, exactly like the cork-board slips draw their grain wash
-// over the stylebox fill. Inline SVG data URI so the page stays self-contained
-// (file:// bake, no assets). feTurbulence with a fixed seed is deterministic for
-// a given chromium build — the bake --check still holds on one host.
+// Paper wash (SB-093, Terje 2026-08-12: uniform fractal static «doesn't give
+// me paper»). Four deterministic feTurbulence layers on one 320px tile, drawn
+// ABOVE the ink at low alpha like the cork-board slips' grain wash:
+//   1. pulp mottle, dark  — low-frequency warm blotches (uneven pulp density)
+//   2. pulp mottle, light — offset-seed near-white lift (sheen variation)
+//   3. fibers — anisotropic noise (low x-freq, higher y-freq) = faint
+//      horizontal streaks, the machine direction of cheap 90s copy paper
+//   4. tooth — fine grain, kept from the old wash but quieter
+// Inline SVG data URI so the page stays self-contained (file:// bake, no
+// assets). feTurbulence with fixed seeds is deterministic for a given
+// chromium build — the bake --check still holds on one host.
 const GRAIN_SVG = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">` +
+  `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320">` +
+    `<filter id="md"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="17" stitchTiles="stitch"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 0.36  0 0 0 0 0.28  0 0 0 0 0.16  0 0 0 0.34 0"/></filter>` +
+    `<filter id="ml"><feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="52" stitchTiles="stitch"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.99  0 0 0 0 0.94  0 0 0 0.42 0"/></filter>` +
+    `<filter id="fb"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.18" numOctaves="2" seed="8" stitchTiles="stitch"/>` +
+    `<feColorMatrix type="matrix" values="0 0 0 0 0.30  0 0 0 0 0.24  0 0 0 0 0.15  0 0 0 0.20 0"/></filter>` +
     `<filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="421" stitchTiles="stitch"/>` +
-    `<feColorMatrix type="matrix" values="0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.55 0"/></filter>` +
-    `<rect width="96" height="96" filter="url(#g)"/></svg>`,
+    `<feColorMatrix type="matrix" values="0 0 0 0 0.13  0 0 0 0 0.10  0 0 0 0 0.06  0 0 0 0.32 0"/></filter>` +
+    `<rect width="320" height="320" filter="url(#md)"/>` +
+    `<rect width="320" height="320" filter="url(#ml)"/>` +
+    `<rect width="320" height="320" filter="url(#fb)"/>` +
+    `<rect width="320" height="320" filter="url(#g)"/></svg>`,
 );
 
 // Paper ground (SDD-108 feel-gate): pages must read as paper under room light,

@@ -1,6 +1,6 @@
 # Character: frank
 
-// Seed skeleton (PLAN-006 TASK-028). Frank never thinks (SDD-110 #10) —
+// Seed skeleton (PLAN-006 TASK-028). Frank never thinks (SDD-110 #10) -
 // phone and barks only. The real line migration is SB-072.
 
 # Barks: frank
@@ -11,6 +11,6 @@ Stub: yes
 
 # Phone: frank
 
-Answer: «ja, det er Frank.»
-Close: «vi snakkes.»
+Answer: "ja, det er Frank."
+Close: "vi snakkes."
 Stub: yes

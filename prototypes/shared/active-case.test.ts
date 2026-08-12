@@ -81,7 +81,7 @@ describe('key builders and save target', () => {
 
 describe('picker labels', () => {
   it('labels a case with its compiled slice title', () => {
-    expect(caseTitle(OLSEN)).toBe('Olsen — full case slice');
+    expect(caseTitle(OLSEN)).toBe('Olsen - full case slice');
     expect(caseTitle('content/cases/stub/seam-stub.case.md')).toBe('Stub — seam check');
   });
 

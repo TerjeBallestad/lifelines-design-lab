@@ -194,7 +194,7 @@ export function tiltakAvailability(
     const questionTitle = openers[0].question.title;
     return {
       ok: false,
-      why: `krever arbeidshypotese${questionTitle ? ` under «${questionTitle}»` : ''}`,
+      why: `krever arbeidshypotese${questionTitle ? ` under "${questionTitle}"` : ''}`,
     };
   }
   return { ok: true };
@@ -231,13 +231,13 @@ export function enactBlueprintTiltak(progress: BlueprintProgress): BlueprintTilt
   progress.vedtakRecords.push({
     documentId,
     number: vedtakNumber,
-    title: `Vedtak ${vedtakNumber} · tiltakspakke`,
+    title: `Vedtak ${vedtakNumber} - tiltakspakke`,
     peek: 'Tiltak og arbeidshypoteser lagt til grunn.',
-    meta: `DAG ${progress.day} · OSLO KOMMUNE`,
+    meta: `DAG ${progress.day} - OSLO KOMMUNE`,
     day: progress.day,
     tiltakIds: chosen,
     hypothesisIds: hypotheses.map((hypothesis) => hypothesis.id),
-    stampText: 'IVERKSATT · følges opp gjennom Frank og sakens videre dokumenter.',
+    stampText: 'IVERKSATT - følges opp gjennom Frank og sakens videre dokumenter.',
   });
 
   for (const tiltakId of chosen) {
@@ -364,7 +364,7 @@ export function runBlueprintDispatch(
     });
     if (lifted) {
       outcome.toasts.push({
-        tag: `FAKTUM LAGT TIL · ${lifted.fact.domain}`,
+        tag: `FAKTUM LAGT TIL - ${lifted.fact.domain}`,
         text: lifted.fact.text,
         kind: 'fact',
       });
@@ -603,7 +603,7 @@ function applyScriptedDay(progress: BlueprintProgress, outcome: BlueprintDispatc
     receiveBlueprintDocument(progress, 'doc_huseier');
     outcome.toasts.push({
       tag: 'NY POST PÅ PULTEN',
-      text: 'Håndskrevet brev · T. Bakkerud',
+      text: 'Håndskrevet brev - T. Bakkerud',
       kind: 'day',
     });
   }
@@ -673,7 +673,7 @@ function simTick(progress: BlueprintProgress): void {
     sim.needs.hunger =
       sim.foodBoxes > 0 ? Math.max(40, sim.needs.hunger - 6) : Math.max(10, sim.needs.hunger - 15);
     if (sim.foodBoxes === 1) {
-      log('Én boks igjen i kjøleskapet. Merket «søndag», i Gretes håndskrift.');
+      log('Én boks igjen i kjøleskapet. Merket "søndag", i Gretes håndskrift.');
     } else if (sim.foodBoxes <= 0) {
       log(
         'Kjøleskapet: lyset, en halv pakke smør, ingenting annet. Han spiste knekkebrød stående.',
@@ -689,7 +689,7 @@ function simTick(progress: BlueprintProgress): void {
   }
 
   if (coverage.channel && progress.enactedTiltakIds.includes('t_hjemmehjelp')) {
-    log('Frank 14:00, fast tid. Kaffen sto klar da han gikk — én kopp brukt.', 'tiltak');
+    log('Frank 14:00, fast tid. Kaffen sto klar da han gikk - én kopp brukt.', 'tiltak');
     sim.needs.social = Math.min(45, sim.needs.social + 4);
   } else if (!coverage.channel) {
     log('Banking på døren. E. frøs. Ingen lyd i fire minutter. Så stillhet.');
@@ -702,7 +702,7 @@ function simTick(progress: BlueprintProgress): void {
       const steps = [
         'Brevrutine: Frank la ett brev på bordet og ventet. E. så på det. Det var nok.',
         'Brevrutine: E. åpnet konvolutten. Leste avsenderen høyt.',
-        'Brevrutine: E. leste første avsnitt. «De vil ha et svar innen fjorten dager.»',
+        'Brevrutine: E. leste første avsnitt. "De vil ha et svar innen fjorten dager."',
         'Brevrutine: E. la brevet i en mappe han hadde laget selv. Den var merket.',
       ];
       const step = steps[progress.clocks.ck_rutine.good - 1];
@@ -775,7 +775,7 @@ function buildEndText(progress: BlueprintProgress): BlueprintEndText {
         'Kartlegging for omsorgsbolig er igangsatt. Saken er bureaukratisk lesbar og kan lukkes administrativt ved tildeling.',
       para2:
         'Skjemaet ligger fortsatt uåpnet i posten hans. Leiligheten er i så fall et avsluttet kapittel.',
-      closing: '«Han er en smart gutt,» sa hun i trappen. Det var det siste hun sa til kommunen.',
+      closing: '"Han er en smart gutt," sa hun i trappen. Det var det siste hun sa til kommunen.',
     };
   }
 

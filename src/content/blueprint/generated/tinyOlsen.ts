@@ -69,7 +69,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'OLSEN GRETE\nGABELS GATE 14\n0272 OSLO',
+            text: 'OLSEN GRETE\nAMMERUDVEIEN 47\n0958 OSLO',
           },
         ],
       },
@@ -99,7 +99,7 @@ export const tinyOlsenDocuments = {
           ],
           [
             {
-              text: 'UT [icon=coin]',
+              text: 'UT',
             },
           ],
           [
@@ -129,7 +129,7 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '6,40',
+                text: '25 [icon=coin]',
               },
             ],
           ],
@@ -147,12 +147,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '31,00',
+                text: '125 [icon=coin]',
               },
             ],
             [
               {
-                text: '37,40',
+                text: '150 [icon=coin]',
               },
             ],
           ],
@@ -170,12 +170,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [
               {
-                text: '59,40',
+                text: '240 [icon=coin]',
               },
             ],
           ],
@@ -193,13 +193,13 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '30,00',
+                text: '120 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '29,40',
+                text: '120 [icon=coin]',
               },
             ],
           ],
@@ -211,18 +211,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'MATSENTRALEN GABELS GT',
+                text: 'MATSENTRALEN AMMERUD',
               },
             ],
             [
               {
-                text: '2,35',
+                text: '10 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '27,05',
+                text: '110 [icon=coin]',
               },
             ],
           ],
@@ -234,18 +234,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'POSTGIRO — OSLO ENERGIVERK',
+                text: 'POSTGIRO - OSLO ENERGIVERK',
               },
             ],
             [
               {
-                text: '4,10',
+                text: '17 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '22,95',
+                text: '93 [icon=coin]',
               },
             ],
           ],
@@ -257,18 +257,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'MATSENTRALEN GABELS GT',
+                text: 'MATSENTRALEN AMMERUD',
               },
             ],
             [
               {
-                text: '2,60',
+                text: '11 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '20,35',
+                text: '82 [icon=coin]',
               },
             ],
           ],
@@ -280,18 +280,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'SKILLEBEKK APOTEK',
+                text: 'AMMERUD APOTEK',
               },
             ],
             [
               {
-                text: '0,85',
+                text: '4 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '19,50',
+                text: '78 [icon=coin]',
               },
             ],
           ],
@@ -303,18 +303,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'MATSENTRALEN GABELS GT',
+                text: 'MATSENTRALEN AMMERUD',
               },
             ],
             [
               {
-                text: '2,45',
+                text: '10 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '17,05',
+                text: '68 [icon=coin]',
               },
             ],
           ],
@@ -326,18 +326,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'POSTGIRO — TELEVERKET',
+                text: 'POSTGIRO - TELEVERKET',
               },
             ],
             [
               {
-                text: '1,20',
+                text: '5 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '15,85',
+                text: '63 [icon=coin]',
               },
             ],
           ],
@@ -349,18 +349,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'MATSENTRALEN GABELS GT',
+                text: 'MATSENTRALEN AMMERUD',
               },
             ],
             [
               {
-                text: '2,50',
+                text: '11 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '13,35',
+                text: '52 [icon=coin]',
               },
             ],
           ],
@@ -372,18 +372,18 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: 'NARVESEN — UKEBLAD/AVIS',
+                text: 'NARVESEN - UKEBLAD/AVIS',
               },
             ],
             [
               {
-                text: '0,45',
+                text: '2 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '12,90',
+                text: '50 [icon=coin]',
               },
             ],
           ],
@@ -402,7 +402,7 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '12,90',
+                text: '50 [icon=coin]',
               },
             ],
           ],
@@ -413,7 +413,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: ' RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON. ',
+            text: ' RENTESATS INNSKUDD 3 % P.A. - UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON. ',
           },
         ],
       },
@@ -425,14 +425,14 @@ export const tinyOlsenDocuments = {
     title: 'KONTOUTSKRIFT',
     register: 'formell',
     peek: 'Årsutskrift. Elling Olsen.',
-    meta: 'NR. 1/99 — ÅRSUTSKRIFT',
+    meta: 'NR. 1/99 - ÅRSUTSKRIFT',
     blocks: [
       {
         id: 'doc_konto_elling_p1',
         type: 'para',
         runs: [
           {
-            text: 'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO',
+            text: 'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nAMMERUDVEIEN 47\n0958 OSLO',
           },
         ],
       },
@@ -462,7 +462,7 @@ export const tinyOlsenDocuments = {
           ],
           [
             {
-              text: 'UT [icon=coin]',
+              text: 'UT',
             },
           ],
           [
@@ -492,7 +492,7 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -511,12 +511,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
           ],
@@ -533,13 +533,13 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -557,12 +557,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
           ],
@@ -579,13 +579,13 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -603,12 +603,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
           ],
@@ -625,13 +625,13 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -649,12 +649,12 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
           ],
@@ -671,13 +671,13 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '22,00',
+                text: '90 [icon=coin]',
               },
             ],
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -696,7 +696,7 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '0,00',
+                text: '0 [icon=coin]',
               },
             ],
           ],
@@ -739,7 +739,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: '2. GANGS VARSEL\nOLSEN GRETE\nGABELS GATE 14, LEIL. 3\n0272 OSLO',
+            text: '2. GANGS VARSEL\nOLSEN GRETE\nAMMERUDVEIEN 47, LEIL. 312\n0958 OSLO',
           },
         ],
       },
@@ -748,7 +748,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'KUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: GABELS GT 14/3 ',
+            text: 'KUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: AMMERUDVN. 47/312 ',
           },
         ],
       },
@@ -769,7 +769,7 @@ export const tinyOlsenDocuments = {
           ],
           [
             {
-              text: 'BELØP [icon=coin]',
+              text: 'BELØP',
             },
           ],
         ],
@@ -787,7 +787,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '2,90',
+                text: '12 [icon=coin]',
               },
             ],
           ],
@@ -799,12 +799,12 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '—',
+                text: '-',
               },
             ],
             [
               {
-                text: '1,20',
+                text: '5 [icon=coin]',
               },
             ],
           ],
@@ -816,12 +816,12 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '—',
+                text: '-',
               },
             ],
             [
               {
-                text: '0,15',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -834,7 +834,7 @@ export const tinyOlsenDocuments = {
             [],
             [
               {
-                text: '4,25',
+                text: '18 [icon=coin]',
               },
             ],
           ],
@@ -854,7 +854,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 · KID: 99114872008\nFORFALL: 15.03.1999 · BELØP: 4,25 ',
+            text: 'BETALT AV: OLSEN GRETE, AMMERUDVEIEN 47, 0958 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 - KID: 99114872008\nFORFALL: 15.03.1999 - BELØP: 18 [icon=coin] ',
           },
         ],
       },
@@ -866,14 +866,14 @@ export const tinyOlsenDocuments = {
     title: 'MATSENTRALEN',
     register: 'formell',
     peek: 'En kassalapp fra skoesken.',
-    meta: '07.01.99 · KASSE 2',
+    meta: '07.01.99 - KASSE 2',
     blocks: [
       {
         id: 'doc_kassalapp_p1',
         type: 'para',
         runs: [
           {
-            text: 'MATSENTRALEN\nGABELS GATE 11 · OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx ',
+            text: 'MATSENTRALEN\nAMMERUD SENTER - OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx ',
           },
         ],
       },
@@ -891,7 +891,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,22',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -903,7 +903,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,28',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -915,7 +915,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,52',
+                text: '2 [icon=coin]',
               },
             ],
           ],
@@ -927,7 +927,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,30',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -939,7 +939,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,64',
+                text: '3 [icon=coin]',
               },
             ],
           ],
@@ -951,7 +951,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,18',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -963,7 +963,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '0,21',
+                text: '1 [icon=coin]',
               },
             ],
           ],
@@ -978,12 +978,12 @@ export const tinyOlsenDocuments = {
           [
             [
               {
-                text: 'TOTALT [icon=coin]',
+                text: 'TOTALT',
               },
             ],
             [
               {
-                text: '2,35',
+                text: '10 [icon=coin]',
               },
             ],
           ],
@@ -996,7 +996,7 @@ export const tinyOlsenDocuments = {
             ],
             [
               {
-                text: '2,35',
+                text: '10 [icon=coin]',
               },
             ],
           ],
@@ -1025,10 +1025,10 @@ export const tinyOlsenDocuments = {
   doc_huseier: {
     id: 'doc_huseier',
     kind: 'BREV',
-    title: 'Brev fra huseieren · T. Bakkerud',
+    title: 'Brev fra huseieren - T. Bakkerud',
     register: 'formell',
-    peek: '«Jeg hører at din mor er gått bort.»',
-    meta: 'T. BAKKERUD · HÅNDSKREVET · LEVERT I POSTKASSEN · VIDEREFORMIDLET AV 4012',
+    peek: '"Jeg hører at din mor er gått bort."',
+    meta: 'T. BAKKERUD - HÅNDSKREVET - LEVERT I POSTKASSEN - VIDEREFORMIDLET AV 4012',
     blocks: [
       {
         id: 'doc_huseier_p1',
@@ -1098,10 +1098,10 @@ export const tinyOlsenDocuments = {
   doc_frank_tlf: {
     id: 'doc_frank_tlf',
     kind: 'FELTNOTAT',
-    title: 'Frank · telefonsamtale med Grete',
+    title: 'Frank - telefonsamtale med Grete',
     register: 'notat',
-    peek: '«Hun tok den på andre forsøk.»',
-    meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
+    peek: '"Hun tok den på andre forsøk."',
+    meta: 'FELTNOTAT - 4012 F. ÅSLI - TLF. G. OLSEN',
     blocks: [
       {
         id: 'doc_frank_tlf_p1',
@@ -1120,7 +1120,7 @@ export const tinyOlsenDocuments = {
             text: 'Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: ',
           },
           {
-            text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
+            text: '"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.',
             factId: 'f_klarer_seg',
           },
           {
@@ -1143,7 +1143,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
+            text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."',
             factId: 'f_elling_tlf',
           },
         ],
@@ -1169,7 +1169,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til. ',
+            text: 'Hun gikk med på hjemmebesøk. "Hvis det må til." Det må til. ',
           },
         ],
       },
@@ -1178,10 +1178,10 @@ export const tinyOlsenDocuments = {
   doc_frank_visit: {
     id: 'doc_frank_visit',
     kind: 'RAPPORT',
-    title: 'Frank · hjemmebesøk Gabels gate 14',
+    title: 'Frank - hjemmebesøk Ammerudveien 47',
     register: 'notat',
-    peek: '«Hun hadde dekket på med tre kopper.»',
-    meta: 'HJEMMEBESØK · 4012 F. ÅSLI',
+    peek: '"Hun hadde dekket på med tre kopper."',
+    meta: 'HJEMMEBESØK - 4012 F. ÅSLI',
     blocks: [
       {
         id: 'doc_frank_visit_p1',
@@ -1261,7 +1261,7 @@ export const tinyOlsenDocuments = {
             text: 'Grete fulgte meg ut. I trappen sa hun: ',
           },
           {
-            text: '«Du så hvordan han er. Han er en smart gutt.»',
+            text: '"Du så hvordan han er. Han er en smart gutt."',
             factId: 'f_smart_gutt',
           },
           {
@@ -1274,10 +1274,10 @@ export const tinyOlsenDocuments = {
   doc_innleggelse: {
     id: 'doc_innleggelse',
     kind: 'MELDING',
-    title: 'OUS Ullevål · innleggelse',
+    title: 'OUS Ullevål - innleggelse',
     register: 'klinisk',
-    peek: '«…ber om at kommunen ser til ham.»',
-    meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 14.02.1999',
+    peek: '"…ber om at kommunen ser til ham."',
+    meta: 'ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 14.02.1999',
     blocks: [
       {
         id: 'doc_innleggelse_p1',
@@ -1322,7 +1322,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'SOSIALMEDISINSK ENHET · OUS ',
+            text: 'SOSIALMEDISINSK ENHET - OUS ',
           },
         ],
       },
@@ -1331,10 +1331,10 @@ export const tinyOlsenDocuments = {
   doc_dodsfall: {
     id: 'doc_dodsfall',
     kind: 'MELDING',
-    title: 'OUS Ullevål · dødsfall',
+    title: 'OUS Ullevål - dødsfall',
     register: 'klinisk',
-    peek: '—',
-    meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999',
+    peek: '-',
+    meta: 'ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 15.02.1999',
     blocks: [
       {
         id: 'doc_dodsfall_p1',
@@ -1385,7 +1385,7 @@ export const tinyOlsenDocuments = {
         type: 'para',
         runs: [
           {
-            text: 'SOSIALMEDISINSK ENHET · OUS ',
+            text: 'SOSIALMEDISINSK ENHET - OUS ',
           },
         ],
       },
@@ -1394,10 +1394,10 @@ export const tinyOlsenDocuments = {
   doc_status: {
     id: 'doc_status',
     kind: 'STATUSRAPPORT',
-    title: 'Frank · status dag 8',
+    title: 'Frank - status dag 8',
     register: 'notat',
     peek: 'En uke siden meldingen.',
-    meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+    meta: 'STATUSRAPPORT - 4012 F. ÅSLI - DAG 8',
     blocks: [
       {
         id: 'doc_status_p1',
@@ -1459,7 +1459,7 @@ export const tinyOlsenFacts = {
     id: 'f_husleie',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Husleien er 30 [icon=coin] og betales av Grete.',
+    text: 'Husleien er 120 [icon=coin] og betales av Grete.',
     quote: 'KONTANTUTTAK SKRANKE',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -1467,7 +1467,7 @@ export const tinyOlsenFacts = {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
+    text: 'Ellings uføretrygd: 90 [icon=coin] i måneden.',
     quote: 'UFØRETRYGD RTV',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -1491,7 +1491,7 @@ export const tinyOlsenFacts = {
     id: 'f_gap',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
+    text: 'Uten Gretes pensjon mangler husholdet 100 [icon=coin] hver måned.',
     quote: '',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -1524,7 +1524,7 @@ export const tinyOlsenFacts = {
     domain: 'Nettverk/sosialt',
     category: 'Samtale',
     text: 'Grete avviser bekymringen. Gjentar formuleringen.',
-    quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
+    quote: '"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.',
     supports: ['q_grete_dor'],
   },
   f_ingen_plan: {
@@ -1542,14 +1542,14 @@ export const tinyOlsenFacts = {
     category: 'Samtale',
     text: 'Elling tar ikke telefonen. Grete normaliserer det.',
     quote:
-      'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
+      'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."',
     supports: ['q_baering'],
   },
   f_grete_redd: {
     id: 'f_grete_redd',
     domain: 'Nettverk/sosialt',
     category: 'Samtale',
-    text: 'Grete frykter at kommunen vil ta leiligheten — eller Elling.',
+    text: 'Grete frykter at kommunen vil ta leiligheten, eller Elling.',
     quote: 'spurte hun om dette betydde at noen kom til å ta ham fra leiligheten',
     supports: ['q_bolig'],
   },
@@ -1557,7 +1557,7 @@ export const tinyOlsenFacts = {
     id: 'f_post',
     domain: 'Hverdag/rutine',
     category: 'Observasjon',
-    text: 'Uåpnet post samler seg. Grete håndterer den — og skjuler den.',
+    text: 'Uåpnet post samler seg. Grete håndterer den - og skjuler den.',
     quote:
       'en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.',
     supports: ['q_grete_dor', 'q_okonomi'],
@@ -1591,7 +1591,7 @@ export const tinyOlsenFacts = {
     id: 'f_dor_glott',
     domain: 'Nettverk/sosialt',
     category: 'Samtale',
-    text: 'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+    text: 'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig - forsiktig.',
     quote:
       'han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.',
     supports: ['q_baering'],
@@ -1600,8 +1600,8 @@ export const tinyOlsenFacts = {
     id: 'f_smart_gutt',
     domain: 'Nettverk/sosialt',
     category: 'Samtale',
-    text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
-    quote: '«Du så hvordan han er. Han er en smart gutt.»',
+    text: 'Grete omtaler Elling (35) som "gutt". Rollene er fastlåst.',
+    quote: '"Du så hvordan han er. Han er en smart gutt."',
     supports: ['q_grete_dor', 'q_evner'],
   },
   f_innlagt: {
@@ -1641,7 +1641,7 @@ export const tinyOlsenFacts = {
 export const tinyOlsenQuestions = {
   q_grete_dor: {
     id: 'q_grete_dor',
-    title: 'Den dagen Grete ikke kommer hjem — hva stopper?',
+    title: 'Den dagen Grete ikke kommer hjem - hva stopper?',
     appearsOn: ['f_grete_syk', 'f_klarer_seg'],
     hypotheses: [
       {
@@ -1663,13 +1663,13 @@ export const tinyOlsenQuestions = {
         label: 'Ingenting vi vet. Ingen har noen gang sett Elling alene.',
         needs: ['f_ingen_plan'],
         opens: [],
-        note: 'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
+        note: 'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet - og den må lukkes før noe annet.',
       },
     ],
   },
   q_evner: {
     id: 'q_evner',
-    title: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
+    title: 'Hva klarer Elling selv - når ingen har gjort det for ham først?',
     appearsOn: ['f_bok', 'f_utklipp'],
     hypotheses: [
       {
@@ -1681,7 +1681,7 @@ export const tinyOlsenQuestions = {
       },
       {
         id: 'h_ev_unngaar',
-        label: 'Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.',
+        label: 'Han forstår - men unngår. Posten ligger uåpnet, ikke ulest.',
         needs: ['f_post', 'f_bok'],
         opens: ['t_dokgjennomgang'],
         note: 'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
@@ -1691,13 +1691,13 @@ export const tinyOlsenQuestions = {
         label: 'Vet ikke. Ingen har prøvd. Det er selve funnet.',
         needs: [],
         opens: ['t_brev', 't_regning'],
-        note: 'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.',
+        note: 'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut - forsiktig.',
       },
     ],
   },
   q_okonomi: {
     id: 'q_okonomi',
-    title: 'Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?',
+    title: 'Regnestykket Olsen: hva kommer inn, hva går ut - og gjennom hvem?',
     appearsOn: ['f_grete_baerer', 'f_trygd', 'f_husleie'],
     hypotheses: [
       {
@@ -1705,25 +1705,25 @@ export const tinyOlsenQuestions = {
         label: 'Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.',
         needs: ['f_husleie', 'f_alt_via_grete'],
         opens: ['t_forvaltning'],
-        note: 'Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
+        note: 'Husleie og faste betalinger fungerer gjennom Gretes system - skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
       },
       {
         id: 'h_ok_gap',
-        label: 'Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.',
+        label: 'Trygden dekker ikke husholdet. 100 [icon=coin] mangler hver måned.',
         needs: ['f_gap'],
         opens: ['t_bostotte', 't_huseier'],
-        note: 'Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        note: 'Ellings trygd er 90 [icon=coin]. Husleien alene er 120 [icon=coin], og januar kostet 190. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       },
     ],
   },
   q_bolig: {
     id: 'q_bolig',
-    title: 'Kan Elling bli boende — når husleien har stoppet?',
+    title: 'Kan Elling bli boende - når husleien har stoppet?',
     appearsOn: ['f_gap', 'f_leie_stoppet', 'f_husleie'],
     hypotheses: [
       {
         id: 'h_b_sikres',
-        label: 'Boligen kan sikres — med bostøtte og ordnet betalingskjede.',
+        label: 'Boligen kan sikres - med bostøtte og ordnet betalingskjede.',
         needs: ['f_gap', 'f_trygd'],
         opens: ['t_bostotte', 't_forvaltning'],
         note: 'Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.',
@@ -1737,7 +1737,7 @@ export const tinyOlsenQuestions = {
       },
       {
         id: 'h_b_uavklart',
-        label: 'Uavklart — økonomien må kartlegges først.',
+        label: 'Uavklart - økonomien må kartlegges først.',
         needs: [],
         opens: [],
         note: 'Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.',
@@ -1747,12 +1747,12 @@ export const tinyOlsenQuestions = {
   q_baering: {
     id: 'q_baering',
     title:
-      'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
+      'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med - og hvor mye tåler han?',
     appearsOn: ['f_elling_tlf', 'f_avstand'],
     hypotheses: [
       {
         id: 'h_ba_kanal',
-        label: 'Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.',
+        label: 'Først en kanal. Fast person, fast tid, oppmøte - telefonen er stengt.',
         needs: ['f_elling_tlf', 'f_avstand'],
         opens: ['t_hjemmehjelp'],
         note: 'Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.',
@@ -1766,16 +1766,16 @@ export const tinyOlsenQuestions = {
       },
       {
         id: 'h_ba_alt',
-        label: 'Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.',
+        label: 'Alt. Fullt omsorgsansvar - institusjon eller omsorgsbolig.',
         needs: ['f_saarbar'],
         opens: ['t_institusjon'],
-        note: 'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.',
+        note: 'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen - og den kan alltid utløses.',
       },
     ],
   },
   q_vekst: {
     id: 'q_vekst',
-    title: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
+    title: 'Hva kan læres - og i hvilket tempo, uten å knekke noe?',
     appearsOn: ['f_bok', 'f_utklipp'],
     hypotheses: [
       {
@@ -1783,11 +1783,11 @@ export const tinyOlsenQuestions = {
         label: 'Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.',
         needs: ['f_bok'],
         opens: ['t_brev', 't_regning'],
-        note: 'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.',
+        note: 'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte - lavt tempo, fast person, hans eget arkivspråk.',
       },
       {
         id: 'h_ve_formell',
-        label: 'Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.',
+        label: 'Ferdighetene er der ikke. Støtte må bære - læring er ikke planen nå.',
         needs: ['f_saarbar'],
         opens: ['t_hjemmehjelp'],
         note: 'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.',
@@ -1831,7 +1831,7 @@ export const tinyOlsenQuestions = {
   },
   q_liv: {
     id: 'q_liv',
-    title: 'Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?',
+    title: 'Ikke bare berget - levd. Hva skulle til for at Elling har et liv han vil ha?',
     appearsOn: ['f_dod', 'f_utklipp'],
     hypotheses: [
       {
@@ -1839,18 +1839,18 @@ export const tinyOlsenQuestions = {
         label: 'Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.',
         needs: ['f_utklipp', 'f_bok'],
         opens: [],
-        note: 'Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.',
+        note: 'Gro-arkivet og systematikken er en identitet det går an å delta gjennom - i hans tempo.',
       },
       {
         id: 'h_liv_trygghet',
-        label: 'Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.',
+        label: 'Trygghet først. Verden i hans tempo, med møbel imellom - og det er greit.',
         needs: ['f_avstand'],
         opens: [],
         note: 'Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.',
       },
       {
         id: 'h_liv_sporre',
-        label: 'Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.',
+        label: 'Det vet bare Elling. Noen må spørre ham - og noen må kunne få svar.',
         needs: ['f_elling_tlf'],
         opens: [],
         note: 'Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.',
@@ -1882,13 +1882,13 @@ export const tinyOlsenTiltak = {
     title: 'Snakk med huseieren',
     cost: 0,
     description:
-      'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.',
+      'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank - ikke torsdagsbesøket.',
     sim: 'case.olsen.tiltak.garanti',
   },
   t_hjemmehjelp: {
     id: 't_hjemmehjelp',
     slot: 's2',
-    title: 'Hjemmehjelp 2× uke — Frank',
+    title: 'Hjemmehjelp 2× uke - Frank',
     cost: 2,
     description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
     sim: 'case.olsen.tiltak.channel',
@@ -1952,7 +1952,7 @@ export const tinyOlsenDispatches = {
 
 export const tinyOlsenGodotSource = {
   id: 'case_olsen_tiny',
-  title: 'Olsen — full case slice',
+  title: 'Olsen - full case slice',
   scenario_stage: 0,
   vurdering_frist_day: 10,
   documents: [
@@ -2011,11 +2011,11 @@ export const tinyOlsenGodotSource = {
       peek: 'Kontoutskrift. Grete Olsen, januar.',
       meta: 'NR. 2/99',
       body_bbcode:
-        'OLSEN GRETE\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.44892\nPERIODE: 01.01.99–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.01[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]6,40[/cell][cell]04.01[/cell][cell]PENSJON RTV[/cell][cell][/cell][cell]31,00[/cell][cell]37,40[/cell][cell]04.01[/cell][cell]OVERF. E. OLSEN 7024.31.55103[/cell][cell][/cell][cell]22,00[/cell][cell]59,40[/cell][cell]05.01[/cell][cell][url=fact:f_husleie]KONTANTUTTAK SKRANKE[/url][/cell][cell]30,00[/cell][cell][/cell][cell]29,40[/cell][cell]07.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,35[/cell][cell][/cell][cell]27,05[/cell][cell]11.01[/cell][cell]POSTGIRO — OSLO ENERGIVERK[/cell][cell]4,10[/cell][cell][/cell][cell]22,95[/cell][cell]12.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,60[/cell][cell][/cell][cell]20,35[/cell][cell]14.01[/cell][cell]SKILLEBEKK APOTEK[/cell][cell]0,85[/cell][cell][/cell][cell]19,50[/cell][cell]18.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,45[/cell][cell][/cell][cell]17,05[/cell][cell]21.01[/cell][cell]POSTGIRO — TELEVERKET[/cell][cell]1,20[/cell][cell][/cell][cell]15,85[/cell][cell]25.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,50[/cell][cell][/cell][cell]13,35[/cell][cell]28.01[/cell][cell]NARVESEN — UKEBLAD/AVIS[/cell][cell]0,45[/cell][cell][/cell][cell]12,90[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]12,90[/cell][/table]\n\nRENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
+        'OLSEN GRETE\nAMMERUDVEIEN 47\n0958 OSLO\n\nKONTO: 7024.31.44892\nPERIODE: 01.01.99–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT[/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.01[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]25 [icon=coin][/cell][cell]04.01[/cell][cell]PENSJON RTV[/cell][cell][/cell][cell]125 [icon=coin][/cell][cell]150 [icon=coin][/cell][cell]04.01[/cell][cell]OVERF. E. OLSEN 7024.31.55103[/cell][cell][/cell][cell]90 [icon=coin][/cell][cell]240 [icon=coin][/cell][cell]05.01[/cell][cell][url=fact:f_husleie]KONTANTUTTAK SKRANKE[/url][/cell][cell]120 [icon=coin][/cell][cell][/cell][cell]120 [icon=coin][/cell][cell]07.01[/cell][cell]MATSENTRALEN AMMERUD[/cell][cell]10 [icon=coin][/cell][cell][/cell][cell]110 [icon=coin][/cell][cell]11.01[/cell][cell]POSTGIRO - OSLO ENERGIVERK[/cell][cell]17 [icon=coin][/cell][cell][/cell][cell]93 [icon=coin][/cell][cell]12.01[/cell][cell]MATSENTRALEN AMMERUD[/cell][cell]11 [icon=coin][/cell][cell][/cell][cell]82 [icon=coin][/cell][cell]14.01[/cell][cell]AMMERUD APOTEK[/cell][cell]4 [icon=coin][/cell][cell][/cell][cell]78 [icon=coin][/cell][cell]18.01[/cell][cell]MATSENTRALEN AMMERUD[/cell][cell]10 [icon=coin][/cell][cell][/cell][cell]68 [icon=coin][/cell][cell]21.01[/cell][cell]POSTGIRO - TELEVERKET[/cell][cell]5 [icon=coin][/cell][cell][/cell][cell]63 [icon=coin][/cell][cell]25.01[/cell][cell]MATSENTRALEN AMMERUD[/cell][cell]11 [icon=coin][/cell][cell][/cell][cell]52 [icon=coin][/cell][cell]28.01[/cell][cell]NARVESEN - UKEBLAD/AVIS[/cell][cell]2 [icon=coin][/cell][cell][/cell][cell]50 [icon=coin][/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]50 [icon=coin][/cell][/table]\n\nRENTESATS INNSKUDD 3 % P.A. - UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
       runs: [
         {
           id: 'run_text_0',
-          text: 'OLSEN GRETE GABELS GATE 14 0272 OSLO KONTO: 7024.31.44892 PERIODE: 01.01.99–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT [icon=coin] INN SALDO 01.01 SALDO OVERFØRT 6,40 04.01 PENSJON RTV 31,00 37,40 04.01 OVERF. E. OLSEN 7024.31.55103 22,00 59,40 05.01 ',
+          text: 'OLSEN GRETE AMMERUDVEIEN 47 0958 OSLO KONTO: 7024.31.44892 PERIODE: 01.01.99–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT INN SALDO 01.01 SALDO OVERFØRT 25 [icon=coin] 04.01 PENSJON RTV 125 [icon=coin] 150 [icon=coin] 04.01 OVERF. E. OLSEN 7024.31.55103 90 [icon=coin] 240 [icon=coin] 05.01 ',
           fact_id: '',
         },
         {
@@ -2025,7 +2025,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: ' 30,00 29,40 07.01 MATSENTRALEN GABELS GT 2,35 27,05 11.01 POSTGIRO — OSLO ENERGIVERK 4,10 22,95 12.01 MATSENTRALEN GABELS GT 2,60 20,35 14.01 SKILLEBEKK APOTEK 0,85 19,50 18.01 MATSENTRALEN GABELS GT 2,45 17,05 21.01 POSTGIRO — TELEVERKET 1,20 15,85 25.01 MATSENTRALEN GABELS GT 2,50 13,35 28.01 NARVESEN — UKEBLAD/AVIS 0,45 12,90 31.01 SALDO 12,90 RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS HENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
+          text: ' 120 [icon=coin] 120 [icon=coin] 07.01 MATSENTRALEN AMMERUD 10 [icon=coin] 110 [icon=coin] 11.01 POSTGIRO - OSLO ENERGIVERK 17 [icon=coin] 93 [icon=coin] 12.01 MATSENTRALEN AMMERUD 11 [icon=coin] 82 [icon=coin] 14.01 AMMERUD APOTEK 4 [icon=coin] 78 [icon=coin] 18.01 MATSENTRALEN AMMERUD 10 [icon=coin] 68 [icon=coin] 21.01 POSTGIRO - TELEVERKET 5 [icon=coin] 63 [icon=coin] 25.01 MATSENTRALEN AMMERUD 11 [icon=coin] 52 [icon=coin] 28.01 NARVESEN - UKEBLAD/AVIS 2 [icon=coin] 50 [icon=coin] 31.01 SALDO 50 [icon=coin] RENTESATS INNSKUDD 3 % P.A. - UTSKRIFTEN SENDES KVARTALSVIS HENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
           fact_id: '',
         },
       ],
@@ -2036,13 +2036,13 @@ export const tinyOlsenGodotSource = {
       title: 'KONTOUTSKRIFT',
       register: 'formell',
       peek: 'Årsutskrift. Elling Olsen.',
-      meta: 'NR. 1/99 — ÅRSUTSKRIFT',
+      meta: 'NR. 1/99 - ÅRSUTSKRIFT',
       body_bbcode:
-        'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.10[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][cell]02.10[/cell][cell][url=fact:f_trygd]UFØRETRYGD RTV[/url][/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.10[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.11[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.11[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.12[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.12[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]04.01[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]04.01[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][/table]\n\nINGEN ANDRE BEVEGELSER I PERIODEN.\n\n[url=fact:f_alt_via_grete]KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.[/url]',
+        'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nAMMERUDVEIEN 47\n0958 OSLO\n\nKONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT[/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.10[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]0 [icon=coin][/cell][cell]02.10[/cell][cell][url=fact:f_trygd]UFØRETRYGD RTV[/url][/cell][cell][/cell][cell]90 [icon=coin][/cell][cell]90 [icon=coin][/cell][cell]02.10[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]90 [icon=coin][/cell][cell][/cell][cell]0 [icon=coin][/cell][cell]02.11[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]90 [icon=coin][/cell][cell]90 [icon=coin][/cell][cell]02.11[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]90 [icon=coin][/cell][cell][/cell][cell]0 [icon=coin][/cell][cell]02.12[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]90 [icon=coin][/cell][cell]90 [icon=coin][/cell][cell]02.12[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]90 [icon=coin][/cell][cell][/cell][cell]0 [icon=coin][/cell][cell]04.01[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]90 [icon=coin][/cell][cell]90 [icon=coin][/cell][cell]04.01[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]90 [icon=coin][/cell][cell][/cell][cell]0 [icon=coin][/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]0 [icon=coin][/cell][/table]\n\nINGEN ANDRE BEVEGELSER I PERIODEN.\n\n[url=fact:f_alt_via_grete]KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.[/url]',
       runs: [
         {
           id: 'run_text_0',
-          text: 'OLSEN ELLING V/ OLSEN GRETE (VERGE) GABELS GATE 14 0272 OSLO KONTO: 7024.31.55103 PERIODE: 01.10.98–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT [icon=coin] INN SALDO 01.10 SALDO OVERFØRT 0,00 02.10 ',
+          text: 'OLSEN ELLING V/ OLSEN GRETE (VERGE) AMMERUDVEIEN 47 0958 OSLO KONTO: 7024.31.55103 PERIODE: 01.10.98–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT INN SALDO 01.10 SALDO OVERFØRT 0 [icon=coin] 02.10 ',
           fact_id: '',
         },
         {
@@ -2052,7 +2052,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: ' 22,00 22,00 02.10 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 02.11 UFØRETRYGD RTV 22,00 22,00 02.11 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 02.12 UFØRETRYGD RTV 22,00 22,00 02.12 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 04.01 UFØRETRYGD RTV 22,00 22,00 04.01 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 31.01 SALDO 0,00 INGEN ANDRE BEVEGELSER I PERIODEN. ',
+          text: ' 90 [icon=coin] 90 [icon=coin] 02.10 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 02.11 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 02.11 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 02.12 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 02.12 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 04.01 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 04.01 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 31.01 SALDO 0 [icon=coin] INGEN ANDRE BEVEGELSER I PERIODEN. ',
           fact_id: '',
         },
         {
@@ -2070,11 +2070,11 @@ export const tinyOlsenGodotSource = {
       peek: 'Strømregning. 2. gangs varsel.',
       meta: 'FAKTURADATO 20.02.1999',
       body_bbcode:
-        '2. GANGS VARSEL\nOLSEN GRETE\nGABELS GATE 14, LEIL. 3\n0272 OSLO\n\nKUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: GABELS GT 14/3\n\n[table=3][cell]SPESIFIKASJON[/cell][cell]MÅLT[/cell][cell]BELØP [icon=coin][/cell][cell]Kraftforbruk 01.12.98–31.01.99[/cell][cell]1 412 kWh[/cell][cell]2,90[/cell][cell]Nettleie og fastavgift[/cell][cell]—[/cell][cell]1,20[/cell][cell]Purregebyr[/cell][cell]—[/cell][cell]0,15[/cell][cell]Å BETALE[/cell][cell][/cell][cell]4,25[/cell][/table]\n\nVi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.\n\nBETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 · KID: 99114872008\nFORFALL: 15.03.1999 · BELØP: 4,25',
+        '2. GANGS VARSEL\nOLSEN GRETE\nAMMERUDVEIEN 47, LEIL. 312\n0958 OSLO\n\nKUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: AMMERUDVN. 47/312\n\n[table=3][cell]SPESIFIKASJON[/cell][cell]MÅLT[/cell][cell]BELØP[/cell][cell]Kraftforbruk 01.12.98–31.01.99[/cell][cell]1 412 kWh[/cell][cell]12 [icon=coin][/cell][cell]Nettleie og fastavgift[/cell][cell]-[/cell][cell]5 [icon=coin][/cell][cell]Purregebyr[/cell][cell]-[/cell][cell]1 [icon=coin][/cell][cell]Å BETALE[/cell][cell][/cell][cell]18 [icon=coin][/cell][/table]\n\nVi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.\n\nBETALT AV: OLSEN GRETE, AMMERUDVEIEN 47, 0958 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 - KID: 99114872008\nFORFALL: 15.03.1999 - BELØP: 18 [icon=coin]',
       runs: [
         {
           id: 'run_text_0',
-          text: '2. GANGS VARSEL OLSEN GRETE GABELS GATE 14, LEIL. 3 0272 OSLO KUNDENR. 442 108 MÅLERNR. 08841-B ANLEGG: GABELS GT 14/3 SPESIFIKASJON MÅLT BELØP [icon=coin] Kraftforbruk 01.12.98–31.01.99 1 412 kWh 2,90 Nettleie og fastavgift — 1,20 Purregebyr — 0,15 Å BETALE 4,25 Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7. BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO BETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO KONTO: 0540.08.11223 · KID: 99114872008 FORFALL: 15.03.1999 · BELØP: 4,25',
+          text: '2. GANGS VARSEL OLSEN GRETE AMMERUDVEIEN 47, LEIL. 312 0958 OSLO KUNDENR. 442 108 MÅLERNR. 08841-B ANLEGG: AMMERUDVN. 47/312 SPESIFIKASJON MÅLT BELØP Kraftforbruk 01.12.98–31.01.99 1 412 kWh 12 [icon=coin] Nettleie og fastavgift - 5 [icon=coin] Purregebyr - 1 [icon=coin] Å BETALE 18 [icon=coin] Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7. BETALT AV: OLSEN GRETE, AMMERUDVEIEN 47, 0958 OSLO BETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO KONTO: 0540.08.11223 - KID: 99114872008 FORFALL: 15.03.1999 - BELØP: 18 [icon=coin]',
           fact_id: '',
         },
       ],
@@ -2085,13 +2085,13 @@ export const tinyOlsenGodotSource = {
       title: 'MATSENTRALEN',
       register: 'formell',
       peek: 'En kassalapp fra skoesken.',
-      meta: '07.01.99 · KASSE 2',
+      meta: '07.01.99 - KASSE 2',
       body_bbcode:
-        'MATSENTRALEN\nGABELS GATE 11 · OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx\n\n[table=2][cell]HELMELK 1L[/cell][cell]0,22[/cell][cell]KNEIPPBRØD[/cell][cell]0,28[/cell][cell]KAFFE FILTERM. 250G[/cell][cell]0,52[/cell][cell]POTETER 2KG[/cell][cell]0,30[/cell][cell]KJØTTDEIG 400G[/cell][cell]0,64[/cell][cell]GULROT PK[/cell][cell]0,18[/cell][cell]HUSHOLDNINGSSAFT[/cell][cell]0,21[/cell][/table]\n\n[table=2][cell]TOTALT [icon=coin][/cell][cell]2,35[/cell][cell][url=fact:f_ingen_matkjop]BANKKORT[/url][/cell][cell]2,35[/cell][/table]\n\n07.01.99  10:42  KASSE 2\nOPERATØR: 014\n\nTAKK FOR HANDELEN\nVELKOMMEN IGJEN',
+        'MATSENTRALEN\nAMMERUD SENTER - OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx\n\n[table=2][cell]HELMELK 1L[/cell][cell]1 [icon=coin][/cell][cell]KNEIPPBRØD[/cell][cell]1 [icon=coin][/cell][cell]KAFFE FILTERM. 250G[/cell][cell]2 [icon=coin][/cell][cell]POTETER 2KG[/cell][cell]1 [icon=coin][/cell][cell]KJØTTDEIG 400G[/cell][cell]3 [icon=coin][/cell][cell]GULROT PK[/cell][cell]1 [icon=coin][/cell][cell]HUSHOLDNINGSSAFT[/cell][cell]1 [icon=coin][/cell][/table]\n\n[table=2][cell]TOTALT[/cell][cell]10 [icon=coin][/cell][cell][url=fact:f_ingen_matkjop]BANKKORT[/url][/cell][cell]10 [icon=coin][/cell][/table]\n\n07.01.99  10:42  KASSE 2\nOPERATØR: 014\n\nTAKK FOR HANDELEN\nVELKOMMEN IGJEN',
       runs: [
         {
           id: 'run_text_0',
-          text: 'MATSENTRALEN GABELS GATE 11 · OSLO TLF 22 43 xx xx ORG NR 934 xxx xxx HELMELK 1L 0,22 KNEIPPBRØD 0,28 KAFFE FILTERM. 250G 0,52 POTETER 2KG 0,30 KJØTTDEIG 400G 0,64 GULROT PK 0,18 HUSHOLDNINGSSAFT 0,21 TOTALT [icon=coin] 2,35 ',
+          text: 'MATSENTRALEN AMMERUD SENTER - OSLO TLF 22 43 xx xx ORG NR 934 xxx xxx HELMELK 1L 1 [icon=coin] KNEIPPBRØD 1 [icon=coin] KAFFE FILTERM. 250G 2 [icon=coin] POTETER 2KG 1 [icon=coin] KJØTTDEIG 400G 3 [icon=coin] GULROT PK 1 [icon=coin] HUSHOLDNINGSSAFT 1 [icon=coin] TOTALT 10 [icon=coin] ',
           fact_id: '',
         },
         {
@@ -2101,7 +2101,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_1',
-          text: ' 2,35 07.01.99 10:42 KASSE 2 OPERATØR: 014 TAKK FOR HANDELEN VELKOMMEN IGJEN',
+          text: ' 10 [icon=coin] 07.01.99 10:42 KASSE 2 OPERATØR: 014 TAKK FOR HANDELEN VELKOMMEN IGJEN',
           fact_id: '',
         },
       ],
@@ -2109,10 +2109,10 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_huseier',
       kind: 'BREV',
-      title: 'Brev fra huseieren · T. Bakkerud',
+      title: 'Brev fra huseieren - T. Bakkerud',
       register: 'formell',
-      peek: '«Jeg hører at din mor er gått bort.»',
-      meta: 'T. BAKKERUD · HÅNDSKREVET · LEVERT I POSTKASSEN · VIDEREFORMIDLET AV 4012',
+      peek: '"Jeg hører at din mor er gått bort."',
+      meta: 'T. BAKKERUD - HÅNDSKREVET - LEVERT I POSTKASSEN - VIDEREFORMIDLET AV 4012',
       body_bbcode:
         'Til Elling Olsen.\n\nJeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen.\n\nJeg må likevel skrive om det praktiske. [url=fact:f_leie_stoppet]Leien for mars er ikke kommet.[/url] [url=fact:f_leie_privat]Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.[/url] Nå vet jeg ikke hvem jeg skal forholde meg til.\n\nJeg vil ikke lage vanskeligheter. Men [url=fact:f_huseier_kommer]jeg kommer innom på torsdag, så får vi snakke om veien videre.[/url]\n\nVennlig hilsen\nT. Bakkerud',
       runs: [
@@ -2156,12 +2156,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_frank_tlf',
       kind: 'FELTNOTAT',
-      title: 'Frank · telefonsamtale med Grete',
+      title: 'Frank - telefonsamtale med Grete',
       register: 'notat',
-      peek: '«Hun tok den på andre forsøk.»',
-      meta: 'FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN',
+      peek: '"Hun tok den på andre forsøk."',
+      meta: 'FELTNOTAT - 4012 F. ÅSLI - TLF. G. OLSEN',
       body_bbcode:
-        'Ringte Grete 11:40. Hun tok den på andre forsøk.\n\nHun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: [url=fact:f_klarer_seg]«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.[/url] Andre gangen lavere.\n\n[url=fact:f_ingen_plan]Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.[/url]\n\n[url=fact:f_elling_tlf]Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»[/url]\n\nMot slutten [url=fact:f_grete_redd]spurte hun om dette betydde at noen kom til å ta ham fra leiligheten[/url]. Jeg sa nei. Jeg håper det var sant.\n\nHun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
+        'Ringte Grete 11:40. Hun tok den på andre forsøk.\n\nHun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: [url=fact:f_klarer_seg]"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.[/url] Andre gangen lavere.\n\n[url=fact:f_ingen_plan]Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.[/url]\n\n[url=fact:f_elling_tlf]Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."[/url]\n\nMot slutten [url=fact:f_grete_redd]spurte hun om dette betydde at noen kom til å ta ham fra leiligheten[/url]. Jeg sa nei. Jeg håper det var sant.\n\nHun gikk med på hjemmebesøk. "Hvis det må til." Det må til.',
       runs: [
         {
           id: 'run_text_0',
@@ -2170,7 +2170,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_klarer_seg',
-          text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
+          text: '"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.',
           fact_id: 'f_klarer_seg',
         },
         {
@@ -2190,7 +2190,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_elling_tlf',
-          text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
+          text: 'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."',
           fact_id: 'f_elling_tlf',
         },
         {
@@ -2205,7 +2205,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_4',
-          text: '. Jeg sa nei. Jeg håper det var sant. Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.',
+          text: '. Jeg sa nei. Jeg håper det var sant. Hun gikk med på hjemmebesøk. "Hvis det må til." Det må til.',
           fact_id: '',
         },
       ],
@@ -2213,12 +2213,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_frank_visit',
       kind: 'RAPPORT',
-      title: 'Frank · hjemmebesøk Gabels gate 14',
+      title: 'Frank - hjemmebesøk Ammerudveien 47',
       register: 'notat',
-      peek: '«Hun hadde dekket på med tre kopper.»',
-      meta: 'HJEMMEBESØK · 4012 F. ÅSLI',
+      peek: '"Hun hadde dekket på med tre kopper."',
+      meta: 'HJEMMEBESØK - 4012 F. ÅSLI',
       body_bbcode:
-        'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.\n\nI gangen: [url=fact:f_post]en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.[/url] Grete flyttet bunken da hun så at jeg så.\n\nElling satt i stuen med [url=fact:f_bok]en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.[/url] Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.\n\nOver skrivebordet hans: [url=fact:f_utklipp]avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.[/url] Det er ikke rot. Det er et arkiv.\n\n[url=fact:f_avstand]Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.[/url] Ikke demonstrativt. Bare slik det ble.\n\nGrete fulgte meg ut. I trappen sa hun: [url=fact:f_smart_gutt]«Du så hvordan han er. Han er en smart gutt.»[/url] Hun er 72. Han er 35. Gutt.',
+        'Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.\n\nI gangen: [url=fact:f_post]en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.[/url] Grete flyttet bunken da hun så at jeg så.\n\nElling satt i stuen med [url=fact:f_bok]en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.[/url] Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg.\n\nOver skrivebordet hans: [url=fact:f_utklipp]avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.[/url] Det er ikke rot. Det er et arkiv.\n\n[url=fact:f_avstand]Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.[/url] Ikke demonstrativt. Bare slik det ble.\n\nGrete fulgte meg ut. I trappen sa hun: [url=fact:f_smart_gutt]"Du så hvordan han er. Han er en smart gutt."[/url] Hun er 72. Han er 35. Gutt.',
       runs: [
         {
           id: 'run_text_0',
@@ -2267,7 +2267,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_smart_gutt',
-          text: '«Du så hvordan han er. Han er en smart gutt.»',
+          text: '"Du så hvordan han er. Han er en smart gutt."',
           fact_id: 'f_smart_gutt',
         },
         {
@@ -2280,12 +2280,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_innleggelse',
       kind: 'MELDING',
-      title: 'OUS Ullevål · innleggelse',
+      title: 'OUS Ullevål - innleggelse',
       register: 'klinisk',
-      peek: '«…ber om at kommunen ser til ham.»',
-      meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 14.02.1999',
+      peek: '"…ber om at kommunen ser til ham."',
+      meta: 'ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 14.02.1999',
       body_bbcode:
-        'MELDING OM INNLEGGELSE\n\nGrete Olsen (f. 1927) ble [url=fact:f_innlagt]innlagt akutt 14.02[/url], kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen.\n\n[url=fact:f_elling_uvarslet]Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.[/url] Hun var tydelig på dette før hun ble lagt i behandling.\n\nSOSIALMEDISINSK ENHET · OUS',
+        'MELDING OM INNLEGGELSE\n\nGrete Olsen (f. 1927) ble [url=fact:f_innlagt]innlagt akutt 14.02[/url], kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen.\n\n[url=fact:f_elling_uvarslet]Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.[/url] Hun var tydelig på dette før hun ble lagt i behandling.\n\nSOSIALMEDISINSK ENHET - OUS',
       runs: [
         {
           id: 'run_text_0',
@@ -2309,7 +2309,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_2',
-          text: ' Hun var tydelig på dette før hun ble lagt i behandling. SOSIALMEDISINSK ENHET · OUS',
+          text: ' Hun var tydelig på dette før hun ble lagt i behandling. SOSIALMEDISINSK ENHET - OUS',
           fact_id: '',
         },
       ],
@@ -2317,12 +2317,12 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_dodsfall',
       kind: 'MELDING',
-      title: 'OUS Ullevål · dødsfall',
+      title: 'OUS Ullevål - dødsfall',
       register: 'klinisk',
-      peek: '—',
-      meta: 'ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999',
+      peek: '-',
+      meta: 'ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 15.02.1999',
       body_bbcode:
-        'MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [url=fact:f_brevsprekken]Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET · OUS',
+        'MELDING OM DØDSFALL\n\nGrete Olsen, f. 21.09.1927. [url=fact:f_dod]Dødsfall konstatert 15.02 kl. 04:12.[/url]\n\nAvdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. [url=fact:f_brevsprekken]Beskjeden ble gitt gjennom brevsprekken.[/url]\n\nSaken overføres kommunen for videre oppfølging av gjenlevende.\n\nSOSIALMEDISINSK ENHET - OUS',
       runs: [
         {
           id: 'run_text_0',
@@ -2346,7 +2346,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_text_2',
-          text: ' Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET · OUS',
+          text: ' Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET - OUS',
           fact_id: '',
         },
       ],
@@ -2354,10 +2354,10 @@ export const tinyOlsenGodotSource = {
     {
       id: 'doc_status',
       kind: 'STATUSRAPPORT',
-      title: 'Frank · status dag 8',
+      title: 'Frank - status dag 8',
       register: 'notat',
       peek: 'En uke siden meldingen.',
-      meta: 'STATUSRAPPORT · 4012 F. ÅSLI · DAG 8',
+      meta: 'STATUSRAPPORT - 4012 F. ÅSLI - DAG 8',
       body_bbcode:
         'Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.\n\nRestanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke.\n\nBekymringsmeldingen var berettiget. Det er den fortsatt.',
       runs: [
@@ -2379,7 +2379,7 @@ export const tinyOlsenGodotSource = {
       category: 'Dokument',
       quote: 'sykdom med kort forventet forløp',
       frank_response:
-        '«Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.',
+        "'Kort forventet forløp', og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.",
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
     },
@@ -2392,7 +2392,7 @@ export const tinyOlsenGodotSource = {
       category: 'Dokument',
       quote: 'Omfanget er ikke kartlagt',
       frank_response:
-        '«Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.',
+        "'Omfanget er ikke kartlagt'. Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.",
       supports_questions: ['q_grete_dor', 'q_okonomi'],
       lift_effects: [],
     },
@@ -2412,7 +2412,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_husleie',
       label: 'Husleie betales av Grete',
-      summary: 'Husleien er 30 [icon=coin] og betales av Grete.',
+      summary: 'Husleien er 120 [icon=coin] og betales av Grete.',
       source_document_id: 'doc_konto_grete',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -2423,7 +2423,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_trygd',
       label: 'Ellings uføretrygd',
-      summary: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
+      summary: 'Ellings uføretrygd: 90 [icon=coin] i måneden.',
       source_document_id: 'doc_konto_elling',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -2455,8 +2455,8 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'f_gap',
-      label: '23 [icon=coin] mangler',
-      summary: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
+      label: '100 [icon=coin] mangler',
+      summary: 'Uten Gretes pensjon mangler husholdet 100 [icon=coin] hver måned.',
       source_document_id: '',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -2501,12 +2501,12 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'f_klarer_seg',
-      label: '«Han klarer seg»',
+      label: '"Han klarer seg"',
       summary: 'Grete avviser bekymringen. Gjentar formuleringen.',
       source_document_id: 'doc_frank_tlf',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
-      quote: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
+      quote: '"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.',
       supports_questions: ['q_grete_dor'],
       reveals_event: 'call:grete',
       lift_effects: [],
@@ -2531,14 +2531,14 @@ export const tinyOlsenGodotSource = {
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
       quote:
-        'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»',
+        'Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."',
       supports_questions: ['q_baering'],
       lift_effects: [],
     },
     {
       id: 'f_grete_redd',
       label: 'Grete er redd',
-      summary: 'Grete frykter at kommunen vil ta leiligheten — eller Elling.',
+      summary: 'Grete frykter at kommunen vil ta leiligheten, eller Elling.',
       source_document_id: 'doc_frank_tlf',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
@@ -2549,7 +2549,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_post',
       label: 'Uåpnet post',
-      summary: 'Uåpnet post samler seg. Grete håndterer den — og skjuler den.',
+      summary: 'Uåpnet post samler seg. Grete håndterer den - og skjuler den.',
       source_document_id: 'doc_frank_visit',
       domain: 'Hverdag/rutine',
       category: 'Observasjon',
@@ -2597,7 +2597,7 @@ export const tinyOlsenGodotSource = {
       id: 'f_dor_glott',
       label: 'En dør på gløtt',
       summary:
-        'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.',
+        'Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig - forsiktig.',
       source_document_id: 'doc_frank_visit',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
@@ -2609,11 +2609,11 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_smart_gutt',
       label: 'En smart gutt',
-      summary: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
+      summary: 'Grete omtaler Elling (35) som "gutt". Rollene er fastlåst.',
       source_document_id: 'doc_frank_visit',
       domain: 'Nettverk/sosialt',
       category: 'Samtale',
-      quote: '«Du så hvordan han er. Han er en smart gutt.»',
+      quote: '"Du så hvordan han er. Han er en smart gutt."',
       supports_questions: ['q_grete_dor', 'q_evner'],
       lift_effects: [],
     },
@@ -2672,7 +2672,7 @@ export const tinyOlsenGodotSource = {
   questions: [
     {
       id: 'q_grete_dor',
-      prompt: 'Den dagen Grete ikke kommer hjem — hva stopper?',
+      prompt: 'Den dagen Grete ikke kommer hjem - hva stopper?',
       teaser:
         'Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.',
       reveal_when: {
@@ -2701,7 +2701,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_evner',
-      prompt: 'Hva klarer Elling selv — når ingen har gjort det for ham først?',
+      prompt: 'Hva klarer Elling selv - når ingen har gjort det for ham først?',
       teaser: 'Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.',
       reveal_when: {
         op: 'all',
@@ -2729,8 +2729,8 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_okonomi',
-      prompt: 'Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?',
-      teaser: 'Tallene går opp — men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.',
+      prompt: 'Regnestykket Olsen: hva kommer inn, hva går ut - og gjennom hvem?',
+      teaser: 'Tallene går opp - men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.',
       reveal_when: {
         op: 'all',
         children: [
@@ -2767,7 +2767,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_bolig',
-      prompt: 'Kan Elling bli boende — når husleien har stoppet?',
+      prompt: 'Kan Elling bli boende - når husleien har stoppet?',
       teaser: 'Det er noe med leiligheten som ikke tåler mange spørsmål. Ta en titt når du kan.',
       reveal_when: {
         op: 'all',
@@ -2802,7 +2802,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'q_baering',
       prompt:
-        'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?',
+        'Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med - og hvor mye tåler han?',
       teaser: '',
       reveal_when: {
         op: 'all',
@@ -2824,7 +2824,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_vekst',
-      prompt: 'Hva kan læres — og i hvilket tempo, uten å knekke noe?',
+      prompt: 'Hva kan læres - og i hvilket tempo, uten å knekke noe?',
       teaser: 'Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.',
       card_title: 'Hva kan læres?',
       reveal_when: {
@@ -2859,7 +2859,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'q_liv',
-      prompt: 'Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?',
+      prompt: 'Ikke bare berget - levd. Hva skulle til for at Elling har et liv han vil ha?',
       teaser: 'Det ligger et større spørsmål her enn berging. Jeg klarer ikke slippe det.',
       reveal_when: {
         op: 'all',
@@ -2949,7 +2949,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_gd_ukjent',
       title: 'Ingenting vi vet. Ingen har noen gang sett Elling alene.',
       summary:
-        'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.',
+        'Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet - og den må lukkes før noe annet.',
       question_id: 'q_grete_dor',
       availability: {
         op: 'fact_lifted',
@@ -2999,7 +2999,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ev_unngaar',
-      title: 'Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.',
+      title: 'Han forstår - men unngår. Posten ligger uåpnet, ikke ulest.',
       summary:
         'Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.',
       question_id: 'q_evner',
@@ -3033,7 +3033,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_ev_ukjent',
       title: 'Vet ikke. Ingen har prøvd. Det er selve funnet.',
       summary:
-        'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.',
+        'Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut - forsiktig.',
       question_id: 'q_evner',
       opening_sources: [
         {
@@ -3048,7 +3048,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_ok_kjede',
       title: 'Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.',
       summary:
-        'Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
+        'Husleie og faste betalinger fungerer gjennom Gretes system - skoesken, postgiroene, kontantene den første. Systemet har én operatør.',
       question_id: 'q_okonomi',
       availability: {
         op: 'all',
@@ -3084,9 +3084,9 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ok_gap',
-      title: 'Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.',
+      title: 'Trygden dekker ikke husholdet. 100 [icon=coin] mangler hver måned.',
       summary:
-        'Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        'Ellings trygd er 90 [icon=coin]. Husleien alene er 120 [icon=coin], og januar kostet 190. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       question_id: 'q_okonomi',
       availability: {
         op: 'fact_lifted',
@@ -3122,7 +3122,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_b_sikres',
-      title: 'Boligen kan sikres — med bostøtte og ordnet betalingskjede.',
+      title: 'Boligen kan sikres - med bostøtte og ordnet betalingskjede.',
       summary:
         'Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.',
       question_id: 'q_bolig',
@@ -3186,7 +3186,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_b_uavklart',
-      title: 'Uavklart — økonomien må kartlegges først.',
+      title: 'Uavklart - økonomien må kartlegges først.',
       summary: 'Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.',
       question_id: 'q_bolig',
       opening_sources: [
@@ -3200,7 +3200,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ba_kanal',
-      title: 'Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.',
+      title: 'Først en kanal. Fast person, fast tid, oppmøte - telefonen er stengt.',
       summary:
         'Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.',
       question_id: 'q_baering',
@@ -3264,9 +3264,9 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ba_alt',
-      title: 'Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.',
+      title: 'Alt. Fullt omsorgsansvar - institusjon eller omsorgsbolig.',
       summary:
-        'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.',
+        'Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen - og den kan alltid utløses.',
       question_id: 'q_baering',
       availability: {
         op: 'fact_lifted',
@@ -3287,7 +3287,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_ve_rutine',
       title: 'Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.',
       summary:
-        'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.',
+        'Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte - lavt tempo, fast person, hans eget arkivspråk.',
       question_id: 'q_vekst',
       availability: {
         op: 'fact_lifted',
@@ -3306,7 +3306,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ve_formell',
-      title: 'Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.',
+      title: 'Ferdighetene er der ikke. Støtte må bære - læring er ikke planen nå.',
       summary:
         'Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.',
       question_id: 'q_vekst',
@@ -3410,7 +3410,7 @@ export const tinyOlsenGodotSource = {
       id: 'h_liv_interesser',
       title: 'Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.',
       summary:
-        'Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.',
+        'Gro-arkivet og systematikken er en identitet det går an å delta gjennom - i hans tempo.',
       question_id: 'q_liv',
       availability: {
         op: 'all',
@@ -3433,7 +3433,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_liv_trygghet',
-      title: 'Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.',
+      title: 'Trygghet først. Verden i hans tempo, med møbel imellom - og det er greit.',
       summary:
         'Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.',
       question_id: 'q_liv',
@@ -3447,7 +3447,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_liv_sporre',
-      title: 'Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.',
+      title: 'Det vet bare Elling. Noen må spørre ham - og noen må kunne få svar.',
       summary: 'Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.',
       question_id: 'q_liv',
       availability: {
@@ -3483,11 +3483,11 @@ export const tinyOlsenGodotSource = {
       slot: 's1',
       cost: 0,
       description:
-        'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.',
+        'Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank - ikke torsdagsbesøket.',
     },
     {
       id: 't_hjemmehjelp',
-      title: 'Hjemmehjelp 2× uke — Frank',
+      title: 'Hjemmehjelp 2× uke - Frank',
       sim_hook_id: 'case.olsen.tiltak.channel',
       slot: 's2',
       cost: 2,
@@ -3744,7 +3744,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'beat_grete_d6',
       day: 6,
-      text: 'Håndskrevet brev · T. Bakkerud',
+      text: 'Håndskrevet brev - T. Bakkerud',
       effects: [
         {
           op: 'queue_pending_document',
@@ -3798,7 +3798,7 @@ export const tinyOlsenGodotSource = {
   frank_chat: [
     {
       id: 'c_post',
-      question: 'Posten i gangen — likegyldighet?',
+      question: 'Posten i gangen - likegyldighet?',
       answer:
         'Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.',
       needs: ['f_post'],
@@ -3818,14 +3818,14 @@ export const tinyOlsenGodotSource = {
           label: 'Hva gjør vi med bunken?',
           lines: [
             'Ikke ta den fra ham. Da tar du det siste han har kontroll på.',
-            'Åpne ett brev. Sammen. Det ufarligste først — strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.',
+            'Åpne ett brev. Sammen. Det ufarligste først - strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.',
           ],
         },
       ],
     },
     {
       id: 'c_smart',
-      question: '«En smart gutt» — hva la du i det?',
+      question: '"En smart gutt" - hva la du i det?',
       answer:
         'Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne. Det er det vi egentlig skal kartlegge.',
       needs: ['f_smart_gutt'],
@@ -3835,7 +3835,7 @@ export const tinyOlsenGodotSource = {
       ],
       followups: [
         {
-          label: 'Kartlegge — hva da, egentlig?',
+          label: 'Kartlegge - hva da, egentlig?',
           lines: [
             'Hvor Grete slutter og Elling begynner.',
             'Alt hun gjør ligner omsorg. Noe av det er det. Resten er femti år med vane som ingen har turt å forstyrre.',
@@ -3845,7 +3845,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'c_klarer',
-      question: 'Tror du på «han klarer seg»?',
+      question: 'Tror du på "han klarer seg"?',
       answer:
         'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
       needs: ['f_klarer_seg'],
@@ -3856,7 +3856,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'c_bok',
-      question: 'Boken og notatene — hva sier det deg?',
+      question: 'Boken og notatene - hva sier det deg?',
       answer:
         'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet. Det er to forskjellige problemer. Og de har to forskjellige løsninger.',
       needs: ['f_bok'],
@@ -3866,25 +3866,25 @@ export const tinyOlsenGodotSource = {
       ],
       followups: [
         {
-          label: 'To løsninger — hvilke?',
+          label: 'To løsninger - hvilke?',
           lines: [
             'Evnene trenger ingenting av oss. De er der. Rommet trenger trening.',
-            'Én person. Samme person, samme tid, hver uke — til det slutter å være farlig å ha noen der. Alt annet er støy.',
+            'Én person. Samme person, samme tid, hver uke - til det slutter å være farlig å ha noen der. Alt annet er støy.',
           ],
         },
         {
           label: 'Kan han bo alene, mener du?',
           lines: [
             'Feil spørsmål. Han har aldri fått prøvd.',
-            'Ingen har noen gang sett ham gjøre noe alene. Ikke fordi han ikke kan — fordi ingen har sluppet ham til. Vi vet ikke hva han klarer. Det burde uroe deg mer enn posten.',
+            'Ingen har noen gang sett ham gjøre noe alene. Ikke fordi han ikke kan - fordi ingen har sluppet ham til. Vi vet ikke hva han klarer. Det burde uroe deg mer enn posten.',
           ],
-          tanke: 'VURDERING — «Vet ikke» er ikke et hull i saken. Det ER saken.',
+          tanke: 'VURDERING - "Vet ikke" er ikke et hull i saken. Det ER saken.',
         },
       ],
     },
     {
       id: 'c_avstand',
-      question: 'Møbelet mellom dere — hvor lang vei er det inn?',
+      question: 'Møbelet mellom dere - hvor lang vei er det inn?',
       answer:
         'Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt. Den lukkes hvis vi river i den.',
       needs: ['f_avstand'],
@@ -3912,17 +3912,17 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'c_gro',
-      question: 'Utklippene av Gro — hva gjør vi med det?',
+      question: 'Utklippene av Gro - hva gjør vi med det?',
       answer:
-        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
+        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause - årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten. Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
       needs: ['f_utklipp'],
       answer_lines: [
-        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten.',
+        'Jeg spurte om valget i -97. Han snakket i fire minutter uten pause - årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten.',
         'Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.',
       ],
       followups: [
         {
-          label: 'Begynne der — hvordan, konkret?',
+          label: 'Begynne der - hvordan, konkret?',
           lines: [
             'Spør ham om ting han vet. Politikk, årstall, fakta. Aldri om følelser, aldri om Grete.',
             'Han snakker når han er den som kan noe og du er den som spør. Snu rollene, og døren er igjen.',
@@ -3943,7 +3943,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'c_dor_glott',
-      question: 'Døren på gløtt — hva holder den åpen?',
+      question: 'Døren på gløtt - hva holder den åpen?',
       answer: '',
       needs: ['f_dor_glott'],
       answer_lines: [
@@ -3956,135 +3956,135 @@ export const tinyOlsenGodotSource = {
   frank_proposals: [
     {
       handbok_id: 'matlevering',
-      line: 'Matlevering, kanskje. Ingen matkjøp står i hans navn — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.',
+      line: 'Matlevering, kanskje. Ingen matkjøp står i hans navn - middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.',
       relevant_fact_ids: ['f_ingen_matkjop', 'f_dor_glott'],
       order: 0,
     },
     {
       handbok_id: 'hjemmehjelp',
-      line: 'Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.',
+      line: 'Praktisk bistand. Én fast person, én fast tid - det er den eneste kanalen inn som har virket hittil.',
       relevant_fact_ids: ['f_avstand', 'f_elling_tlf', 'f_dor_glott'],
       order: 1,
     },
     {
       handbok_id: 'bostotte',
-      line: 'Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.',
+      line: 'Søk bostøtte. Trygden dekker ikke husleien - tilskuddet kan tette gapet. Papirarbeid, men det haster.',
       relevant_fact_ids: ['f_gap', 'f_trygd', 'f_husleie'],
       relevant_categories: ['Økonomi'],
       order: 2,
     },
     {
       handbok_id: 'forvaltning',
-      line: 'Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.',
+      line: 'Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør - kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.',
       relevant_fact_ids: ['f_alt_via_grete', 'f_husleie', 'f_gap'],
       order: 3,
     },
     {
       handbok_id: 'mekling',
-      line: 'Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.',
+      line: 'Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til - en betalingsplan kan roe det før torsdagsbesøket.',
       relevant_fact_ids: ['f_huseier_kommer', 'f_leie_stoppet', 'f_leie_privat'],
       order: 4,
     },
     {
       handbok_id: 'boopp',
-      line: 'Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.',
+      line: 'Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet - hvis han tåler en ny person i rommet.',
       relevant_fact_ids: ['f_leie_stoppet', 'f_post'],
       order: 5,
     },
     {
       handbok_id: 'radgivning',
-      line: 'Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.',
+      line: 'Økonomisk rådgivning. Time hos gjeldsrådgiver - på kontoret. Jeg er usikker på om han kommer seg dit.',
       relevant_fact_ids: ['f_gap', 'f_post'],
       relevant_categories: ['Økonomi'],
       order: 6,
     },
     {
       handbok_id: 'innkjop',
-      line: 'Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.',
+      line: 'Innkjøpsordning. Ingen har handlet for ham siden Grete - varer levert én gang i uken er det minste som kan virke.',
       relevant_fact_ids: ['f_ingen_matkjop', 'f_alt_via_grete'],
       order: 7,
     },
     {
       handbok_id: 'maltidsvenn',
-      line: 'Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.',
+      line: 'Måltidsvenn, forsiktig. Noen som spiser middag MED ham - men det er en fremmed ved bordet. Usikker.',
       relevant_fact_ids: ['f_avstand', 'f_ingen_matkjop'],
       order: 8,
     },
     {
       handbok_id: 'kartlegging',
-      line: 'Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.',
+      line: 'Funksjonskartlegging. Ingen har noen gang sett Elling alene - et strukturert besøk kan lukke det hullet.',
       relevant_fact_ids: ['f_ingen_plan'],
       order: 9,
     },
     {
       handbok_id: 'oppfolging',
-      line: 'Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.',
+      line: 'Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken - hvis dette skal bæres, må noen få tid til å bære.',
       relevant_fact_ids: ['f_ingen_plan'],
       order: 10,
     },
     {
       handbok_id: 'samtaler',
-      line: 'Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.',
+      line: 'Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken - men kanalen inn må finnes først.',
       relevant_fact_ids: ['f_brevsprekken', 'f_avstand'],
       order: 11,
     },
     {
       handbok_id: 'stottekontakt',
-      line: 'Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.',
+      line: 'Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om - arkivet er et sted å begynne.',
       relevant_fact_ids: ['f_utklipp', 'f_bok'],
       order: 12,
     },
     {
       handbok_id: 'tilsyn',
-      line: 'Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.',
+      line: 'Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag - det er mye trykk på en lukket dør. Tyngre enn jeg liker.',
       relevant_fact_ids: ['f_saarbar', 'f_brevsprekken'],
       order: 13,
     },
     {
       handbok_id: 'besoksvenn',
-      line: 'Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.',
+      line: 'Besøksvenn, kanskje. Frivillig én gang i uken - mildere enn tjenester, men fortsatt en fremmed i stuen.',
       relevant_fact_ids: ['f_avstand'],
       order: 14,
     },
     {
       handbok_id: 'dagsenter',
-      line: 'Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.',
+      line: 'Dagsenter er langt unna der han er nå. To dager i uken ute blant folk - jeg tror ikke han går dit ennå.',
       relevant_fact_ids: ['f_avstand'],
       order: 15,
     },
     {
       handbok_id: 'folgetjeneste',
-      line: 'Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.',
+      line: 'Følgetjeneste. Følge til avtaler utenfor hjemmet - hvis det noen gang blir avtaler.',
       relevant_fact_ids: ['f_elling_tlf'],
       order: 16,
     },
     {
       handbok_id: 'hverdagsrehab',
-      line: 'Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.',
+      line: 'Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig - men et tverrfaglig lag i leiligheten er mye på én gang.',
       relevant_fact_ids: ['f_bok', 'f_avstand'],
       order: 17,
     },
     {
       handbok_id: 'parorende',
-      line: 'Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.',
+      line: 'Pårørendestøtte. Grete bar alt - avlastning og veiledning kunne lettet henne mens hun ennå bærer.',
       relevant_fact_ids: ['f_grete_baerer', 'f_grete_syk'],
       order: 18,
     },
     {
       handbok_id: 'tt',
-      line: 'TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.',
+      line: 'TT-kort. Subsidiert transport, åtte turer i måneden - men han har ingen steder han skal ennå.',
       relevant_fact_ids: ['f_avstand'],
       order: 19,
     },
     {
       handbok_id: 'alarm',
-      line: 'Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.',
+      line: 'Trygghetsalarm, tja. Utrykning ved fall - jeg er usikker på om det treffer det som er skjørt her.',
       relevant_fact_ids: ['f_saarbar'],
       order: 20,
     },
     {
       handbok_id: 'depositum',
-      line: 'Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.',
+      line: 'Depositumsgaranti. Bare aktuelt hvis det blir flytting - garanti for et nytt leieforhold.',
       relevant_fact_ids: ['f_leie_privat', 'f_leie_stoppet'],
       order: 21,
     },
@@ -4096,7 +4096,7 @@ export const tinyOlsenGodotSource = {
     },
     {
       handbok_id: 'startlan',
-      line: 'Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.',
+      line: 'Startlån. Lån til kjøp av egen bolig - det er langt fra der denne saken står.',
       relevant_fact_ids: ['f_trygd', 'f_gap'],
       order: 23,
     },
@@ -4111,7 +4111,7 @@ export const tinyOlsenGodotSource = {
       frank_lines: [
         'Boken og utklippene. Ja. Jeg har tenkt på dem sammen, men jeg fikk det ikke sagt.',
         'Han holder krevende stoff i hodet og noterer systematisk. Og han klipper ut, daterer og ordner. Begge deler er hans egne.',
-        'Så spørsmålet er ikke om han kan lære. Det er hva som kan læres — og i hvilket tempo, uten å knekke noe.',
+        'Så spørsmålet er ikke om han kan lære. Det er hva som kan læres - og i hvilket tempo, uten å knekke noe.',
       ],
     },
     {
@@ -4121,7 +4121,7 @@ export const tinyOlsenGodotSource = {
         'Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.',
       frank_lines: [
         'Haug skriver kort forventet forløp. Grete sier han klarer seg. Begge kan ikke ha rett.',
-        'Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe — og vi vet ikke hva.',
+        'Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe - og vi vet ikke hva.',
         'Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved å være der.',
       ],
     },

@@ -859,7 +859,7 @@ export function emitCase(
 
     const leads: LeadOut[] = [];
     for (const lead of fields.all('Lead')) {
-      const match = lead.value.match(/^«(.*)»\s*->\s*(\S+)$/);
+      const match = lead.value.match(/^[«"](.*)[»"]\s*->\s*(\S+)$/);
       if (!match) {
         diag.add(
           codes.LINE_UNPARSED,

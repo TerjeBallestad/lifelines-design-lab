@@ -76,7 +76,7 @@ export const intakeCaseCopy = {
     signature: 'Dr. Haug',
   },
   firstContactReport: {
-    title: 'Frankrapport · Første kontakt',
+    title: 'Frankrapport - Første kontakt',
     paragraphs: [
       {
         label: 'Observasjon',
@@ -111,7 +111,7 @@ export const intakeCaseCopy = {
     performActionLabel: 'Gjennomfør sosialt besøk',
     nextStepTitle: 'Avtalt med Grete',
     nextStepText:
-      'Grete har sagt ja til et kort sosialt besøk. Frank skal ikke konkludere ennå — bare se hvordan hjemmet faktisk holdes sammen.',
+      'Grete har sagt ja til et kort sosialt besøk. Frank skal ikke konkludere ennå - bare se hvordan hjemmet faktisk holdes sammen.',
     reportTitle: 'Besøksnotat: Gretes rolle i saken',
     reportParagraphs: [
       'Frank beskriver ikke et rotete hjem. Han beskriver et hjem som fungerer fordi Grete gjør besøket, posten, pausene og Elling sosialt håndterbart.',

@@ -165,7 +165,10 @@ async function renderPage(browser, { html, docId, texture, outDir, htmlDir, kind
     await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     const facts = await measureFacts(page);
-    await page.screenshot({ path: pngPath, fullPage: true });
+    // omitBackground drops Chromium's default white canvas. Kinds whose body
+    // paints --paper are unaffected; KASSALAPP keeps a transparent body so
+    // its sawtooth tear lands on alpha in the texture.
+    await page.screenshot({ path: pngPath, fullPage: true, omitBackground: true });
     const size_px = pngSize(await readFile(pngPath));
     return { docId, entry: { texture, size_px, facts } };
   } finally {

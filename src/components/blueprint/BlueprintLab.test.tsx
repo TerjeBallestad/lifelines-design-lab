@@ -147,9 +147,9 @@ function liftFirstDocumentFacts() {
 function runFrankDocumentLoop() {
   clickTab('Frank');
   clickAriaButton('Ring Grete');
-  clickButton('Send · Be om økonomisk oversikt');
+  clickButton('Send - Be om økonomisk oversikt');
   clickButton('Neste dag');
-  clickButton('Send · Avtal hjemmebesøk');
+  clickButton('Send - Avtal hjemmebesøk');
   clickButton('Neste dag');
   clickTab('Pulten');
 
@@ -295,26 +295,26 @@ describe('BlueprintLab rendered interaction trace', () => {
     vi.useFakeTimers();
     startAtDesk();
 
-    expect(document.body.textContent).toContain('MOTTATT · SOSIALKONTORET');
+    expect(document.body.textContent).toContain('MOTTATT - SOSIALKONTORET');
 
     act(() => {
       vi.advanceTimersByTime(5_199);
     });
 
-    expect(document.body.textContent).toContain('MOTTATT · SOSIALKONTORET');
+    expect(document.body.textContent).toContain('MOTTATT - SOSIALKONTORET');
 
     act(() => {
       vi.advanceTimersByTime(1);
     });
 
-    expect(document.body.textContent).not.toContain('MOTTATT · SOSIALKONTORET');
+    expect(document.body.textContent).not.toContain('MOTTATT - SOSIALKONTORET');
   });
 
   it('deep-links fact, hypothesis, and day notices to their Blueprint surfaces', () => {
     startAtDesk();
     clickTab('Frank');
     expect(document.body.textContent).toContain('Send Frank');
-    clickToast('MOTTATT · SOSIALKONTORET');
+    clickToast('MOTTATT - SOSIALKONTORET');
     expect(document.body.textContent).toContain('Én melding. Én pult. Begynn der.');
 
     openDocument('Legesenteret');
@@ -350,8 +350,8 @@ describe('BlueprintLab rendered interaction trace', () => {
     // opens it, and this run chose «Konsentrasjonen er sterk» (h_s_trenbar).
     clickButton('Fatt vedtak');
     expect(document.body.textContent).toContain('Pulten svarer først når du ber noen gjøre noe.');
-    expect(document.body.textContent).toContain('Vedtak 1 · tiltakspakke');
-    openDocument('Vedtak 1 · tiltakspakke', false);
+    expect(document.body.textContent).toContain('Vedtak 1 - tiltakspakke');
+    openDocument('Vedtak 1 - tiltakspakke', false);
     expect(document.body.textContent).not.toContain('Gul markering vises først etter');
     expect(document.body.textContent).toContain('Frivillig forvaltning av faste betalinger');
     expect(document.body.textContent).toContain('Hjemmehjelp 2x uke');
@@ -359,7 +359,7 @@ describe('BlueprintLab rendered interaction trace', () => {
     expect(document.body.textContent).toContain('Arbeidshypotese lagt til grunn');
     expect(document.body.textContent).toContain('IVERKSATT');
     closeDocument();
-    openDocument('Vedtak 1 · tiltakspakke', false);
+    openDocument('Vedtak 1 - tiltakspakke', false);
     expect(document.body.textContent).toContain(
       'Arbeidshypoteser lagt til grunn for tiltakspakken',
     );
@@ -380,8 +380,8 @@ describe('BlueprintLab rendered interaction trace', () => {
     clickButton('Neste dag');
     clickButton('Neste dag');
 
-    expect(document.body.textContent).toContain('Dag 8 · saken fortsetter');
-    expect(document.body.textContent).toContain('Frank · status dag 8');
+    expect(document.body.textContent).toContain('Dag 8 - saken fortsetter');
+    expect(document.body.textContent).toContain('Frank - status dag 8');
   });
 
   it('exposes the first Frank dispatch with the exact accessible name used by browser smoke', () => {
@@ -394,7 +394,7 @@ describe('BlueprintLab rendered interaction trace', () => {
 
     expect(dispatch).toBeTruthy();
     expect(dispatch?.getAttribute('aria-label')).toBe('Ring Grete');
-    expect(dispatch?.textContent).toContain('Send · Ring Grete');
+    expect(dispatch?.textContent).toContain('Send - Ring Grete');
   });
 
   it('keeps the first mobile-width path playable at 390px', () => {

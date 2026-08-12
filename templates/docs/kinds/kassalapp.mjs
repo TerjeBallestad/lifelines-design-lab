@@ -19,9 +19,14 @@ const SAWTOOTH =
   '26% 100%, 19% calc(100% - 5px), 12% calc(100% - 1px), 6% calc(100% - 6px), 0 100%)';
 
 export const styleCss = `
-.doc--kassalapp { --paper: #f4f0e4; --page-pad: 26px 24px 30px; --coin-size: 16px; }
+/* The body stays transparent and the sheet itself carries the paper fill —
+   the sawtooth must tear into alpha, not into a paper-colored ground (the
+   bake screenshots with omitBackground, so transparency survives to the
+   texture and the desk shows through the notches). */
+.doc--kassalapp { --paper: #f4f0e4; --page-pad: 26px 24px 30px; --coin-size: 16px; background: transparent; }
 .doc--kassalapp .page {
   border: none;
+  background: var(--paper);
   clip-path: ${SAWTOOTH};
   font-family: 'Courier Prime', 'Courier New', monospace;
   font-size: 12.5px;

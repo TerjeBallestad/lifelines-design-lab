@@ -369,8 +369,8 @@ function normalizeQuote(raw: string): string {
     .replace(/\[([^\]]*)\]\(fact:[\wæøåÆØÅ_.-]+\)/g, '$1')
     .replace(/\s+/g, ' ')
     .trim()
-    .replace(/^«/, '')
-    .replace(/»$/, '')
+    .replace(/^[«"]/, '')
+    .replace(/[»"]$/, '')
     .trim();
 }
 

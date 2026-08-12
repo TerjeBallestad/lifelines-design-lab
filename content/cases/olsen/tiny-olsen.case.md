@@ -1,10 +1,10 @@
 # Case: case_olsen_tiny
 
-Title: Olsen — full case slice
+Title: Olsen - full case slice
 Stage: 0
 Deadline: day 10
-Pair soft reject: «De to? Jeg ser ikke tråden mellom dem. Ennå.»
-Pair already set: «Det spørsmålet har vi allerede stående.»
+Pair soft reject: "De to? Jeg ser ikke tråden mellom dem. Ennå."
+Pair already set: "Det spørsmålet har vi allerede stående."
 
 # Document: doc_bekymring
 
@@ -24,14 +24,14 @@ Label: Grete er alvorlig syk
 Summary: Grete er alvorlig syk. Forventet forløp er kort.
 Domain: Helse/risiko · Category: Dokument
 Supports: q_grete_dor
-Frank: ««Kort forventet forløp», og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe.»
+Frank: "'Kort forventet forløp', og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe."
 
 ## f_grete_baerer
 Label: Grete bærer rutiner
 Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
 Domain: Hverdag/rutine · Category: Dokument
 Supports: q_grete_dor, q_okonomi
-Frank: ««Omfanget er ikke kartlagt». Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller.»
+Frank: "'Omfanget er ikke kartlagt'. Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller."
 
 ## f_saarbar
 
@@ -39,7 +39,7 @@ Label: Sårbar ved bortfall
 Summary: Elling vurderes som sårbar ved bortfall av pårørende.
 Domain: Helse/risiko · Category: Risiko
 Supports: q_grete_dor
-Frank: «Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.»
+Frank: "Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke."
 
 # Document: doc_konto_grete
 
@@ -49,36 +49,36 @@ Peek: Kontoutskrift. Grete Olsen, januar.
 Meta: NR. 2/99
 
 OLSEN GRETE
-GABELS GATE 14
-0272 OSLO
+AMMERUDVEIEN 47
+0958 OSLO
 
 KONTO: 7024.31.44892
 PERIODE: 01.01.99–31.01.99
 UTSKR.DATO: 02.02.99
 
-| DATO | TEKST | UT [icon=coin] | INN | SALDO |
+| DATO | TEKST | UT | INN | SALDO |
 | --- | --- | ---: | ---: | ---: |
-| 01.01 | SALDO OVERFØRT | | | 6,40 |
-| 04.01 | PENSJON RTV | | 31,00 | 37,40 |
-| 04.01 | OVERF. E. OLSEN 7024.31.55103 | | 22,00 | 59,40 |
-| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_husleie) | 30,00 | | 29,40 |
-| 07.01 | MATSENTRALEN GABELS GT | 2,35 | | 27,05 |
-| 11.01 | POSTGIRO — OSLO ENERGIVERK | 4,10 | | 22,95 |
-| 12.01 | MATSENTRALEN GABELS GT | 2,60 | | 20,35 |
-| 14.01 | SKILLEBEKK APOTEK | 0,85 | | 19,50 |
-| 18.01 | MATSENTRALEN GABELS GT | 2,45 | | 17,05 |
-| 21.01 | POSTGIRO — TELEVERKET | 1,20 | | 15,85 |
-| 25.01 | MATSENTRALEN GABELS GT | 2,50 | | 13,35 |
-| 28.01 | NARVESEN — UKEBLAD/AVIS | 0,45 | | 12,90 |
-| 31.01 | SALDO | | | 12,90 |
+| 01.01 | SALDO OVERFØRT | | | 25 [icon=coin] |
+| 04.01 | PENSJON RTV | | 125 [icon=coin] | 150 [icon=coin] |
+| 04.01 | OVERF. E. OLSEN 7024.31.55103 | | 90 [icon=coin] | 240 [icon=coin] |
+| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_husleie) | 120 [icon=coin] | | 120 [icon=coin] |
+| 07.01 | MATSENTRALEN AMMERUD | 10 [icon=coin] | | 110 [icon=coin] |
+| 11.01 | POSTGIRO - OSLO ENERGIVERK | 17 [icon=coin] | | 93 [icon=coin] |
+| 12.01 | MATSENTRALEN AMMERUD | 11 [icon=coin] | | 82 [icon=coin] |
+| 14.01 | AMMERUD APOTEK | 4 [icon=coin] | | 78 [icon=coin] |
+| 18.01 | MATSENTRALEN AMMERUD | 10 [icon=coin] | | 68 [icon=coin] |
+| 21.01 | POSTGIRO - TELEVERKET | 5 [icon=coin] | | 63 [icon=coin] |
+| 25.01 | MATSENTRALEN AMMERUD | 11 [icon=coin] | | 52 [icon=coin] |
+| 28.01 | NARVESEN - UKEBLAD/AVIS | 2 [icon=coin] | | 50 [icon=coin] |
+| 31.01 | SALDO | | | 50 [icon=coin] |
 
-RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS
+RENTESATS INNSKUDD 3 % P.A. - UTSKRIFTEN SENDES KVARTALSVIS
 HENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.
 
 ## f_husleie
 
 Label: Husleie betales av Grete
-Summary: Husleien er 30 [icon=coin] og betales av Grete.
+Summary: Husleien er 120 [icon=coin] og betales av Grete.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 
@@ -87,29 +87,29 @@ Supports: q_okonomi, q_bolig
 Kind: KONTOUTSKRIFT · Register: formell
 Title: KONTOUTSKRIFT
 Peek: Årsutskrift. Elling Olsen.
-Meta: NR. 1/99 — ÅRSUTSKRIFT
+Meta: NR. 1/99 - ÅRSUTSKRIFT
 
 OLSEN ELLING
 V/ OLSEN GRETE (VERGE)
-GABELS GATE 14
-0272 OSLO
+AMMERUDVEIEN 47
+0958 OSLO
 
 KONTO: 7024.31.55103
 PERIODE: 01.10.98–31.01.99
 UTSKR.DATO: 02.02.99
 
-| DATO | TEKST | UT [icon=coin] | INN | SALDO |
+| DATO | TEKST | UT | INN | SALDO |
 | --- | --- | ---: | ---: | ---: |
-| 01.10 | SALDO OVERFØRT | | | 0,00 |
-| 02.10 | [UFØRETRYGD RTV](fact:f_trygd) | | 22,00 | 22,00 |
-| 02.10 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
-| 02.11 | UFØRETRYGD RTV | | 22,00 | 22,00 |
-| 02.11 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
-| 02.12 | UFØRETRYGD RTV | | 22,00 | 22,00 |
-| 02.12 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
-| 04.01 | UFØRETRYGD RTV | | 22,00 | 22,00 |
-| 04.01 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
-| 31.01 | SALDO | | | 0,00 |
+| 01.10 | SALDO OVERFØRT | | | 0 [icon=coin] |
+| 02.10 | [UFØRETRYGD RTV](fact:f_trygd) | | 90 [icon=coin] | 90 [icon=coin] |
+| 02.10 | FAST OVERF. G. OLSEN (VERGE) | 90 [icon=coin] | | 0 [icon=coin] |
+| 02.11 | UFØRETRYGD RTV | | 90 [icon=coin] | 90 [icon=coin] |
+| 02.11 | FAST OVERF. G. OLSEN (VERGE) | 90 [icon=coin] | | 0 [icon=coin] |
+| 02.12 | UFØRETRYGD RTV | | 90 [icon=coin] | 90 [icon=coin] |
+| 02.12 | FAST OVERF. G. OLSEN (VERGE) | 90 [icon=coin] | | 0 [icon=coin] |
+| 04.01 | UFØRETRYGD RTV | | 90 [icon=coin] | 90 [icon=coin] |
+| 04.01 | FAST OVERF. G. OLSEN (VERGE) | 90 [icon=coin] | | 0 [icon=coin] |
+| 31.01 | SALDO | | | 0 [icon=coin] |
 
 INGEN ANDRE BEVEGELSER I PERIODEN.
 
@@ -118,7 +118,7 @@ INGEN ANDRE BEVEGELSER I PERIODEN.
 ## f_trygd
 
 Label: Ellings uføretrygd
-Summary: Ellings uføretrygd: 22 [icon=coin] i måneden.
+Summary: Ellings uføretrygd: 90 [icon=coin] i måneden.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 
@@ -138,49 +138,49 @@ Meta: FAKTURADATO 20.02.1999
 
 2. GANGS VARSEL
 OLSEN GRETE
-GABELS GATE 14, LEIL. 3
-0272 OSLO
+AMMERUDVEIEN 47, LEIL. 312
+0958 OSLO
 
 KUNDENR. 442 108
 MÅLERNR. 08841-B
-ANLEGG: GABELS GT 14/3
+ANLEGG: AMMERUDVN. 47/312
 
-| SPESIFIKASJON | MÅLT | BELØP [icon=coin] |
+| SPESIFIKASJON | MÅLT | BELØP |
 | --- | ---: | ---: |
-| Kraftforbruk 01.12.98–31.01.99 | 1 412 kWh | 2,90 |
-| Nettleie og fastavgift | — | 1,20 |
-| Purregebyr | — | 0,15 |
-| Å BETALE | | 4,25 |
+| Kraftforbruk 01.12.98–31.01.99 | 1 412 kWh | 12 [icon=coin] |
+| Nettleie og fastavgift | - | 5 [icon=coin] |
+| Purregebyr | - | 1 [icon=coin] |
+| Å BETALE | | 18 [icon=coin] |
 
 Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.
 
-BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO
+BETALT AV: OLSEN GRETE, AMMERUDVEIEN 47, 0958 OSLO
 BETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO
-KONTO: 0540.08.11223 · KID: 99114872008
-FORFALL: 15.03.1999 · BELØP: 4,25
+KONTO: 0540.08.11223 - KID: 99114872008
+FORFALL: 15.03.1999 - BELØP: 18 [icon=coin]
 
 # Document: doc_kassalapp
 
 Kind: KASSALAPP · Register: formell
 Title: MATSENTRALEN
 Peek: En kassalapp fra skoesken.
-Meta: 07.01.99 · KASSE 2
+Meta: 07.01.99 - KASSE 2
 
 MATSENTRALEN
-GABELS GATE 11 · OSLO
+AMMERUD SENTER - OSLO
 TLF 22 43 xx xx
 ORG NR 934 xxx xxx
 
-| HELMELK 1L | 0,22 |
-| KNEIPPBRØD | 0,28 |
-| KAFFE FILTERM. 250G | 0,52 |
-| POTETER 2KG | 0,30 |
-| KJØTTDEIG 400G | 0,64 |
-| GULROT PK | 0,18 |
-| HUSHOLDNINGSSAFT | 0,21 |
+| HELMELK 1L | 1 [icon=coin] |
+| KNEIPPBRØD | 1 [icon=coin] |
+| KAFFE FILTERM. 250G | 2 [icon=coin] |
+| POTETER 2KG | 1 [icon=coin] |
+| KJØTTDEIG 400G | 3 [icon=coin] |
+| GULROT PK | 1 [icon=coin] |
+| HUSHOLDNINGSSAFT | 1 [icon=coin] |
 
-| TOTALT [icon=coin] | 2,35 |
-| [BANKKORT](fact:f_ingen_matkjop) | 2,35 |
+| TOTALT | 10 [icon=coin] |
+| [BANKKORT](fact:f_ingen_matkjop) | 10 [icon=coin] |
 
 07.01.99  10:42  KASSE 2
 OPERATØR: 014
@@ -199,8 +199,8 @@ Supports: q_grete_dor
 
 ## f_gap
 
-Label: 23 [icon=coin] mangler
-Summary: Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.
+Label: 100 [icon=coin] mangler
+Summary: Uten Gretes pensjon mangler husholdet 100 [icon=coin] hver måned.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 Derived: f_trygd, f_husleie
@@ -208,9 +208,9 @@ Derived: f_trygd, f_husleie
 # Document: doc_huseier
 
 Kind: BREV · Register: formell
-Title: Brev fra huseieren · T. Bakkerud
-Peek: «Jeg hører at din mor er gått bort.»
-Meta: T. BAKKERUD · HÅNDSKREVET · LEVERT I POSTKASSEN · VIDEREFORMIDLET AV 4012
+Title: Brev fra huseieren - T. Bakkerud
+Peek: "Jeg hører at din mor er gått bort."
+Meta: T. BAKKERUD - HÅNDSKREVET - LEVERT I POSTKASSEN - VIDEREFORMIDLET AV 4012
 
 Til Elling Olsen.
 
@@ -247,25 +247,25 @@ Supports: q_bolig
 # Document: doc_frank_tlf
 
 Kind: FELTNOTAT · Register: notat
-Title: Frank · telefonsamtale med Grete
-Peek: «Hun tok den på andre forsøk.»
-Meta: FELTNOTAT · 4012 F. ÅSLI · TLF. G. OLSEN
+Title: Frank - telefonsamtale med Grete
+Peek: "Hun tok den på andre forsøk."
+Meta: FELTNOTAT - 4012 F. ÅSLI - TLF. G. OLSEN
 
 Ringte Grete 11:40. Hun tok den på andre forsøk.
 
-Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: [«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.](fact:f_klarer_seg) Andre gangen lavere.
+Hun visste hvorfor jeg ringte. Haug hadde sagt fra. Hun var ikke sint, men hun var klar: ["Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.](fact:f_klarer_seg) Andre gangen lavere.
 
 [Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.](fact:f_ingen_plan)
 
-[Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. «Det er ikke noe galt med ham. Han liker bare ikke apparatet.»](fact:f_elling_tlf)
+[Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. "Det er ikke noe galt med ham. Han liker bare ikke apparatet."](fact:f_elling_tlf)
 
 Mot slutten [spurte hun om dette betydde at noen kom til å ta ham fra leiligheten](fact:f_grete_redd). Jeg sa nei. Jeg håper det var sant.
 
-Hun gikk med på hjemmebesøk. «Hvis det må til.» Det må til.
+Hun gikk med på hjemmebesøk. "Hvis det må til." Det må til.
 
 ## f_klarer_seg
 
-Label: «Han klarer seg»
+Label: "Han klarer seg"
 Summary: Grete avviser bekymringen. Gjentar formuleringen.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_grete_dor
@@ -288,16 +288,16 @@ Supports: q_baering
 ## f_grete_redd
 
 Label: Grete er redd
-Summary: Grete frykter at kommunen vil ta leiligheten — eller Elling.
+Summary: Grete frykter at kommunen vil ta leiligheten, eller Elling.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_bolig
 
 # Document: doc_frank_visit
 
 Kind: RAPPORT · Register: notat
-Title: Frank · hjemmebesøk Gabels gate 14
-Peek: «Hun hadde dekket på med tre kopper.»
-Meta: HJEMMEBESØK · 4012 F. ÅSLI
+Title: Frank - hjemmebesøk Ammerudveien 47
+Peek: "Hun hadde dekket på med tre kopper."
+Meta: HJEMMEBESØK - 4012 F. ÅSLI
 
 Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.
 
@@ -309,12 +309,12 @@ Over skrivebordet hans: [avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-t
 
 [Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.](fact:f_avstand) Ikke demonstrativt. Bare slik det ble.
 
-Grete fulgte meg ut. I trappen sa hun: [«Du så hvordan han er. Han er en smart gutt.»](fact:f_smart_gutt) Hun er 72. Han er 35. Gutt.
+Grete fulgte meg ut. I trappen sa hun: ["Du så hvordan han er. Han er en smart gutt."](fact:f_smart_gutt) Hun er 72. Han er 35. Gutt.
 
 ## f_post
 
 Label: Uåpnet post
-Summary: Uåpnet post samler seg. Grete håndterer den — og skjuler den.
+Summary: Uåpnet post samler seg. Grete håndterer den - og skjuler den.
 Domain: Hverdag/rutine · Category: Observasjon
 Supports: q_grete_dor, q_okonomi
 
@@ -342,23 +342,23 @@ Supports: q_baering, q_evner
 ## f_dor_glott
 
 Label: En dør på gløtt
-Summary: Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig — forsiktig.
+Summary: Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig - forsiktig.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_baering
-Quote: «han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.»
+Quote: "han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt."
 
 ## f_smart_gutt
 Label: En smart gutt
-Summary: Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.
+Summary: Grete omtaler Elling (35) som "gutt". Rollene er fastlåst.
 Domain: Nettverk/sosialt · Category: Samtale
 Supports: q_grete_dor, q_evner
 
 # Document: doc_innleggelse
 
 Kind: MELDING · Register: klinisk
-Title: OUS Ullevål · innleggelse
-Peek: «…ber om at kommunen ser til ham.»
-Meta: ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 14.02.1999
+Title: OUS Ullevål - innleggelse
+Peek: "…ber om at kommunen ser til ham."
+Meta: ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 14.02.1999
 
 MELDING OM INNLEGGELSE
 
@@ -366,7 +366,7 @@ Grete Olsen (f. 1927) ble [innlagt akutt 14.02](fact:f_innlagt), kl. 06:50. Tils
 
 [Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.](fact:f_elling_uvarslet) Hun var tydelig på dette før hun ble lagt i behandling.
 
-SOSIALMEDISINSK ENHET · OUS
+SOSIALMEDISINSK ENHET - OUS
 
 ## f_innlagt
 
@@ -385,9 +385,9 @@ Supports: q_baering, q_kollaps
 # Document: doc_dodsfall
 
 Kind: MELDING · Register: klinisk
-Title: OUS Ullevål · dødsfall
-Peek: —
-Meta: ULLEVÅL SYKEHUS · TIL SOSIALKONTORET · 15.02.1999
+Title: OUS Ullevål - dødsfall
+Peek: -
+Meta: ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 15.02.1999
 
 MELDING OM DØDSFALL
 
@@ -397,7 +397,7 @@ Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefo
 
 Saken overføres kommunen for videre oppfølging av gjenlevende.
 
-SOSIALMEDISINSK ENHET · OUS
+SOSIALMEDISINSK ENHET - OUS
 
 ## f_dod
 
@@ -417,9 +417,9 @@ Supports: q_baering, q_kollaps
 # Document: doc_status
 
 Kind: STATUSRAPPORT · Register: notat
-Title: Frank · status dag 8
+Title: Frank - status dag 8
 Peek: En uke siden meldingen.
-Meta: STATUSRAPPORT · 4012 F. ÅSLI · DAG 8
+Meta: STATUSRAPPORT - 4012 F. ÅSLI - DAG 8
 
 Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag.
 
@@ -429,42 +429,42 @@ Bekymringsmeldingen var berettiget. Det er den fortsatt.
 
 # Question: q_grete_dor
 
-Title: Den dagen Grete ikke kommer hjem — hva stopper?
+Title: Den dagen Grete ikke kommer hjem - hva stopper?
 Teaser: Det er noe her om hva som faktisk stopper den dagen Grete ikke er der. Jeg har ikke ord på det ennå.
 when: f_grete_syk and f_klarer_seg
-Lead: «Ring Grete» -> call:grete
+Lead: "Ring Grete" -> call:grete
 
 # Question: q_evner
 
-Title: Hva klarer Elling selv — når ingen har gjort det for ham først?
+Title: Hva klarer Elling selv - når ingen har gjort det for ham først?
 Teaser: Jeg tror vi vet mindre om hva Elling klarer enn vi tror. Det ligger noe her.
 when: f_bok and f_utklipp
-Lead: «Åpne ett brev sammen med Frank» -> t_brev
+Lead: "Åpne ett brev sammen med Frank" -> t_brev
 
 # Question: q_okonomi
 
-Title: Regnestykket Olsen: hva kommer inn, hva går ut — og gjennom hvem?
-Teaser: Tallene går opp — men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.
+Title: Regnestykket Olsen: hva kommer inn, hva går ut - og gjennom hvem?
+Teaser: Tallene går opp - men jeg klarer ikke helt å se gjennom hvem. Verdt å se på.
 when: f_grete_baerer and f_trygd and f_husleie
-Lead: «Be om økonomisk oversikt» -> d_konto
-Lead: «Snakk med huseieren» -> t_huseier
+Lead: "Be om økonomisk oversikt" -> d_konto
+Lead: "Snakk med huseieren" -> t_huseier
 
 # Question: q_bolig
 
-Title: Kan Elling bli boende — når husleien har stoppet?
+Title: Kan Elling bli boende - når husleien har stoppet?
 Teaser: Det er noe med leiligheten som ikke tåler mange spørsmål. Ta en titt når du kan.
 when: f_gap and f_leie_stoppet and f_husleie
-Lead: «Snakk med huseieren» -> t_huseier
+Lead: "Snakk med huseieren" -> t_huseier
 
 # Question: q_baering
 
-Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med — og hvor mye tåler han?
+Title: Noe av det Grete gjorde må noen andre gjøre. Hvor lite kan kommunen slippe unna med - og hvor mye tåler han?
 Teaser:
 when: f_elling_tlf and f_avstand
 
 # Question: q_vekst
 
-Title: Hva kan læres — og i hvilket tempo, uten å knekke noe?
+Title: Hva kan læres - og i hvilket tempo, uten å knekke noe?
 Teaser: Jeg så noe hos ham som kan bygges på. Usikker på tempoet. Vi bør snakke om det.
 Card title: Hva kan læres?
 when: f_bok and f_utklipp
@@ -477,7 +477,7 @@ Card title:
 
 # Question: q_liv
 
-Title: Ikke bare berget — levd. Hva skulle til for at Elling har et liv han vil ha?
+Title: Ikke bare berget - levd. Hva skulle til for at Elling har et liv han vil ha?
 Teaser: Det ligger et større spørsmål her enn berging. Jeg klarer ikke slippe det.
 when: f_dod and f_utklipp
 
@@ -499,7 +499,7 @@ Opens: t_hjemmehjelp, t_matlevering, t_dokgjennomgang
 # Hypothesis: h_gd_ukjent
 
 Title: Ingenting vi vet. Ingen har noen gang sett Elling alene.
-Summary: Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet — og den må lukkes før noe annet.
+Summary: Det finnes ikke observasjon av Elling uten Grete. Uvitenheten er selve funnet - og den må lukkes før noe annet.
 Question: q_grete_dor
 needs: f_ingen_plan
 Opens dispatches: hjemmebesok
@@ -514,7 +514,7 @@ Opens: t_brev
 
 # Hypothesis: h_ev_unngaar
 
-Title: Han forstår — men unngår. Posten ligger uåpnet, ikke ulest.
+Title: Han forstår - men unngår. Posten ligger uåpnet, ikke ulest.
 Summary: Kapasiteten til å forstå er observert. Papiret når likevel aldri frem, fordi konvolutten aldri åpnes. Problemet er kanal, ikke forståelse.
 Question: q_evner
 needs: f_post and f_bok
@@ -523,7 +523,7 @@ Opens: t_dokgjennomgang
 # Hypothesis: h_ev_ukjent
 
 Title: Vet ikke. Ingen har prøvd. Det er selve funnet.
-Summary: Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut — forsiktig.
+Summary: Kommunen har ingen observasjon av hva Elling klarer alene. Første tiltak må være å finne det ut - forsiktig.
 Question: q_evner
 Needs:
 Opens: t_brev, t_regning
@@ -531,22 +531,22 @@ Opens: t_brev, t_regning
 # Hypothesis: h_ok_kjede
 
 Title: Betalingskjeden er én person. Kjeden, ikke beløpene, er risikoen.
-Summary: Husleie og faste betalinger fungerer gjennom Gretes system — skoesken, postgiroene, kontantene den første. Systemet har én operatør.
+Summary: Husleie og faste betalinger fungerer gjennom Gretes system - skoesken, postgiroene, kontantene den første. Systemet har én operatør.
 Question: q_okonomi
 needs: f_husleie and f_alt_via_grete
 Opens: t_forvaltning, d_konto
 
 # Hypothesis: h_ok_gap
 
-Title: Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.
-Summary: Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
+Title: Trygden dekker ikke husholdet. 100 [icon=coin] mangler hver måned.
+Summary: Ellings trygd er 90 [icon=coin]. Husleien alene er 120 [icon=coin], og januar kostet 190. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 needs: f_gap
 Opens: t_bostotte, t_huseier, d_konto, c_frank_okonomi [type=conversation category=frank actor=frank risk=okonomi sim=case.olsen.opening.conversation.frank_okonomi]
 
 # Hypothesis: h_b_sikres
 
-Title: Boligen kan sikres — med bostøtte og ordnet betalingskjede.
+Title: Boligen kan sikres - med bostøtte og ordnet betalingskjede.
 Summary: Med bostøtte og en betalingskjede som ikke går gjennom én person kan leieforholdet overleve.
 Question: q_bolig
 needs: f_gap and f_trygd
@@ -562,7 +562,7 @@ Opens: t_huseier
 
 # Hypothesis: h_b_uavklart
 
-Title: Uavklart — økonomien må kartlegges først.
+Title: Uavklart - økonomien må kartlegges først.
 Summary: Å velge bolig-retning uten regnestykket er gjetning. Kartlegg først.
 Question: q_bolig
 Needs:
@@ -570,7 +570,7 @@ Opens: d_konto
 
 # Hypothesis: h_ba_kanal
 
-Title: Først en kanal. Fast person, fast tid, oppmøte — telefonen er stengt.
+Title: Først en kanal. Fast person, fast tid, oppmøte - telefonen er stengt.
 Summary: Elling tar ikke telefonen og holder avstand til fremmede. Uten en kanal inn er alle andre tiltak teori.
 Question: q_baering
 needs: f_elling_tlf and f_avstand
@@ -586,8 +586,8 @@ Opens: t_matlevering, t_dokgjennomgang
 
 # Hypothesis: h_ba_alt
 
-Title: Alt. Fullt omsorgsansvar — institusjon eller omsorgsbolig.
-Summary: Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen — og den kan alltid utløses.
+Title: Alt. Fullt omsorgsansvar - institusjon eller omsorgsbolig.
+Summary: Sårbarheten vurderes som for stor for hjemmeboende støtte. Tyngste ende av skalaen - og den kan alltid utløses.
 Question: q_baering
 needs: f_saarbar
 Opens: t_institusjon
@@ -595,14 +595,14 @@ Opens: t_institusjon
 # Hypothesis: h_ve_rutine
 
 Title: Én rutine om gangen. Konsentrasjonen er der; tempoet må være hans.
-Summary: Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte — lavt tempo, fast person, hans eget arkivspråk.
+Summary: Kapasitet til fordypning og system er observert. Avgrensede rutiner kan bygges med støtte - lavt tempo, fast person, hans eget arkivspråk.
 Question: q_vekst
 needs: f_bok
 Opens: t_brev, t_regning
 
 # Hypothesis: h_ve_formell
 
-Title: Ferdighetene er der ikke. Støtte må bære — læring er ikke planen nå.
+Title: Ferdighetene er der ikke. Støtte må bære - læring er ikke planen nå.
 Summary: Funksjonsnivået vurderes som for lavt for egenmestring. Tjenestene må dimensjoneres for full kompensasjon.
 Question: q_vekst
 needs: f_saarbar
@@ -643,21 +643,21 @@ Opens: t_hjemmehjelp
 # Hypothesis: h_liv_interesser
 
 Title: Deltakelse via interessene. Arkivet er en dør ut, ikke et symptom.
-Summary: Gro-arkivet og systematikken er en identitet det går an å delta gjennom — i hans tempo.
+Summary: Gro-arkivet og systematikken er en identitet det går an å delta gjennom - i hans tempo.
 Question: q_liv
 needs: f_utklipp and f_bok
 Opens:
 
 # Hypothesis: h_liv_trygghet
 
-Title: Trygghet først. Verden i hans tempo, med møbel imellom — og det er greit.
+Title: Trygghet først. Verden i hans tempo, med møbel imellom - og det er greit.
 Summary: Avstanden er ikke et problem som skal fikses, men et premiss tjenestene må respektere.
 Question: q_liv
 needs: f_avstand
 
 # Hypothesis: h_liv_sporre
 
-Title: Det vet bare Elling. Noen må spørre ham — og noen må kunne få svar.
+Title: Det vet bare Elling. Noen må spørre ham - og noen må kunne få svar.
 Summary: Ingen har spurt Elling hva han vil. Svaret krever en kanal som virker.
 Question: q_liv
 needs: f_elling_tlf
@@ -680,12 +680,12 @@ Sim hook: case.olsen.tiltak.forvaltning
 
 Title: Snakk med huseieren
 Slot: s1 · Cost: 0
-Description: Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank — ikke torsdagsbesøket.
+Description: Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank - ikke torsdagsbesøket.
 Sim hook: case.olsen.tiltak.garanti
 
 # Tiltak: t_hjemmehjelp
 
-Title: Hjemmehjelp 2× uke — Frank
+Title: Hjemmehjelp 2× uke - Frank
 Slot: s2 · Cost: 2
 Description: Fast person, fast tid. Den eneste kanalen inn som har virket hittil.
 Sim hook: case.olsen.tiltak.channel
@@ -730,7 +730,7 @@ Sim hook: case.olsen.tiltak.institusjon
 Title: Be om økonomisk oversikt
 Sim hook: case.olsen.dispatch.account_overview
 Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.
-Activity: «BE OM BANKUTSKRIFT»
+Activity: "BE OM BANKUTSKRIFT"
 Channel: scheduled · Delay: 480m · Duration: 1h · Occupies: 3h
 Reception: +1
 gate: f_grete_baerer
@@ -742,7 +742,7 @@ gate: f_grete_baerer
 Title: Hjemmebesøk
 Sim hook: case.olsen.dispatch.hjemmebesok
 Description: Frank drar på uanmeldt besøk til leiligheten.
-Activity: «HJEMMEBESØK»
+Activity: "HJEMMEBESØK"
 Channel: now · Delay: 0m · Duration: 2h · Occupies: 2h
 Reception: -1
 gate: f_saarbar
@@ -828,7 +828,7 @@ Grete Olsen er død.
 
 # Beat: day 6 [id=beat_grete_d6]
 
-Håndskrevet brev · T. Bakkerud
+Håndskrevet brev - T. Bakkerud
 ~ deliver doc_huseier in 0d on ck_grete
 
 # Beat: day 7 [id=beat_grete_d7]
@@ -844,7 +844,7 @@ En uke siden meldingen.
 
 # Conversation: chat:frank
 
-* f_post: Posten i gangen — likegyldighet?
+* f_post: Posten i gangen - likegyldighet?
     Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.
     Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.
     * * Frykt for hva, helt konkret?
@@ -852,30 +852,30 @@ En uke siden meldingen.
         Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen.
     * * Hva gjør vi med bunken?
         Ikke ta den fra ham. Da tar du det siste han har kontroll på.
-        Åpne ett brev. Sammen. Det ufarligste først — strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.
+        Åpne ett brev. Sammen. Det ufarligste først - strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.
 
-* f_smart_gutt: «En smart gutt» — hva la du i det? [id=c_smart]
+* f_smart_gutt: "En smart gutt" - hva la du i det? [id=c_smart]
     Hun sa det i trappen, lavt, som om det var en hemmelighet. Hun har båret ham så lenge at jeg tror hun ikke lenger vet hva som er ham og hva som er henne.
     Det er det vi egentlig skal kartlegge.
-    * * Kartlegge — hva da, egentlig?
+    * * Kartlegge - hva da, egentlig?
         Hvor Grete slutter og Elling begynner.
         Alt hun gjør ligner omsorg. Noe av det er det. Resten er femti år med vane som ingen har turt å forstyrre.
 
-* f_klarer_seg: Tror du på «han klarer seg»? [id=c_klarer]
+* f_klarer_seg: Tror du på "han klarer seg"? [id=c_klarer]
     Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.
 
-* f_bok: Boken og notatene — hva sier det deg?
+* f_bok: Boken og notatene - hva sier det deg?
     Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet.
     Det er to forskjellige problemer. Og de har to forskjellige løsninger.
-    * * To løsninger — hvilke?
+    * * To løsninger - hvilke?
         Evnene trenger ingenting av oss. De er der. Rommet trenger trening.
-        Én person. Samme person, samme tid, hver uke — til det slutter å være farlig å ha noen der. Alt annet er støy.
+        Én person. Samme person, samme tid, hver uke - til det slutter å være farlig å ha noen der. Alt annet er støy.
     * * Kan han bo alene, mener du?
         Feil spørsmål. Han har aldri fått prøvd.
-        Ingen har noen gang sett ham gjøre noe alene. Ikke fordi han ikke kan — fordi ingen har sluppet ham til. Vi vet ikke hva han klarer. Det burde uroe deg mer enn posten.
-        Tanke: «VURDERING — «Vet ikke» er ikke et hull i saken. Det ER saken.»
+        Ingen har noen gang sett ham gjøre noe alene. Ikke fordi han ikke kan - fordi ingen har sluppet ham til. Vi vet ikke hva han klarer. Det burde uroe deg mer enn posten.
+        Tanke: "VURDERING - "Vet ikke" er ikke et hull i saken. Det ER saken."
 
-* f_avstand: Møbelet mellom dere — hvor lang vei er det inn?
+* f_avstand: Møbelet mellom dere - hvor lang vei er det inn?
     ~ pay f_dor_glott
     Lang. Men han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne.
     Det er en dør på gløtt. Den lukkes hvis vi river i den.
@@ -886,160 +886,160 @@ En uke siden meldingen.
         Da lukkes den. Og jeg tror ikke den åpner for den neste som ringer på.
         Vi har én sjanse til å være de som ikke rev.
 
-* f_utklipp: Utklippene av Gro — hva gjør vi med det? [id=c_gro]
-    Jeg spurte om valget i -97. Han snakket i fire minutter uten pause — årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten.
+* f_utklipp: Utklippene av Gro - hva gjør vi med det? [id=c_gro]
+    Jeg spurte om valget i -97. Han snakket i fire minutter uten pause - årstall, navn, partilandsmøter. Ikke til meg. Men det var nesten.
     Det arkivet er det mest levende i den leiligheten. Hvis vi noen gang skal bygge noe med ham, begynner det der.
-    * * Begynne der — hvordan, konkret?
+    * * Begynne der - hvordan, konkret?
         Spør ham om ting han vet. Politikk, årstall, fakta. Aldri om følelser, aldri om Grete.
         Han snakker når han er den som kan noe og du er den som spør. Snu rollene, og døren er igjen.
 
 * f_brevsprekken: Brevsprekken. Hørte han det, tror du? [id=c_brevsprekk]
     Han sto rett innenfor. Politiet hørte ham puste. Han hørte hvert ord, og han klarte ikke å åpne. Det er det vi jobber med nå. Ikke sorgen. Døren.
 
-* f_dor_glott: Døren på gløtt — hva holder den åpen? [answer=none]
+* f_dor_glott: Døren på gløtt - hva holder den åpen? [answer=none]
     At noen spør ham om noe han kan svare på. Det er hele mekanikken.
     Den tåler ikke omsorg ennå. Den tåler spørsmål.
 
 # Proposal: matlevering
 
 Relevant: f_ingen_matkjop, f_dor_glott
-Line: «Matlevering, kanskje. Ingen matkjøp står i hans navn — middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal.»
+Line: "Matlevering, kanskje. Ingen matkjøp står i hans navn - middag på døra tre dager i uken kan overta. Forutsetter at døren er en kanal."
 
 # Proposal: hjemmehjelp
 
 Relevant: f_avstand, f_elling_tlf, f_dor_glott
-Line: «Praktisk bistand. Én fast person, én fast tid — det er den eneste kanalen inn som har virket hittil.»
+Line: "Praktisk bistand. Én fast person, én fast tid - det er den eneste kanalen inn som har virket hittil."
 
 # Proposal: bostotte
 
 Relevant: f_gap, f_trygd, f_husleie
 Categories: Økonomi
-Line: «Søk bostøtte. Trygden dekker ikke husleien — tilskuddet kan tette gapet. Papirarbeid, men det haster.»
+Line: "Søk bostøtte. Trygden dekker ikke husleien - tilskuddet kan tette gapet. Papirarbeid, men det haster."
 
 # Proposal: forvaltning
 
 Relevant: f_alt_via_grete, f_husleie, f_gap
-Line: «Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør — kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting.»
+Line: "Frivillig forvaltning, kanskje. Skoesken trenger en ny operatør - kommunen kan betale de faste utgiftene direkte. Trygt. Bygger ingenting."
 
 # Proposal: mekling
 
 Relevant: f_huseier_kommer, f_leie_stoppet, f_leie_privat
-Line: «Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til — en betalingsplan kan roe det før torsdagsbesøket.»
+Line: "Utleier-mekling. Bakkerud vil vite hvem han skal forholde seg til - en betalingsplan kan roe det før torsdagsbesøket."
 
 # Proposal: boopp
 
 Relevant: f_leie_stoppet, f_post
-Line: «Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet — hvis han tåler en ny person i rommet.»
+Line: "Booppfølging, muligens. En miljøarbeider ukentlig kan holde boligdriften samlet - hvis han tåler en ny person i rommet."
 
 # Proposal: radgivning
 
 Relevant: f_gap, f_post
 Categories: Økonomi
-Line: «Økonomisk rådgivning. Time hos gjeldsrådgiver — på kontoret. Jeg er usikker på om han kommer seg dit.»
+Line: "Økonomisk rådgivning. Time hos gjeldsrådgiver - på kontoret. Jeg er usikker på om han kommer seg dit."
 
 # Proposal: innkjop
 
 Relevant: f_ingen_matkjop, f_alt_via_grete
-Line: «Innkjøpsordning. Ingen har handlet for ham siden Grete — varer levert én gang i uken er det minste som kan virke.»
+Line: "Innkjøpsordning. Ingen har handlet for ham siden Grete - varer levert én gang i uken er det minste som kan virke."
 
 # Proposal: maltidsvenn
 
 Relevant: f_avstand, f_ingen_matkjop
-Line: «Måltidsvenn, forsiktig. Noen som spiser middag MED ham — men det er en fremmed ved bordet. Usikker.»
+Line: "Måltidsvenn, forsiktig. Noen som spiser middag MED ham - men det er en fremmed ved bordet. Usikker."
 
 # Proposal: kartlegging
 
 Relevant: f_ingen_plan
-Line: «Funksjonskartlegging. Ingen har noen gang sett Elling alene — et strukturert besøk kan lukke det hullet.»
+Line: "Funksjonskartlegging. Ingen har noen gang sett Elling alene - et strukturert besøk kan lukke det hullet."
 
 # Proposal: oppfolging
 
 Relevant: f_ingen_plan
-Line: «Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken — hvis dette skal bæres, må noen få tid til å bære.»
+Line: "Oppfølgingsvedtak, kanskje. To timer ekstra per dag i saken - hvis dette skal bæres, må noen få tid til å bære."
 
 # Proposal: samtaler
 
 Relevant: f_brevsprekken, f_avstand
-Line: «Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken — men kanalen inn må finnes først.»
+Line: "Støttesamtaler, på sikt. Fast samtalekontakt én gang i uken - men kanalen inn må finnes først."
 
 # Proposal: stottekontakt
 
 Relevant: f_utklipp, f_bok
-Line: «Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om — arkivet er et sted å begynne.»
+Line: "Støttekontakt. Tre timer i uken rundt det han allerede bryr seg om - arkivet er et sted å begynne."
 
 # Proposal: tilsyn
 
 Relevant: f_saarbar, f_brevsprekken
-Line: «Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag — det er mye trykk på en lukket dør. Tyngre enn jeg liker.»
+Line: "Tilsynsbesøk daglig. Hjemmetjenesten innom hver dag - det er mye trykk på en lukket dør. Tyngre enn jeg liker."
 
 # Proposal: besoksvenn
 
 Relevant: f_avstand
-Line: «Besøksvenn, kanskje. Frivillig én gang i uken — mildere enn tjenester, men fortsatt en fremmed i stuen.»
+Line: "Besøksvenn, kanskje. Frivillig én gang i uken - mildere enn tjenester, men fortsatt en fremmed i stuen."
 
 # Proposal: dagsenter
 
 Relevant: f_avstand
-Line: «Dagsenter er langt unna der han er nå. To dager i uken ute blant folk — jeg tror ikke han går dit ennå.»
+Line: "Dagsenter er langt unna der han er nå. To dager i uken ute blant folk - jeg tror ikke han går dit ennå."
 
 # Proposal: folgetjeneste
 
 Relevant: f_elling_tlf
-Line: «Følgetjeneste. Følge til avtaler utenfor hjemmet — hvis det noen gang blir avtaler.»
+Line: "Følgetjeneste. Følge til avtaler utenfor hjemmet - hvis det noen gang blir avtaler."
 
 # Proposal: hverdagsrehab
 
 Relevant: f_bok, f_avstand
-Line: «Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig — men et tverrfaglig lag i leiligheten er mye på én gang.»
+Line: "Hverdagsrehabilitering, muligens. Fire uker trening i egen bolig - men et tverrfaglig lag i leiligheten er mye på én gang."
 
 # Proposal: parorende
 
 Relevant: f_grete_baerer, f_grete_syk
-Line: «Pårørendestøtte. Grete bar alt — avlastning og veiledning kunne lettet henne mens hun ennå bærer.»
+Line: "Pårørendestøtte. Grete bar alt - avlastning og veiledning kunne lettet henne mens hun ennå bærer."
 
 # Proposal: tt
 
 Relevant: f_avstand
-Line: «TT-kort. Subsidiert transport, åtte turer i måneden — men han har ingen steder han skal ennå.»
+Line: "TT-kort. Subsidiert transport, åtte turer i måneden - men han har ingen steder han skal ennå."
 
 # Proposal: alarm
 
 Relevant: f_saarbar
-Line: «Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.»
+Line: "Trygghetsalarm, tja. Utrykning ved fall - jeg er usikker på om det treffer det som er skjørt her."
 
 # Proposal: depositum
 
 Relevant: f_leie_privat, f_leie_stoppet
-Line: «Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.»
+Line: "Depositumsgaranti. Bare aktuelt hvis det blir flytting - garanti for et nytt leieforhold."
 
 # Proposal: kbolig
 
 Relevant: f_leie_stoppet, f_gap
-Line: «Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.»
+Line: "Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er."
 
 # Proposal: startlan
 
 Relevant: f_trygd, f_gap
-Line: «Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.»
+Line: "Startlån. Lån til kjøp av egen bolig - det er langt fra der denne saken står."
 
 # Recipe: f_bok + f_utklipp
 
 ~ open q_vekst
-Frank: «Boken og utklippene. Ja. Jeg har tenkt på dem sammen, men jeg fikk det ikke sagt.»
-Frank: «Han holder krevende stoff i hodet og noterer systematisk. Og han klipper ut, daterer og ordner. Begge deler er hans egne.»
-Frank: «Så spørsmålet er ikke om han kan lære. Det er hva som kan læres — og i hvilket tempo, uten å knekke noe.»
+Frank: "Boken og utklippene. Ja. Jeg har tenkt på dem sammen, men jeg fikk det ikke sagt."
+Frank: "Han holder krevende stoff i hodet og noterer systematisk. Og han klipper ut, daterer og ordner. Begge deler er hans egne."
+Frank: "Så spørsmålet er ikke om han kan lære. Det er hva som kan læres - og i hvilket tempo, uten å knekke noe."
 
 # Recipe: f_grete_syk + f_klarer_seg
 
 ~ open q_grete_dor
-Frank: «Haug skriver kort forventet forløp. Grete sier han klarer seg. Begge kan ikke ha rett.»
-Frank: «Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe — og vi vet ikke hva.»
-Frank: «Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved å være der.»
+Frank: "Haug skriver kort forventet forløp. Grete sier han klarer seg. Begge kan ikke ha rett."
+Frank: "Hun har båret alt så lenge at hun ikke ser det selv. Den dagen hun ikke kommer hjem, stopper noe - og vi vet ikke hva."
+Frank: "Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved å være der."
 
 # Conversation: call:grete
 
 gate: f_grete_baerer
-Soft reject: «… Jeg vet ikke hva du mener med det.»
+Soft reject: "… Jeg vet ikke hva du mener med det."
 
 Ja, hallo?
 du: Det gjelder Elling. Dr. Haug har meldt bekymring.

@@ -14,7 +14,7 @@
 export const kind = 'KONTOUTSKRIFT';
 
 const BANK_NAME = 'SPAREBANKEN VESTRE OSLO';
-const BANK_STRAP = 'FILIAL SKILLEBEKK · DRAMMENSVEIEN 118 · TLF 22 44 xx xx';
+const BANK_STRAP = 'FILIAL GRORUD - TRONDHEIMSVEIEN 435 - TLF 22 44 xx xx';
 
 export const styleCss = `
 .doc--kontoutskrift { --paper: #ece4d0; --page-pad: 44px 50px 50px; }

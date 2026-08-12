@@ -106,10 +106,15 @@ export function renderGeneratedBlueprintModule({ slice, labContent }) {
 }
 
 function toTs(value) {
+  // Walk real JSON string literals and re-quote them as single-quoted TS
+  // strings with correct escaping (a bare "→'" swap corrupts any content
+  // that itself contains an apostrophe or a double quote).
   return JSON.stringify(value, null, 2)
-    .replace(/"([A-Za-z_$][\w$]*)":/g, '$1:')
-    .replace(/: "([a-zA-Z0-9_]+)"/g, ": '$1'")
-    .replace(/"/g, "'");
+    .replace(/"(?:[^"\\]|\\.)*"/g, (literal) => {
+      const text = JSON.parse(literal);
+      return `'${text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
+    })
+    .replace(/'([A-Za-z_$][\w$]*)':/g, '$1:');
 }
 
 export async function formatGeneratedBlueprintModule(artifacts) {

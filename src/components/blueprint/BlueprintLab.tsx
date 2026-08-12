@@ -152,16 +152,16 @@ const Header = observer(function Header({ store }: { store: BlueprintStore }) {
       <div className="blueprint-case-head">
         <div>
           <h1 className="text-lg font-black uppercase tracking-[0.12em]">
-            Sak 99/0412 · Olsen, Elling
+            Sak 99/0412 - Olsen, Elling
           </h1>
           <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[#6b6259]">
-            Oslo kommune · sosialkontoret · meldt av Dr. J. Haug · februar 1999
+            Oslo kommune - sosialkontoret - meldt av Dr. J. Haug - februar 1999
           </p>
         </div>
         <div className="mt-3 text-xs uppercase tracking-[0.14em] text-[#6b6259] md:mt-0 md:text-right">
           Tiltaksramme: 6 mynter/mnd
           <br />
-          Disponert: {store.spentCost || '—'}
+          Disponert: {store.spentCost || '-'}
         </div>
       </div>
       <ResourceBox value={store.progress.day} label="dag" />
@@ -240,7 +240,7 @@ const Desk = observer(function Desk({ store }: { store: BlueprintStore }) {
             >
               {state.isNew ? <span className="blueprint-stamp new">NY</span> : null}
               <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#6b6259]">
-                {document.kind} · dag {state.day}
+                {document.kind} - dag {state.day}
               </span>
               <span className="mt-2 block text-left text-base font-black leading-tight">
                 {document.title}
@@ -362,13 +362,13 @@ const RunText = observer(function RunText({
 const FactsBoard = observer(function FactsBoard({ store }: { store: BlueprintStore }) {
   return (
     <section>
-      <FrameTitle title="Sakens fakta" meta="Auto-arkivert på domene · kilde påført" />
+      <FrameTitle title="Sakens fakta" meta="Auto-arkivert på domene - kilde påført" />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {store.factsByDomain.map(({ domain, facts }) => (
           <div key={domain} className="min-w-0">
             <h3 className="mb-3 flex justify-between border-b border-[#a49a8c] pb-1 text-xs font-bold uppercase tracking-[0.14em] text-[#6b6259]">
               <span>{domain}</span>
-              <span>{facts.length || '—'}</span>
+              <span>{facts.length || '-'}</span>
             </h3>
             <div className="grid gap-3">
               {facts.length ? (
@@ -384,9 +384,9 @@ const FactsBoard = observer(function FactsBoard({ store }: { store: BlueprintSto
                   >
                     <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
                     <span className="font-semibold">{fact.text}</span>
-                    <span className="mt-1 block text-xs italic text-[#6b6259]">«{fact.quote}»</span>
+                    <span className="mt-1 block text-xs italic text-[#6b6259]">"{fact.quote}"</span>
                     <span className="mt-2 block text-[10px] uppercase tracking-[0.12em] text-[#6b6259]">
-                      {fact.category} · dag {store.progress.facts[fact.id]?.day}
+                      {fact.category} - dag {store.progress.facts[fact.id]?.day}
                     </span>
                   </button>
                 ))
@@ -474,7 +474,7 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
 
   return (
     <section ref={boardRef} className="blueprint-question-board relative">
-      <FrameTitle title="Åpne spørsmål" meta="Arbeidshypoteser er foreløpige · ikke fasit" />
+      <FrameTitle title="Åpne spørsmål" meta="Arbeidshypoteser er foreløpige - ikke fasit" />
       <svg className="blueprint-question-lines" aria-hidden data-testid="blueprint-question-lines">
         {lines.map((line) => (
           <path
@@ -541,7 +541,7 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
                           <>
                             <span className="blueprint-redact">{hypothesis.label}</span>
                             <span className="ml-2 text-xs uppercase tracking-[0.1em] text-[#c86244]">
-                              uleselig · mangler faktum
+                              uleselig - mangler faktum
                             </span>
                           </>
                         )}
@@ -553,13 +553,13 @@ const QuestionsBoard = observer(function QuestionsBoard({ store }: { store: Blue
               {chosen ? (
                 <div className="mt-4 rounded border-2 border-[#2a2520] bg-[#ece7d8] p-3">
                   <div className="text-xs font-bold uppercase tracking-[0.16em] text-[#c86244]">
-                    Arbeidshypotese · foreløpig
+                    Arbeidshypotese - foreløpig
                   </div>
                   <p className="mt-1 text-sm leading-relaxed">{chosen.note}</p>
                   {chosen.opens.length ? (
                     <p className="mt-2 text-xs uppercase tracking-[0.12em] text-[#7a6420]">
                       Gir grunnlag for:{' '}
-                      {chosen.opens.map((tiltakId) => blueprintTiltak[tiltakId].title).join(' · ')}
+                      {chosen.opens.map((tiltakId) => blueprintTiltak[tiltakId].title).join(' - ')}
                     </p>
                   ) : null}
                 </div>
@@ -584,7 +584,7 @@ const VedtakBoard = observer(function VedtakBoard({ store }: { store: BlueprintS
     <section className="grid gap-5 xl:grid-cols-[1.45fr_0.75fr]">
       <div>
         <FrameTitle
-          title={`Vedtak ${store.progress.vedtakCount + 1} · utkast`}
+          title={`Vedtak ${store.progress.vedtakCount + 1} - utkast`}
           meta="Tre slots pluss presskort"
         />
         {slots.map((slot) => (
@@ -633,7 +633,7 @@ const VedtakBoard = observer(function VedtakBoard({ store }: { store: BlueprintS
                         ) : null}
                       </span>
                       <span className="ml-auto whitespace-nowrap text-xs uppercase tracking-[0.12em] text-[#6b6259]">
-                        {tiltak.cost ? `${tiltak.cost} mynt` : '—'}
+                        {tiltak.cost ? `${tiltak.cost} mynt` : '-'}
                       </span>
                     </button>
                   );
@@ -672,7 +672,7 @@ function ClockPanel({ store }: { store: BlueprintStore }) {
   ];
   return (
     <aside className="blueprint-frame h-fit bg-[#ece7d8] p-4">
-      <FrameTitle title="Klokker" meta="Fylles · går ikke tilbake" compact />
+      <FrameTitle title="Klokker" meta="Fylles - går ikke tilbake" compact />
       <ClockRow
         name="Grete tilgjengelig"
         question={
@@ -810,7 +810,7 @@ const FrankBoard = observer(function FrankBoard({ store }: { store: BlueprintSto
       <div className="blueprint-frame p-4">
         <FrameTitle
           title="Send Frank"
-          meta={`1 handling per oppdrag · ${store.progress.actions} igjen i dag`}
+          meta={`1 handling per oppdrag - ${store.progress.actions} igjen i dag`}
           compact
         />
         {store.availableDispatches.length ? (
@@ -833,7 +833,7 @@ const FrankBoard = observer(function FrankBoard({ store }: { store: BlueprintSto
                   onClick={() => store.runDispatch(dispatch.id)}
                 >
                   <Send size={16} />
-                  Send · {dispatch.title}
+                  Send - {dispatch.title}
                 </button>
               </article>
             ))}
@@ -904,9 +904,9 @@ const ApartmentBoard = observer(function ApartmentBoard({ store }: { store: Blue
       <div className="grid content-start gap-4">
         <div className="blueprint-frame p-4">
           <FrameTitle
-            title="Elling · anslag"
+            title="Elling - anslag"
             meta={
-              sim.visitLevel === 2 ? 'Løpende · Frank har kanal inn' : 'Sist observert ved besøk'
+              sim.visitLevel === 2 ? 'Løpende - Frank har kanal inn' : 'Sist observert ved besøk'
             }
             compact
           />
@@ -916,7 +916,7 @@ const ApartmentBoard = observer(function ApartmentBoard({ store }: { store: Blue
           <NeedBar label="Trygghet" value={sim.needs.security} />
         </div>
         <div className="blueprint-frame p-4">
-          <FrameTitle title="Leiligheten" meta="Gabels gate 14 · 4. etasje" compact />
+          <FrameTitle title="Leiligheten" meta="Ammerudveien 47 - 4. etasje" compact />
           <AptObject
             label="Postbunken på skoskapet"
             value={`${sim.mail} brev`}
@@ -934,7 +934,7 @@ const ApartmentBoard = observer(function ApartmentBoard({ store }: { store: Blue
       </div>
       <div className="blueprint-frame reg-notat p-4">
         <FrameTitle
-          title="Logg · det kommunen vet"
+          title="Logg - det kommunen vet"
           meta={sim.visitLevel === 2 ? 'Daglig' : 'Fragmentarisk'}
           compact
         />
@@ -948,7 +948,7 @@ const ApartmentBoard = observer(function ApartmentBoard({ store }: { store: Blue
             ).map(([day, entries]) => (
               <div key={day}>
                 <div className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-[#c86244]">
-                  Dag {day} · {blueprintDayName(Number(day)).split('.')[0]}
+                  Dag {day} - {blueprintDayName(Number(day)).split('.')[0]}
                 </div>
                 {entries.map((entry, index) => (
                   <p
@@ -1012,10 +1012,10 @@ const FactDialog = observer(function FactDialog({ store }: { store: BlueprintSto
       <article className="blueprint-reader w-full max-w-lg p-5">
         <div className="text-xs font-bold uppercase tracking-[0.14em] text-[#6b6259]">
           <span className="blueprint-domain-icon">{domainIcon[fact.domain]}</span>
-          {fact.domain} · {fact.category} · dag {store.progress.facts[fact.id]?.day}
+          {fact.domain} - {fact.category} - dag {store.progress.facts[fact.id]?.day}
         </div>
         <h2 className="mt-2 text-2xl font-semibold leading-tight">{fact.text}</h2>
-        <p className="mt-2 text-sm italic text-[#6b6259]">«{fact.quote}»</p>
+        <p className="mt-2 text-sm italic text-[#6b6259]">"{fact.quote}"</p>
         <FactRelation title="Henger sammen med">
           {fact.supports
             .filter((questionId) => store.progress.questions[questionId])
@@ -1108,7 +1108,7 @@ const Reflection = observer(function Reflection({ store }: { store: BlueprintSto
     <div className="fixed inset-0 z-20 flex items-center justify-center bg-[#382f26] p-4">
       <section className="blueprint-story-card w-full max-w-2xl p-7">
         <div className="mb-4 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#6b6259]">
-          Dag 8 · saken fortsetter
+          Dag 8 - saken fortsetter
         </div>
         <div className="grid gap-3 text-base leading-relaxed">
           <p>{end.para1}</p>

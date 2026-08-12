@@ -16,7 +16,7 @@ function runs(...items: Array<string | BlueprintTextRun>): BlueprintTextRun[] {
 }
 
 export const blueprintPrologue: BlueprintStoryBeat[] = [
-  { cap: 'LEGESENTERET · TIRSDAG I FEBRUAR 1999' },
+  { cap: 'LEGESENTERET - TIRSDAG I FEBRUAR 1999' },
   { who: 'DR. HAUG', say: 'Prøvesvarene er kommet. Det er som vi trodde.' },
   { who: 'GRETE', say: 'Ja.' },
   { dir: 'Det er stille en stund. Noen ler av noe i naborommet.' },
@@ -28,9 +28,9 @@ export const blueprintPrologue: BlueprintStoryBeat[] = [
   { dir: 'Grete tar på seg hanskene. Én finger om gangen.' },
   { who: 'GRETE', say: 'Dere får gjøre det dere må.' },
   {
-    dir: 'Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet «alvorlig». Sender.',
+    dir: 'Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet "alvorlig". Sender.',
   },
-  { stamp: 'MOTTATT · SOSIALKONTORET', end: 'Meldingen ligger på pulten din.' },
+  { stamp: 'MOTTATT - SOSIALKONTORET', end: 'Meldingen ligger på pulten din.' },
 ];
 
 export const blueprintDomains: BlueprintDomain[] = [
@@ -166,7 +166,7 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     id: 'f_smart_gutt',
     domain: 'Nettverk/sosialt',
     category: 'Samtale',
-    text: 'Grete omtaler Elling (35) som «gutt». Rollene er fastlåst.',
+    text: 'Grete omtaler Elling (35) som "gutt". Rollene er fastlåst.',
     quote: 'han er en smart gutt',
     supports: ['q_hverdag', 'q_selv'],
   },
@@ -174,16 +174,16 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Ellings uføretrygd: to mynter i måneden.',
-    quote: 'trygden hans — to mynter i måneden',
+    text: 'Ellings uføretrygd: nitti mynter i måneden.',
+    quote: 'trygden hans - nitti mynter i måneden',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_husleie: {
     id: 'f_husleie',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Husleien er tre mynter og betales av Grete.',
-    quote: 'husleien — tre mynter. den betales kontant til huseieren',
+    text: 'Husleien er hundre og tjue mynter og betales av Grete.',
+    quote: 'husleien - hundre og tjue mynter. den betales kontant til huseieren',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_alt_via_grete: {
@@ -198,8 +198,8 @@ export const blueprintFacts: Record<string, BlueprintFact> = {
     id: 'f_gap',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet to mynter hver måned.',
-    quote: 'uten henne mangler det to mynter. hver måned',
+    text: 'Uten Gretes pensjon mangler husholdet hundre mynter hver måned.',
+    quote: 'uten henne mangler det hundre mynter. hver måned',
     supports: ['q_okonomi', 'q_bolig', 'q_kollaps'],
   },
   f_ingen_matkjop: {
@@ -304,12 +304,12 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_bekymring: {
     id: 'doc_bekymring',
     kind: 'BEKYMRINGSMELDING',
-    title: 'Legesenteret · Dr. J. Haug',
+    title: 'Legesenteret - Dr. J. Haug',
     register: 'klinisk',
-    peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
-    meta: 'LEGESENTERET · 11.02.1999',
+    peek: '"…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak."',
+    meta: 'LEGESENTERET - 11.02.1999',
     blocks: [
-      { id: 'b1', type: 'para', runs: runs('Gjelder: Olsen, Elling · f. 14.03.1964.') },
+      { id: 'b1', type: 'para', runs: runs('Gjelder: Olsen, Elling - f. 14.03.1964.') },
       {
         id: 'b2',
         type: 'para',
@@ -351,17 +351,17 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_frank_tlf: {
     id: 'doc_frank_tlf',
     kind: 'FELTNOTAT',
-    title: 'Frank · telefonsamtale med Grete',
+    title: 'Frank - telefonsamtale med Grete',
     register: 'notat',
-    peek: '«Hun tok den på andre forsøk.»',
-    meta: 'TLF. G. OLSEN · 4012 F. SOLBERG',
+    peek: '"Hun tok den på andre forsøk."',
+    meta: 'TLF. G. OLSEN - 4012 F. SOLBERG',
     blocks: [
       { id: 't1', type: 'para', runs: runs('Ringte Grete 11:40. Hun tok den på andre forsøk.') },
       {
         id: 't2',
         type: 'para',
         runs: runs({
-          text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
+          text: '"Han klarer seg. Han har alltid klart seg." Hun sa det to ganger.',
           factId: 'f_klarer_seg',
         }),
       },
@@ -377,7 +377,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 't4',
         type: 'para',
         runs: runs({
-          text: 'Jeg ba om å få hilse på Elling. Hun sa han ikke tar telefonen. «Han liker bare ikke apparatet.»',
+          text: 'Jeg ba om å få hilse på Elling. Hun sa han ikke tar telefonen. "Han liker bare ikke apparatet."',
           factId: 'f_elling_tlf',
         }),
       },
@@ -398,10 +398,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_frank_visit: {
     id: 'doc_frank_visit',
     kind: 'RAPPORT',
-    title: 'Frank · hjemmebesøk Gabels gate 14',
+    title: 'Frank - hjemmebesøk Ammerudveien 47',
     register: 'notat',
-    peek: '«Hun hadde dekket på med tre kopper.»',
-    meta: 'BLOKKA · 4. ETASJE · AVTALT VIA G. OLSEN',
+    peek: '"Hun hadde dekket på med tre kopper."',
+    meta: 'BLOKKA - 4. ETASJE - AVTALT VIA G. OLSEN',
     blocks: [
       {
         id: 'v1',
@@ -460,7 +460,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 'v8',
         type: 'para',
         runs: runs('Grete fulgte meg ut. I trappen sa hun: ', {
-          text: '«Du så hvordan han er. Han er en smart gutt.»',
+          text: '"Du så hvordan han er. Han er en smart gutt."',
           factId: 'f_smart_gutt',
         }),
       },
@@ -469,9 +469,9 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_konto: {
     id: 'doc_konto',
     kind: 'ØKONOMISK OVERSIKT',
-    title: 'Frank · husholdets økonomi',
+    title: 'Frank - husholdets økonomi',
     register: 'notat',
-    peek: '«Regnestykket går opp — med henne.»',
+    peek: '"Regnestykket går opp - med henne."',
     meta: 'GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
     blocks: [
       {
@@ -483,7 +483,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 'k2',
         type: 'para',
         runs: runs('Inn: ', {
-          text: 'trygden hans — to mynter i måneden',
+          text: 'trygden hans - nitti mynter i måneden',
           factId: 'f_trygd',
         }),
       },
@@ -491,7 +491,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 'k3',
         type: 'para',
         runs: runs('Ut: ', {
-          text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete',
+          text: 'husleien - hundre og tjue mynter. Den betales kontant til huseieren, av Grete',
           factId: 'f_husleie',
         }),
       },
@@ -515,7 +515,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 'k6',
         type: 'para',
         runs: runs({
-          text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
+          text: 'Regnestykket går opp - med henne. Uten henne mangler det hundre mynter. Hver måned.',
           factId: 'f_gap',
         }),
       },
@@ -524,10 +524,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_papirer: {
     id: 'doc_papirer',
     kind: 'ØKONOMISK OVERSIKT',
-    title: 'Frank · papirene i leiligheten',
+    title: 'Frank - papirene i leiligheten',
     register: 'notat',
-    peek: '«Skoesken sto der hun forlot den.»',
-    meta: 'ETTER DØDSFALLET · MED ELLING I ROMMET',
+    peek: '"Skoesken sto der hun forlot den."',
+    meta: 'ETTER DØDSFALLET - MED ELLING I ROMMET',
     blocks: [
       {
         id: 'p1',
@@ -537,13 +537,13 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       {
         id: 'p2',
         type: 'para',
-        runs: runs({ text: 'trygden hans — to mynter i måneden', factId: 'f_trygd' }),
+        runs: runs({ text: 'trygden hans - nitti mynter i måneden', factId: 'f_trygd' }),
       },
       {
         id: 'p3',
         type: 'para',
         runs: runs({
-          text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete',
+          text: 'husleien - hundre og tjue mynter. Den ble betalt kontant til huseieren, av Grete',
           factId: 'f_husleie',
         }),
       },
@@ -556,7 +556,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
         id: 'p5',
         type: 'para',
         runs: runs({
-          text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
+          text: 'Regnestykket gikk opp - med henne. Nå mangler det hundre mynter. Hver måned.',
           factId: 'f_gap',
         }),
       },
@@ -565,10 +565,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_innleggelse: {
     id: 'doc_innleggelse',
     kind: 'MELDING',
-    title: 'OUS Ullevål · innleggelse',
+    title: 'OUS Ullevål - innleggelse',
     register: 'klinisk',
-    peek: '«…ber om at kommunen ser til ham.»',
-    meta: 'TIL SOSIALKONTORET · 14.02.1999',
+    peek: '"…ber om at kommunen ser til ham."',
+    meta: 'TIL SOSIALKONTORET - 14.02.1999',
     blocks: [
       {
         id: 'i1',
@@ -591,10 +591,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_dodsfall: {
     id: 'doc_dodsfall',
     kind: 'MELDING',
-    title: 'OUS Ullevål · dødsfall',
+    title: 'OUS Ullevål - dødsfall',
     register: 'klinisk',
-    peek: '—',
-    meta: 'TIL SOSIALKONTORET · 15.02.1999',
+    peek: '-',
+    meta: 'TIL SOSIALKONTORET - 15.02.1999',
     blocks: [
       {
         id: 'd1',
@@ -617,10 +617,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
   doc_huseier: {
     id: 'doc_huseier',
     kind: 'BREV',
-    title: 'Brev fra huseieren · T. Bakkerud',
+    title: 'Brev fra huseieren - T. Bakkerud',
     register: 'formell',
-    peek: '«Jeg hører at din mor er gått bort.»',
-    meta: 'HÅNDSKREVET · LEVERT I POSTKASSEN',
+    peek: '"Jeg hører at din mor er gått bort."',
+    meta: 'HÅNDSKREVET - LEVERT I POSTKASSEN',
     blocks: [
       { id: 'h1', type: 'para', runs: runs('Til Elling Olsen.') },
       {
@@ -676,7 +676,7 @@ export const blueprintQuestions: Record<string, BlueprintQuestion> = {
         label: 'Trygden dekker ikke boligen uten Gretes pensjon.',
         needs: ['f_gap'],
         opens: ['t_bostotte'],
-        note: 'Ellings trygd er to mynter. Boligen koster tre. Differansen bæres av Gretes pensjon.',
+        note: 'Ellings trygd er nitti mynter. Januar kostet hundre og nitti - husleien alene hundre og tjue. Differansen bæres av Gretes pensjon.',
       },
     ],
   },
@@ -850,7 +850,7 @@ export const blueprintTiltak: Record<string, BlueprintTiltak> = {
   t_hjemmehjelp: {
     id: 't_hjemmehjelp',
     slot: 's2',
-    title: 'Hjemmehjelp 2x uke — Frank',
+    title: 'Hjemmehjelp 2x uke - Frank',
     cost: 2,
     description: 'Fast person, fast tid. Den eneste kanalen inn som har virket hittil.',
     sim: 'hjemmehjelp',
@@ -957,7 +957,7 @@ export const blueprintChat: BlueprintChatPrompt[] = [
   {
     id: 'c_post',
     needs: 'f_post',
-    question: 'Posten i gangen — likegyldighet?',
+    question: 'Posten i gangen - likegyldighet?',
     answer: runs(
       'Nei. Han vet nøyaktig hva som ligger der. Det er ikke likegyldighet. Det ligner mer på frykt for hva papiret krever av svar.',
     ),
@@ -965,7 +965,7 @@ export const blueprintChat: BlueprintChatPrompt[] = [
   {
     id: 'c_klarer',
     needs: 'f_klarer_seg',
-    question: 'Tror du på «han klarer seg»?',
+    question: 'Tror du på "han klarer seg"?',
     answer: runs(
       'Folk sier det på to måter. Som en vurdering, eller som et håp. Hun sa det to ganger. Andre gangen var det et håp.',
     ),
@@ -973,7 +973,7 @@ export const blueprintChat: BlueprintChatPrompt[] = [
   {
     id: 'c_bok',
     needs: 'f_bok',
-    question: 'Boken og notatene — hva sier det deg?',
+    question: 'Boken og notatene - hva sier det deg?',
     answer: runs(
       'Tre setninger om Nansen, presise, til veggen. Det er ikke en som mangler evner. Det er en som mangler trening i å ha noen i rommet.',
     ),
@@ -981,7 +981,7 @@ export const blueprintChat: BlueprintChatPrompt[] = [
   {
     id: 'c_avstand',
     needs: 'f_avstand',
-    question: 'Møbelet mellom dere — hvor lang vei er det inn?',
+    question: 'Møbelet mellom dere - hvor lang vei er det inn?',
     answer: runs(
       'Lang. Men ',
       {
@@ -1010,11 +1010,11 @@ export const blueprintChat: BlueprintChatPrompt[] = [
 ];
 
 export const blueprintFlavor = [
-  '21:10 — teleskopet ved vinduet. 40 min. Himmelen var overskyet.',
+  '21:10 - teleskopet ved vinduet. 40 min. Himmelen var overskyet.',
   'Kryssordet fra lørdagsavisen. Tre ord fylt inn, alle riktige.',
   'Boken om Maud-ekspedisjonen. Margnotater, små bokstaver.',
-  'Utklippsboken: nytt utklipp limt inn under «1994». Limstift, linjal, årstall i hjørnet.',
-  '10:48 — naboen i vinduet et øyeblikk. E. så, uten å bevege seg.',
+  'Utklippsboken: nytt utklipp limt inn under "1994". Limstift, linjal, årstall i hjørnet.',
+  '10:48 - naboen i vinduet et øyeblikk. E. så, uten å bevege seg.',
   'NRK Kveldsnytt. Han satt gjennom hele sendingen. Reiste seg da innenrikspolitikken var over.',
   'Han brettet pleddet på Gretes stol. La det tilbake nøyaktig slik det lå.',
 ];

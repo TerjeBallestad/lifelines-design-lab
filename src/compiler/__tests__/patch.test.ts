@@ -328,6 +328,6 @@ describe('(d) patches compose', () => {
     // cleanup is the canvas's concern, not the patch layer's.
     expect(text).not.toContain('# Clock: ck_selvstendighet');
     // Untouched blocks kept their bytes.
-    expect(text).toContain('Frank: ««Omfanget er ikke kartlagt».');
+    expect(text).toContain(`Frank: "'Omfanget er ikke kartlagt'.`);
   });
 });

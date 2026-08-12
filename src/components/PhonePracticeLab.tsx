@@ -202,7 +202,7 @@ const GreteCallSurface = observer(function GreteCallSurface() {
             <div>
               <div className="font-bold">Frank ringer Grete</div>
               <div className="text-xs uppercase tracking-[0.18em] text-base-content/50">
-                Telefonsamtale · obskurert
+                Telefonsamtale - obskurert
               </div>
             </div>
           </div>
@@ -576,7 +576,7 @@ const CaseDeskSurface = observer(function CaseDeskSurface() {
                             <div>
                               <div className="font-bold">Frank svarer</div>
                               <div className="text-xs uppercase tracking-[0.18em] text-base-content/50">
-                                Romobservasjon · samtale
+                                Romobservasjon - samtale
                               </div>
                             </div>
                           </div>
@@ -801,7 +801,7 @@ const ActionContextPanel = observer(function ActionContextPanel() {
           <div className="font-bold">Kortet styrer forsøket</div>
           <p className="mt-1 text-base-content/65">
             Valgt kort: {selectedCard.title}. Dette er før Grete dør, så tiltakene handler om å
-            avlaste Grete og beskytte hjemmet — ikke om telefontrening ennå.
+            avlaste Grete og beskytte hjemmet - ikke om telefontrening ennå.
           </p>
         </div>
       </div>

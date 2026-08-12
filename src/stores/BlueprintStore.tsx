@@ -86,7 +86,7 @@ export class BlueprintStore {
     receiveBlueprintDocument(this.progress, 'doc_bekymring');
     this.activeSurface = 'pulten';
     this.openDocumentId = null;
-    this.addNotice('MOTTATT · SOSIALKONTORET', 'Meldingen ligger på pulten din.', 'day');
+    this.addNotice('MOTTATT - SOSIALKONTORET', 'Meldingen ligger på pulten din.', 'day');
   }
 
   showSurface(surface: BlueprintSurface): void {
@@ -108,7 +108,7 @@ export class BlueprintStore {
   liftFact(factId: BlueprintFactId): void {
     const result = liftBlueprintFact(this.progress, factId);
     if (!result) return;
-    this.addNotice(`FAKTUM LAGT TIL · ${result.fact.domain}`, result.fact.text, 'fact');
+    this.addNotice(`FAKTUM LAGT TIL - ${result.fact.domain}`, result.fact.text, 'fact');
     for (const questionId of result.newQuestionIds) {
       this.addNotice('ÅPENT SPØRSMÅL', blueprintQuestions[questionId].title, 'hypothesis');
     }
@@ -284,10 +284,10 @@ export class BlueprintStore {
       return {
         id: 'doc_status',
         kind: 'STATUSRAPPORT',
-        title: 'Frank · status dag 8',
+        title: 'Frank - status dag 8',
         register: 'notat',
         peek: 'En uke siden meldingen.',
-        meta: 'DAG 8 · SAKEN FORTSETTER',
+        meta: 'DAG 8 - SAKEN FORTSETTER',
         blocks: statusDocumentBlocks(this.progress.endText).map((text, index) => ({
           id: `status-${index}`,
           type: 'para' as const,
