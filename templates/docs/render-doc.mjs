@@ -17,7 +17,7 @@ import { mkdirSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { templateForKind } from './registry.mjs';
-import { renderRuns, pageShell, overrideForDoc, sizeForKind, PAGE_WIDTH_PX } from './shared.mjs';
+import { renderBlocks, pageShell, overrideForDoc, sizeForKind, PAGE_WIDTH_PX } from './shared.mjs';
 import { fontFaceCss } from './fonts-node.mjs';
 
 const DEFAULT_OUT_DIR = '/tmp/bake-spike';
@@ -35,10 +35,8 @@ export function buildDocHtml(docId, labContent) {
     throw new Error(`Unknown doc id ${JSON.stringify(docId)}. Known: ${known}.`);
   }
   const template = templateForKind(doc.kind);
-  // One labContent block per authored paragraph (blank-line separated).
-  const runsHtml = (doc.blocks ?? [])
-    .map((b) => `<p class="para">${renderRuns(b.runs)}</p>`)
-    .join('\n');
+  // One labContent block per authored paragraph or pipe table (SDD-011).
+  const runsHtml = renderBlocks(doc.blocks);
   const override = overrideForDoc(docId);
   const bodyHtml = template.render({
     docId,

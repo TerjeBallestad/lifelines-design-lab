@@ -4,7 +4,7 @@
 // Typed via templates-docs.d.ts — the modules themselves are plain .mjs.
 import { templateForKind, hasTemplate } from '../../templates/docs/registry.mjs';
 import {
-  renderRuns,
+  renderBlocks,
   pageShell,
   overrideForDoc,
   sizeForKind,
@@ -55,13 +55,18 @@ export interface DocPreviewBuild {
   fallback: boolean;
 }
 
+type LabRun = { text: string; factId?: string };
+type LabBlock =
+  | { type: 'para'; runs: LabRun[] }
+  | { type: 'table'; align: Array<'left' | 'right'>; header: LabRun[][]; rows: LabRun[][][] };
+
 interface LabDoc {
   kind: string;
   title?: string;
   meta?: string;
   register?: string;
   peek?: string;
-  blocks?: Array<{ runs: Array<{ text: string; factId?: string }> }>;
+  blocks?: LabBlock[];
 }
 
 // Mirrors render-doc.mjs buildDocHtml, plus: browser fonts, preview highlight
@@ -70,10 +75,8 @@ export function buildDocPreviewHtml(docId: string, doc: LabDoc): DocPreviewBuild
   const fallback = !hasTemplate(doc.kind);
   const kindUsed = fallback ? 'RAPPORT' : doc.kind;
   const template = templateForKind(kindUsed);
-  // One labContent block per authored paragraph (blank-line separated).
-  const runsHtml = (doc.blocks ?? [])
-    .map((b) => `<p class="para">${renderRuns(b.runs)}</p>`)
-    .join('\n');
+  // One labContent block per authored paragraph or pipe table (SDD-011).
+  const runsHtml = renderBlocks(doc.blocks ?? []);
   const override = overrideForDoc(docId);
   const bodyHtml = template.render({
     docId,
