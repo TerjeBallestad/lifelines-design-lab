@@ -47,6 +47,7 @@ import {
 } from './compile-content.mjs';
 import { buildDocHtml, buildStationeryHtml } from '../../templates/docs/render-doc.mjs';
 import { sizeForKind } from '../../templates/docs/shared.mjs';
+import { blockRuns } from '../../src/domain/blueprint.ts';
 
 // The shell renders at this device scale (mirrors render-doc.mjs) — the "@
 // deviceScaleFactor per template shell" the task asks for.
@@ -172,6 +173,28 @@ async function renderPage(browser, { html, docId, texture, outDir, htmlDir, kind
   }
 }
 
+// SDD-011 coverage assertion: every fact anchored in a document's blocks must
+// measure at least one UV rect on its sheet. A fact whose span renders
+// zero-width, or whose anchor silently failed to land in a cell, would ship an
+// empty rect list — the bake would pass and the desk highlight would be
+// invisible in the game. Fail the bake instead, naming the doc and the fact.
+function assertFactCoverage(docId, doc, measured) {
+  const anchored = new Set(
+    doc.blocks.flatMap((block) =>
+      blockRuns(block)
+        .filter((run) => run.factId)
+        .map((run) => run.factId),
+    ),
+  );
+  const uncovered = [...anchored].filter((factId) => !(measured[factId]?.length > 0));
+  if (uncovered.length) {
+    throw new Error(
+      `bake coverage: ${docId} anchors ${uncovered.join(', ')} but measured no UV rect for ` +
+        `${uncovered.length > 1 ? 'them' : 'it'} — the desk highlight would be invisible.`,
+    );
+  }
+}
+
 // Render every doc + stationery into outDir, return the manifest object (docs
 // keyed by doc_id in a fixed, deterministic order).
 export async function bakeAll(outDir, paths = defaultPaths()) {
@@ -195,6 +218,7 @@ export async function bakeAll(outDir, paths = defaultPaths()) {
         htmlDir,
         kind: labContent.documents[docId].kind,
       });
+      assertFactCoverage(docId, labContent.documents[docId], entry.facts);
       docs[docId] = entry;
     }
     for (const { kind, docId } of STATIONERY_DOCS) {
