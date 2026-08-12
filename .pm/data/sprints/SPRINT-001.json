@@ -165,6 +165,12 @@
       "author": "claude",
       "text": "Session log (wayfinder, 2026-08-09): claimed SB-051 off the frontier. Built the layout probe — three candidates behind a zoombar toggle (hand = lanes + node drag, gravity = force-directed via new pure force.ts, pin = gravity-until-drag) with per-frame DOM sync, live-bounds fit, and 4 headless sim tests. Mid-session: fixed the legend on Terje's feedback (hover-unfold chip, 10.5px, weave family merged); diagnosed 3 content-anchored probe-smoke failures and 6 hard-coded line numbers in patch.test.ts as drift from the case file's stale-draft resurrection (the SB-055 session traced the mechanism) — both test files now compute anchors from content. Terje played: PIN MODE WINS, remaining pain is volume → graduated SB-077 (board scoping) and wired it ahead of SB-045. SB-051 closed. Suite 287/288 — provenance red stays until the culled-line revert lands (SB-055 session's repair plan).",
       "createdAt": "2026-08-09T13:36:58.159Z"
+    },
+    {
+      "id": "c1786534821251",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-12: claimed and closed SB-091 (digit bug). All seven damaged sites in tiny-olsen.case.md restored from doc_konto ground truth (22/30/23). No other case file has the damage. Artifacts regenerated, case:check 16/16 green. Note: gen:content also rewrote tiny_olsen_slice.json in the core-loop checkout, which carries uncommitted SB-067 work — left uncommitted there.",
+      "createdAt": "2026-08-12T11:40:21.251Z"
     }
   ],
   "status": "active",

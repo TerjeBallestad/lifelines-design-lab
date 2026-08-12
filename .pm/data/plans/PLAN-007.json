@@ -52,9 +52,14 @@
       ],
       "verification": "judge: pipeline. command: npm run gen:content && npm run case:check && npm run bake:docs && npm run bake:docs:check. proves: every fact summary and the h_ok_gap title carry the figures the document prose prints, the slice and core JSON regenerate clean, and the re-baked textures match. fake_evidence: a grep showing `22` in the case file — the case only round-trips when tinyOlsen.ts, the core JSON and the manifest are regenerated in the same commit.",
       "blockedBy": [],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Case-file fix + SB-091 close landed earlier in 9c1c732 (main). This session finished the owed re-bake: doc_papirer.png + manifest re-baked and committed in core-loop (cf991e0e) together with the regenerated tiny_olsen_slice.json. Found missed fallout: shipped-fragments.json and fragments.case.md still carried the eaten digits — fixed on branch plan-007 (efa4380). Suite 488/488, case:check green, bake:docs:check fresh. Grep for other single-digit-before-coin damage was done in the earlier session: no other sites.",
+          "timestamp": "2026-08-12T11:46:22.437Z"
+        }
+      ]
     },
     {
       "id": "TASK-031",
@@ -75,9 +80,14 @@
       ],
       "verification": "judge: test. command: npx vitest run src/compiler/__tests__/entities.test.ts && npm test && npm run case:check && npm run lint. proves: markup text with pipe rows compiles through compileCase into typed table blocks with header, alignment and per-cell runs; the bbcode carries `[table=N]`; a ragged row warns instead of failing; the nine existing documents still round-trip. fake_evidence: a green assertion built from a hand-constructed block object, or an emit test that never starts from markup text — the pipe grammar only exists if the text goes in one end.",
       "blockedBy": [],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Pipe-table grammar landed in emit.ts (parser untouched, as predicted): splitDocumentSegments/parseDocTable/splitTableRow beside parseDocumentRuns. Blocks typed para|table; LabDocBlock + BlueprintDocumentBlock unions; shared blockRuns helper for flatten-readers (store, lab UI, canvas, script-editor, tests). DOC_TABLE_RAGGED warns per offending row with line span. Derived: field emits derived_from + '' source, refs each parent, payableFacts fixed-point closure. bbcode [table=N][cell] form; para-only docs byte-identical (bake:docs:check stayed fresh). Red-green: broke TABLE_LINE_RE, 3 tests red, restored green — stamped in entities.test.ts. Golden fixture doc_tabell added to fragments.case.md. prettierignore covers prototypes/paper-reference/. Suite 492/492, lint clean. Commits: 928cb20 (worktree plan-007); core-loop slice regen committed separately (drops stale depositum, Terje's 2026-08-09 live delete).",
+          "timestamp": "2026-08-12T12:00:22.400Z"
+        }
+      ]
     },
     {
       "id": "TASK-032",
@@ -95,9 +105,14 @@
       "blockedBy": [
         "TASK-031"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "renderBlocks shared renderer in shared.mjs; both buildDocHtml and buildDocPreviewHtml route through it, inline para maps deleted. Neutral .doc-table CSS in BASE_CSS (collapse, header rules via --rule-strong, cell padding, .cell-right). templates-docs.d.ts grew the renderBlocks export. Visual self-verification done: rendered scratchpad fixture (para + 3-row table + anchored cell + coin header) at ØKONOMISK OVERSIKT size, opened the PNG — alignment, header rules and coin seat all correct; factCount 1 confirms the anchor span survives inside a td. bake:docs:check fresh (para path byte-identical). Suite 492/492, lint clean. Commit 7ffa33c (worktree plan-007).",
+          "timestamp": "2026-08-12T12:03:07.524Z"
+        }
+      ]
     },
     {
       "id": "TASK-033",
@@ -116,9 +131,14 @@
       "blockedBy": [
         "TASK-032"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Three kinds ported from paper-reference 1a–1d: kontoutskrift.mjs (bank letterhead Archivo 700 blue + small-caps strapline, typewriter body), regning.mjs (orange E mark letterhead, dark-header table styling, last-authored-block-as-giro-band under a RIV AV HER tear line), kassalapp.mjs (300px strip, sawtooth clip-path both edges, .page border opted out, dashed segment rules between blocks). Registered in AUTHORED_KINDS + TEMPLATES; KIND_SIZES 800x1131/800x1131/300x620. Archivo vendored as the variable [wdth,wght] TTF (upstream ships no static 400/700 — SDD naming deviation 2), declared 100–900 in fonts-node.mjs and doc-preview.ts. All three stationery PNGs rendered and inspected. bake:docs:check fresh, suite 492/492, lint clean. Commit 6590ccd. Note: mid-task, merged main (4c7cef5 depositum restore, PLAN-008 collision) and synced 3 fixture sites, commit 23c8f1d.",
+          "timestamp": "2026-08-12T12:11:42.140Z"
+        }
+      ]
     },
     {
       "id": "TASK-034",
@@ -184,5 +204,5 @@
   ],
   "comments": [],
   "createdAt": "2026-08-11T14:01:27.283Z",
-  "updatedAt": "2026-08-11T14:01:49.098Z"
+  "updatedAt": "2026-08-12T12:11:42.141Z"
 }

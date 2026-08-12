@@ -39,9 +39,14 @@
       "steps": [],
       "verification": "judge: gath\ncommand: cd ../lifelines-core-loop && ./tests/run_tests.sh -- --filter sim_content (then full ./tests/run_tests.sh)\nproves: fixture JSON round-trips into typed resources field-for-field (incl. stub flags, wildcard keys, visit step payload parity with an OPPDRAG_BEATS-verbatim fixture), and the headless generator writes loadable .tres\nfake_evidence: a green test that only checks the generator returns non-null, or .tres files existing on disk without field-level assertions. New tests need red-green verification + stamp.",
       "blockedBy": [],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Landed in core-loop 411096ab (+ fix c83b2b7d). New Resource classes BarkPool/PhoneLines (scripts/simulation) + StringTable/VisitScene (scripts/case_files); ThoughtLine.stub export. VisitScene.steps normalized OPPDRAG_BEATS-verbatim incl. types (StringName ids/actors/beats, float duration, int dwell) + optional when->PredicateSpec via generator _build_predicate. CasePack.visits + find_visit; TinyOlsenPackGenerator.build_visits + stable_snapshot visits coverage. SimContentGenerator + generate_sim_content.gd headless entry; committed .tres: resources/characters/generated/{elling,frank,grete}_barks.tres + frank_phone.tres. DECISION: save_thought_pools exists (SB-072 road, GATH-proven round-trip to user://) but default run writes NO thought pools — nothing generated lands near resources/thoughts/; test asserts no generated thoughts dir is committed. GATH sim_content_pack_test red-green verified 2026-08-12 (stub read + no_wait drop both failed red). DEVIATION/side-fix: committed pack was stale since TASK-026 slice baseline (3 tests red on main); regenerated pack + restored depositum proposal dropped by SB-024 back-port (design-lab 4c7cef5). Full suite 337/0.",
+          "timestamp": "2026-08-12T11:52:22.011Z"
+        }
+      ]
     },
     {
       "id": "TASK-038",
@@ -52,9 +57,14 @@
       "blockedBy": [
         "TASK-037"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Landed core-loop cfdde99c. Ports: ThoughtStreamManager.load_lines_from_dirs scans GENERATED_THOUGHTS_DIR (resources/characters/generated/thoughts/) alongside resources/thoughts/ when present — dir absent until SB-072, production scan unchanged; content lint in thought_stream_test extended over the generated dir. ConversationManager: bark_pools (canonical id -> BarkPool) filled at setup() from committed resources, bark_text_for_pair = pair-union pool with one rng roll, BARK_TEXTS fallback — note committed stub pools exist for elling/grete/frank so production bark text is now the Norwegian stub content (intended cutover). PhoneCallDirector: answer_line_for/close_line_for read responder PhoneLines, const fallback — only frank has committed phone lines and responders are household members, so production still speaks consts. Presence seam: static for_character on BarkPool/PhoneLines. Gaps filed: GAP-003 (thoughts), GAP-004 (barks), GAP-005 (phone). GATH character_content_loader_test red-green verified per port 2026-08-12. INCIDENT handled mid-task: concurrent PLAN-007 session regenerated the slice from a stale checkout, resurfacing Terje's Aug-9 depositum deletion — reconciled (slice regen 58934fb1), [grill] SB-092 filed for the deliberate-vs-slip ruling, fixture reverse-edit inventory on the ticket, peer session coordinated via message. Full suite 338/0; besok_single_ring_test flaked once in full-suite runs (passes solo + on rerun) — watch alongside npc_visit_gym_test.",
+          "timestamp": "2026-08-12T12:07:49.701Z"
+        }
+      ]
     },
     {
       "id": "TASK-039",
@@ -65,12 +75,17 @@
       "blockedBy": [
         "TASK-037"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Landed core-loop 8befa8ed. start() gains optional visit_scene param; CaseHost resolves engine.case_pack.find_visit(active_oppdrag) — scene steps replace OPPDRAG_BEATS when present, const verbatim otherwise. Step machinery/hosting spine untouched. Catalog seam: static catalog_ids/catalog_face/catalog_offer_line/catalog_unlock_questions on SocialVisitDirector (pack-first, const fallback); consumers ported: handbok_ui_controller.oppdrag_snapshot, case_engine.play_cards unlock map, phone_panel.show_oppdrag_offer — DEVIATION (faithful to intent): phone_panel is fill-only/engine-free by design, so the CONTROLLER resolves the offer line and passes it as a new param; empty falls back via catalog_offer_line(null,...). when-guards: stripped before play, evaluation NOT wired (part of GAP-006 with the surviving consts). GATH social_visit_scene_parity_test red-green 2026-08-12: full-payload parity vs OPPDRAG_ALENE, divergent-scene-wins guard (identical-content parity alone can't catch an ignored scene), catalog both paths, live scene-driven tillit visit fired arrival/t3/t4/t5/escort in order. ui_driver main_frank_npc_visit in-container: PASS 30/30, assert_trace OK, findings.json [], step-23 shot opened and looked at. Full suite 339/0 before commit.",
+          "timestamp": "2026-08-12T12:20:40.892Z"
+        }
+      ]
     }
   ],
   "comments": [],
   "createdAt": "2026-08-12T11:31:31.576Z",
-  "updatedAt": "2026-08-12T11:31:31.576Z"
+  "updatedAt": "2026-08-12T12:20:40.893Z"
 }
