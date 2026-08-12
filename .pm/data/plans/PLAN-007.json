@@ -2,7 +2,7 @@
   "id": "PLAN-007",
   "title": "PLAN — SDD-011: økonomien blir papir, fire rå dokumenter erstatter Franks notat",
   "sddId": "SDD-011",
-  "stage": "planned",
+  "stage": "done",
   "sprintId": "SPRINT-001",
   "context": {
     "setupNotes": "## What this plan is\n\nSDD-011 replaces `doc_konto` and `doc_papirer` (two `ØKONOMISK OVERSIKT` documents, both Frank's prose) with four raw primary papers: two bank statements, one electricity bill, one till receipt. The player derives the reading instead of being handed it.\n\nThe work has four seams, in this order: a pipe-row table grammar in the markup, a table renderer on the paper, three new paper kinds, then the case-content swap.\n\n## Two-track split (SDD-011 §Verification, ruled by Terje 2026-08-11)\n\n**Track V — this plan.** Pipe-row grammar, emitter shapes, the BBCode table form, bake determinism, and a manifest assertion that every anchored fact measures at least one UV rect.\n\n**Track F — gate tickets, not plan tasks.** Terje reads the four baked PNGs cold. Task 7 preps that gate and files it. No plan task waits on Terje.\n\n## Baseline state, verified 2026-08-11\n\n1. `npm run gen:content:check` — green.\n2. `npm run bake:docs:check` — green. Chromium launches in this environment and the PNGs are byte-deterministic, so the bake is an agent-reachable judge, not a Terje-only step.\n3. `npm run lint` — **red before you start**, on three untracked files from other in-flight work: `prototypes/paper-reference/in-game-dokumenter.dc.html`, `prototypes/paper-reference/support.js`, `prototypes/script-editor/strings-views.ts`. Do not fix `strings-views.ts` — it belongs to someone else's branch. Task 2 adds the vendored `prototypes/paper-reference/` export to `.prettierignore` (it is a design-canvas dump, same class as the prettier-ignored `*.case.md` files). After that, `npm run lint` must be clean except for `strings-views.ts`.\n\n## Cross-repo\n\n`npm run bake:docs` writes into `../lifelines-core-loop/resources/cases/olsen/textures/`, and `npm run gen:content` writes `resources/cases/olsen/source/tiny_olsen_slice.json`. Both are this repo's own outputs — regenerating them IS the verification, not debt.\n\nWhat core-loop still owes is filed as **GAP-002**: the engine has no payment path for a derived fact, its generated `tiny_olsen_case_pack.tres` needs regenerating, and five `tests/ui_driver/*.json` scripts drive the desk through the deleted `doc_konto`. Read GAP-002 before Task 5 — do not try to fix core-loop from here.\n\n## Open tensions routed to Terje (Task 7 files them; nothing blocks on them)\n\n1. **What pays `f_gap`.** The SDD retires its document and gives it a derived list. `case_engine.gd:lift_fact` pays facts from document runs, call lines, chat `pays_fact` and event deltas only — a derived fact hits none of them, and `# Recipe:` does not pay either. This repo emits `derived_from` and teaches the lint; the engine rule is GAP-002.\n2. **When `f_husleie` becomes husleie.** The SDD's fact table anchors it on paper 1a (`KONTANTUTTAK SKRANKE`, arrives ~day 2), while the prose says the economy branch opens on day 6 after Bakkerud's letter names the rent. This plan follows the fact table, because the day-6 reading is SDD-067's lift-and-couple verb, which lives in core-loop and is out of scope here.\n\n## SDD Deviations\n\n1. **NAMING (not mechanism): the derived-fact field.** SDD-011 names the concept, not the markup field. This plan uses `Derived: f_trygd, f_husleie` on the `## f_gap` block, emitting `source_document_id: ''` plus `derived_from: ['f_trygd','f_husleie']`. Requires human decision: no.\n2. **NAMING: Archivo file set.** SDD-011 asks for `Archivo-400.ttf` and `Archivo-700.ttf`. Upstream google/fonts ships only `Archivo[wdth,wght].ttf` (variable) — verified 2026-08-11. Ship the variable TTF and declare it across the weight range so 400 and 700 both render. Requires human decision: no.\n\n## Slices\n\n- **Slice 1 — independent content fix.** Task 1 (SB-091). Evidence: `npm run case:check` + re-bake.\n- **Slice 2 — the table seam.** Tasks 2–3. Evidence: focused vitest with red-green, then a rendered PNG.\n- **Slice 3 — the new paper.** Tasks 4–6. Evidence: `--stationery` renders, then `npm run bake:docs` + a manifest coverage assertion.\n- **Slice 4 — hand off.** Task 7. Evidence: two gate tickets on the board.\n\n## Standing rules\n\n- Tests are your instrument, not the deliverable. Red-green every new test. The judge stanza on the task is the success criterion.\n- Never resolve a design ambiguity by guessing. Route it to Terje as a gate ticket.\n- Commit per task.\n- Do not edit `.pm/data/**` by hand; use the `pm` CLI, run from this checkout.",
@@ -207,12 +207,17 @@
       "blockedBy": [
         "TASK-035"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Artifacts copied to gates/sdd011-papers/ (main checkout). SB-093 filed (feel gate: cold read of the four papers, chain-closure question, least build = the PNGs + existing lightbox/Preview, answer feeds = another printed line, never a margin note). SB-094 filed (grill: half one = what pays a derived f_gap, engine rule vs SDD-067 lift-and-couple verb, GAP-002 linked; half two = f_husleie timing with the three shapes). PM comment on SDD-011 lists what landed and what the gates hold. No follow-up work opened behind either ruling. Plan run ends here per the task.",
+          "timestamp": "2026-08-12T12:32:12.798Z"
+        }
+      ]
     }
   ],
   "comments": [],
   "createdAt": "2026-08-11T14:01:27.283Z",
-  "updatedAt": "2026-08-12T12:30:36.548Z"
+  "updatedAt": "2026-08-12T12:42:39.104Z"
 }
