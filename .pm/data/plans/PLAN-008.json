@@ -1,0 +1,76 @@
+{
+  "id": "PLAN-008",
+  "title": "PLAN — SB-067: Godot loaders — sim-content pack generation and director ports",
+  "sddId": null,
+  "stage": "planned",
+  "sprintId": "SPRINT-003",
+  "context": {
+    "setupNotes": "All code work happens in ../lifelines-core-loop (run pm from the design-lab checkout). Goal per SDD-130 §2: the pack-generator pattern extends to emit committed .tres for the new sim-content shapes, and the loaders become data-driven players of those resources. Content migration is NOT this plan: SB-072 ports each placeholder family into markup and owns the per-family cutover with byte-identical round-trip proofs. This plan builds the machinery and proves it on GATH fixtures.\n\n## Sequencing law (load-bearing)\n- The compiled inputs already exist: resources/characters/source/<id>_sim_content.json (thoughts/barks/phone, stub-marked) and resources/cases/olsen/source/tiny_olsen_slice.json (sparse `visits`/`strings` keys — ABSENT today because no `# Visit:`/`# Strings:` blocks are authored yet). Shapes are defined in design-lab src/compiler/emit-character.ts and src/compiler/emit-visit.ts; visit step payloads mirror OPPDRAG_BEATS verbatim.\n- Loaders read generated resources when present and fall back to their legacy consts when absent (presence = cutover, controlled by SB-072 landing content and regenerating). Each surviving const fallback is named debt: file `pm gap` per family (sim-IOU rule), to be deleted by SB-072.\n- NEVER delete or clobber content before its family rides the generated road. In particular the 15 hand-edited resources/thoughts/*.tres keep firing in production until SB-072 migrates their content; the generator must not overwrite them in this plan (generated pools land in a distinct location or are only committed for families whose source content is the intended production content).\n\n## Constraints\n- Stub marking survives compile into the runtime resource (SDD-130 §2): every new resource class and ThoughtLine carry a `stub` export the generator fills from the JSON.\n- ThoughtLine epistemics are law (SDD-110 #8/#10): no fact ids in thought data, Frank excluded at data level — the content-lint in tests/behavioral/thought_stream_test.gd must keep holding over generated pools.\n- Spoken channels render written text via ConversationBus.social_bark per DD-127 (supersedes DD-031 in part) — the ports change where the words come from, never the channel.\n- Godot never parses markup — loaders read only generated JSON/.tres (SDD-130 non-goal).\n- SocialVisitDirector step machinery (urgent/line/queue_elling/conversation/await_answer/catalog handling, holds, baselines, stall logic) stays; only the authored data (OPPDRAG_BEATS + catalog dicts) becomes VisitScene-driven. The hosting spine in _build_steps has config-driven durations and announced-branching — it is machinery in this plan; its lines migrate later (SB-072, 22-visit-lines family).\n- Oppdrag catalog consumers outside the director: handbok_ui_controller.gd:432 (OPPDRAG_TITLES), phone_panel.gd:703 (OPPDRAG_OFFER_LINES), case_engine.gd:995 (OPPDRAG_UNLOCK_QUESTIONS). VisitSceneOut carries name/blurb/offer_line/unlocks_question for exactly these.\n- Headless generation precedent: scripts/case_files/generate_tiny_olsen_pack.gd + TinyOlsenPackGenerator (source JSON → .tres via ResourceSaver). Follow it; do not invent a new invocation style.\n- GATH red-green per port is the ticket's own bar. Full suite (./tests/run_tests.sh) green before every commit; know the named flake npc_visit_gym_test (intermittent, pre-existing).\n\n## SDD Deviations\n1. MECHANISM_DEVIATION: ticket says the director's \"authored arrays leave\"; this plan keeps them as presence-guarded fallbacks named as pm gaps.\n   - SDD/ticket says: authored arrays leave the director.\n   - Plan does: resource-first reads with const fallback until SB-072 lands the migrated content; SB-072 deletes the consts at each family cutover.\n   - Reason: slice JSON has no visits yet and thought sim-content is stub-only; a hard cutover here would blank live visits/thoughts. SB-072's body explicitly owns \"GATH green after each loader cutover\".\n   - Requires human decision: no.",
+    "relevantFiles": [
+      "../lifelines-core-loop/scripts/case_files/tiny_olsen_pack_generator.gd",
+      "../lifelines-core-loop/scripts/case_files/generate_tiny_olsen_pack.gd",
+      "../lifelines-core-loop/scripts/case_files/case_pack.gd",
+      "../lifelines-core-loop/scripts/simulation/thought_line.gd",
+      "../lifelines-core-loop/scripts/simulation/thought_stream_manager.gd",
+      "../lifelines-core-loop/scripts/simulation/conversation_manager.gd",
+      "../lifelines-core-loop/scripts/simulation/phone_call_director.gd",
+      "../lifelines-core-loop/scripts/simulation/social_visit_director.gd",
+      "../lifelines-core-loop/scripts/ui/handbok_ui_controller.gd",
+      "../lifelines-core-loop/scripts/ui/phone_panel.gd",
+      "../lifelines-core-loop/scripts/case_files/case_engine.gd",
+      "../lifelines-core-loop/resources/characters/source/elling_sim_content.json",
+      "../lifelines-core-loop/resources/cases/olsen/source/tiny_olsen_slice.json",
+      "src/compiler/emit-character.ts",
+      "src/compiler/emit-visit.ts"
+    ],
+    "designDecisions": [
+      "SDD-130 §2 (core-loop store): pack-generator pattern extends to VisitScene/ThoughtLine pools/BarkPool/PhoneLines/StringTable; loader deltas small; sim-IOU rule for surviving hardcodes",
+      "DD-127 (core-loop store): spoken channels render written text via social_bark; thoughts keep the icon/TANKER split; gibberish audio stays",
+      "SDD-110 #8/#10: thought data carries no fact ids; Frank never authored a thought",
+      "Stub: yes survives compile into the runtime resource; stub-count accounting is how the purge is measured",
+      "SB-072 owns content migration and per-family cutover; this plan is machinery + fixture proof"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-037",
+      "title": "Task 1: Runtime resource shapes + sim-content pack generation",
+      "description": "The generator road exists end-to-end: new Resource classes mirror the compiler's emitted shapes, and a headless generator turns the committed source JSON into committed .tres. New classes (scripts/simulation or scripts/case_files per owner): BarkPool (character, lines, stub), PhoneLines (character, answer, close, stub), StringTable (id, entries, stub), VisitScene (id, name, blurb, offer_line, unlocks_question, steps as Array[Dictionary] matching the OPPDRAG_BEATS step payloads incl. optional when-predicates, stub). ThoughtLine gains a stub export. TinyOlsenPackGenerator builds pack.visits (Array[VisitScene]) from the slice's sparse visits key, and CasePack gains the field plus stable_snapshot coverage. A sibling sim-content generator + headless entry (generate_tiny_olsen_pack.gd precedent) emits per-character ThoughtLine pools, BarkPool and PhoneLines from <id>_sim_content.json, and StringTable resources from the slice strings key. Generated thought pools must not clobber the 15 hand-edited resources/thoughts/*.tres (see sequencing law). Commit the generated .tres for barks/phone (their source content is the intended stub content); leave thought-pool production output to SB-072.",
+      "steps": [],
+      "verification": "judge: gath\ncommand: cd ../lifelines-core-loop && ./tests/run_tests.sh -- --filter sim_content (then full ./tests/run_tests.sh)\nproves: fixture JSON round-trips into typed resources field-for-field (incl. stub flags, wildcard keys, visit step payload parity with an OPPDRAG_BEATS-verbatim fixture), and the headless generator writes loadable .tres\nfake_evidence: a green test that only checks the generator returns non-null, or .tres files existing on disk without field-level assertions. New tests need red-green verification + stamp.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-038",
+      "title": "Task 2: Character-content loader ports — thoughts, barks, phone lines",
+      "description": "The three character-content consumers become resource-driven. ThoughtStreamManager keeps its directory scan and picks up generated pools (including the stub field) alongside the hand-edited files without double-loading or behavior change to trigger routing; the Frank-exclusion and no-fact-id lints hold over generated pools. ConversationManager picks bark text from the speaking pair's per-character BarkPool resources instead of the global BARK_TEXTS const; rng-driven selection and social-boost mechanics unchanged. PhoneCallDirector reads the responder's PhoneLines resource for the answer/close barks instead of LINE_ANSWER/LINE_CLOSE. Each port falls back to its legacy const when no generated resource is present, and each surviving fallback is filed as a pm gap naming the family and the SB-072 cutover.",
+      "steps": [],
+      "verification": "judge: gath\ncommand: cd ../lifelines-core-loop && ./tests/run_tests.sh -- --filter thought (plus focused bark/phone filters), then full ./tests/run_tests.sh\nproves: each loader reads the generated resource when present and the legacy const when absent, red-green verified per port; existing thought_stream_test content-lints stay green\nfake_evidence: proving only the fallback path (the pre-port behavior) and calling the port done; a bark test that never installs a BarkPool resource. pm gaps filed for every surviving const.",
+      "blockedBy": [
+        "TASK-037"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-039",
+      "title": "Task 3: SocialVisitDirector plays VisitScene data; Oppdrag catalog serves from the pack",
+      "description": "The visit middle becomes data-driven: start() resolves the Oppdrag beat list from a VisitScene (pack.visits) when the pack carries one, falling back to OPPDRAG_BEATS verbatim otherwise. Step machinery, hosting spine, holds and completion tracking stay untouched. The catalog seam moves with it: OPPDRAG_TITLES / OPPDRAG_OFFER_LINES / OPPDRAG_UNLOCK_QUESTIONS reads in handbok_ui_controller, phone_panel and case_engine go through one accessor that serves VisitScene name/blurb/offer_line/unlocks_question from the loaded pack when present, const fallback otherwise (named pm gap, deleted at SB-072's visit-family cutover). GATH parity fixture: a VisitScene built verbatim from OPPDRAG_ALENE drives the same step sequence and fired_beats as the const table. Because visits are player-watched choreography, close with one ui_driver visit run and read the choreography trace — the port must not disturb who stands where, when.",
+      "steps": [],
+      "verification": "judge: gath (parity), then ui_driver (choreography unchanged)\ncommand: cd ../lifelines-core-loop && ./tests/run_tests.sh -- --filter visit, then full suite; then tests/run_ui_driver.sh visit driver (in-container) and read trace findings.json/timeline.svg\nproves: data-driven and const paths produce identical steps/fired_beats for the same Oppdrag; a driven visit still choreographs clean (empty findings list, no new smells)\nfake_evidence: a parity test that compares only step counts, not payloads; screenshots without the trace; a host-side render past the WARNING banner. pm gap filed for the surviving const fallback.",
+      "blockedBy": [
+        "TASK-037"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-12T11:31:31.576Z",
+  "updatedAt": "2026-08-12T11:31:31.576Z"
+}

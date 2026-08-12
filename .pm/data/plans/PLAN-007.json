@@ -1,0 +1,188 @@
+{
+  "id": "PLAN-007",
+  "title": "PLAN — SDD-011: økonomien blir papir, fire rå dokumenter erstatter Franks notat",
+  "sddId": "SDD-011",
+  "stage": "planned",
+  "sprintId": "SPRINT-001",
+  "context": {
+    "setupNotes": "## What this plan is\n\nSDD-011 replaces `doc_konto` and `doc_papirer` (two `ØKONOMISK OVERSIKT` documents, both Frank's prose) with four raw primary papers: two bank statements, one electricity bill, one till receipt. The player derives the reading instead of being handed it.\n\nThe work has four seams, in this order: a pipe-row table grammar in the markup, a table renderer on the paper, three new paper kinds, then the case-content swap.\n\n## Two-track split (SDD-011 §Verification, ruled by Terje 2026-08-11)\n\n**Track V — this plan.** Pipe-row grammar, emitter shapes, the BBCode table form, bake determinism, and a manifest assertion that every anchored fact measures at least one UV rect.\n\n**Track F — gate tickets, not plan tasks.** Terje reads the four baked PNGs cold. Task 7 preps that gate and files it. No plan task waits on Terje.\n\n## Baseline state, verified 2026-08-11\n\n1. `npm run gen:content:check` — green.\n2. `npm run bake:docs:check` — green. Chromium launches in this environment and the PNGs are byte-deterministic, so the bake is an agent-reachable judge, not a Terje-only step.\n3. `npm run lint` — **red before you start**, on three untracked files from other in-flight work: `prototypes/paper-reference/in-game-dokumenter.dc.html`, `prototypes/paper-reference/support.js`, `prototypes/script-editor/strings-views.ts`. Do not fix `strings-views.ts` — it belongs to someone else's branch. Task 2 adds the vendored `prototypes/paper-reference/` export to `.prettierignore` (it is a design-canvas dump, same class as the prettier-ignored `*.case.md` files). After that, `npm run lint` must be clean except for `strings-views.ts`.\n\n## Cross-repo\n\n`npm run bake:docs` writes into `../lifelines-core-loop/resources/cases/olsen/textures/`, and `npm run gen:content` writes `resources/cases/olsen/source/tiny_olsen_slice.json`. Both are this repo's own outputs — regenerating them IS the verification, not debt.\n\nWhat core-loop still owes is filed as **GAP-002**: the engine has no payment path for a derived fact, its generated `tiny_olsen_case_pack.tres` needs regenerating, and five `tests/ui_driver/*.json` scripts drive the desk through the deleted `doc_konto`. Read GAP-002 before Task 5 — do not try to fix core-loop from here.\n\n## Open tensions routed to Terje (Task 7 files them; nothing blocks on them)\n\n1. **What pays `f_gap`.** The SDD retires its document and gives it a derived list. `case_engine.gd:lift_fact` pays facts from document runs, call lines, chat `pays_fact` and event deltas only — a derived fact hits none of them, and `# Recipe:` does not pay either. This repo emits `derived_from` and teaches the lint; the engine rule is GAP-002.\n2. **When `f_husleie` becomes husleie.** The SDD's fact table anchors it on paper 1a (`KONTANTUTTAK SKRANKE`, arrives ~day 2), while the prose says the economy branch opens on day 6 after Bakkerud's letter names the rent. This plan follows the fact table, because the day-6 reading is SDD-067's lift-and-couple verb, which lives in core-loop and is out of scope here.\n\n## SDD Deviations\n\n1. **NAMING (not mechanism): the derived-fact field.** SDD-011 names the concept, not the markup field. This plan uses `Derived: f_trygd, f_husleie` on the `## f_gap` block, emitting `source_document_id: ''` plus `derived_from: ['f_trygd','f_husleie']`. Requires human decision: no.\n2. **NAMING: Archivo file set.** SDD-011 asks for `Archivo-400.ttf` and `Archivo-700.ttf`. Upstream google/fonts ships only `Archivo[wdth,wght].ttf` (variable) — verified 2026-08-11. Ship the variable TTF and declare it across the weight range so 400 and 700 both render. Requires human decision: no.\n\n## Slices\n\n- **Slice 1 — independent content fix.** Task 1 (SB-091). Evidence: `npm run case:check` + re-bake.\n- **Slice 2 — the table seam.** Tasks 2–3. Evidence: focused vitest with red-green, then a rendered PNG.\n- **Slice 3 — the new paper.** Tasks 4–6. Evidence: `--stationery` renders, then `npm run bake:docs` + a manifest coverage assertion.\n- **Slice 4 — hand off.** Task 7. Evidence: two gate tickets on the board.\n\n## Standing rules\n\n- Tests are your instrument, not the deliverable. Red-green every new test. The judge stanza on the task is the success criterion.\n- Never resolve a design ambiguity by guessing. Route it to Terje as a gate ticket.\n- Commit per task.\n- Do not edit `.pm/data/**` by hand; use the `pm` CLI, run from this checkout.",
+    "relevantFiles": [
+      "content/cases/olsen/tiny-olsen.case.md",
+      "src/compiler/emit.ts",
+      "src/compiler/parse.ts",
+      "src/compiler/lints.ts",
+      "src/compiler/diagnostics.ts",
+      "src/compiler/__tests__/entities.test.ts",
+      "src/compiler/__tests__/fixtures/fragments.case.md",
+      "src/domain/blueprint.ts",
+      "templates/docs/shared.mjs",
+      "templates/docs/registry.mjs",
+      "templates/docs/render-doc.mjs",
+      "templates/docs/fonts-node.mjs",
+      "templates/docs/kinds/okonomisk-oversikt.mjs",
+      "prototypes/shared/doc-preview.ts",
+      "prototypes/paper-reference/in-game-dokumenter.dc.html",
+      "scripts/blueprint/bake-docs.mjs",
+      "scripts/blueprint/compile-content.mjs"
+    ],
+    "designDecisions": [
+      "SDD-011 grammar option A (Terje's pick): a `|` at line start inside a document body opens a table; consecutive `|` lines are one table; a blank line closes it. A separator row of `-` and `|` marks the row above as the header, and `---:` right-aligns that column.",
+      "Terje's ruling 2026-08-11: no stamps and no Frank marginalia. The papers stand bare and printed. Nothing a reader added by hand appears on them.",
+      "The coin goes in the column header once (`UT [icon=coin]`), never on every row.",
+      "The footer boilerplate and the address block stay authored paragraphs. Only the bank name and the strapline are template chrome.",
+      "`KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.` is the load-bearing line in the set. It must print as flat boilerplate — it looks like nothing and proves he cannot buy anything.",
+      "`f_gap` keeps its id, loses its document, and gains `Derived: f_trygd, f_husleie`. It has 13 references across the case; deleting it would mean rewriting all of them.",
+      "`gate: f_gap` on `d_konto` becomes `gate: f_grete_baerer` — the doctor's line that she handles his errands is the reason to ask for the statement.",
+      "`prototypes/paper-reference/in-game-dokumenter.dc.html` is inspiration only (lab wireframe rule). Port the printed content and the letterhead structure; drop `transform: rotate()`, `box-shadow`, and every `sc-if` wear/stamp layer — the desk mesh maps the texture edge-to-edge and supplies its own light.",
+      "Editor chrome stays English; document content stays Norwegian.",
+      "A ragged table row warns as `DOC_TABLE_RAGGED` and never blocks the compile (project rule: stubs and drift warn)."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-030",
+      "title": "Task 1: Fact summaries print the same figures the documents print (SB-091)",
+      "description": "Seven sites in the case file lost a leading digit before `[icon=coin]`, so a fact card reads `2` where the document prose reads `22`. Independent of the rest of this plan, but SDD-011 makes it player-visible: once the statements print the arithmetic, a card that says 2 beside a sheet that says 22,00 is a visible contradiction on the desk. Ground truth is the document prose: `doc_konto` line 53 (`Trygden hans er 22`), line 55 (`Husleien er 30`), line 61 (`mangler det 23`). Scope is the digits only — no rewording.",
+      "steps": [
+        "Read SB-091 for the site table, then fix the seven sites in content/cases/olsen/tiny-olsen.case.md: line 66 (`2` -> `22`), 80 (`3` -> `30`), 86 (`2` -> `23`), 87 (`2` -> `23`), 113 (`2` -> `23`), 450 (`2` -> `23`), 451 (`2` -> `22` and `3` -> `30`).",
+        "Grep the other case and character sources under content/ for the same damage — a bare digit immediately before ` [icon=coin]` — and report what you find in the progress note. Fix only what is unambiguously the same bug.",
+        "Run npm run gen:content and commit the regenerated src/content/blueprint/generated/tinyOlsen.ts and the core JSON in the same commit.",
+        "Run npm run bake:docs (doc_papirer's prose carries one of the sites, so its PNG changes) and commit the re-baked texture and manifest.",
+        "Close SB-091 with pm and note which extra sites the grep found."
+      ],
+      "verification": "judge: pipeline. command: npm run gen:content && npm run case:check && npm run bake:docs && npm run bake:docs:check. proves: every fact summary and the h_ok_gap title carry the figures the document prose prints, the slice and core JSON regenerate clean, and the re-baked textures match. fake_evidence: a grep showing `22` in the case file — the case only round-trips when tinyOlsen.ts, the core JSON and the manifest are regenerated in the same commit.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-031",
+      "title": "Task 2: A pipe table in a document body compiles to a typed table block",
+      "description": "Today every labContent document block is an untyped paragraph and the slice's `body_bbcode` is flat whitespace-collapsed prose. Pipe rows would collapse into garbage. Give blocks a `type`, add the table shape, and teach the BBCode form. Grammar is SDD-011 option A: a `|` at line start opens a table, consecutive `|` lines are one table, a blank line closes it, a separator row of `-` and `|` marks the row above as the header and `---:` right-aligns. Cells split on `|`, outer pipes are optional, cells are trimmed, `\\|` escapes a literal pipe. A cell takes the same run grammar as prose — `[text](fact:id)` anchors and `[icon=coin]` work unchanged. Every cell is a run list, so UV measurement stays as it is. This task is compiler-side only; the renderers are Task 3. Note the parser needs no change — document prose lines are already captured verbatim (src/compiler/parse.ts:520); the block split happens in emit.ts where documentParagraphs is built (src/compiler/emit.ts:503-565, consumed at :1439-1458).",
+      "steps": [
+        "Add a focused vitest case to src/compiler/__tests__/entities.test.ts that compiles a document body holding a lead-in paragraph, a pipe table with a separator row and one right-aligned column, and a `[text](fact:f_x)` anchor inside a cell — assert the labContent blocks come back as `type: 'para'` then `type: 'table'` with `align`, `header` and per-cell run lists, and that the anchored cell's run carries `factId`. Run it and confirm it fails.",
+        "Give existing paragraph blocks `type: 'para'` and add the table block shape `{ id, type: 'table', align, header, rows }` where header and rows are arrays of run lists. Mirror the id convention already in use (`<docId>_p<N>`).",
+        "Split a blank-line paragraph further when it mixes prose and pipe rows: the lead-in lines become their own para block, the consecutive pipe rows become one table block.",
+        "Add `DOC_TABLE_RAGGED` to src/compiler/diagnostics.ts and warn (never error) when a row's cell count differs from the header's.",
+        "Grow `body_bbcode` with the `[table=N][cell]...[/cell][/table]` form, and make sure no `|` character and no separator-row debris reaches either `body_bbcode` or the slice's flat `runs` list.",
+        "Update `BlueprintDocumentBlock` in src/domain/blueprint.ts so the generated module still type-checks.",
+        "Teach `payableFacts` in src/compiler/lints.ts to count a fact as payable when every id in its `derived_from` list is payable, and add the `Derived:` field to the fact emitter so `## f_x` with `Derived: f_a, f_b` emits `source_document_id: ''` plus `derived_from: ['f_a','f_b']` without firing the missing-source warning. Add a test for the field. See GAP-002 for why the engine side is core-loop's debt.",
+        "Add a table with an anchored cell to src/compiler/__tests__/fixtures/fragments.case.md so the emit-stability golden covers the new shape.",
+        "Run the focused tests and confirm they pass. Break the table splitter, confirm red, restore, and record the red-green in the progress note.",
+        "Add `prototypes/paper-reference/` to .prettierignore — it is a vendored design-canvas export, same class as the already-ignored `*.case.md` sources.",
+        "Run npm run gen:content: every block gains `type`, so src/content/blueprint/generated/tinyOlsen.ts changes. Commit it with the code."
+      ],
+      "verification": "judge: test. command: npx vitest run src/compiler/__tests__/entities.test.ts && npm test && npm run case:check && npm run lint. proves: markup text with pipe rows compiles through compileCase into typed table blocks with header, alignment and per-cell runs; the bbcode carries `[table=N]`; a ragged row warns instead of failing; the nine existing documents still round-trip. fake_evidence: a green assertion built from a hand-constructed block object, or an emit test that never starts from markup text — the pipe grammar only exists if the text goes in one end.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-032",
+      "title": "Task 3: A table block draws as a ruled table on the paper, in the bake and in the editor preview",
+      "description": "Both consumers of the block shape live in this repo and both hard-code `<p class=\"para\">`: templates/docs/render-doc.mjs:39-41 (buildDocHtml, the bake path) and prototypes/shared/doc-preview.ts:74-76 (buildDocPreviewHtml, the script-editor preview). Give them one shared block renderer in templates/docs/shared.mjs beside `renderRuns`, so a table renders identically in the baked texture and in the editor. The designer must be able to read a bank statement's columns without opening the markup. Alignment comes from the block's `align` array. The coin renders in a column header (`UT [icon=coin]`) through the existing `renderInlineTokens` path — no per-row coins. A `[data-fact-id]` span inside a `<td>` must still yield line-box rects, because the UV manifest depends on it.",
+      "steps": [
+        "Add a block renderer to templates/docs/shared.mjs that takes the labContent blocks array and returns HTML: `type: 'para'` keeps `<p class=\"para\">` byte-for-byte as today, `type: 'table'` emits a `<table>` with a `<thead>` row and `<tbody>` rows, each cell rendered through the existing renderRuns and carrying its column's alignment.",
+        "Add the shared table CSS to BASE_CSS in shared.mjs: collapsed borders, a rule above and below the header row, per-cell padding, and right alignment driven by the align array. Keep it neutral enough that a kind template can restyle it.",
+        "Route templates/docs/render-doc.mjs buildDocHtml and prototypes/shared/doc-preview.ts buildDocPreviewHtml through the shared renderer; delete both inline `<p class=\"para\">` maps.",
+        "Extend prototypes/script-editor/templates-docs.d.ts with the new export so the preview still type-checks.",
+        "Write a throwaway script in your scratchpad that builds a labContent doc holding one paragraph and one table with a right-aligned amount column, an anchored cell and a `[icon=coin]` header, calls buildDocHtml, and renders it with renderHtmlToPng from templates/docs/render-doc.mjs. Read the PNG and check the columns line up, the amounts sit right-aligned, and the coin sits on the figure line rather than the x-height.",
+        "Run npm run bake:docs:check and confirm the nine existing paragraph-only documents still bake byte-identical — the para path must not have moved a pixel."
+      ],
+      "verification": "judge: screenshot. command: node <scratchpad>/render-table-fixture.mjs then Read the emitted PNG; then npm run bake:docs:check && npm run lint && npm test. proves: a table draws as ruled columns with the authored alignment, the coin sits correctly in the column header, and the existing nine documents bake unchanged. fake_evidence: an HTML string assertion containing `<table` — column alignment, the header rule and the coin's vertical seat only show in a render.",
+      "blockedBy": [
+        "TASK-031"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-033",
+      "title": "Task 4: Three new paper kinds exist and print — KONTOUTSKRIFT, REGNING, KASSALAPP",
+      "description": "SDD-011 adds three kinds. Port them from Terje's design-canvas export at prototypes/paper-reference/in-game-dokumenter.dc.html (1a/1b are KONTOUTSKRIFT, 1c is REGNING, 1d is KASSALAPP) minus the canvas-only presentation: no `transform: rotate()`, no `box-shadow`, no `sc-if` wear or stamp layers. The bake pages are axis-aligned because the desk mesh maps the texture edge-to-edge and the desk supplies its own light. That export is inspiration, not a spec — match the letterhead structure and the printed voice, not the pixels. This task ships the kinds empty; the case content arrives in Task 5.",
+      "steps": [
+        "Vendor Archivo into templates/docs/fonts/ from google/fonts OFL upstream (only the variable `Archivo[wdth,wght].ttf` exists there, verified 2026-08-11) and declare it in templates/docs/fonts-node.mjs for the bake and in prototypes/shared/doc-preview.ts for the browser preview, so both 400 and 700 render. `Courier Prime` in the export maps onto the already-embedded `Special Elite`.",
+        "Add templates/docs/kinds/kontoutskrift.mjs: bank letterhead (name in Archivo 700, branch strapline in Archivo 500 small caps), an address block and account/period block, the ledger table, and a footer boilerplate slot. Body copy is typewriter.",
+        "Add templates/docs/kinds/regning.mjs: energy-company letterhead with the mark, the invoice body, and the darker payment-slip band at the foot.",
+        "Add templates/docs/kinds/kassalapp.mjs: narrow till receipt, typewriter throughout, sawtooth `clip-path` top and bottom edges. This kind opts out of the shared `.page` ink border — the sawtooth edge would cut straight through it.",
+        "Register all three in templates/docs/registry.mjs (add to AUTHORED_KINDS and TEMPLATES) and add KIND_SIZES entries in templates/docs/shared.mjs: KONTOUTSKRIFT 800x1131, REGNING 800x1131, KASSALAPP 300x620.",
+        "Render each kind empty and look at it: node templates/docs/render-doc.mjs --stationery KONTOUTSKRIFT <outDir>, then REGNING, then KASSALAPP. Read the three PNGs.",
+        "Run npm run bake:docs:check — the existing nine documents must be untouched by the new kinds."
+      ],
+      "verification": "judge: screenshot. command: node templates/docs/render-doc.mjs --stationery KONTOUTSKRIFT /tmp/sdd011 && node templates/docs/render-doc.mjs --stationery REGNING /tmp/sdd011 && node templates/docs/render-doc.mjs --stationery KASSALAPP /tmp/sdd011, then Read all three PNGs; then npm run bake:docs:check && npm run lint. proves: each sheet renders at its declared size with its own letterhead, the receipt reads as a receipt at 300px wide, and the sawtooth edge does not cut through an ink border. fake_evidence: a unit test asserting templateForKind('KASSALAPP') returns a module — that proves wiring, not that the sheet looks like paper.",
+      "blockedBy": [
+        "TASK-032"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-034",
+      "title": "Task 5: The four raw papers replace Frank's notat in the case",
+      "description": "The swap itself, and it is atomic: the bake throws on a missing doc, so the case content, the retired kind and the bake's doc-id list must land in one commit. `doc_konto` and `doc_papirer` go; `doc_konto_grete` (KONTOUTSKRIFT, 800x1131), `doc_konto_elling` (KONTOUTSKRIFT, 800x1131), `doc_strom` (REGNING, 800x1131) and `doc_kassalapp` (KASSALAPP, 300x620) arrive. Doc count goes 9 to 11. The verb needs work to do: no sheet may state the reading. The best coupling only exists across sheets — Elling's årsutskrift shows UFØRETRYGD RTV 22,00 in and FAST OVERF. G. OLSEN (VERGE) 22,00 out on the same date four months running with SALDO 0,00; Grete's shows KONTANTUTTAK SKRANKE 30,00 on the 5th; the receipt ties to her card line. Read GAP-002 first — the derived-fact engine rule and the core-loop ui_driver scripts that drive through the deleted doc_konto are core-loop's debt, not yours. Do not try to fix core-loop from here.",
+      "steps": [
+        "Author the four documents in content/cases/olsen/tiny-olsen.case.md using the Task 2 pipe grammar, porting the printed content from prototypes/paper-reference/in-game-dokumenter.dc.html sheets 1a/1b/1c/1d. No stamps, no marginalia. Keep the footer boilerplate and the address blocks as authored paragraphs; only the bank name and strapline are template chrome.",
+        "Change the receipt to `BANKKORT 2,35` so it matches Grete's `07.01 MATSENTRALEN GABELS GT 2,35` row exactly. The export's `KONTANT 2,50 / VEKSEL 0,10` contradicts her statement twice over — a cash purchase leaves no statement line, and the totals disagree. The fix turns a contradiction into a three-way lock: her receipt, her card line, his `KORT ER IKKE UTSTEDT`.",
+        "Move the fact anchors onto their new sheets: f_trygd and f_alt_via_grete onto doc_konto_elling (the UFØRETRYGD RTV rows, and the footer line `KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.`), f_husleie onto doc_konto_grete (the KONTANTUTTAK SKRANKE cell), f_ingen_matkjop onto doc_kassalapp (the BANKKORT 2,35 line).",
+        "Give f_gap `Derived: f_trygd, f_husleie` and no Source. Keep its id and every one of its 13 references unchanged.",
+        "Rewire arrival: d_konto gets two `~ deliver` lines for the two statements (+1d) and its gate becomes `gate: f_grete_baerer`; the `pending_konto_overfort` target retires. Add a `# Beat: day 7` delivering doc_strom (post) and doc_kassalapp (shoebox). Record in the progress note that the kassalapp belongs in the shoebox with Frank at the table and moves onto a post-death hjemmebesøk dispatch if one ever lands.",
+        "Delete templates/docs/kinds/okonomisk-oversikt.mjs and its registry and KIND_SIZES entries — the kind has no documents left.",
+        "Update AUTHORED_DOC_IDS in scripts/blueprint/bake-docs.mjs: drop doc_konto and doc_papirer, add the four new ids, keep the list deterministic.",
+        "Run npm run gen:content, then npm run bake:docs. Delete the now-stale doc_konto.png, doc_papirer.png and their .import sidecars from ../lifelines-core-loop/resources/cases/olsen/textures/ — the bake writes but never deletes.",
+        "Confirm in the compiled slice that `pending_konto_overfort` is gone, and that the lint-quiet-day advisory no longer names day 7.",
+        "Read the four new PNGs and check that no sheet states the reading in prose."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && npm run bake:docs && npm run bake:docs:check && npm run lint, then Read the four new PNGs. proves: the four papers compile, the tables render, doc count is 11, the slice and core JSON regenerate in the same commit, and the baked textures match. fake_evidence: a green npm run case:check with AUTHORED_DOC_IDS untouched — the compiler is happy with an unbaked document, so only a completed bake proves the swap landed.",
+      "blockedBy": [
+        "TASK-030",
+        "TASK-033"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-035",
+      "title": "Task 6: The manifest proves every anchored fact measures on its sheet",
+      "description": "The whole point of moving anchors into table cells is that the desk can highlight them. A fact whose span renders zero-width, or whose anchor silently failed to land in a cell, still appears in the manifest with an empty rect array — the bake would pass and the highlight would be invisible in the game. Close that hole at bake time. SDD-011 asks specifically that all five economy facts measure at least one UV rect on their new paper.",
+      "steps": [
+        "Add a coverage assertion to scripts/blueprint/bake-docs.mjs: after measureFacts, any fact that has a run in the document but no rect (or an empty rect list) fails the bake with the doc id and fact id named.",
+        "Add a focused vitest test that names the five economy facts — f_trygd, f_alt_via_grete, f_husleie, f_ingen_matkjop and the f_gap derived pair — and asserts against the committed manifest that each document-anchored one carries at least one rect on its expected sheet. f_gap has no sheet by design; assert it is absent from the manifest rather than empty.",
+        "Run the test, confirm it fails when you temporarily point one anchor at a cell that does not exist, restore, and record the red-green in the progress note.",
+        "Run npm run bake:docs and npm run bake:docs:check."
+      ],
+      "verification": "judge: pipeline. command: npx vitest run <the new test file> && npm run bake:docs && npm run bake:docs:check. proves: every fact anchored in a document run measures at least one UV rect, including the anchors that now sit inside table cells, and a silently-lost anchor fails the bake instead of shipping. fake_evidence: asserting a manifest key exists — a fact can appear with an empty rect array and read as covered.",
+      "blockedBy": [
+        "TASK-034"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-036",
+      "title": "Task 7: Prep and file the two Terje gates, then stop",
+      "description": "Terje rungs never live as plan tasks — a task waiting on Terje is invisible to him. This task makes the artifacts readable, writes the questions, files them as gate tickets on the board, and ends the plan. Do not start any follow-up work behind either ruling; that is its own ticket with blockedBy on the gate.",
+      "steps": [
+        "Copy the four baked PNGs (doc_konto_grete, doc_konto_elling, doc_strom, doc_kassalapp) somewhere Terje can open them cold, and note the exact path in the ticket body.",
+        "File the feel gate: pm create issue \"[probe] feel-gate: read the four raw papers cold — does the chain close without a margin note?\" then pm patch SB-NNN --related <this PLAN-ID> --sprint SPRINT-001 --body with Question / Least build / how to start / answer feeds. The question: reading only the printed sheets, can you get from UFØRETRYGD RTV 22,00 to FAST OVERF. G. OLSEN (VERGE) 22,00 to SALDO 0,00 to KORT ER IKKE UTSTEDT, and land on «he has no money of his own»? Least build: the four PNGs, no new view — the existing lightbox and the editor Preview cover the read-through. Answer feeds: if the chain does not close without help, the papers need another printed line, not a margin note (Terje's ruling 2026-08-11: no stamps, no marginalia).",
+        "File the design gate: pm create issue \"[grill] Coupling and the økonomi branch — what pays f_gap, and when does f_husleie become husleie?\" then pm patch SB-NNN --related <this PLAN-ID>,GAP-002 --sprint SPRINT-001 --body carrying both halves. Half one: f_gap is now derived and nothing in case_engine.gd pays a derived fact, so h_ok_gap, h_b_flytte, h_c_penger, q_bolig and ck_bostotte have no route — GAP-002 holds the evidence and the engine debt. Half two: the SDD's fact table anchors f_husleie on Grete's statement (arrives ~day 2) while its prose says the economy branch opens on day 6 after Bakkerud names the rent; this plan followed the fact table, so the branch opens early in the slice. Offer the three shapes — anchor f_husleie on Bakkerud's letter instead, make it a recipe output, or leave the timing to SDD-067's lift-and-couple in core-loop.",
+        "Add a PM comment on SDD-011 listing what landed and what the two gates hold, then stop. Do not open the follow-up work."
+      ],
+      "verification": "judge: terje. command: playable-question — the two gate tickets are filed and visible on the project frontier, each carrying its question, the artifact path, and what the answer feeds. proves: nothing on its own. Terje's read of the four papers is the only thing that can validate whether the coupling chain closes, and his ruling is the only thing that can settle what pays a derived fact. fake_evidence: an agent declaring the papers legible, or resolving the f_gap payment question by picking a mechanism — both are exactly the judgments this rung exists to withhold.",
+      "blockedBy": [
+        "TASK-035"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-11T14:01:27.283Z",
+  "updatedAt": "2026-08-11T14:01:49.098Z"
+}

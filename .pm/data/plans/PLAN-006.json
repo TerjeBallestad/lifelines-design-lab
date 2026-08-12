@@ -1,0 +1,114 @@
+{
+  "id": "PLAN-006",
+  "title": "PLAN — SB-066 compiler: compileCharacter, five new emitters, gen:content",
+  "sddId": null,
+  "stage": "done",
+  "sprintId": "SPRINT-003",
+  "context": {
+    "setupNotes": "Source: SB-066 (SPRINT-003) + SDD-130 §1–2 (core-loop pm store — read via `cd ../lifelines-core-loop && pm get SDD-130`). Track V, dial D1.\n\n## Destination\nThe 0.2 compiler grows a sibling entry `compileCharacter(text)` for `content/characters/<id>.sim.md` files, the case compiler grows `# Visit:` and `# Strings:` blocks, and five new emit shapes exist: ThoughtPoolOut, BarkPoolOut, PhoneLinesOut, VisitSceneOut, StringTableOut. `gen:olsen` generalizes to `gen:content`: compile every source file, write `src/content/blueprint/generated/tinyOlsen.ts` + `../lifelines-core-loop/resources/cases/olsen/source/tiny_olsen_slice.json` (unchanged law) + `../lifelines-core-loop/resources/characters/source/<id>_sim_content.json` (new). Same tab-JSON formatting law, `--check` mode, cross-repo write guard (`assertWritableDirectory` pattern). `Stub: yes` survives compile into every new emitted shape.\n\n## Grammar authority\nSDD-130 locks block kinds and payloads, NOT syntax — exact sigils are THIS plan's choice (markup-0.2 precedent). The suggested grammar is in designDecisions. You may refine surface details, but the constraint set is hard: (a) every block kind and payload field named in SDD-130 §1 is representable, (b) a `# Visit:` block can represent the existing `OPPDRAG_BEATS` tables in core-loop `scripts/simulation/social_visit_director.gd:96-147` VERBATIM — all three step kinds (line: speaker/text/dwell/beat-id, urgent: actor/label/room/duration/no_wait, queue_elling: room/duration/beat-id) plus step ids, plus the Oppdrag catalog fields (name, blurb, offer line, unlock question), (c) visit branching reuses the existing weave `{condition}` guard grammar and condition.ts unchanged, (d) bracket payloads reuse parseHeaderMeta, (e) the final grammar is recorded in docs/markup-0.2-reference.md as a new appendix. If a constraint cannot be met without changing a locked SDD payload, stop and file the question — never guess.\n\n## Baseline caution\n`npm run case:check` is ALREADY STALE at plan time: `content/cases/olsen/tiny-olsen.case.md` carries uncommitted Terje edits that were never regenerated (git status also shows uncommitted templates/ and .pm/ changes — leave all of it intact, never revert). First action of Task 1: run `npm run gen:olsen`, eyeball the diff of the two generated artifacts, commit the regeneration as its own baseline commit, and confirm `npm run case:check` is green before any compiler edit.\n\n## Boundaries\n- Design-lab only. Godot loaders are SB-067; editors/save-route are SB-068..071; real placeholder-content migration is SB-072. Seed `content/characters/*.sim.md` files here stay minimal skeletons (one or two `Stub: yes` sample blocks each) — do NOT port the real BARK_TEXTS/thought/visit text, that is SB-072's wave and its byte-round-trip proof.\n- The checked-in `tiny_olsen_slice.json` must not change semantically in this plan beyond the baseline regeneration: emit `visits`/`strings` keys sparsely (only when the case authors such blocks) and keep the real case file free of them for now — fixtures carry the new blocks.\n- Chrome-layer/UI text is out per DD-004 — `# Strings:` covers only the named families (notat glue, håndbok, prologue), and none of that content lands in this plan anyway.\n- Stub-COUNT lint and worklist are SB-071; here only the `stub` field must exist and survive emit.\n- No new prose voice work: any sample text in seeds/fixtures is throwaway greybox marked `Stub: yes`.\n\n## Evidence strategy\nVitest per module (executor authors own tests, red-green honest), `npm run case:check` as the pipeline floor (it must end up running the generalized check), `npm run lint` green, and emit-stability determinism extended to the new family. Nothing in core-loop reads `<id>_sim_content.json` yet, so `npm run test:harness` is not expected to change — run it once at the end to prove no regression.",
+    "relevantFiles": [
+      "src/compiler/index.ts",
+      "src/compiler/parse.ts",
+      "src/compiler/emit.ts",
+      "src/compiler/weave.ts",
+      "src/compiler/condition.ts",
+      "src/compiler/diagnostics.ts",
+      "src/compiler/lints.ts",
+      "src/compiler/patch.ts",
+      "scripts/blueprint/compile-olsen-case.mjs",
+      "scripts/blueprint/emit-stability.test.mjs",
+      "scripts/compiler/provenance.test.mjs",
+      "content/cases/olsen/tiny-olsen.case.md",
+      "content/characters/",
+      "docs/markup-0.2-reference.md",
+      "package.json"
+    ],
+    "designDecisions": [
+      "SDD-130 §2: compileCase gains sibling compileCharacter; parser, diagnostics, lints, patch writer shared. Five emit shapes: ThoughtPoolOut, BarkPoolOut, PhoneLinesOut, VisitSceneOut, StringTableOut.",
+      "Suggested grammar (plan-level, refinable within the constraint set): character file `content/characters/<id>.sim.md` opens `# Character: <id>`; pools are `# Thoughts: <char>/<key_type>/<key>` (`*` wildcard; key_type/key mirror the ThoughtLine .tres fields) with optional `Icon: <icon_key>` and `Stub: yes` field lines, variants as `- ` bullets; `# Barks: <char>` is bullets + optional Stub; `# Phone: <char>` is `Answer: «…»` / `Close: «…»` fields.",
+      "Suggested case-file grammar: `# Visit: <id>` with fields `Title:`, `Blurb:`, `Offer: «…»`, `Unlocks: <question_id>`, optional `Stub: yes`, then ordered `- ` step bullets — line step `frank: «text» [dwell=4 beat=a2 id=opp_a2]`, urgent direction `! grete: blir i stua @ living_room [duration=18 no_wait id=opp_a_hold]`, queue step `? elling @ living_room [duration=8 beat=a6 id=opp_a6]`; `{condition}` guard prefix on a step reuses weave grammar for branches. `# Strings: <table_id>` is flat `key: value` field lines + optional Stub.",
+      "Emit destinations: ThoughtPoolOut[]/BarkPoolOut/PhoneLinesOut per character into `resources/characters/source/<id>_sim_content.json`; VisitSceneOut[] as sparse `visits` key and StringTableOut[] as sparse `strings` key on CaseSlice (both omitted when unauthored — sparse-field law, keeps shipped slice stable).",
+      "Stub marking: `Stub: yes` on a block emits `stub: true` (sparse — omitted when absent) on the corresponding Out shape.",
+      "Frank is excluded from thoughts at diagnostic level: a `# Thoughts: frank/...` block yields an advisory warning and emits nothing (SDD-130 §1, existing core-loop test invariant).",
+      "gen:content replaces gen:olsen on the live path: npm scripts `gen:content`/`gen:content:check` compile the case file + every `content/characters/*.sim.md`; `case:check` runs the generalized check; `gen:olsen` may remain as an alias of `gen:content` or be removed — do not leave two divergent code paths.",
+      "The compiler stays a pure module with no filesystem access; 'the file always compiles' law holds for compileCharacter too (errors become diagnostics, never throws).",
+      "DD-004: chrome-layer/scene text is out of the # Strings family.",
+      "Baseline regeneration of the stale tiny-olsen artifacts is its own commit before compiler work starts."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-026",
+      "title": "Task 1: Baseline regeneration, then the shared parser reads both source families",
+      "description": "First re-green the pipeline: `npm run gen:olsen`, review the regenerated tinyOlsen.ts / tiny_olsen_slice.json diff (Terje's uncommitted case edits), commit as a standalone baseline commit, confirm `npm run case:check` passes. Then extend src/compiler/parse.ts (shared with emit-side binding stubs as needed) so the block parser recognizes the new headers in both families — `# Character:`, `# Thoughts:`, `# Barks:`, `# Phone:` in sim files and `# Visit:`, `# Strings:` in case files — including bullet variant lines, ordered visit step lines kept raw for the visit emitter (weave precedent: verbatim capture where indentation/order is semantic), `Stub: yes` fields, and unknown-header behavior unchanged for old files. Add `compileCharacter(text)` to src/compiler/index.ts returning `{ content, diagnostics }` under the never-throws law. The Frank-thoughts advisory diagnostic lands here. Settle the final grammar against the constraint set in setupNotes.",
+      "steps": [],
+      "verification": "judge: pipeline. command: npx vitest run src/compiler && npm run case:check. proves: the baseline is green, both families parse, old case files parse byte-for-byte identically to before the change (emit-stability suite still green), and compileCharacter never throws on garbage input. fake_evidence: green new-parser tests while case:check still fails from the pre-existing staleness, or a parser that only handles the fixture's exact whitespace.",
+      "blockedBy": [],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Baseline regen committed first (design-lab df98ae9 + core-loop 2a1554e6; core-loop textures/ dirt is pre-existing, left alone). Grammar ratified per plan suggestion: # Character/# Thoughts: char/key_type/key (strict 3 tokens)/# Barks/# Phone in sim files; # Visit/# Strings in case files; bullets captured raw (visit steps verbatim); strings blocks use id-shaped keys, no composite split, values verbatim. parseCaseText/parseCharacterText share parseSource(family). New codes: character-missing-header, thoughts-frank-excluded (advisory, fires in emit-character.ts skeleton). compileCharacter returns {content:{id,thoughts:[]},diagnostics} — payload binding is TASK-027. Red-green verified (bullet capture nulled → 3 failures). Suite 401 green, lint green, case:check green.",
+          "timestamp": "2026-08-11T11:55:01.252Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-027",
+      "title": "Task 2: The five emit shapes exist and carry the real payloads",
+      "description": "In src/compiler/emit.ts (or a sibling emit-character.ts if size argues for it), bind the parsed blocks into ThoughtPoolOut, BarkPoolOut, PhoneLinesOut (per-character content object), and VisitSceneOut + StringTableOut (sparse `visits`/`strings` keys on CaseSlice). Sparse-field law throughout; `stub: true` survives on every shape. Visit steps must round-trip the OPPDRAG_BEATS tables verbatim — write a fixture (`src/compiler/__tests__/fixtures/` + a sim.md fixture) that transcribes one full Oppdrag from core-loop social_visit_director.gd:96-147 and assert the emitted VisitSceneOut carries every id, beat key, speaker, room, duration, dwell and no_wait flag. Visit `{condition}` guards emit through condition.ts like weave gates. Duplicate-id and dangling-reference diagnostics follow the existing emit.ts patterns (e.g. a Visit `Unlocks:` question id that does not exist warns).",
+      "steps": [],
+      "verification": "judge: test. command: npx vitest run src/compiler. proves: each of the five shapes emits from authored markup with correct payloads, stubs survive, sparse keys are omitted when unauthored, and the OPPDRAG_BEATS transcription fixture round-trips losslessly. fake_evidence: shape-only assertions (toHaveProperty) that never compare payload values, or a fixture simplified until it no longer exercises urgent/queue/no_wait steps.",
+      "blockedBy": [
+        "TASK-026"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Five shapes live: ThoughtPoolOut/BarkPoolOut/PhoneLinesOut (emit-character.ts full binding), VisitSceneOut/StringTableOut (emit.ts, sparse visits/strings on CaseSlice). OPPDRAG_ALENE fixture transcribed verbatim from social_visit_director.gd:96-118 and round-trips losslessly (all step kinds, ids, beats, rooms, durations, dwell, no_wait). Guards emit via condition.ts (when: PredicateSpec, gateSites fed). parseHeaderMeta grew bare-flag tokens for no_wait. Extras forced by the codebase: coverage registry + playtest index grew visits/strings rows (typecheck guard fired as designed, honest 'no player surface yet'); .sim.md files joined .prettierignore (prettier escapes wildcard * in headers, same law as case.md). Duplicate step-id/string-key errors, DD-120 queue=elling only, dangling Unlocks warns via refs. Red-green verified. 416 green, lint green, case:check green.",
+          "timestamp": "2026-08-11T12:03:43.619Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-028",
+      "title": "Task 3: gen:content compiles every source file and the pipeline gate runs it",
+      "description": "Generalize scripts/blueprint/compile-olsen-case.mjs into gen:content (new scripts/blueprint/compile-content.mjs or in-place rename — one live path, no divergent twin): discover the case file + every content/characters/*.sim.md, compile all, print merged diagnostics, write tinyOlsen.ts + tiny_olsen_slice.json exactly as today plus ../lifelines-core-loop/resources/characters/source/<id>_sim_content.json per character (tab-JSON law, _generated stamp pointing at the owning source file, cross-repo write guard). `--check` covers every written artifact. Seed content/characters/elling.sim.md, grete.sim.md, frank.sim.md as minimal skeletons (frank: phone/barks only — no thoughts). Wire package.json: gen:content, gen:content:check, case:check runs the generalized check; extend emit-stability determinism to compileCharacter output. The shipped tiny_olsen_slice.json must stay byte-identical to the Task 1 baseline (seeds author no visits/strings in the real case file).",
+      "steps": [],
+      "verification": "judge: pipeline. command: npm run gen:content && npm run case:check && git -C ../lifelines-core-loop status --porcelain resources/ && npm run test:harness. proves: the generator writes all artifacts, the check gate covers them, the slice JSON is byte-stable vs the Task 1 baseline, and the core-loop harness still passes with only the three new sim_content.json files added. fake_evidence: a green case:check that still runs only the old olsen check, or new JSON written without --check coverage (stale-detection never exercised — prove it by hand-editing one output and watching --check fail).",
+      "blockedBy": [
+        "TASK-027"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "gen:content live: compile-content.mjs (git mv from compile-olsen-case.mjs, one path; gen:olsen/gen:olsen:check kept as npm aliases). Discovers content/characters/*.sim.md sorted, writes <id>_sim_content.json per character (tab-JSON, _generated stamp names the owning source, assertWritableDirectory guard, filename-vs-header mismatch warns). --check covers module + slice + every character JSON; stale detection proven by hand-edit (grete → check failed → regenerated). Seeds elling/grete/frank committed (frank barks+phone only, all Stub: yes, throwaway greybox — real phone lines NOT ported, SB-072 owns that). tiny_olsen_slice.json byte-identical to Task-1 baseline (core-loop status clean apart from pre-existing textures dirt). emit-stability extended: determinism + serializer fixed point over fixture + all three seeds. case:check runs the generalized gate (13 tests). Suite 424 green, lint green, test:harness green. Core-loop commit 3b122aa7 adds the three JSONs.",
+          "timestamp": "2026-08-11T12:06:57.874Z"
+        }
+      ]
+    },
+    {
+      "id": "TASK-029",
+      "title": "Task 4: The patch writer speaks the new blocks and the grammar is documented",
+      "description": "Extend src/compiler/patch.ts so the canvas/editor patch layer (SB-068/069/070 will build on it) can address the new block kinds in both file families: BLOCK_HEADERS + DEFAULT_TEMPLATES entries for thoughts/barks/phone/visit/strings blocks, field patching and appendBlock working on sim.md text, bullet-line (variant and visit-step) add/edit/remove patches following the minimal-patch law (untouched lines byte-identical, no-op patch is a byte no-op). Record the final ratified grammar as an appendix in docs/markup-0.2-reference.md (sigils, payload keys, sparse rules, stub marking) and leave a one-line pointer comment in parse.ts. Close with the full gate: lint + all tests + pipeline.",
+      "steps": [],
+      "verification": "judge: pipeline. command: npm run lint && npm test && npm run case:check. proves: patches on the new blocks compose and are byte-minimal (property-style no-op test), the whole suite and the pipeline gate are green, prettier/tsc pass. fake_evidence: patch tests that reformat whole blocks and assert only on parsed equality rather than byte-identity of untouched lines.",
+      "blockedBy": [
+        "TASK-028"
+      ],
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "patch.ts: BLOCK_HEADERS + DEFAULT_TEMPLATES for visit/strings/thoughts/barks/phone; family sniff (# Character: header routes to parseCharacterText); strings-aware locateValue (id-shaped keys, no composite split); bulletAdd/bulletEdit/bulletRemove (single-line splices, no-op = byte no-op). API decision worth surfacing for SB-068/069: character files reuse the character id across kinds (barks/phone/root all 'elling'), so patchField/listField*/bullet* gained an optional trailing kind?: BlockType disambiguator, and appendBlock's duplicate check is now type-scoped (mirrors the compiler's type:id key — old case-family behavior unaffected, ids unique there). Grammar ratified as docs/markup-0.2-reference.md Appendix A + pointer comment in parse.ts. Red-green verified (bulletRemove index shifted). Full gate: lint green, 439 tests green, case:check green.",
+          "timestamp": "2026-08-11T12:11:18.735Z"
+        }
+      ]
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-11T11:43:58.737Z",
+  "updatedAt": "2026-08-11T12:20:40.407Z"
+}

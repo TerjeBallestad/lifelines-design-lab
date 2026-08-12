@@ -2,13 +2,49 @@
   "id": "SPRINT-003",
   "name": "Kildeverket for the sim — SDD-130 build map",
   "problemStatement": "All in-game text travels the Kildeverket road: compiler emits every SDD-130 shape, Godot loaders read generated .tres, editors have the new sub-views with previews, every placeholder family is migrated as marked stubs, and Terje's gate session has ruled on the previews. Stub count zero is NOT the bar — rewriting is Terje's ongoing work.",
-  "body": "## Decisions so far\n\n- SDD-130 (core-loop store) rules that the Kildeverket pipeline is the one authoring road for all in-game text. Block kinds, emit shapes, loader deltas, and editor views are locked there — this map only sequences them.\n- SB-602 (core-loop) went green 2026-08-07. The hygiene prereq is met, so the frontier starts at the compiler.\n- Destination bar (Terje, 2026-08-09): the map is done when the road is built, every placeholder text family travels it as marked stubs, and the gate session has ruled on the previews. Rewriting stubs to zero is Terje's ongoing writing, outside the map.\n- Map store (Terje, 2026-08-09): the map lives in the design-lab store. Core-loop work is ticketed here and marked \"Repo: core-loop\" in the ticket body.\n\n## Out of scope\n\n- Numeric config tuning — separate SDD, per SDD-130 non-goals.\n- Prose rewriting of stub text — Terje's own writing sessions, no agent voice work.\n- A second parser — Godot reads only generated JSON/.tres.\n- SB-505 (core-loop) cadence probe re-run — it unblocks once real tanker lines exist; tracked on that ticket, not here.\n",
+  "body": "## Decisions so far\n\n- SDD-130 (core-loop store) rules that the Kildeverket pipeline is the one authoring road for all in-game text. Block kinds, emit shapes, loader deltas, and editor views are locked there — this map only sequences them.\n- SB-602 (core-loop) went green 2026-08-07. The hygiene prereq is met, so the frontier starts at the compiler.\n- Destination bar (Terje, 2026-08-09): the map is done when the road is built, every placeholder text family travels it as marked stubs, and the gate session has ruled on the previews. Rewriting stubs to zero is Terje's ongoing writing, outside the map.\n- Map store (Terje, 2026-08-09): the map lives in the design-lab store. Core-loop work is ticketed here and marked \"Repo: core-loop\" in the ticket body.\n- DD-127 (core-loop, filed 2026-08-06) is the standing supersede of DD-031: spoken channels render written text, thoughts keep the icon split. Cross-links wired 2026-08-11 (SB-065). Loader work cites DD-127.\n- Migration inventory pinned 2026-08-11 (SB-064): the eight §4 families verified with exact file/line/counts. Two drifts — håndbok copy mostly lives in 30 .tres files, and the 20 prologue mail strings never render. The eight-family checklist is SB-072's done-ness reference.\n- Scope ruling (Terje, 2026-08-11, SB-090/DD-004): the UI-chrome/scene text layer stays out of SDD-130 — own later SDD. SB-072 gains the sibling files and a duplicate-kill clause, and drops the 20 dead prologue mail strings (delete, re-author when mail renders).\n- Source-file switcher landed 2026-08-11 (SB-068, commit 1aecd4a): the seam exposes sourcePaths (cases + character sim files) behind a ?file= param, /__save-case accepts .sim.md, and the script editor opens any source file with per-file drafts. Canvas and playtest stay case lenses. Sub-views build on activeSourcePath.\n\n## Out of scope\n\n- Numeric config tuning — separate SDD, per SDD-130 non-goals.\n- Prose rewriting of stub text — Terje's own writing sessions, no agent voice work.\n- A second parser — Godot reads only generated JSON/.tres.\n- SB-505 (core-loop) cadence probe re-run — it unblocks once real tanker lines exist; tracked on that ticket, not here.\n- UI-chrome/scene text migration (.tscn text=, ui/*.gd captions, English remnants, .tres display_names) — own future SDD, per DD-004. Only family-shadowing duplicates die inside this map.\n\n",
   "comments": [
     {
       "id": "c1786278319241",
       "author": "claude",
       "text": "Charting session 2026-08-09 (wayfinder Mode 1). Facts that reshaped the SDD sequence: SB-602 (core-loop) is DONE since 2026-08-07, so the frontier opens at the compiler. Terje rulings this session: destination bar is road-built-stubs-allowed (not stub count zero), and the map lives in this design-lab store with core-loop work marked per ticket. Ten tickets, edges wired. Frontier: SB-064 (inventory research), SB-065 (DD filing), SB-066 (compiler). Charting only — nothing resolved.",
       "createdAt": "2026-08-09T12:25:19.241Z"
+    },
+    {
+      "id": "c1786430953061",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-11 (fact tier): SB-064 + SB-065 resolved. SB-065 collapsed to wiring — DD-127 already carried the ruling, so the session added cross-links both ways and a superseded banner on DD-031. SB-064 delivered the verified eight-family inventory (two Explore sweeps, main tree only): counts exact for barks/visit lines/phone/thoughts, major drift on håndbok (30 .tres files the SDD missed, ~149 strings) and prologue mail (20 dead strings, payload discarded by the consumer). Fog graduated: SB-090 [grill] — does the UI-chrome/scene text layer join the Strings table? Wired as a blocker of SB-072 alongside SB-067. Frontier now: SB-066 (compiler) and SB-090 (grill).",
+      "createdAt": "2026-08-11T06:49:13.061Z"
+    },
+    {
+      "id": "c1786448172302",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-11: grill SB-090 resolved (one judgment ticket, per pacing rule). Three rulings — chrome layer out to its own future SDD (DD-004), dead prologue mail deleted not migrated, sibling files folded into SB-072. SB-072's done-ness extent is now unambiguous and it sits one blocker (SB-067) closer to the frontier. Next frontier: SB-066 compiler [task].",
+      "createdAt": "2026-08-11T11:36:12.302Z"
+    },
+    {
+      "id": "c1786448653448",
+      "author": "claude",
+      "text": "Session 2026-08-11: /plan SB-066 → PLAN-006 filed (compiler: compileCharacter, five emitters, gen:content). Frontier unchanged — SB-067/SB-068 unblock when the plan executes and SB-066 closes. Found at baseline: case:check is stale (uncommitted tiny-olsen.case.md edits); PLAN-006 Task 1 starts with the regeneration commit.",
+      "createdAt": "2026-08-11T11:44:13.448Z"
+    },
+    {
+      "id": "c1786454175176",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-11: claimed and resolved the source-file switcher ticket (SB-068, commit 1aecd4a). Seam widened to sourcePaths, ?file= param, save route accepts .sim.md, script editor opens sim files with compileCharacter + degraded outline/preview. Verified in browser (cmux) + 446-test suite green. Frontier now: the three view tickets (SB-069/070/071) unblocked in design-lab, plus the Godot loaders ticket (SB-067, core-loop). No new fog graduated — the resolution revealed nothing that reshapes the map.",
+      "createdAt": "2026-08-11T13:16:15.176Z"
+    },
+    {
+      "id": "c1786457874013",
+      "author": "claude",
+      "text": "Orchestrated task run 2026-08-11: SB-069/070/071 resolved in series (commits 9061ec6, b935a71, 5df8883), one agent per ticket plus a verify pass. Suite 446→488, lint and gen:content:check green on the committed tree. Verify pass drove thoughts/barks previews, the stub worklist, and the cross-file lens jump live in the browser; visit storyboard and Strings table are unit-tested plus implementer-verified only — no committed source holds a # Visit: or # Strings: block yet (verifiability gap; the oppdrag-alene fixture is a ready transcription). Findings routed onto ticket comments. Frontier now: SB-067 (core-loop loaders) — SB-072 migration and the SB-073 gate session sit behind it. Two environmental notes: untracked prototypes/paper-reference/ files keep 'prettier --check .' red on the working tree; SB-068 had shipped a prettier failure in active-case.ts, fixed in 9061ec6.",
+      "createdAt": "2026-08-11T14:17:54.013Z"
+    },
+    {
+      "id": "c1786534315437",
+      "author": "claude",
+      "text": "Wayfinder session 2026-08-12: claimed frontier ticket SB-067 (Godot loaders), routed as [task] → D1 plan. Read SDD-130 §2, DD-127, the SB-066 emit shapes (emit-character.ts / emit-visit.ts) and the four core-loop loaders. Key finding: slice JSON has no visits key yet and sim-content thoughts are stub-only, so the plan separates machinery (this ticket) from content cutover (SB-072) via presence-guarded fallbacks named as gaps. Filed PLAN-008 (3 tasks); SB-067 stays open until /execute-plan PLAN-008 completes. Claim released.",
+      "createdAt": "2026-08-12T11:31:55.437Z"
     }
   ],
   "status": "active",
