@@ -909,6 +909,11 @@ Line: «TT-kort. Subsidiert transport, åtte turer i måneden — men han har in
 Relevant: f_saarbar
 Line: «Trygghetsalarm, tja. Utrykning ved fall — jeg er usikker på om det treffer det som er skjørt her.»
 
+# Proposal: depositum
+
+Relevant: f_leie_privat, f_leie_stoppet
+Line: «Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.»
+
 # Proposal: kbolig
 
 Relevant: f_leie_stoppet, f_gap
