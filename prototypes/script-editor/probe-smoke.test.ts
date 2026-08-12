@@ -67,7 +67,8 @@ describe('script editor probe', () => {
       expect(built.html).toContain('<!doctype html>');
       expect(built.html).toContain('@font-face');
       expect(built.width).toBeGreaterThan(0);
-      if (doc.blocks[0]?.runs.some((r) => r.factId)) {
+      const firstBlock = doc.blocks[0];
+      if (firstBlock?.type === 'para' && firstBlock.runs.some((r) => r.factId)) {
         expect(built.html).toContain('data-fact-id=');
       }
     }

@@ -43,7 +43,7 @@ describe('(a) no-op patches are byte-identical', () => {
   it('patchField with the current value returns the same text', () => {
     expect(patchField(olsen, 'f_bok', 'Label', 'Bok med notater')).toBe(olsen);
     expect(patchField(olsen, 'q_kollaps', 'when', 'f_dod')).toBe(olsen);
-    expect(patchField(olsen, 'd_konto', 'gate', 'f_gap')).toBe(olsen);
+    expect(patchField(olsen, 'd_konto', 'gate', 'f_grete_baerer')).toBe(olsen);
   });
 
   it('listFieldAdd of an already-listed entry returns the same text', () => {
@@ -272,7 +272,7 @@ describe('liftFact (SB-043): a document passage becomes a fact stub', () => {
     const lines = text.split('\n');
     const at = lines.indexOf('## f_ny');
     expect(at).toBeGreaterThan(lines.indexOf('## f_ingen_tjenester'));
-    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto'));
+    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto_grete'));
     // labelLine points at the empty Label line — where focus goes next.
     expect(lines[labelLine - 1]).toBe('Label: ');
     // The ## placement wires it: the compiled fact carries its document.
@@ -290,7 +290,7 @@ describe('liftFact (SB-043): a document passage becomes a fact stub', () => {
 
   it('a second lift gets a fresh id (f_ny2) and lifts compose', () => {
     const first = liftFact(olsen, 'doc_bekymring', 'første løft');
-    const second = liftFact(first.text, 'doc_konto', 'andre løft');
+    const second = liftFact(first.text, 'doc_konto_grete', 'andre løft');
     expect(second.id).toBe('f_ny2');
     expect(second.text).toContain('## f_ny\n');
     expect(second.text).toContain('## f_ny2\n');
@@ -298,7 +298,7 @@ describe('liftFact (SB-043): a document passage becomes a fact stub', () => {
       id: string;
       source_document_id?: string;
     }>;
-    expect(facts.find((f) => f.id === 'f_ny2')?.source_document_id).toBe('doc_konto');
+    expect(facts.find((f) => f.id === 'f_ny2')?.source_document_id).toBe('doc_konto_grete');
   });
 
   it('refuses an empty selection and a non-document source', () => {

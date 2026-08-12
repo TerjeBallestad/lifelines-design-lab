@@ -61,6 +61,11 @@ export interface FactOut {
   supports_questions: string[];
   reveals_event?: string;
   lift_effects: EffectSpec[];
+  /**
+   * SDD-011: a derived fact has no source document — the player reads it off
+   * these facts' sheets. Paying it is core-loop's debt (GAP-002).
+   */
+  derived_from?: string[];
 }
 
 export interface LeadOut {
@@ -209,6 +214,23 @@ export interface LabRun {
   factId?: string;
 }
 
+export type LabColumnAlign = 'left' | 'right';
+
+/**
+ * SDD-011: a document body block is either a paragraph or a pipe table.
+ * Every table cell is a run list, so fact anchors and UV measurement work
+ * inside cells exactly as they do in prose.
+ */
+export type LabDocBlock =
+  | { id: string; type: 'para'; runs: LabRun[] }
+  | {
+      id: string;
+      type: 'table';
+      align: LabColumnAlign[];
+      header: LabRun[][];
+      rows: LabRun[][][];
+    };
+
 export interface LabContent {
   documents: Record<
     string,
@@ -219,7 +241,7 @@ export interface LabContent {
       register: string;
       peek: string;
       meta: string;
-      blocks: Array<{ id: string; runs: LabRun[] }>;
+      blocks: LabDocBlock[];
     }
   >;
   facts: Record<
@@ -336,6 +358,142 @@ function parseDocumentRuns(
 
 function evidenceMarkdownToBbcode(markdown: string): string {
   return markdown.replace(new RegExp(ANCHOR_RE.source, 'g'), '[url=fact:$2]$1[/url]').trim();
+}
+
+// ---- SDD-011 pipe tables (grammar option A) -------------------------------
+// A `|` at line start inside a document body opens a table; consecutive `|`
+// lines are one table; any other line closes it. A separator row of `-` and
+// `|` marks the row above as the header, and `---:` right-aligns that column.
+// Cells split on unescaped `|`, outer pipes are optional, cells are trimmed,
+// `\|` escapes a literal pipe. A cell takes the same run grammar as prose.
+
+const TABLE_LINE_RE = /^[ \t]*\|/;
+const SEPARATOR_CELL_RE = /^:?-+:?$/;
+
+/** Split one authored table row into trimmed raw-markdown cells. */
+function splitTableRow(line: string): string[] {
+  const raw = line.trim();
+  const cells: string[] = [];
+  let current = '';
+  for (let i = 0; i < raw.length; i += 1) {
+    const ch = raw[i];
+    if (ch === '\\' && raw[i + 1] === '|') {
+      current += '|';
+      i += 1;
+      continue;
+    }
+    if (ch === '|') {
+      cells.push(current);
+      current = '';
+      continue;
+    }
+    current += ch;
+  }
+  cells.push(current);
+  if (raw.startsWith('|')) cells.shift();
+  if (/(^|[^\\])\|$/.test(raw) && cells.length) cells.pop();
+  return cells.map((cell) => cell.trim());
+}
+
+function isSeparatorRow(cells: string[]): boolean {
+  return cells.length > 0 && cells.every((cell) => SEPARATOR_CELL_RE.test(cell));
+}
+
+interface ParsedDocTable {
+  align: LabColumnAlign[];
+  /** Raw-markdown header cells; empty when the table has no separator row. */
+  header: string[];
+  /** Raw-markdown body cells, separator rows dropped. */
+  rows: string[][];
+  ragged: Array<{ line: number; got: number; expected: number }>;
+  startLine: number;
+}
+
+function parseDocTable(lines: Array<{ text: string; line: number }>): ParsedDocTable {
+  const parsed = lines.map(({ text, line }) => ({ cells: splitTableRow(text), line }));
+  const separatorIndex = parsed.findIndex(({ cells }) => isSeparatorRow(cells));
+  let header: string[] = [];
+  let align: LabColumnAlign[] = [];
+  if (separatorIndex > 0) {
+    header = parsed[separatorIndex - 1].cells;
+    align = parsed[separatorIndex].cells.map((cell) => (cell.endsWith(':') ? 'right' : 'left'));
+  }
+  const body = parsed.filter(
+    ({ cells }, index) => index !== separatorIndex - 1 && !isSeparatorRow(cells),
+  );
+  const expected = header.length || body[0]?.cells.length || 0;
+  if (!align.length) align = new Array<LabColumnAlign>(expected).fill('left');
+  const ragged = body
+    .filter(({ cells }) => cells.length !== expected)
+    .map(({ cells, line }) => ({ line, got: cells.length, expected }));
+  return {
+    align,
+    header,
+    rows: body.map(({ cells }) => cells),
+    ragged,
+    startLine: lines[0]?.line ?? 1,
+  };
+}
+
+type DocBodySegment = { kind: 'text'; lines: string[] } | { kind: 'table'; table: ParsedDocTable };
+
+/** Split verbatim document prose into text segments and pipe-table segments. */
+function splitDocumentSegments(
+  proseLines: Array<{ text: string; line: number }>,
+): DocBodySegment[] {
+  const segments: DocBodySegment[] = [];
+  let tableLines: Array<{ text: string; line: number }> = [];
+  const closeTable = (): void => {
+    if (!tableLines.length) return;
+    segments.push({ kind: 'table', table: parseDocTable(tableLines) });
+    tableLines = [];
+  };
+  for (const prose of proseLines) {
+    if (TABLE_LINE_RE.test(prose.text)) {
+      tableLines.push(prose);
+      continue;
+    }
+    closeTable();
+    const last = segments[segments.length - 1];
+    if (last?.kind === 'text') last.lines.push(prose.text);
+    else segments.push({ kind: 'text', lines: [prose.text] });
+  }
+  closeTable();
+  return segments;
+}
+
+/** The `[table=N][cell]…[/cell][/table]` bbcode form, cells still markdown. */
+function tableToBbcode(table: ParsedDocTable): string {
+  const columns = table.align.length || 1;
+  const cells = [...table.header, ...table.rows.flat()]
+    .map((cell) => `[cell]${cell}[/cell]`)
+    .join('');
+  return `[table=${columns}]${cells}[/table]`;
+}
+
+/** Table content flattened for the slice's whitespace-collapsed run list. */
+function tableToRunsText(table: ParsedDocTable): string {
+  return [...table.header, ...table.rows.flat()].filter(Boolean).join('\n');
+}
+
+/** Blocks for labContent: paragraphs plus tables, in authored order. */
+type LabBlockSpec = { type: 'para'; text: string } | { type: 'table'; table: ParsedDocTable };
+
+function segmentsToBlockSpecs(segments: DocBodySegment[]): LabBlockSpec[] {
+  const specs: LabBlockSpec[] = [];
+  for (const segment of segments) {
+    if (segment.kind === 'table') {
+      specs.push({ type: 'table', table: segment.table });
+      continue;
+    }
+    for (const para of segment.lines
+      .join('\n')
+      .split(/\n[ \t]*\n+/)
+      .filter((para) => para.trim())) {
+      specs.push({ type: 'para', text: para });
+    }
+  }
+  return specs;
 }
 
 function listValue(value: string | undefined): string[] {
@@ -500,9 +658,10 @@ export function emitCase(
     where: Span;
   }
   const arrivals: DocArrival[] = [];
-  // Paragraphs (blank-line separated) survive only into labContent blocks —
-  // the slice's flat run list is core-loop canon and stays whitespace-collapsed.
-  const documentParagraphs = new Map<string, string[]>();
+  // Blocks (blank-line paragraphs and pipe tables) survive only into
+  // labContent — the slice's flat run list is core-loop canon and stays
+  // whitespace-collapsed.
+  const documentBlockSpecs = new Map<string, LabBlockSpec[]>();
   const documents: DocumentOut[] = byType('document').map((block) => {
     const fields = new FieldMap(block.fields);
     const arrives = fields.find('arrives');
@@ -537,15 +696,32 @@ export function emitCase(
         );
       }
     }
-    const body = block.proseLines
-      .map((prose) => prose.text)
+    const segments = splitDocumentSegments(block.proseLines);
+    for (const segment of segments) {
+      if (segment.kind !== 'table') continue;
+      for (const row of segment.table.ragged) {
+        diag.add(
+          codes.DOC_TABLE_RAGGED,
+          'warning',
+          `Table row has ${row.got} cells where the table has ${row.expected} columns — the renderer keeps the authored cells.`,
+          span(row.line),
+          [block.id],
+        );
+      }
+    }
+    documentBlockSpecs.set(block.id, segmentsToBlockSpecs(segments));
+    const runsBody = segments
+      .map((segment) =>
+        segment.kind === 'text' ? segment.lines.join('\n') : tableToRunsText(segment.table),
+      )
       .join('\n')
       .trim();
-    documentParagraphs.set(
-      block.id,
-      body.split(/\n[ \t]*\n+/).filter((para) => para.trim()),
-    );
-    const runs = parseDocumentRuns(body);
+    const bbcodeBody = segments
+      .map((segment) =>
+        segment.kind === 'text' ? segment.lines.join('\n') : tableToBbcode(segment.table),
+      )
+      .join('\n');
+    const runs = parseDocumentRuns(runsBody);
     for (const run of runs) {
       if (run.fact_id)
         refs.push({ id: run.fact_id, kind: 'fact', where: blockSpan(block), ownerId: block.id });
@@ -557,7 +733,7 @@ export function emitCase(
       register: fields.value('Register') ?? '',
       peek: fields.value('Peek') ?? '',
       meta: fields.value('Meta') ?? '',
-      body_bbcode: evidenceMarkdownToBbcode(body),
+      body_bbcode: evidenceMarkdownToBbcode(bbcodeBody),
       runs,
     };
     warnLeftovers(fields, diag, block.id);
@@ -571,8 +747,11 @@ export function emitCase(
   const facts: FactOut[] = byType('fact').map((block) => {
     const fields = new FieldMap(block.fields);
     const sourceField = fields.find('Source');
+    const derivedFrom = listValue(fields.find('Derived')?.value);
+    for (const factId of derivedFrom)
+      refs.push({ id: factId, kind: 'fact', where: blockSpan(block), ownerId: block.id });
     const sourceDocumentId = block.documentId ?? sourceField?.value ?? '';
-    if (!sourceDocumentId) {
+    if (!sourceDocumentId && derivedFrom.length === 0) {
       diag.add(
         codes.FIELD_MISSING,
         'warning',
@@ -580,7 +759,7 @@ export function emitCase(
         blockSpan(block),
         [block.id],
       );
-    } else {
+    } else if (sourceDocumentId) {
       refs.push({
         id: sourceDocumentId,
         kind: 'document',
@@ -644,6 +823,7 @@ export function emitCase(
       supports_questions: supports,
       ...(reveals !== undefined ? { reveals_event: reveals } : {}),
       lift_effects: liftEffects,
+      ...(derivedFrom.length ? { derived_from: derivedFrom } : {}),
     };
     warnLeftovers(fields, diag, block.id);
     return fact;
@@ -1447,12 +1627,22 @@ export function emitCase(
           register: document.register,
           peek: document.peek,
           meta: document.meta,
-          blocks: (documentParagraphs.get(document.id) ?? []).map((para, index) => ({
-            id: `${document.id}_p${index + 1}`,
-            runs: parseDocumentRuns(para, normalizeRunTextKeepBreaks).map((run) =>
-              run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
-            ),
-          })),
+          blocks: (documentBlockSpecs.get(document.id) ?? []).map((spec, index): LabDocBlock => {
+            const id = `${document.id}_p${index + 1}`;
+            const toLabRuns = (markdown: string, normalize?: (value: string) => string): LabRun[] =>
+              parseDocumentRuns(markdown, normalize).map((run) =>
+                run.fact_id ? { text: run.text, factId: run.fact_id } : { text: run.text },
+              );
+            if (spec.type === 'para')
+              return { id, type: 'para', runs: toLabRuns(spec.text, normalizeRunTextKeepBreaks) };
+            return {
+              id,
+              type: 'table',
+              align: spec.table.align,
+              header: spec.table.header.map((cell) => toLabRuns(cell)),
+              rows: spec.table.rows.map((row) => row.map((cell) => toLabRuns(cell))),
+            };
+          }),
         },
       ]),
     ),

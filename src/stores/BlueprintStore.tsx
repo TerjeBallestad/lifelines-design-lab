@@ -25,6 +25,7 @@ import type {
   BlueprintTiltak,
   BlueprintTiltakId,
 } from '../domain/blueprint';
+import { blockRuns } from '../domain/blueprint';
 import {
   advanceBlueprintDay,
   askBlueprintFrank,
@@ -289,6 +290,7 @@ export class BlueprintStore {
         meta: 'DAG 8 · SAKEN FORTSETTER',
         blocks: statusDocumentBlocks(this.progress.endText).map((text, index) => ({
           id: `status-${index}`,
+          type: 'para' as const,
           runs: [{ text }],
         })),
       };
@@ -321,7 +323,7 @@ export class BlueprintStore {
 
   evidenceCount(document: BlueprintDocument): { total: number; lifted: number } {
     const factIds = document.blocks.flatMap((block) =>
-      block.runs.flatMap((run) => (run.factId ? [run.factId] : [])),
+      blockRuns(block).flatMap((run) => (run.factId ? [run.factId] : [])),
     );
     return {
       total: factIds.length,

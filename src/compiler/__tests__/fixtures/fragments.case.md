@@ -98,6 +98,28 @@ Domain: Helse/risiko · Category: Dokument
 Supports: q_kollaps
 ~ open q_kollaps
 
+# Document: doc_tabell
+
+Kind: KONTOUTSKRIFT · Register: formell
+Title: Sparebanken · kontoutskrift
+Peek: —
+Meta: SPAREBANKEN · JANUAR 1999
+
+Utskrift for perioden 01.01–31.01.
+
+| DATO | TEKST | UT [icon=coin] |
+| --- | --- | ---: |
+| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_uttak_golden) | 30,00 |
+| 07.01 | MATSENTRALEN GABELS GT | 2,35 |
+
+KONTOEN DISPONERES AV VERGE.
+
+## f_uttak_golden
+
+Label: Kontantuttak i skranken
+Summary: Fast kontantuttak den 5. hver måned.
+Domain: Økonomi/bolig · Category: Dokument
+
 # Question: q_grete_dor
 
 Title: Den dagen Grete ikke kommer hjem — hva stopper?
@@ -137,8 +159,8 @@ Card title:
 
 # Hypothesis: h_ok_gap
 
-Title: Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.
-Summary: Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
+Title: Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.
+Summary: Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 needs: f_gap
 Opens: t_bostotte, t_huseier, d_konto, c_frank_okonomi [type=conversation category=frank actor=frank risk=okonomi sim=case.olsen.opening.conversation.frank_okonomi]
@@ -187,8 +209,9 @@ Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. 
 Activity: «BE OM BANKUTSKRIFT»
 Channel: scheduled · Delay: 480m · Duration: 1h · Occupies: 3h
 Reception: +1
-gate: f_gap
-~ deliver pending_konto_overfort in 1d on ck_overfort
+gate: f_grete_baerer
+~ deliver doc_konto_grete in 1d on ck_overfort
+~ deliver doc_konto_elling in 1d on ck_overfort
 
 # Dispatch: hjemmebesok
 

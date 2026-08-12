@@ -10,3 +10,5 @@ src/compiler/__tests__/fixtures/*.case.md
 # sim.md shares the law: the grammar (wildcard keys, «» fields) is not markdown-normalizable
 content/characters/*.sim.md
 src/compiler/__tests__/fixtures/*.sim.md
+# vendored design-canvas export (inspiration reference, not maintained source)
+prototypes/paper-reference/

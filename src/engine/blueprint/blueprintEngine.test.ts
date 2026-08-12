@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { blueprintDocuments } from '../../content/blueprint';
+import { blockRuns } from '../../domain/blueprint';
 import { BlueprintStore } from '../../stores/BlueprintStore';
 import {
   createBlueprintProgress,
@@ -23,7 +24,9 @@ describe('Blueprint v1 caseworker loop', () => {
     expect(store.progress.phase).toBe('play');
     expect(store.progress.documents.doc_bekymring).toBeDefined();
     expect(
-      blueprintDocuments.doc_bekymring.blocks.some((block) => block.runs.some((run) => run.factId)),
+      blueprintDocuments.doc_bekymring.blocks.some((block) =>
+        blockRuns(block).some((run) => run.factId),
+      ),
     ).toBe(true);
   });
 
@@ -180,7 +183,11 @@ describe('Blueprint v1 caseworker loop', () => {
     });
     const vedtak = store.documentById('doc_vedtak_1');
     const vedtakText = vedtak.blocks
-      .map((block) => block.runs.map((run) => run.text).join(' '))
+      .map((block) =>
+        blockRuns(block)
+          .map((run) => run.text)
+          .join(' '),
+      )
       .join(' ');
     expect(vedtak.title).toBe('Vedtak 1 · tiltakspakke');
     expect(vedtakText).toContain('Tiltak iverksatt i dette vedtaket');
@@ -205,7 +212,13 @@ describe('Blueprint v1 caseworker loop', () => {
       hypothesisIds: ['h_ok_grete'],
       stampText: 'IVERKSATT',
     });
-    const text = blocks.map((block) => block.runs.map((run) => run.text).join(' ')).join(' ');
+    const text = blocks
+      .map((block) =>
+        blockRuns(block)
+          .map((run) => run.text)
+          .join(' '),
+      )
+      .join(' ');
 
     expect(text).toContain('Tiltak iverksatt i dette vedtaket');
     expect(text).toContain('Frivillig forvaltning av faste betalinger');

@@ -23,7 +23,7 @@ describe('canvas graph derivation', () => {
     const graph = buildGraph(slice);
 
     const byKind = (kind: string) => graph.nodes.filter((n) => n.kind === kind).length;
-    expect(byKind('document')).toBe(9);
+    expect(byKind('document')).toBe(11);
     expect(byKind('fact')).toBe(25);
     expect(byKind('question')).toBe(8);
     expect(byKind('hypothesis')).toBe(23);
@@ -37,9 +37,11 @@ describe('canvas graph derivation', () => {
       expect(ids.has(edge.to)).toBe(true);
     }
 
-    // Every fact hangs off a document; every hypothesis hangs off a question.
+    // Every fact hangs off a document (a derived fact hangs off its inputs
+    // instead — SDD-011); every hypothesis hangs off a question.
     for (const fact of slice.facts)
-      expect(graph.edges.some((e) => e.to === fact.id && e.label === 'source')).toBe(true);
+      if (!fact.derived_from?.length)
+        expect(graph.edges.some((e) => e.to === fact.id && e.label === 'source')).toBe(true);
     for (const h of slice.hypotheses)
       expect(graph.edges.some((e) => e.to === h.id && e.from === h.question_id)).toBe(true);
   });
@@ -1070,7 +1072,7 @@ describe('canvas select-to-lift (SB-043)', () => {
     const lines = text.split('\n');
     const at = lines.indexOf('## f_ny');
     expect(at).toBeGreaterThan(lines.indexOf('## f_ingen_tjenester'));
-    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto'));
+    expect(at).toBeLessThan(lines.indexOf('# Document: doc_konto_grete'));
     // …compiled to a node wired to its document (containment = source edge)…
     expect(
       probe.graph.edges.some(
@@ -1095,11 +1097,11 @@ describe('canvas select-to-lift (SB-043)', () => {
     expect(first).toEqual({ ok: true, id: 'f_ny' });
     expect(probe.getCaseText()).toContain('Quote: «en sykdom med forløp»');
 
-    const second = probe.liftAsFact('doc_konto', 'andre løft');
+    const second = probe.liftAsFact('doc_konto_grete', 'andre løft');
     expect(second).toEqual({ ok: true, id: 'f_ny2' });
     expect(
       probe.graph.edges.some(
-        (e) => e.from === 'doc_konto' && e.to === 'f_ny2' && e.label === 'source',
+        (e) => e.from === 'doc_konto_grete' && e.to === 'f_ny2' && e.label === 'source',
       ),
     ).toBe(true);
     localStorage.clear();

@@ -41,9 +41,32 @@ export interface BlueprintTextRun {
   factId?: BlueprintFactId;
 }
 
-export interface BlueprintDocumentBlock {
-  id: string;
-  runs: BlueprintTextRun[];
+export type BlueprintColumnAlign = 'left' | 'right';
+
+/**
+ * SDD-011: a document body block is a paragraph or a pipe table. Table header
+ * and rows hold one run list per cell, so fact anchors work inside cells.
+ */
+export type BlueprintDocumentBlock =
+  | { id: string; type: 'para'; runs: BlueprintTextRun[] }
+  | {
+      id: string;
+      type: 'table';
+      align: BlueprintColumnAlign[];
+      header: BlueprintTextRun[][];
+      rows: BlueprintTextRun[][][];
+    };
+
+/**
+ * Every run in a block, in reading order — table cells flatten header-first.
+ * Generic so it serves both BlueprintDocumentBlock and the compiler's
+ * LabDocBlock, which share the shape.
+ */
+export function blockRuns<R>(
+  block: { type: 'para'; runs: R[] } | { type: 'table'; header: R[][]; rows: R[][][] },
+): R[] {
+  if (block.type === 'para') return block.runs;
+  return [...block.header, ...block.rows.flat()].flat();
 }
 
 export interface BlueprintDocument {

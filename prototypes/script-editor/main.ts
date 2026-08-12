@@ -5,6 +5,7 @@
 // save; the lens owns the editor view and its extensions.
 import { html, render as litRender, nothing } from 'lit-html';
 import { compileCase, compileCharacter } from '../../src/compiler/index.ts';
+import { blockRuns } from '../../src/domain/blueprint.ts';
 import type { CompileResult, CompileCharacterResult } from '../../src/compiler/index.ts';
 import type { StringTableOut, VisitSceneOut } from '../../src/compiler/emit-visit.ts';
 import { liftFact } from '../../src/compiler/patch.ts';
@@ -313,7 +314,7 @@ function renderPreview(line: number) {
 
 function sourceDocOf(factId: string): string | null {
   for (const [docId, d] of Object.entries(result.labContent.documents)) {
-    if (d.blocks.some((b) => b.runs.some((r) => r.factId === factId))) return docId;
+    if (d.blocks.some((b) => blockRuns(b).some((r) => r.factId === factId))) return docId;
   }
   return null;
 }
@@ -371,7 +372,7 @@ function renderDocPreview(docId: string, focusFact: string | null) {
   const d = result.labContent.documents[docId];
   previewTitle.textContent = `PREVIEW — ${docId.toUpperCase()}`;
   const factIds = new Set<string>();
-  d.blocks.forEach((b) => b.runs.forEach((r) => r.factId && factIds.add(r.factId)));
+  d.blocks.forEach((b) => blockRuns(b).forEach((r) => r.factId && factIds.add(r.factId)));
   const questions = new Set<string>();
   factIds.forEach((f) =>
     (result.labContent.facts[f]?.supports ?? []).forEach((q) => questions.add(q)),

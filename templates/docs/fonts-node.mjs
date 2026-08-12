@@ -54,6 +54,15 @@ export function fontFaceCss() {
   font-weight: 400;
   font-style: normal;
   src: url('${fontDataUri('Kalam-400.ttf')}') format('truetype');
+}
+/* SDD-011 letterheads. Upstream google/fonts ships only the variable
+   Archivo[wdth,wght].ttf (verified 2026-08-11) — declared across the weight
+   range so 400, 500 and 700 all render from the one file. */
+@font-face {
+  font-family: 'Archivo';
+  font-weight: 100 900;
+  font-style: normal;
+  src: url('${fontDataUri('Archivo[wdth,wght].ttf')}') format('truetype');
 }`;
   return _fontFaceCss;
 }

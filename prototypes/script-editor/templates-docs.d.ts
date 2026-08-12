@@ -24,6 +24,17 @@ declare module '*/templates/docs/registry.mjs' {
 declare module '*/templates/docs/shared.mjs' {
   export function escapeHtml(value: unknown): string;
   export function renderRuns(runs: Array<{ text: string; factId?: string }>): string;
+  export function renderBlocks(
+    blocks: Array<
+      | { type: 'para'; runs: Array<{ text: string; factId?: string }> }
+      | {
+          type: 'table';
+          align: Array<'left' | 'right'>;
+          header: Array<Array<{ text: string; factId?: string }>>;
+          rows: Array<Array<Array<{ text: string; factId?: string }>>>;
+        }
+    >,
+  ): string;
   export function overrideForDoc(docId: string): { className: string; css: string; art: string };
   export function sizeForKind(kind: string): { width: number; minHeight: number };
   export function kindSlug(kind: string): string;

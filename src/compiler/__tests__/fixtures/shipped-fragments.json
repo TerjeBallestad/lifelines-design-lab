@@ -172,8 +172,8 @@
   "hypotheses": {
     "h_ok_gap": {
       "id": "h_ok_gap",
-      "title": "Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.",
-      "summary": "Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.",
+      "title": "Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.",
+      "summary": "Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.",
       "question_id": "q_okonomi",
       "availability": {
         "op": "fact_lifted",
@@ -273,7 +273,7 @@
       "gate": {
         "op": "fact_lifted",
         "args": {
-          "fact_id": "f_gap"
+          "fact_id": "f_grete_baerer"
         }
       },
       "effects": [
@@ -281,7 +281,15 @@
           "op": "queue_pending_document",
           "args": {
             "clock_id": "ck_overfort",
-            "document_id": "pending_konto_overfort",
+            "document_id": "doc_konto_grete",
+            "delay_days": 1
+          }
+        },
+        {
+          "op": "queue_pending_document",
+          "args": {
+            "clock_id": "ck_overfort",
+            "document_id": "doc_konto_elling",
             "delay_days": 1
           }
         }
@@ -688,16 +696,22 @@
       "order": 20
     },
     {
+      "handbok_id": "depositum",
+      "line": "Depositumsgaranti. Bare aktuelt hvis det blir flytting — garanti for et nytt leieforhold.",
+      "relevant_fact_ids": ["f_leie_privat", "f_leie_stoppet"],
+      "order": 21
+    },
+    {
       "handbok_id": "kbolig",
       "line": "Kommunal bolig, hvis leiligheten ikke kan holdes. Men å flytte ham er å flytte alt han er.",
       "relevant_fact_ids": ["f_leie_stoppet", "f_gap"],
-      "order": 21
+      "order": 22
     },
     {
       "handbok_id": "startlan",
       "line": "Startlån. Lån til kjøp av egen bolig — det er langt fra der denne saken står.",
       "relevant_fact_ids": ["f_trygd", "f_gap"],
-      "order": 22
+      "order": 23
     }
   ]
 }

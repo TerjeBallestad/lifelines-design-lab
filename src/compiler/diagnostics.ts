@@ -57,6 +57,12 @@ export const codes = {
   EFFECT_UNSUPPORTED_PAY: 'effect-unsupported-pay',
   EFFECT_UNSUPPORTED_CLOCK: 'effect-unsupported-clock',
   EFFECT_UNSUPPORTED_LOG: 'effect-unsupported-log',
+  // §2 document pipe tables (SDD-011 grammar option A)
+  /**
+   * A table row whose cell count differs from its header's. Warns and never
+   * blocks the compile (project rule: stubs and drift warn).
+   */
+  DOC_TABLE_RAGGED: 'doc-table-ragged',
   // §8 conversation weave (ruling 2 warn list — DD-002: this list doubles as
   // the engine backlog; each construct parses, warns, and emits nothing)
   WEAVE_UNKNOWN_KIND: 'weave-unknown-kind',

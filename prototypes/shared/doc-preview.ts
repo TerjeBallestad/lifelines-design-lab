@@ -4,7 +4,7 @@
 // Typed via templates-docs.d.ts — the modules themselves are plain .mjs.
 import { templateForKind, hasTemplate } from '../../templates/docs/registry.mjs';
 import {
-  renderRuns,
+  renderBlocks,
   pageShell,
   overrideForDoc,
   sizeForKind,
@@ -15,8 +15,9 @@ import caveat400 from '../../templates/docs/fonts/Caveat-400.ttf?url';
 import specialElite400 from '../../templates/docs/fonts/SpecialElite-400.ttf?url';
 import architects400 from '../../templates/docs/fonts/ArchitectsDaughter-400.ttf?url';
 import kalam400 from '../../templates/docs/fonts/Kalam-400.ttf?url';
+import archivoVariable from '../../templates/docs/fonts/Archivo[wdth,wght].ttf?url';
 
-const face = (family: string, weight: number, url: string) =>
+const face = (family: string, weight: number | string, url: string) =>
   `@font-face { font-family: '${family}'; font-weight: ${weight}; font-style: normal; src: url('${url}') format('truetype'); }`;
 
 export const browserFontCss = [
@@ -26,6 +27,8 @@ export const browserFontCss = [
   face('Special Elite', 400, specialElite400),
   face('Architects Daughter', 400, architects400),
   face('Kalam', 400, kalam400),
+  // SDD-011: the variable Archivo covers the whole weight range in one file.
+  face('Archivo', '100 900', archivoVariable),
 ].join('\n');
 
 // The bake keeps fact spans visually neutral; the game overlays highlights at
@@ -55,13 +58,18 @@ export interface DocPreviewBuild {
   fallback: boolean;
 }
 
+type LabRun = { text: string; factId?: string };
+type LabBlock =
+  | { type: 'para'; runs: LabRun[] }
+  | { type: 'table'; align: Array<'left' | 'right'>; header: LabRun[][]; rows: LabRun[][][] };
+
 interface LabDoc {
   kind: string;
   title?: string;
   meta?: string;
   register?: string;
   peek?: string;
-  blocks?: Array<{ runs: Array<{ text: string; factId?: string }> }>;
+  blocks?: LabBlock[];
 }
 
 // Mirrors render-doc.mjs buildDocHtml, plus: browser fonts, preview highlight
@@ -70,10 +78,8 @@ export function buildDocPreviewHtml(docId: string, doc: LabDoc): DocPreviewBuild
   const fallback = !hasTemplate(doc.kind);
   const kindUsed = fallback ? 'RAPPORT' : doc.kind;
   const template = templateForKind(kindUsed);
-  // One labContent block per authored paragraph (blank-line separated).
-  const runsHtml = (doc.blocks ?? [])
-    .map((b) => `<p class="para">${renderRuns(b.runs)}</p>`)
-    .join('\n');
+  // One labContent block per authored paragraph or pipe table (SDD-011).
+  const runsHtml = renderBlocks(doc.blocks ?? []);
   const override = overrideForDoc(docId);
   const bodyHtml = template.render({
     docId,

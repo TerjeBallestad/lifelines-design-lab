@@ -81,6 +81,20 @@ function payableFacts(slice: CaseSlice): Set<string> {
   for (const entry of slice.frank_chat ?? []) if (entry.pays_fact) payable.add(entry.pays_fact);
   for (const delta of slice.event_delta_specs)
     if (delta.reveal_fact_id) payable.add(delta.reveal_fact_id);
+  // SDD-011: a derived fact is payable when every fact it derives from is.
+  // Fixed-point pass so a derived-of-derived chain resolves in any order.
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const fact of slice.facts) {
+      if (payable.has(fact.id)) continue;
+      const derived = fact.derived_from ?? [];
+      if (derived.length && derived.every((id) => payable.has(id))) {
+        payable.add(fact.id);
+        changed = true;
+      }
+    }
+  }
   return payable;
 }
 

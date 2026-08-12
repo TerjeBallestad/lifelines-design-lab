@@ -65,6 +65,39 @@ export function renderRuns(runs) {
 }
 
 // ---------------------------------------------------------------------------
+// Block rendering (SDD-011). One shared renderer for both consumers — the
+// bake (render-doc.mjs buildDocHtml) and the script-editor preview
+// (prototypes/shared/doc-preview.ts) — so a table draws identically on the
+// baked texture and in the editor. `type: 'para'` keeps the historical
+// `<p class="para">` byte-for-byte; `type: 'table'` draws a ruled table with
+// per-column alignment from the block's align array. Cells render through
+// renderRuns, so a [data-fact-id] span inside a <td> still yields line-box
+// rects for the UV manifest.
+// ---------------------------------------------------------------------------
+function renderTableBlock(block) {
+  const align = block.align ?? [];
+  const cellHtml = (tag, runs, column) =>
+    `<${tag}${align[column] === 'right' ? ' class="cell-right"' : ''}>${renderRuns(runs)}</${tag}>`;
+  const head = block.header?.length
+    ? `<thead><tr>${block.header.map((cell, i) => cellHtml('th', cell, i)).join('')}</tr></thead>`
+    : '';
+  const body = `<tbody>${(block.rows ?? [])
+    .map((row) => `<tr>${row.map((cell, i) => cellHtml('td', cell, i)).join('')}</tr>`)
+    .join('')}</tbody>`;
+  return `<table class="doc-table">${head}${body}</table>`;
+}
+
+export function renderBlocks(blocks) {
+  return (blocks ?? [])
+    .map((block) =>
+      block.type === 'table'
+        ? renderTableBlock(block)
+        : `<p class="para">${renderRuns(block.runs)}</p>`,
+    )
+    .join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Per-doc override hook (CAPABILITY only, unused in v1). A kind template renders
 // every doc of its kind identically; this returns an extra body class + optional
 // inline CSS/art selected by doc id, so bespoke per-doc treatment can be dropped in
@@ -107,10 +140,14 @@ export const KIND_SIZES = Object.freeze({
   // with short content baked in a huge blank bottom — «not in a good way»). The
   // strip's identity is its NARROW WIDTH; height comes from the text.
   BREV: { width: 660, minHeight: 560 }, // A5-ish personal letter
-  'ØKONOMISK OVERSIKT': { width: 560, minHeight: 620 }, // narrow ledger strip
   FELTNOTAT: { width: 640, minHeight: 460 }, // notepad index card
   STATUSRAPPORT: { width: 700, minHeight: 400 }, // typed half-sheet status memo
   MELDING: { width: 480, minHeight: 360 }, // phone-message lapp
+  // SDD-011 raw economy papers: full-A4 bank statements and invoice, a
+  // narrow till strip.
+  KONTOUTSKRIFT: { width: 800, minHeight: 1131 },
+  REGNING: { width: 800, minHeight: 1131 },
+  KASSALAPP: { width: 300, minHeight: 620 },
 });
 
 export function sizeForKind(kind) {
@@ -223,6 +260,27 @@ body {
 /* One .para per authored paragraph (labContent block). */
 .para { margin: 0 0 0.85em; }
 .para:last-child { margin-bottom: 0; }
+/* Shared table form (SDD-011): collapsed borders, a rule above and below the
+   header, per-cell padding, right alignment from the authored align array.
+   Deliberately neutral — a kind template restyles rules/weights per paper. */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 0.85em;
+}
+.doc-table:last-child { margin-bottom: 0; }
+.doc-table th, .doc-table td {
+  padding: 0.14em 0.6em;
+  text-align: left;
+  vertical-align: baseline;
+}
+.doc-table th:first-child, .doc-table td:first-child { padding-left: 0; }
+.doc-table th:last-child, .doc-table td:last-child { padding-right: 0; }
+.doc-table thead th {
+  border-top: 1.5px solid var(--rule-strong);
+  border-bottom: 1.5px solid var(--rule-strong);
+}
+.doc-table .cell-right { text-align: right; }
 /* Coin sprite, drawn nearest-neighbour so it stays pixel-crisp. --coin-size is
    the source PNG's native 16px, which makes every device scale a whole
    multiple: 1:1 in the preview, 2x at deviceScaleFactor 2, 3x at the bake's 3.

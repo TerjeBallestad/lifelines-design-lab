@@ -309,9 +309,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     peek: '«…anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.»',
     meta: 'LEGESENTERET · 11.02.1999',
     blocks: [
-      { id: 'b1', runs: runs('Gjelder: Olsen, Elling · f. 14.03.1964.') },
+      { id: 'b1', type: 'para', runs: runs('Gjelder: Olsen, Elling · f. 14.03.1964.') },
       {
         id: 'b2',
+        type: 'para',
         runs: runs(
           'Undertegnede er fastlege for Grete Olsen og hennes sønn Elling Olsen. Mor er under utredning for ',
           { text: 'sykdom med kort forventet forløp', factId: 'f_grete_syk' },
@@ -320,6 +321,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'b3',
+        type: 'para',
         runs: runs(
           'Mor og sønn bor sammen i en treroms blokkleilighet. ',
           { text: 'Sønnen har aldri bodd alene', factId: 'f_aldri_alene' },
@@ -330,6 +332,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'b4',
+        type: 'para',
         runs: runs({
           text: 'Mor opplyser at hun bistår med praktiske gjøremål, økonomisk oversikt og kontakt med tjenester',
           factId: 'f_grete_baerer',
@@ -337,6 +340,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'b5',
+        type: 'para',
         runs: runs(
           { text: 'Pasienten fremstår sårbar ved bortfall av pårørende', factId: 'f_saarbar' },
           '. Anbefaler kommunal kartlegging av funksjon, hjelpebehov og overgangstiltak.',
@@ -352,9 +356,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     peek: '«Hun tok den på andre forsøk.»',
     meta: 'TLF. G. OLSEN · 4012 F. SOLBERG',
     blocks: [
-      { id: 't1', runs: runs('Ringte Grete 11:40. Hun tok den på andre forsøk.') },
+      { id: 't1', type: 'para', runs: runs('Ringte Grete 11:40. Hun tok den på andre forsøk.') },
       {
         id: 't2',
+        type: 'para',
         runs: runs({
           text: '«Han klarer seg. Han har alltid klart seg.» Hun sa det to ganger.',
           factId: 'f_klarer_seg',
@@ -362,6 +367,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 't3',
+        type: 'para',
         runs: runs({
           text: 'Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille.',
           factId: 'f_ingen_plan',
@@ -369,6 +375,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 't4',
+        type: 'para',
         runs: runs({
           text: 'Jeg ba om å få hilse på Elling. Hun sa han ikke tar telefonen. «Han liker bare ikke apparatet.»',
           factId: 'f_elling_tlf',
@@ -376,6 +383,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 't5',
+        type: 'para',
         runs: runs(
           'Mot slutten ',
           {
@@ -397,10 +405,12 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     blocks: [
       {
         id: 'v1',
+        type: 'para',
         runs: runs('Grete åpnet før jeg fikk ringt på. Tre kopper. Elling brukte ikke sin.'),
       },
       {
         id: 'v2',
+        type: 'para',
         runs: runs('I gangen: ', {
           text: 'en bunke uåpnet post på skoskapet',
           factId: 'f_post',
@@ -408,6 +418,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v3',
+        type: 'para',
         runs: runs('På kjøkkenveggen: ', {
           text: 'kalender. Alle avtaler ført med samme håndskrift.',
           factId: 'f_kalender',
@@ -415,6 +426,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v4',
+        type: 'para',
         runs: runs('I kjøleskapet: ', {
           text: 'middagsbokser merket med ukedager, mandag til søndag',
           factId: 'f_matbokser',
@@ -422,6 +434,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v5',
+        type: 'para',
         runs: runs('Elling satt i stuen med ', {
           text: 'en bok om polarekspedisjoner. Han noterte i margen.',
           factId: 'f_bok',
@@ -429,6 +442,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v6',
+        type: 'para',
         runs: runs('Over skrivebordet hans: ', {
           text: 'avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog.',
           factId: 'f_utklipp',
@@ -436,6 +450,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v7',
+        type: 'para',
         runs: runs({
           text: 'Han flyttet seg slik at det alltid var et møbel mellom oss.',
           factId: 'f_avstand',
@@ -443,6 +458,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'v8',
+        type: 'para',
         runs: runs('Grete fulgte meg ut. I trappen sa hun: ', {
           text: '«Du så hvordan han er. Han er en smart gutt.»',
           factId: 'f_smart_gutt',
@@ -458,9 +474,14 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     peek: '«Regnestykket går opp — med henne.»',
     meta: 'GJENNOMGÅTT MED G. OLSEN VED KJØKKENBORDET',
     blocks: [
-      { id: 'k1', runs: runs('Grete fant frem alt. Postgiroene ligger i en skoeske.') },
+      {
+        id: 'k1',
+        type: 'para',
+        runs: runs('Grete fant frem alt. Postgiroene ligger i en skoeske.'),
+      },
       {
         id: 'k2',
+        type: 'para',
         runs: runs('Inn: ', {
           text: 'trygden hans — to mynter i måneden',
           factId: 'f_trygd',
@@ -468,6 +489,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'k3',
+        type: 'para',
         runs: runs('Ut: ', {
           text: 'husleien — tre mynter. Den betales kontant til huseieren, av Grete',
           factId: 'f_husleie',
@@ -475,6 +497,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'k4',
+        type: 'para',
         runs: runs({
           text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn.',
           factId: 'f_alt_via_grete',
@@ -482,6 +505,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'k5',
+        type: 'para',
         runs: runs({
           text: 'Jeg fant ikke ett kjøp som var hans. Ikke ett.',
           factId: 'f_ingen_matkjop',
@@ -489,6 +513,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'k6',
+        type: 'para',
         runs: runs({
           text: 'Regnestykket går opp — med henne. Uten henne mangler det to mynter. Hver måned.',
           factId: 'f_gap',
@@ -506,11 +531,17 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     blocks: [
       {
         id: 'p1',
+        type: 'para',
         runs: runs('Skoesken sto der hun forlot den. Den øverste postgiroen gjelder mars.'),
       },
-      { id: 'p2', runs: runs({ text: 'trygden hans — to mynter i måneden', factId: 'f_trygd' }) },
+      {
+        id: 'p2',
+        type: 'para',
+        runs: runs({ text: 'trygden hans — to mynter i måneden', factId: 'f_trygd' }),
+      },
       {
         id: 'p3',
+        type: 'para',
         runs: runs({
           text: 'husleien — tre mynter. Den ble betalt kontant til huseieren, av Grete',
           factId: 'f_husleie',
@@ -518,10 +549,12 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'p4',
+        type: 'para',
         runs: runs({ text: 'Alle avtaler står i Gretes navn.', factId: 'f_alt_via_grete' }),
       },
       {
         id: 'p5',
+        type: 'para',
         runs: runs({
           text: 'Regnestykket gikk opp — med henne. Nå mangler det to mynter. Hver måned.',
           factId: 'f_gap',
@@ -539,6 +572,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     blocks: [
       {
         id: 'i1',
+        type: 'para',
         runs: runs('Grete Olsen ble ', {
           text: 'innlagt akutt 14.02',
           factId: 'f_innlagt',
@@ -546,6 +580,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'i2',
+        type: 'para',
         runs: runs({
           text: 'Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.',
           factId: 'f_elling_uvarslet',
@@ -563,6 +598,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     blocks: [
       {
         id: 'd1',
+        type: 'para',
         runs: runs('Grete Olsen, f. 21.09.1927. ', {
           text: 'Dødsfall konstatert 15.02 kl. 04:12.',
           factId: 'f_dod',
@@ -570,6 +606,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'd2',
+        type: 'para',
         runs: runs('Varsling ble forsøkt per telefon uten svar. ', {
           text: 'Sønnen åpnet ikke døren. Beskjeden ble gitt gjennom brevsprekken.',
           factId: 'f_brevsprekken',
@@ -585,9 +622,10 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
     peek: '«Jeg hører at din mor er gått bort.»',
     meta: 'HÅNDSKREVET · LEVERT I POSTKASSEN',
     blocks: [
-      { id: 'h1', runs: runs('Til Elling Olsen.') },
+      { id: 'h1', type: 'para', runs: runs('Til Elling Olsen.') },
       {
         id: 'h2',
+        type: 'para',
         runs: runs(
           'Jeg hører at din mor er gått bort. Kondolerer. Jeg må likevel skrive om det praktiske. ',
           { text: 'Leien for mars er ikke kommet.', factId: 'f_leie_stoppet' },
@@ -595,6 +633,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'h3',
+        type: 'para',
         runs: runs({
           text: 'Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.',
           factId: 'f_leie_privat',
@@ -602,6 +641,7 @@ export const blueprintDocuments: Record<string, BlueprintDocument> = {
       },
       {
         id: 'h4',
+        type: 'para',
         runs: runs('Jeg vil ikke lage vanskeligheter. Men ', {
           text: 'jeg kommer innom på torsdag, så får vi snakke om veien videre',
           factId: 'f_huseier_kommer',

@@ -41,24 +41,78 @@ Domain: Helse/risiko · Category: Risiko
 Supports: q_grete_dor
 Frank: «Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke.»
 
-# Document: doc_konto
+# Document: doc_konto_grete
 
-Kind: ØKONOMISK OVERSIKT · Register: notat
-Title: Økonomisk gjennomgang
-Peek: Økonomisk oversikt
-Meta: Frank Åsli. 
+Kind: KONTOUTSKRIFT · Register: formell
+Title: KONTOUTSKRIFT
+Peek: Kontoutskrift. Grete Olsen, januar.
+Meta: NR. 2/99
 
-Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.
+OLSEN GRETE
+GABELS GATE 14
+0272 OSLO
 
-Inn: [Trygden hans er 22 [icon=coin] i måneden](fact:f_trygd). Men det er [Grete som står som verge](fact:f_alt_via_grete) for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].
+KONTO: 7024.31.44892
+PERIODE: 01.01.99–31.01.99
+UTSKR.DATO: 02.02.99
 
-[Husleien er 30 [icon=coin]](fact:f_husleie). Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.
+| DATO | TEKST | UT [icon=coin] | INN | SALDO |
+| --- | --- | ---: | ---: | ---: |
+| 01.01 | SALDO OVERFØRT | | | 6,40 |
+| 04.01 | PENSJON RTV | | 31,00 | 37,40 |
+| 04.01 | OVERF. E. OLSEN 7024.31.55103 | | 22,00 | 59,40 |
+| 05.01 | [KONTANTUTTAK SKRANKE](fact:f_husleie) | 30,00 | | 29,40 |
+| 07.01 | MATSENTRALEN GABELS GT | 2,35 | | 27,05 |
+| 11.01 | POSTGIRO — OSLO ENERGIVERK | 4,10 | | 22,95 |
+| 12.01 | MATSENTRALEN GABELS GT | 2,60 | | 20,35 |
+| 14.01 | SKILLEBEKK APOTEK | 0,85 | | 19,50 |
+| 18.01 | MATSENTRALEN GABELS GT | 2,45 | | 17,05 |
+| 21.01 | POSTGIRO — TELEVERKET | 1,20 | | 15,85 |
+| 25.01 | MATSENTRALEN GABELS GT | 2,50 | | 13,35 |
+| 28.01 | NARVESEN — UKEBLAD/AVIS | 0,45 | | 12,90 |
+| 31.01 | SALDO | | | 12,90 |
 
-Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan 
+RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS
+HENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.
 
-Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.
+## f_husleie
 
-[Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned](fact:f_gap).
+Label: Husleie betales av Grete
+Summary: Husleien er 30 [icon=coin] og betales av Grete.
+Domain: Økonomi/bolig · Category: Økonomi
+Supports: q_okonomi, q_bolig
+
+# Document: doc_konto_elling
+
+Kind: KONTOUTSKRIFT · Register: formell
+Title: KONTOUTSKRIFT
+Peek: Årsutskrift. Elling Olsen.
+Meta: NR. 1/99 — ÅRSUTSKRIFT
+
+OLSEN ELLING
+V/ OLSEN GRETE (VERGE)
+GABELS GATE 14
+0272 OSLO
+
+KONTO: 7024.31.55103
+PERIODE: 01.10.98–31.01.99
+UTSKR.DATO: 02.02.99
+
+| DATO | TEKST | UT [icon=coin] | INN | SALDO |
+| --- | --- | ---: | ---: | ---: |
+| 01.10 | SALDO OVERFØRT | | | 0,00 |
+| 02.10 | [UFØRETRYGD RTV](fact:f_trygd) | | 22,00 | 22,00 |
+| 02.10 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
+| 02.11 | UFØRETRYGD RTV | | 22,00 | 22,00 |
+| 02.11 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
+| 02.12 | UFØRETRYGD RTV | | 22,00 | 22,00 |
+| 02.12 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
+| 04.01 | UFØRETRYGD RTV | | 22,00 | 22,00 |
+| 04.01 | FAST OVERF. G. OLSEN (VERGE) | 22,00 | | 0,00 |
+| 31.01 | SALDO | | | 0,00 |
+
+INGEN ANDRE BEVEGELSER I PERIODEN.
+[KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.](fact:f_alt_via_grete)
 
 ## f_trygd
 
@@ -74,19 +128,64 @@ Summary: Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi
 
-## f_husleie
+# Document: doc_strom
 
-Label: Husleie betales av Grete
-Summary: Husleien er 30 [icon=coin] og betales av Grete.
-Domain: Økonomi/bolig · Category: Økonomi
-Supports: q_okonomi, q_bolig
+Kind: REGNING · Register: formell
+Title: FAKTURA NR. 99-114 872
+Peek: Strømregning. 2. gangs varsel.
+Meta: FAKTURADATO 20.02.1999
 
-## f_gap
+2. GANGS VARSEL
+OLSEN GRETE
+GABELS GATE 14, LEIL. 3
+0272 OSLO
 
-Label: 23 [icon=coin] mangler
-Summary: Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.
-Domain: Økonomi/bolig · Category: Økonomi
-Supports: q_okonomi, q_bolig
+KUNDENR. 442 108
+MÅLERNR. 08841-B
+ANLEGG: GABELS GT 14/3
+
+| SPESIFIKASJON | MÅLT | BELØP [icon=coin] |
+| --- | ---: | ---: |
+| Kraftforbruk 01.12.98–31.01.99 | 1 412 kWh | 2,90 |
+| Nettleie og fastavgift | — | 1,20 |
+| Purregebyr | — | 0,15 |
+| Å BETALE | | 4,25 |
+
+Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.
+
+BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO
+BETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO
+KONTO: 0540.08.11223 · KID: 99114872008
+FORFALL: 15.03.1999 · BELØP: 4,25
+
+# Document: doc_kassalapp
+
+Kind: KASSALAPP · Register: formell
+Title: MATSENTRALEN
+Peek: En kassalapp fra skoesken.
+Meta: 07.01.99 · KASSE 2
+
+MATSENTRALEN
+GABELS GATE 11 · OSLO
+TLF 22 43 xx xx
+ORG NR 934 xxx xxx
+
+| HELMELK 1L | 0,22 |
+| KNEIPPBRØD | 0,28 |
+| KAFFE FILTERM. 250G | 0,52 |
+| POTETER 2KG | 0,30 |
+| KJØTTDEIG 400G | 0,64 |
+| GULROT PK | 0,18 |
+| HUSHOLDNINGSSAFT | 0,21 |
+
+| TOTALT [icon=coin] | 2,35 |
+| [BANKKORT](fact:f_ingen_matkjop) | 2,35 |
+
+07.01.99  10:42  KASSE 2
+OPERATØR: 014
+
+TAKK FOR HANDELEN
+VELKOMMEN IGJEN
 
 ## f_ingen_matkjop
 
@@ -95,24 +194,15 @@ Summary: Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.
 Domain: Hverdag/rutine · Category: Økonomi
 Supports: q_grete_dor
 
-# Document: doc_papirer
+# Facts
 
-Kind: ØKONOMISK OVERSIKT · Register: notat
-Title: Økonomisk oversikt
-Peek: Skoesken sto der hun forlot den.
-Meta: PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET
+## f_gap
 
-Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.
-
-[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.
-
-[husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.](fact:f_husleie)
-
-[Alle avtaler står i Gretes navn.](fact:f_alt_via_grete) [Ikke ett kjøp i kvitteringene er hans.](fact:f_ingen_matkjop)
-
-[Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.](fact:f_gap)
-
-Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.
+Label: 23 [icon=coin] mangler
+Summary: Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.
+Domain: Økonomi/bolig · Category: Økonomi
+Supports: q_okonomi, q_bolig
+Derived: f_trygd, f_husleie
 
 # Document: doc_huseier
 
@@ -642,8 +732,9 @@ Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. 
 Activity: «BE OM BANKUTSKRIFT»
 Channel: scheduled · Delay: 480m · Duration: 1h · Occupies: 3h
 Reception: +1
-gate: f_gap
-~ deliver pending_konto_overfort in 1d on ck_overfort
+gate: f_grete_baerer
+~ deliver doc_konto_grete in 1d on ck_overfort
+~ deliver doc_konto_elling in 1d on ck_overfort
 
 # Dispatch: hjemmebesok
 
@@ -738,6 +829,12 @@ Grete Olsen er død.
 
 Håndskrevet brev · T. Bakkerud
 ~ deliver doc_huseier in 0d on ck_grete
+
+# Beat: day 7 [id=beat_grete_d7]
+
+Posten kommer. En regning stilet til Grete. I skoesken: en kassalapp.
+~ deliver doc_strom in 0d on ck_grete
+~ deliver doc_kassalapp in 0d on ck_grete
 
 # Beat: day 8 [id=beat_grete_d8]
 
