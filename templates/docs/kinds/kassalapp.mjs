@@ -39,6 +39,10 @@ export const styleCss = `
 .doc--kassalapp .doc-table { font-size: 12.5px; }
 .doc--kassalapp .doc-table th, .doc--kassalapp .doc-table td { padding: 2px 6px; }
 .doc--kassalapp .doc-table thead th { border-top: none; border-bottom: none; }
+/* Receipt tables are headerless (no separator row in the markup), so the
+   authored align array stays left — the till always right-aligns its
+   amount column. */
+.doc--kassalapp .doc-table td:last-child { text-align: right; }
 `;
 
 export function render(ctx) {

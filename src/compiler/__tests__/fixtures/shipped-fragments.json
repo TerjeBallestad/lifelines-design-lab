@@ -273,7 +273,7 @@
       "gate": {
         "op": "fact_lifted",
         "args": {
-          "fact_id": "f_gap"
+          "fact_id": "f_grete_baerer"
         }
       },
       "effects": [
@@ -281,7 +281,15 @@
           "op": "queue_pending_document",
           "args": {
             "clock_id": "ck_overfort",
-            "document_id": "pending_konto_overfort",
+            "document_id": "doc_konto_grete",
+            "delay_days": 1
+          }
+        },
+        {
+          "op": "queue_pending_document",
+          "args": {
+            "clock_id": "ck_overfort",
+            "document_id": "doc_konto_elling",
             "delay_days": 1
           }
         }

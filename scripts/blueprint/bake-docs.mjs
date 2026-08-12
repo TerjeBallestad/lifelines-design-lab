@@ -54,11 +54,14 @@ const DEVICE_SCALE_FACTOR = 3;
 const UV_PRECISION = 5;
 const PNG_BYTE_COMPARE = true;
 
-// 9 authored docs in a fixed bake order (deterministic manifest key order).
+// 11 authored docs in a fixed bake order (deterministic manifest key order).
+// SDD-011: doc_konto/doc_papirer retired; the four raw economy papers arrive.
 export const AUTHORED_DOC_IDS = Object.freeze([
   'doc_bekymring',
-  'doc_konto',
-  'doc_papirer',
+  'doc_konto_grete',
+  'doc_konto_elling',
+  'doc_strom',
+  'doc_kassalapp',
   'doc_huseier',
   'doc_frank_tlf',
   'doc_frank_visit',

@@ -209,8 +209,9 @@ Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. 
 Activity: «BE OM BANKUTSKRIFT»
 Channel: scheduled · Delay: 480m · Duration: 1h · Occupies: 3h
 Reception: +1
-gate: f_gap
-~ deliver pending_konto_overfort in 1d on ck_overfort
+gate: f_grete_baerer
+~ deliver doc_konto_grete in 1d on ck_overfort
+~ deliver doc_konto_elling in 1d on ck_overfort
 
 # Dispatch: hjemmebesok
 

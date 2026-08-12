@@ -56,161 +56,961 @@ export const tinyOlsenDocuments = {
       },
     ],
   },
-  doc_konto: {
-    id: 'doc_konto',
-    kind: 'ØKONOMISK OVERSIKT',
-    title: 'Økonomisk gjennomgang',
-    register: 'notat',
-    peek: 'Økonomisk oversikt',
-    meta: 'Frank Åsli.',
+  doc_konto_grete: {
+    id: 'doc_konto_grete',
+    kind: 'KONTOUTSKRIFT',
+    title: 'KONTOUTSKRIFT',
+    register: 'formell',
+    peek: 'Kontoutskrift. Grete Olsen, januar.',
+    meta: 'NR. 2/99',
     blocks: [
       {
-        id: 'doc_konto_p1',
+        id: 'doc_konto_grete_p1',
         type: 'para',
         runs: [
           {
-            text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.',
+            text: 'OLSEN GRETE\nGABELS GATE 14\n0272 OSLO',
           },
         ],
       },
       {
-        id: 'doc_konto_p2',
+        id: 'doc_konto_grete_p2',
         type: 'para',
         runs: [
           {
-            text: 'Inn: ',
-          },
-          {
-            text: 'Trygden hans er 22 [icon=coin] i måneden',
-            factId: 'f_trygd',
-          },
-          {
-            text: '. Men det er ',
-          },
-          {
-            text: 'Grete som står som verge',
-            factId: 'f_alt_via_grete',
-          },
-          {
-            text: ' for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].',
+            text: 'KONTO: 7024.31.44892\nPERIODE: 01.01.99–31.01.99\nUTSKR.DATO: 02.02.99 ',
           },
         ],
       },
       {
-        id: 'doc_konto_p3',
-        type: 'para',
-        runs: [
-          {
-            text: 'Husleien er 30 [icon=coin]',
-            factId: 'f_husleie',
-          },
-          {
-            text: '. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.',
-          },
+        id: 'doc_konto_grete_p3',
+        type: 'table',
+        align: ['left', 'left', 'right', 'right', 'right'],
+        header: [
+          [
+            {
+              text: 'DATO',
+            },
+          ],
+          [
+            {
+              text: 'TEKST',
+            },
+          ],
+          [
+            {
+              text: 'UT [icon=coin]',
+            },
+          ],
+          [
+            {
+              text: 'INN',
+            },
+          ],
+          [
+            {
+              text: 'SALDO',
+            },
+          ],
+        ],
+        rows: [
+          [
+            [
+              {
+                text: '01.01',
+              },
+            ],
+            [
+              {
+                text: 'SALDO OVERFØRT',
+              },
+            ],
+            [],
+            [],
+            [
+              {
+                text: '6,40',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '04.01',
+              },
+            ],
+            [
+              {
+                text: 'PENSJON RTV',
+              },
+            ],
+            [],
+            [
+              {
+                text: '31,00',
+              },
+            ],
+            [
+              {
+                text: '37,40',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '04.01',
+              },
+            ],
+            [
+              {
+                text: 'OVERF. E. OLSEN 7024.31.55103',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [
+              {
+                text: '59,40',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '05.01',
+              },
+            ],
+            [
+              {
+                text: 'KONTANTUTTAK SKRANKE',
+                factId: 'f_husleie',
+              },
+            ],
+            [
+              {
+                text: '30,00',
+              },
+            ],
+            [],
+            [
+              {
+                text: '29,40',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '07.01',
+              },
+            ],
+            [
+              {
+                text: 'MATSENTRALEN GABELS GT',
+              },
+            ],
+            [
+              {
+                text: '2,35',
+              },
+            ],
+            [],
+            [
+              {
+                text: '27,05',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '11.01',
+              },
+            ],
+            [
+              {
+                text: 'POSTGIRO — OSLO ENERGIVERK',
+              },
+            ],
+            [
+              {
+                text: '4,10',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,95',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '12.01',
+              },
+            ],
+            [
+              {
+                text: 'MATSENTRALEN GABELS GT',
+              },
+            ],
+            [
+              {
+                text: '2,60',
+              },
+            ],
+            [],
+            [
+              {
+                text: '20,35',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '14.01',
+              },
+            ],
+            [
+              {
+                text: 'SKILLEBEKK APOTEK',
+              },
+            ],
+            [
+              {
+                text: '0,85',
+              },
+            ],
+            [],
+            [
+              {
+                text: '19,50',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '18.01',
+              },
+            ],
+            [
+              {
+                text: 'MATSENTRALEN GABELS GT',
+              },
+            ],
+            [
+              {
+                text: '2,45',
+              },
+            ],
+            [],
+            [
+              {
+                text: '17,05',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '21.01',
+              },
+            ],
+            [
+              {
+                text: 'POSTGIRO — TELEVERKET',
+              },
+            ],
+            [
+              {
+                text: '1,20',
+              },
+            ],
+            [],
+            [
+              {
+                text: '15,85',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '25.01',
+              },
+            ],
+            [
+              {
+                text: 'MATSENTRALEN GABELS GT',
+              },
+            ],
+            [
+              {
+                text: '2,50',
+              },
+            ],
+            [],
+            [
+              {
+                text: '13,35',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '28.01',
+              },
+            ],
+            [
+              {
+                text: 'NARVESEN — UKEBLAD/AVIS',
+              },
+            ],
+            [
+              {
+                text: '0,45',
+              },
+            ],
+            [],
+            [
+              {
+                text: '12,90',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '31.01',
+              },
+            ],
+            [
+              {
+                text: 'SALDO',
+              },
+            ],
+            [],
+            [],
+            [
+              {
+                text: '12,90',
+              },
+            ],
+          ],
         ],
       },
       {
-        id: 'doc_konto_p4',
+        id: 'doc_konto_grete_p4',
         type: 'para',
         runs: [
           {
-            text: 'Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan ',
-          },
-        ],
-      },
-      {
-        id: 'doc_konto_p5',
-        type: 'para',
-        runs: [
-          {
-            text: 'Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.',
-          },
-        ],
-      },
-      {
-        id: 'doc_konto_p6',
-        type: 'para',
-        runs: [
-          {
-            text: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
-            factId: 'f_gap',
-          },
-          {
-            text: '. ',
+            text: ' RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON. ',
           },
         ],
       },
     ],
   },
-  doc_papirer: {
-    id: 'doc_papirer',
-    kind: 'ØKONOMISK OVERSIKT',
-    title: 'Økonomisk oversikt',
-    register: 'notat',
-    peek: 'Skoesken sto der hun forlot den.',
-    meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
+  doc_konto_elling: {
+    id: 'doc_konto_elling',
+    kind: 'KONTOUTSKRIFT',
+    title: 'KONTOUTSKRIFT',
+    register: 'formell',
+    peek: 'Årsutskrift. Elling Olsen.',
+    meta: 'NR. 1/99 — ÅRSUTSKRIFT',
     blocks: [
       {
-        id: 'doc_papirer_p1',
+        id: 'doc_konto_elling_p1',
         type: 'para',
         runs: [
           {
-            text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.',
+            text: 'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO',
           },
         ],
       },
       {
-        id: 'doc_papirer_p2',
+        id: 'doc_konto_elling_p2',
         type: 'para',
         runs: [
           {
-            text: '[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.',
+            text: 'KONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99 ',
           },
         ],
       },
       {
-        id: 'doc_papirer_p3',
-        type: 'para',
-        runs: [
-          {
-            text: 'husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
-            factId: 'f_husleie',
-          },
+        id: 'doc_konto_elling_p3',
+        type: 'table',
+        align: ['left', 'left', 'right', 'right', 'right'],
+        header: [
+          [
+            {
+              text: 'DATO',
+            },
+          ],
+          [
+            {
+              text: 'TEKST',
+            },
+          ],
+          [
+            {
+              text: 'UT [icon=coin]',
+            },
+          ],
+          [
+            {
+              text: 'INN',
+            },
+          ],
+          [
+            {
+              text: 'SALDO',
+            },
+          ],
+        ],
+        rows: [
+          [
+            [
+              {
+                text: '01.10',
+              },
+            ],
+            [
+              {
+                text: 'SALDO OVERFØRT',
+              },
+            ],
+            [],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.10',
+              },
+            ],
+            [
+              {
+                text: 'UFØRETRYGD RTV',
+                factId: 'f_trygd',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.10',
+              },
+            ],
+            [
+              {
+                text: 'FAST OVERF. G. OLSEN (VERGE)',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.11',
+              },
+            ],
+            [
+              {
+                text: 'UFØRETRYGD RTV',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.11',
+              },
+            ],
+            [
+              {
+                text: 'FAST OVERF. G. OLSEN (VERGE)',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.12',
+              },
+            ],
+            [
+              {
+                text: 'UFØRETRYGD RTV',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '02.12',
+              },
+            ],
+            [
+              {
+                text: 'FAST OVERF. G. OLSEN (VERGE)',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '04.01',
+              },
+            ],
+            [
+              {
+                text: 'UFØRETRYGD RTV',
+              },
+            ],
+            [],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '04.01',
+              },
+            ],
+            [
+              {
+                text: 'FAST OVERF. G. OLSEN (VERGE)',
+              },
+            ],
+            [
+              {
+                text: '22,00',
+              },
+            ],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: '31.01',
+              },
+            ],
+            [
+              {
+                text: 'SALDO',
+              },
+            ],
+            [],
+            [],
+            [
+              {
+                text: '0,00',
+              },
+            ],
+          ],
         ],
       },
       {
-        id: 'doc_papirer_p4',
+        id: 'doc_konto_elling_p4',
         type: 'para',
         runs: [
           {
-            text: 'Alle avtaler står i Gretes navn.',
+            text: ' INGEN ANDRE BEVEGELSER I PERIODEN. ',
+          },
+          {
+            text: 'KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.',
             factId: 'f_alt_via_grete',
           },
           {
             text: ' ',
           },
+        ],
+      },
+    ],
+  },
+  doc_strom: {
+    id: 'doc_strom',
+    kind: 'REGNING',
+    title: 'FAKTURA NR. 99-114 872',
+    register: 'formell',
+    peek: 'Strømregning. 2. gangs varsel.',
+    meta: 'FAKTURADATO 20.02.1999',
+    blocks: [
+      {
+        id: 'doc_strom_p1',
+        type: 'para',
+        runs: [
           {
-            text: 'Ikke ett kjøp i kvitteringene er hans.',
-            factId: 'f_ingen_matkjop',
+            text: '2. GANGS VARSEL\nOLSEN GRETE\nGABELS GATE 14, LEIL. 3\n0272 OSLO',
           },
         ],
       },
       {
-        id: 'doc_papirer_p5',
+        id: 'doc_strom_p2',
         type: 'para',
         runs: [
           {
-            text: 'Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.',
-            factId: 'f_gap',
+            text: 'KUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: GABELS GT 14/3 ',
           },
         ],
       },
       {
-        id: 'doc_papirer_p6',
+        id: 'doc_strom_p3',
+        type: 'table',
+        align: ['left', 'right', 'right'],
+        header: [
+          [
+            {
+              text: 'SPESIFIKASJON',
+            },
+          ],
+          [
+            {
+              text: 'MÅLT',
+            },
+          ],
+          [
+            {
+              text: 'BELØP [icon=coin]',
+            },
+          ],
+        ],
+        rows: [
+          [
+            [
+              {
+                text: 'Kraftforbruk 01.12.98–31.01.99',
+              },
+            ],
+            [
+              {
+                text: '1 412 kWh',
+              },
+            ],
+            [
+              {
+                text: '2,90',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'Nettleie og fastavgift',
+              },
+            ],
+            [
+              {
+                text: '—',
+              },
+            ],
+            [
+              {
+                text: '1,20',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'Purregebyr',
+              },
+            ],
+            [
+              {
+                text: '—',
+              },
+            ],
+            [
+              {
+                text: '0,15',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'Å BETALE',
+              },
+            ],
+            [],
+            [
+              {
+                text: '4,25',
+              },
+            ],
+          ],
+        ],
+      },
+      {
+        id: 'doc_strom_p4',
         type: 'para',
         runs: [
           {
-            text: 'Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen. ',
+            text: ' Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.',
+          },
+        ],
+      },
+      {
+        id: 'doc_strom_p5',
+        type: 'para',
+        runs: [
+          {
+            text: 'BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 · KID: 99114872008\nFORFALL: 15.03.1999 · BELØP: 4,25 ',
+          },
+        ],
+      },
+    ],
+  },
+  doc_kassalapp: {
+    id: 'doc_kassalapp',
+    kind: 'KASSALAPP',
+    title: 'MATSENTRALEN',
+    register: 'formell',
+    peek: 'En kassalapp fra skoesken.',
+    meta: '07.01.99 · KASSE 2',
+    blocks: [
+      {
+        id: 'doc_kassalapp_p1',
+        type: 'para',
+        runs: [
+          {
+            text: 'MATSENTRALEN\nGABELS GATE 11 · OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx ',
+          },
+        ],
+      },
+      {
+        id: 'doc_kassalapp_p2',
+        type: 'table',
+        align: ['left', 'left'],
+        header: [],
+        rows: [
+          [
+            [
+              {
+                text: 'HELMELK 1L',
+              },
+            ],
+            [
+              {
+                text: '0,22',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'KNEIPPBRØD',
+              },
+            ],
+            [
+              {
+                text: '0,28',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'KAFFE FILTERM. 250G',
+              },
+            ],
+            [
+              {
+                text: '0,52',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'POTETER 2KG',
+              },
+            ],
+            [
+              {
+                text: '0,30',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'KJØTTDEIG 400G',
+              },
+            ],
+            [
+              {
+                text: '0,64',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'GULROT PK',
+              },
+            ],
+            [
+              {
+                text: '0,18',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'HUSHOLDNINGSSAFT',
+              },
+            ],
+            [
+              {
+                text: '0,21',
+              },
+            ],
+          ],
+        ],
+      },
+      {
+        id: 'doc_kassalapp_p3',
+        type: 'table',
+        align: ['left', 'left'],
+        header: [],
+        rows: [
+          [
+            [
+              {
+                text: 'TOTALT [icon=coin]',
+              },
+            ],
+            [
+              {
+                text: '2,35',
+              },
+            ],
+          ],
+          [
+            [
+              {
+                text: 'BANKKORT',
+                factId: 'f_ingen_matkjop',
+              },
+            ],
+            [
+              {
+                text: '2,35',
+              },
+            ],
+          ],
+        ],
+      },
+      {
+        id: 'doc_kassalapp_p4',
+        type: 'para',
+        runs: [
+          {
+            text: ' 07.01.99 10:42 KASSE 2\nOPERATØR: 014',
+          },
+        ],
+      },
+      {
+        id: 'doc_kassalapp_p5',
+        type: 'para',
+        runs: [
+          {
+            text: 'TAKK FOR HANDELEN\nVELKOMMEN IGJEN ',
           },
         ],
       },
@@ -649,12 +1449,20 @@ export const tinyOlsenFacts = {
     quote: 'primær omsorgsperson',
     supports: ['q_grete_dor'],
   },
+  f_husleie: {
+    id: 'f_husleie',
+    domain: 'Økonomi/bolig',
+    category: 'Økonomi',
+    text: 'Husleien er 30 [icon=coin] og betales av Grete.',
+    quote: 'KONTANTUTTAK SKRANKE',
+    supports: ['q_okonomi', 'q_bolig'],
+  },
   f_trygd: {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
-    quote: 'Trygden hans er 22 [icon=coin] i måneden',
+    quote: 'UFØRETRYGD RTV',
     supports: ['q_okonomi', 'q_bolig'],
   },
   f_alt_via_grete: {
@@ -662,32 +1470,24 @@ export const tinyOlsenFacts = {
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
     text: 'Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.',
-    quote: 'Grete som står som verge',
+    quote: 'KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.',
     supports: ['q_okonomi'],
-  },
-  f_husleie: {
-    id: 'f_husleie',
-    domain: 'Økonomi/bolig',
-    category: 'Økonomi',
-    text: 'Husleien er 30 [icon=coin] og betales av Grete.',
-    quote: 'Husleien er 30 [icon=coin]',
-    supports: ['q_okonomi', 'q_bolig'],
-  },
-  f_gap: {
-    id: 'f_gap',
-    domain: 'Økonomi/bolig',
-    category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
-    quote: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
-    supports: ['q_okonomi', 'q_bolig'],
   },
   f_ingen_matkjop: {
     id: 'f_ingen_matkjop',
     domain: 'Hverdag/rutine',
     category: 'Økonomi',
     text: 'Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.',
-    quote: 'Ikke ett kjøp i kvitteringene er hans.',
+    quote: 'BANKKORT',
     supports: ['q_grete_dor'],
+  },
+  f_gap: {
+    id: 'f_gap',
+    domain: 'Økonomi/bolig',
+    category: 'Økonomi',
+    text: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
+    quote: '',
+    supports: ['q_okonomi', 'q_bolig'],
   },
   f_leie_stoppet: {
     id: 'f_leie_stoppet',
@@ -1198,115 +1998,104 @@ export const tinyOlsenGodotSource = {
       ],
     },
     {
-      id: 'doc_konto',
-      kind: 'ØKONOMISK OVERSIKT',
-      title: 'Økonomisk gjennomgang',
-      register: 'notat',
-      peek: 'Økonomisk oversikt',
-      meta: 'Frank Åsli.',
+      id: 'doc_konto_grete',
+      kind: 'KONTOUTSKRIFT',
+      title: 'KONTOUTSKRIFT',
+      register: 'formell',
+      peek: 'Kontoutskrift. Grete Olsen, januar.',
+      meta: 'NR. 2/99',
       body_bbcode:
-        'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall.\n\nInn: [url=fact:f_trygd]Trygden hans er 22 [icon=coin] i måneden[/url]. Men det er [url=fact:f_alt_via_grete]Grete som står som verge[/url] for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin].\n\n[url=fact:f_husleie]Husleien er 30 [icon=coin][/url]. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen.\n\nAlle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan \n\nJeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.\n\n[url=fact:f_gap]Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned[/url].',
+        'OLSEN GRETE\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.44892\nPERIODE: 01.01.99–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.01[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]6,40[/cell][cell]04.01[/cell][cell]PENSJON RTV[/cell][cell][/cell][cell]31,00[/cell][cell]37,40[/cell][cell]04.01[/cell][cell]OVERF. E. OLSEN 7024.31.55103[/cell][cell][/cell][cell]22,00[/cell][cell]59,40[/cell][cell]05.01[/cell][cell][url=fact:f_husleie]KONTANTUTTAK SKRANKE[/url][/cell][cell]30,00[/cell][cell][/cell][cell]29,40[/cell][cell]07.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,35[/cell][cell][/cell][cell]27,05[/cell][cell]11.01[/cell][cell]POSTGIRO — OSLO ENERGIVERK[/cell][cell]4,10[/cell][cell][/cell][cell]22,95[/cell][cell]12.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,60[/cell][cell][/cell][cell]20,35[/cell][cell]14.01[/cell][cell]SKILLEBEKK APOTEK[/cell][cell]0,85[/cell][cell][/cell][cell]19,50[/cell][cell]18.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,45[/cell][cell][/cell][cell]17,05[/cell][cell]21.01[/cell][cell]POSTGIRO — TELEVERKET[/cell][cell]1,20[/cell][cell][/cell][cell]15,85[/cell][cell]25.01[/cell][cell]MATSENTRALEN GABELS GT[/cell][cell]2,50[/cell][cell][/cell][cell]13,35[/cell][cell]28.01[/cell][cell]NARVESEN — UKEBLAD/AVIS[/cell][cell]0,45[/cell][cell][/cell][cell]12,90[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]12,90[/cell][/table]\n\nRENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS\nHENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
       runs: [
         {
           id: 'run_text_0',
-          text: 'Grete fant frem alt. Postgiroene ligger i en skoeske, ferdig utfylt, sortert på forfall. Inn: ',
-          fact_id: '',
-        },
-        {
-          id: 'run_trygd',
-          text: 'Trygden hans er 22 [icon=coin] i måneden',
-          fact_id: 'f_trygd',
-        },
-        {
-          id: 'run_text_1',
-          text: '. Men det er ',
-          fact_id: '',
-        },
-        {
-          id: 'run_alt_via_grete',
-          text: 'Grete som står som verge',
-          fact_id: 'f_alt_via_grete',
-        },
-        {
-          id: 'run_text_2',
-          text: ' for kontoen hans, så hun styrer regnskapet. Pensjonen hennes: 31 [icon=coin]. ',
+          text: 'OLSEN GRETE GABELS GATE 14 0272 OSLO KONTO: 7024.31.44892 PERIODE: 01.01.99–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT [icon=coin] INN SALDO 01.01 SALDO OVERFØRT 6,40 04.01 PENSJON RTV 31,00 37,40 04.01 OVERF. E. OLSEN 7024.31.55103 22,00 59,40 05.01 ',
           fact_id: '',
         },
         {
           id: 'run_husleie',
-          text: 'Husleien er 30 [icon=coin]',
+          text: 'KONTANTUTTAK SKRANKE',
           fact_id: 'f_husleie',
         },
         {
-          id: 'run_text_3',
-          text: '. Den betales kontant til huseieren, av Grete, den første. Strøm, mat og resten: omtrent 15 [icon=coin] til sammen. Alle betalinger går gjennom Grete. Alle avtaler står i hennes navn. Jeg spurte om Elling visste hvordan Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett. ',
-          fact_id: '',
-        },
-        {
-          id: 'run_gap',
-          text: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
-          fact_id: 'f_gap',
-        },
-        {
-          id: 'run_text_4',
-          text: '.',
+          id: 'run_text_1',
+          text: ' 30,00 29,40 07.01 MATSENTRALEN GABELS GT 2,35 27,05 11.01 POSTGIRO — OSLO ENERGIVERK 4,10 22,95 12.01 MATSENTRALEN GABELS GT 2,60 20,35 14.01 SKILLEBEKK APOTEK 0,85 19,50 18.01 MATSENTRALEN GABELS GT 2,45 17,05 21.01 POSTGIRO — TELEVERKET 1,20 15,85 25.01 MATSENTRALEN GABELS GT 2,50 13,35 28.01 NARVESEN — UKEBLAD/AVIS 0,45 12,90 31.01 SALDO 12,90 RENTESATS INNSKUDD 3,25 % P.A. · UTSKRIFTEN SENDES KVARTALSVIS HENVENDELSER RETTES TIL DERES FILIAL. TA MED LEGITIMASJON.',
           fact_id: '',
         },
       ],
     },
     {
-      id: 'doc_papirer',
-      kind: 'ØKONOMISK OVERSIKT',
-      title: 'Økonomisk oversikt',
-      register: 'notat',
-      peek: 'Skoesken sto der hun forlot den.',
-      meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
+      id: 'doc_konto_elling',
+      kind: 'KONTOUTSKRIFT',
+      title: 'KONTOUTSKRIFT',
+      register: 'formell',
+      peek: 'Årsutskrift. Elling Olsen.',
+      meta: 'NR. 1/99 — ÅRSUTSKRIFT',
       body_bbcode:
-        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\n[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.\n\n[url=fact:f_husleie]husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+        'OLSEN ELLING\nV/ OLSEN GRETE (VERGE)\nGABELS GATE 14\n0272 OSLO\n\nKONTO: 7024.31.55103\nPERIODE: 01.10.98–31.01.99\nUTSKR.DATO: 02.02.99\n\n[table=5][cell]DATO[/cell][cell]TEKST[/cell][cell]UT [icon=coin][/cell][cell]INN[/cell][cell]SALDO[/cell][cell]01.10[/cell][cell]SALDO OVERFØRT[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][cell]02.10[/cell][cell][url=fact:f_trygd]UFØRETRYGD RTV[/url][/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.10[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.11[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.11[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]02.12[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]02.12[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]04.01[/cell][cell]UFØRETRYGD RTV[/cell][cell][/cell][cell]22,00[/cell][cell]22,00[/cell][cell]04.01[/cell][cell]FAST OVERF. G. OLSEN (VERGE)[/cell][cell]22,00[/cell][cell][/cell][cell]0,00[/cell][cell]31.01[/cell][cell]SALDO[/cell][cell][/cell][cell][/cell][cell]0,00[/cell][/table]\n\nINGEN ANDRE BEVEGELSER I PERIODEN.\n[url=fact:f_alt_via_grete]KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.[/url]',
       runs: [
         {
           id: 'run_text_0',
-          text: 'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert. [trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt. ',
+          text: 'OLSEN ELLING V/ OLSEN GRETE (VERGE) GABELS GATE 14 0272 OSLO KONTO: 7024.31.55103 PERIODE: 01.10.98–31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT [icon=coin] INN SALDO 01.10 SALDO OVERFØRT 0,00 02.10 ',
           fact_id: '',
         },
         {
-          id: 'run_husleie',
-          text: 'husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.',
-          fact_id: 'f_husleie',
+          id: 'run_trygd',
+          text: 'UFØRETRYGD RTV',
+          fact_id: 'f_trygd',
         },
         {
           id: 'run_text_1',
-          text: ' ',
+          text: ' 22,00 22,00 02.10 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 02.11 UFØRETRYGD RTV 22,00 22,00 02.11 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 02.12 UFØRETRYGD RTV 22,00 22,00 02.12 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 04.01 UFØRETRYGD RTV 22,00 22,00 04.01 FAST OVERF. G. OLSEN (VERGE) 22,00 0,00 31.01 SALDO 0,00 INGEN ANDRE BEVEGELSER I PERIODEN. ',
           fact_id: '',
         },
         {
           id: 'run_alt_via_grete',
-          text: 'Alle avtaler står i Gretes navn.',
+          text: 'KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.',
           fact_id: 'f_alt_via_grete',
         },
+      ],
+    },
+    {
+      id: 'doc_strom',
+      kind: 'REGNING',
+      title: 'FAKTURA NR. 99-114 872',
+      register: 'formell',
+      peek: 'Strømregning. 2. gangs varsel.',
+      meta: 'FAKTURADATO 20.02.1999',
+      body_bbcode:
+        '2. GANGS VARSEL\nOLSEN GRETE\nGABELS GATE 14, LEIL. 3\n0272 OSLO\n\nKUNDENR. 442 108\nMÅLERNR. 08841-B\nANLEGG: GABELS GT 14/3\n\n[table=3][cell]SPESIFIKASJON[/cell][cell]MÅLT[/cell][cell]BELØP [icon=coin][/cell][cell]Kraftforbruk 01.12.98–31.01.99[/cell][cell]1 412 kWh[/cell][cell]2,90[/cell][cell]Nettleie og fastavgift[/cell][cell]—[/cell][cell]1,20[/cell][cell]Purregebyr[/cell][cell]—[/cell][cell]0,15[/cell][cell]Å BETALE[/cell][cell][/cell][cell]4,25[/cell][/table]\n\nVi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7.\n\nBETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO\nBETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO\nKONTO: 0540.08.11223 · KID: 99114872008\nFORFALL: 15.03.1999 · BELØP: 4,25',
+      runs: [
         {
-          id: 'run_text_2',
-          text: ' ',
+          id: 'run_text_0',
+          text: '2. GANGS VARSEL OLSEN GRETE GABELS GATE 14, LEIL. 3 0272 OSLO KUNDENR. 442 108 MÅLERNR. 08841-B ANLEGG: GABELS GT 14/3 SPESIFIKASJON MÅLT BELØP [icon=coin] Kraftforbruk 01.12.98–31.01.99 1 412 kWh 2,90 Nettleie og fastavgift — 1,20 Purregebyr — 0,15 Å BETALE 4,25 Vi kan ikke se å ha mottatt betaling for faktura 99-108 331 med forfall 15.02.1999. Ved fortsatt uteblitt betaling vil anlegget bli varslet for frakobling iht. leveringsvilkårene § 7. BETALT AV: OLSEN GRETE, GABELS GATE 14, 0272 OSLO BETALT TIL: OSLO ENERGIVERK, POSTBOKS 2 SENTRUM, 0101 OSLO KONTO: 0540.08.11223 · KID: 99114872008 FORFALL: 15.03.1999 · BELØP: 4,25',
+          fact_id: '',
+        },
+      ],
+    },
+    {
+      id: 'doc_kassalapp',
+      kind: 'KASSALAPP',
+      title: 'MATSENTRALEN',
+      register: 'formell',
+      peek: 'En kassalapp fra skoesken.',
+      meta: '07.01.99 · KASSE 2',
+      body_bbcode:
+        'MATSENTRALEN\nGABELS GATE 11 · OSLO\nTLF 22 43 xx xx\nORG NR 934 xxx xxx\n\n[table=2][cell]HELMELK 1L[/cell][cell]0,22[/cell][cell]KNEIPPBRØD[/cell][cell]0,28[/cell][cell]KAFFE FILTERM. 250G[/cell][cell]0,52[/cell][cell]POTETER 2KG[/cell][cell]0,30[/cell][cell]KJØTTDEIG 400G[/cell][cell]0,64[/cell][cell]GULROT PK[/cell][cell]0,18[/cell][cell]HUSHOLDNINGSSAFT[/cell][cell]0,21[/cell][/table]\n\n[table=2][cell]TOTALT [icon=coin][/cell][cell]2,35[/cell][cell][url=fact:f_ingen_matkjop]BANKKORT[/url][/cell][cell]2,35[/cell][/table]\n\n07.01.99  10:42  KASSE 2\nOPERATØR: 014\n\nTAKK FOR HANDELEN\nVELKOMMEN IGJEN',
+      runs: [
+        {
+          id: 'run_text_0',
+          text: 'MATSENTRALEN GABELS GATE 11 · OSLO TLF 22 43 xx xx ORG NR 934 xxx xxx HELMELK 1L 0,22 KNEIPPBRØD 0,28 KAFFE FILTERM. 250G 0,52 POTETER 2KG 0,30 KJØTTDEIG 400G 0,64 GULROT PK 0,18 HUSHOLDNINGSSAFT 0,21 TOTALT [icon=coin] 2,35 ',
           fact_id: '',
         },
         {
           id: 'run_ingen_matkjop',
-          text: 'Ikke ett kjøp i kvitteringene er hans.',
+          text: 'BANKKORT',
           fact_id: 'f_ingen_matkjop',
         },
         {
-          id: 'run_text_3',
-          text: ' ',
-          fact_id: '',
-        },
-        {
-          id: 'run_gap',
-          text: 'Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.',
-          fact_id: 'f_gap',
-        },
-        {
-          id: 'run_text_4',
-          text: ' Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+          id: 'run_text_1',
+          text: ' 2,35 07.01.99 10:42 KASSE 2 OPERATØR: 014 TAKK FOR HANDELEN VELKOMMEN IGJEN',
           fact_id: '',
         },
       ],
@@ -1615,13 +2404,24 @@ export const tinyOlsenGodotSource = {
       lift_effects: [],
     },
     {
+      id: 'f_husleie',
+      label: 'Husleie betales av Grete',
+      summary: 'Husleien er 30 [icon=coin] og betales av Grete.',
+      source_document_id: 'doc_konto_grete',
+      domain: 'Økonomi/bolig',
+      category: 'Økonomi',
+      quote: 'KONTANTUTTAK SKRANKE',
+      supports_questions: ['q_okonomi', 'q_bolig'],
+      lift_effects: [],
+    },
+    {
       id: 'f_trygd',
       label: 'Ellings uføretrygd',
       summary: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
-      source_document_id: 'doc_konto',
+      source_document_id: 'doc_konto_elling',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Trygden hans er 22 [icon=coin] i måneden',
+      quote: 'UFØRETRYGD RTV',
       supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
@@ -1629,45 +2429,35 @@ export const tinyOlsenGodotSource = {
       id: 'f_alt_via_grete',
       label: 'Grete er øknomisk verge',
       summary: 'Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.',
-      source_document_id: 'doc_konto',
+      source_document_id: 'doc_konto_elling',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
-      quote: 'Grete som står som verge',
+      quote: 'KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.',
       supports_questions: ['q_okonomi'],
-      lift_effects: [],
-    },
-    {
-      id: 'f_husleie',
-      label: 'Husleie betales av Grete',
-      summary: 'Husleien er 30 [icon=coin] og betales av Grete.',
-      source_document_id: 'doc_konto',
-      domain: 'Økonomi/bolig',
-      category: 'Økonomi',
-      quote: 'Husleien er 30 [icon=coin]',
-      supports_questions: ['q_okonomi', 'q_bolig'],
-      lift_effects: [],
-    },
-    {
-      id: 'f_gap',
-      label: '23 [icon=coin] mangler',
-      summary: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
-      source_document_id: 'doc_konto',
-      domain: 'Økonomi/bolig',
-      category: 'Økonomi',
-      quote: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
-      supports_questions: ['q_okonomi', 'q_bolig'],
       lift_effects: [],
     },
     {
       id: 'f_ingen_matkjop',
       label: 'Ingen egne matkjøp',
       summary: 'Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.',
-      source_document_id: 'doc_konto',
+      source_document_id: 'doc_kassalapp',
       domain: 'Hverdag/rutine',
       category: 'Økonomi',
-      quote: 'Ikke ett kjøp i kvitteringene er hans.',
+      quote: 'BANKKORT',
       supports_questions: ['q_grete_dor'],
       lift_effects: [],
+    },
+    {
+      id: 'f_gap',
+      label: '23 [icon=coin] mangler',
+      summary: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
+      source_document_id: '',
+      domain: 'Økonomi/bolig',
+      category: 'Økonomi',
+      quote: '',
+      supports_questions: ['q_okonomi', 'q_bolig'],
+      lift_effects: [],
+      derived_from: ['f_trygd', 'f_husleie'],
     },
     {
       id: 'f_leie_stoppet',
@@ -2756,7 +3546,7 @@ export const tinyOlsenGodotSource = {
       gate: {
         op: 'fact_lifted',
         args: {
-          fact_id: 'f_gap',
+          fact_id: 'f_grete_baerer',
         },
       },
       effects: [
@@ -2764,7 +3554,15 @@ export const tinyOlsenGodotSource = {
           op: 'queue_pending_document',
           args: {
             clock_id: 'ck_overfort',
-            document_id: 'pending_konto_overfort',
+            document_id: 'doc_konto_grete',
+            delay_days: 1,
+          },
+        },
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_overfort',
+            document_id: 'doc_konto_elling',
             delay_days: 1,
           },
         },
@@ -2947,6 +3745,29 @@ export const tinyOlsenGodotSource = {
           args: {
             clock_id: 'ck_grete',
             document_id: 'doc_huseier',
+            delay_days: 0,
+          },
+        },
+      ],
+    },
+    {
+      id: 'beat_grete_d7',
+      day: 7,
+      text: 'Posten kommer. En regning stilet til Grete. I skoesken: en kassalapp.',
+      effects: [
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_strom',
+            delay_days: 0,
+          },
+        },
+        {
+          op: 'queue_pending_document',
+          args: {
+            clock_id: 'ck_grete',
+            document_id: 'doc_kassalapp',
             delay_days: 0,
           },
         },

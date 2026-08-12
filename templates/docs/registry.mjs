@@ -8,7 +8,6 @@
 // so it has no template here.
 
 import * as bekymringsmelding from './kinds/bekymringsmelding.mjs';
-import * as okonomiskOversikt from './kinds/okonomisk-oversikt.mjs';
 import * as brev from './kinds/brev.mjs';
 import * as feltnotat from './kinds/feltnotat.mjs';
 import * as rapport from './kinds/rapport.mjs';
@@ -23,7 +22,6 @@ import * as kassalapp from './kinds/kassalapp.mjs';
 // KONTOUTSKRIFT, REGNING, KASSALAPP — the raw economy papers).
 export const AUTHORED_KINDS = Object.freeze([
   'BEKYMRINGSMELDING',
-  'ØKONOMISK OVERSIKT',
   'BREV',
   'FELTNOTAT',
   'RAPPORT',
@@ -39,7 +37,6 @@ export const STATIONERY_KINDS = Object.freeze(['DAGSRAPPORT']);
 
 const TEMPLATES = Object.freeze({
   BEKYMRINGSMELDING: bekymringsmelding,
-  'ØKONOMISK OVERSIKT': okonomiskOversikt,
   BREV: brev,
   FELTNOTAT: feltnotat,
   RAPPORT: rapport,
