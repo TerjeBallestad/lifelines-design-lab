@@ -187,7 +187,7 @@ export const tinyOlsenDocuments = {
         id: 'doc_papirer_p5',
         runs: [
           {
-            text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
+            text: 'Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.',
             factId: 'f_gap',
           },
         ],
@@ -610,7 +610,7 @@ export const tinyOlsenFacts = {
     id: 'f_trygd',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
+    text: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
     quote: 'Trygden hans er 22 [icon=coin] i måneden',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -626,7 +626,7 @@ export const tinyOlsenFacts = {
     id: 'f_husleie',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Husleien er 3 [icon=coin] og betales av Grete.',
+    text: 'Husleien er 30 [icon=coin] og betales av Grete.',
     quote: 'Husleien er 30 [icon=coin]',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -634,7 +634,7 @@ export const tinyOlsenFacts = {
     id: 'f_gap',
     domain: 'Økonomi/bolig',
     category: 'Økonomi',
-    text: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
+    text: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
     quote: 'Regnestykket går opp med henne. Uten henne mangler det 23 [icon=coin]. Hver måned',
     supports: ['q_okonomi', 'q_bolig'],
   },
@@ -860,10 +860,10 @@ export const tinyOlsenQuestions = {
       },
       {
         id: 'h_ok_gap',
-        label: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
+        label: 'Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.',
         needs: ['f_gap'],
         opens: ['t_bostotte', 't_huseier'],
-        note: 'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        note: 'Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       },
     ],
   },
@@ -1219,7 +1219,7 @@ export const tinyOlsenGodotSource = {
       peek: 'Skoesken sto der hun forlot den.',
       meta: 'PAPIRGJENNOMGANG · 4012 F. ÅSLI · ETTER DØDSFALLET · MED ELLING I ROMMET',
       body_bbcode:
-        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\n[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.\n\n[url=fact:f_husleie]husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
+        'Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall. Den øverste gjelder mars. Den er ikke levert.\n\n[trygden hans 22 [icon=coin] i måneden].(fact:f_trygd) Pensjonen hennes er opphørt.\n\n[url=fact:f_husleie]husleien — 30 [icon=coin]. Den ble betalt kontant til huseieren, av Grete, den første.[/url]\n\n[url=fact:f_alt_via_grete]Alle avtaler står i Gretes navn.[/url] [url=fact:f_ingen_matkjop]Ikke ett kjøp i kvitteringene er hans.[/url]\n\n[url=fact:f_gap]Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.[/url]\n\nElling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.',
       runs: [
         {
           id: 'run_text_0',
@@ -1258,7 +1258,7 @@ export const tinyOlsenGodotSource = {
         },
         {
           id: 'run_gap',
-          text: 'Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.',
+          text: 'Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.',
           fact_id: 'f_gap',
         },
         {
@@ -1574,7 +1574,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_trygd',
       label: 'Ellings uføretrygd',
-      summary: 'Ellings uføretrygd: 2 [icon=coin] i måneden.',
+      summary: 'Ellings uføretrygd: 22 [icon=coin] i måneden.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -1596,7 +1596,7 @@ export const tinyOlsenGodotSource = {
     {
       id: 'f_husleie',
       label: 'Husleie betales av Grete',
-      summary: 'Husleien er 3 [icon=coin] og betales av Grete.',
+      summary: 'Husleien er 30 [icon=coin] og betales av Grete.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -1606,8 +1606,8 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'f_gap',
-      label: '2 [icon=coin] mangler',
-      summary: 'Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.',
+      label: '23 [icon=coin] mangler',
+      summary: 'Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.',
       source_document_id: 'doc_konto',
       domain: 'Økonomi/bolig',
       category: 'Økonomi',
@@ -2245,9 +2245,9 @@ export const tinyOlsenGodotSource = {
     },
     {
       id: 'h_ok_gap',
-      title: 'Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.',
+      title: 'Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.',
       summary:
-        'Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
+        'Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.',
       question_id: 'q_okonomi',
       availability: {
         op: 'fact_lifted',

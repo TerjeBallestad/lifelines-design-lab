@@ -63,7 +63,7 @@ Jeg gikk gjennom kvitteringene. Jeg fant ikke ett kjøp som var hans. Ikke ett.
 ## f_trygd
 
 Label: Ellings uføretrygd
-Summary: Ellings uføretrygd: 2 [icon=coin] i måneden.
+Summary: Ellings uføretrygd: 22 [icon=coin] i måneden.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 
@@ -77,14 +77,14 @@ Supports: q_okonomi
 ## f_husleie
 
 Label: Husleie betales av Grete
-Summary: Husleien er 3 [icon=coin] og betales av Grete.
+Summary: Husleien er 30 [icon=coin] og betales av Grete.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 
 ## f_gap
 
-Label: 2 [icon=coin] mangler
-Summary: Uten Gretes pensjon mangler husholdet 2 [icon=coin] hver måned.
+Label: 23 [icon=coin] mangler
+Summary: Uten Gretes pensjon mangler husholdet 23 [icon=coin] hver måned.
 Domain: Økonomi/bolig · Category: Økonomi
 Supports: q_okonomi, q_bolig
 
@@ -110,7 +110,7 @@ Skoesken sto der hun forlot den. Postgiroene ferdig utfylt, sortert på forfall.
 
 [Alle avtaler står i Gretes navn.](fact:f_alt_via_grete) [Ikke ett kjøp i kvitteringene er hans.](fact:f_ingen_matkjop)
 
-[Regnestykket gikk opp — med henne. Nå mangler det 2 [icon=coin]. Hver måned.](fact:f_gap)
+[Regnestykket gikk opp — med henne. Nå mangler det 23 [icon=coin]. Hver måned.](fact:f_gap)
 
 Elling satt ved bordet mens jeg gikk gjennom esken. Han rettet på bunkene da jeg la dem fra meg. Han visste rekkefølgen.
 
@@ -447,8 +447,8 @@ Opens: t_forvaltning, d_konto
 
 # Hypothesis: h_ok_gap
 
-Title: Trygden dekker ikke boligen. 2 [icon=coin] mangler hver måned.
-Summary: Ellings trygd er 2 [icon=coin]. Boligen koster 3 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
+Title: Trygden dekker ikke boligen. 23 [icon=coin] mangler hver måned.
+Summary: Ellings trygd er 22 [icon=coin]. Boligen koster 30 [icon=coin]. Differansen bæres i dag av Gretes pensjon. Bortfall gir umiddelbar restanserisiko.
 Question: q_okonomi
 needs: f_gap
 Opens: t_bostotte, t_huseier, d_konto, c_frank_okonomi [type=conversation category=frank actor=frank risk=okonomi sim=case.olsen.opening.conversation.frank_okonomi]
