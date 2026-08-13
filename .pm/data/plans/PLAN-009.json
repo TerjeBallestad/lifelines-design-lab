@@ -145,8 +145,13 @@
         "TASK-043"
       ],
       "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Landed in commit ab2420e (håndbok family migration); status was left pending by the executing session — corrected during SB-072 close-out.",
+          "timestamp": "2026-08-13T08:50:38.372Z"
+        }
+      ]
     },
     {
       "id": "TASK-045",
@@ -201,5 +206,5 @@
     }
   ],
   "createdAt": "2026-08-12T15:59:12.479Z",
-  "updatedAt": "2026-08-12T18:10:37.530Z"
+  "updatedAt": "2026-08-13T08:50:38.373Z"
 }
