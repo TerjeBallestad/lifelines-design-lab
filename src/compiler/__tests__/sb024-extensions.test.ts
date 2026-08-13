@@ -102,7 +102,7 @@ Stage: 0
     Svarlinje.
     * * Oppfølging?
         Linje én.
-        Tanke: «VURDERING — det ER saken.»
+        Tanke: "VURDERING - det ER saken."
 `;
   const { slice, diagnostics } = compileCase(text);
 
@@ -111,7 +111,7 @@ Stage: 0
     expect(entry?.followups[0]).toEqual({
       label: 'Oppfølging?',
       lines: ['Linje én.'],
-      tanke: 'VURDERING — det ER saken.',
+      tanke: 'VURDERING - det ER saken.',
     });
     expect(diagnostics.filter((d) => d.severity === 'warning')).toEqual([
       expect.objectContaining({ code: 'stub-unresolved-id' }),

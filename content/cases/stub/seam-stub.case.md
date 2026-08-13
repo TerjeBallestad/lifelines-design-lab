@@ -1,6 +1,6 @@
 # Case: case_seam_stub
 
-Title: Stub — seam check
+Title: Stub - seam check
 Stage: 0
 Deadline: day 1
 

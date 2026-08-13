@@ -8,6 +8,7 @@
 import { DiagnosticBag, codes, span } from './diagnostics.ts';
 import type { Diagnostic } from './diagnostics.ts';
 import { parseCaseText, parseCharacterText } from './parse.ts';
+import { lintBannedTypography } from './lints.ts';
 import { emitCase } from './emit.ts';
 import type { CaseSlice, LabContent } from './emit.ts';
 import { emitCharacter } from './emit-character.ts';
@@ -27,6 +28,7 @@ export interface CompileCharacterResult {
 export function compileCase(text: string): CompileResult {
   const diag = new DiagnosticBag();
   try {
+    lintBannedTypography(text, diag);
     const parsed = parseCaseText(text, diag);
     const { slice, labContent } = emitCase(parsed, diag);
     return { slice, labContent, diagnostics: diag.items };
@@ -65,6 +67,7 @@ export function compileCase(text: string): CompileResult {
 export function compileCharacter(text: string): CompileCharacterResult {
   const diag = new DiagnosticBag();
   try {
+    lintBannedTypography(text, diag);
     const parsed = parseCharacterText(text, diag);
     const { content } = emitCharacter(parsed, diag);
     return { content, diagnostics: diag.items };

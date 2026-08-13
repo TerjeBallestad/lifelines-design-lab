@@ -439,25 +439,25 @@
   "frank_chat": {
     "c_post": {
       "id": "c_post",
-      "question": "Posten i gangen - likegyldighet?",
-      "answer": "Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det. Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.",
+      "question": "Posten, den lar han bare ligge.",
+      "answer": "Kan hende det. Jeg tror nok han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, jeg la merke til at han ble urolig av det. Så det er ikke likegyldighet. Det er noe som ligner mer på engstelighet.",
       "needs": [
         "f_post"
       ],
       "answer_lines": [
-        "Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.",
-        "Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar."
+        "Kan hende det. Jeg tror nok han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, jeg la merke til at han ble urolig av det.",
+        "Så det er ikke likegyldighet. Det er noe som ligner mer på engstelighet."
       ],
       "followups": [
         {
-          "label": "Frykt for hva, helt konkret?",
+          "label": "Engstelighet for hva?",
           "lines": [
-            "For hva svaret koster. Hvert brev er en beskjed om at noen venter på noe han ikke får til.",
-            "Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen."
+            "Hvert brev er en beskjed om at noen venter på noe han ikke får til.",
+            "Jeg tror ikke det har vært hans oppgave å åpne posten."
           ]
         },
         {
-          "label": "Hva gjør vi med bunken?",
+          "label": "Er det noe vi må håndtere?",
           "lines": [
             "Ikke ta den fra ham. Da tar du det siste han har kontroll på.",
             "Åpne ett brev. Sammen. Det ufarligste først - strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer."

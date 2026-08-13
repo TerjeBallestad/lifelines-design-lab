@@ -39,13 +39,13 @@ du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 const FRANK_CHAT = `${HEADER}
 # Conversation: chat:frank
 
-* f_post: Posten i gangen - likegyldighet?
-    Nei. Han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, og han ble urolig av det.
-    Det er ikke likegyldighet. Det er noe som ligner mer på frykt for hva papiret krever av svar.
-    * * Frykt for hva, helt konkret?
-        For hva svaret koster. Hvert brev er en beskjed om at noen venter på noe han ikke får til.
-        Jeg tror han sluttet å åpne den dagen han sluttet å kunne svare. De to tingene henger sammen.
-    * * Hva gjør vi med bunken?
+* f_post: Posten, den lar han bare ligge.
+    Kan hende det. Jeg tror nok han vet nøyaktig hva som ligger der. Han la merke til at jeg så på bunken, jeg la merke til at han ble urolig av det.
+    Så det er ikke likegyldighet. Det er noe som ligner mer på engstelighet.
+    * * Engstelighet for hva?
+        Hvert brev er en beskjed om at noen venter på noe han ikke får til.
+        Jeg tror ikke det har vært hans oppgave å åpne posten.
+    * * Er det noe vi må håndtere?
         Ikke ta den fra ham. Da tar du det siste han har kontroll på.
         Åpne ett brev. Sammen. Det ufarligste først - strømregningen, ikke sosialkontoret. La ham se at et åpnet brev ikke eksploderer.
 

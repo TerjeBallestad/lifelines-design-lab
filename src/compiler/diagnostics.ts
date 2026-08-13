@@ -123,6 +123,12 @@ export const codes = {
   LINT_GATE_UNDELIVERABLE_FACT: 'lint-gate-undeliverable-fact',
   LINT_QUIET_DAY: 'lint-quiet-day',
   LINT_CLOCK_NEVER_VISIBLE: 'lint-clock-never-visible',
+  /**
+   * Banned typography in authored content: em dash (—), guillemets (« »),
+   * and the middle dot (·). The project writes "-" and straight quotes
+   * instead; the composite-field separator ` · Key:` is grammar and exempt.
+   */
+  LINT_BANNED_TYPOGRAPHY: 'lint-banned-typography',
 } as const;
 
 export type DiagnosticCode = (typeof codes)[keyof typeof codes];
