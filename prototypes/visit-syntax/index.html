@@ -86,7 +86,7 @@
       }
       #cheat {
         padding: 8px 12px;
-        border-bottom: 1px solid var(--line);
+        border-top: 1px solid var(--line);
         font-family: var(--mono);
         font-size: 11px;
         line-height: 1.7;
@@ -512,24 +512,28 @@
         padding: 8px 18px 9px;
         font-family: var(--mono);
         font-size: 11.5px;
-        display: flex;
-        gap: 18px;
-        align-items: flex-start;
       }
-      .d-main {
+      .pv-row {
+        display: flex;
+        gap: 14px;
+        align-items: stretch;
+      }
+      .pv-row #map {
         flex: 1;
         min-width: 0;
       }
       /* Mock of the planning screen (game UI, engine-side SDD territory):
          where Title/Blurb and the goals' plan: lines land for the player. */
       #plan-mock {
-        flex: 0 0 260px;
+        flex: 0 0 250px;
         background: var(--panel-2);
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 8px 12px 9px;
         font-family: var(--sans);
         font-size: 11.5px;
+        overflow-y: auto;
+        max-height: 340px;
       }
       .pm-kind {
         font-family: var(--mono);
@@ -621,19 +625,19 @@
         line-height: 1.9;
         color: var(--ink-dim);
       }
-      #director .g-ok {
+      .g-ok {
         color: var(--ok);
       }
-      #director .g-den {
+      .g-den {
         color: var(--fail);
       }
-      #director .g-end {
+      .g-end {
         color: var(--end);
       }
-      #director .g-skip {
+      .g-skip {
         color: var(--ink-faint);
       }
-      #director .g-arr {
+      .g-arr {
         color: var(--ink-faint);
       }
       /* ---- reference drawer ---- */
@@ -687,14 +691,16 @@
     </header>
     <main>
       <div id="editor-pane">
+        <textarea id="src" spellcheck="false"></textarea>
+        <div id="ac"></div>
+        <div id="errors"></div>
         <div id="cheat">
           <span class="kw">## Goal: name</span> opens a goal - its stages are one scene ·
           <span class="kw">plan:</span> the line on Frank's plan screen ·
           <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
-          denial, comma list (<span class="kw">? item</span> per line also parses) ·
+          denial, comma list ·
           <span class="kw">cost: 8</span> minutes, omit = derived from the scene (~) ·
-          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks
-          (<span class="kw">+ item</span> also parses)<br />
+          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks<br />
           <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
           <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
           stage, unnamed characters continue) &nbsp;·&nbsp; a fail inside a goal
@@ -712,16 +718,16 @@
           timeout is always on):
           <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
         </div>
-        <textarea id="src" spellcheck="false"></textarea>
-        <div id="ac"></div>
-        <div id="errors"></div>
       </div>
       <div id="board-pane">
         <div id="preview">
-          <div id="map">
-            <svg id="convo-svg"></svg>
-            <div id="tokens"></div>
-            <div id="bubbles"></div>
+          <div class="pv-row">
+            <div id="plan-mock"></div>
+            <div id="map">
+              <svg id="convo-svg"></svg>
+              <div id="tokens"></div>
+              <div id="bubbles"></div>
+            </div>
           </div>
           <div id="pv-controls">
             <button id="pv-prev">&#8676; Prev</button>
@@ -732,11 +738,8 @@
           </div>
         </div>
         <div id="director">
-          <div id="plan-mock"></div>
-          <div class="d-main">
-            <div class="d-row" id="d-controls"></div>
-            <div class="d-run" id="d-run"></div>
-          </div>
+          <div class="d-row" id="d-controls"></div>
+          <div class="d-run" id="d-run"></div>
         </div>
         <div id="board"></div>
       </div>
