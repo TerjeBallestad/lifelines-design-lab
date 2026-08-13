@@ -191,6 +191,7 @@
         border-radius: 6px;
         margin-bottom: 4px;
         overflow: hidden;
+        cursor: pointer;
       }
       .stage.calloff {
         border-color: #4a2f28;
@@ -349,6 +350,7 @@
       }
       .prop {
         position: absolute;
+        transform: translate(-50%, -50%);
         border: 1px solid var(--line);
         background: var(--panel-2);
         border-radius: 6px;
@@ -449,9 +451,6 @@
         border-color: var(--ink-dim);
         box-shadow: 0 0 0 1px var(--ink-dim);
       }
-      .stage {
-        cursor: pointer;
-      }
       /* ---- reference drawer ---- */
       #ref {
         border-top: 1px solid var(--line);
@@ -466,7 +465,6 @@
       #ref .cols {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0;
       }
       #ref .col {
         padding: 10px 14px;
@@ -528,29 +526,6 @@
         <div id="preview">
           <div id="map">
             <svg id="convo-svg"></svg>
-            <div class="room" style="left: 2%; top: 2%; width: 44%; height: 30%">
-              <div class="rlabel">kitchen</div>
-            </div>
-            <div class="room" style="left: 48%; top: 2%; width: 50%; height: 34%">
-              <div class="rlabel">grete_room</div>
-            </div>
-            <div class="room" style="left: 2%; top: 34%; width: 42%; height: 52%">
-              <div class="rlabel">living_room</div>
-            </div>
-            <div class="room" style="left: 48%; top: 38%; width: 26%; height: 30%">
-              <div class="rlabel">bathroom</div>
-            </div>
-            <div class="room" style="left: 76%; top: 38%; width: 22%; height: 40%">
-              <div class="rlabel">elling_room</div>
-            </div>
-            <div class="room" style="left: 46%; top: 70%; width: 24%; height: 18%">
-              <div class="rlabel">entrance</div>
-            </div>
-            <div class="room" style="left: 36%; top: 90%; width: 44%; height: 9%">
-              <div class="rlabel">hallway</div>
-            </div>
-            <div class="prop" style="left: 5%; top: 56%">sofa</div>
-            <div class="prop" style="left: 53%; top: 86%">door</div>
             <div id="tokens"></div>
             <div id="bubbles"></div>
           </div>
@@ -568,11 +543,11 @@
     <div id="ref">
       <div class="cols">
         <div class="col">
-          <h2>Current markup (serial queue) - oppdrag_alene</h2>
+          <h2>Current markup (serial queue) - oppdrag_alene, verbatim from tiny-olsen.case.md</h2>
           <pre id="ref-old"></pre>
         </div>
         <div class="col">
-          <h2>Hardcoded arrival spine (social_visit_director.gd)</h2>
+          <h2>Hardcoded arrival spine (social_visit_director.gd, snapshot 2026-08-13)</h2>
           <pre id="ref-spine"></pre>
         </div>
       </div>
@@ -667,13 +642,16 @@
 
       Title: Klarer han seg alene?
       Blurb: Se på Elling. Hva klarer han, hva klarer han ikke.
+      Offer: Godt spørsmål. Vil du at jeg skal se på hva han faktisk klarer, ved neste besøk?
+      Unlocks: q_evner
+      Stub: yes
 
       - ! grete: blir i stua @ living_room [id=opp_a_hold duration=18 no_wait]
       - ? elling @ living_room [id=opp_a6 beat=a6 duration=8]
       - frank: "Er det Nansen du leser om?" [id=opp_a2 beat=a2 dwell=4]
-      - elling: "Nansen lot Fram fryse fast i isen. 1893." [id=opp_a3 beat=a3 dwell=4]
+      - elling: "Nansen lot Fram fryse fast i isen. 1893. Det var planen hele tiden." [id=opp_a3 beat=a3 dwell=4]
       - frank: "Liker du å bo her, Elling?" [id=opp_a4 beat=a4 dwell=4]
-      - grete: "Han har det fint her." [id=opp_a5 beat=a5 dwell=4]
+      - grete: "Han har det fint her. Han har alt han trenger." [id=opp_a5 beat=a5 dwell=4]
     </script>
 
     <script type="text/plain" id="spine-steps">
@@ -701,8 +679,8 @@
 
     <script>
       const ROLES = ['frank', 'grete', 'elling'];
-      const DUTIES = ['goto', 'stay', 'say', 'converse', 'do', 'free'];
       // Snake-cased from core-loop ActivityIds (activity_ids.gd) + leave.
+      // Hand-typed snapshot 2026-08-13; re-sync when the catalog changes.
       const KNOWN_ACTIVITIES = [
         'answer_the_phone',
         'answer_door',
@@ -751,8 +729,24 @@
         'write_poetry',
         'leave',
       ];
-      const END_KINDS = ['arrived', 'roles-arrived', 'duration', 'event'];
-      const FAIL_KINDS = ['timeout', 'unreachable', 'role-lost'];
+      const KNOWN_ACTIVITY_SET = new Set(KNOWN_ACTIVITIES);
+      // One row per duty word: which arg it takes, what a missing arg is called
+      // in errors, whether trailing text is a spoken line, which catalog checks
+      // the arg, and the label when the duty ends the stage by itself.
+      const VERB_SPEC = {
+        goto: { arg: 'target', required: 'a room or character' },
+        stay: { arg: 'target' },
+        do: { arg: 'activity', required: 'an activity', catalog: KNOWN_ACTIVITY_SET },
+        say: { text: true, required: 'a line', selfTerm: 'line read' },
+        converse: {
+          arg: 'partner',
+          required: 'a partner',
+          text: true,
+          selfTerm: 'conversation ends',
+        },
+        free: {},
+      };
+      const DUTIES = Object.keys(VERB_SPEC);
       const LS_KEY = 'visit-syntax-probe-v1';
 
       const $ = (id) => document.getElementById(id);
@@ -818,13 +812,13 @@
             s.auto = true;
           }
           if (s.ends.length === 0) {
-            const selfTerm = Object.values(s.duties).some(
-              (d) => d.verb === 'say' || d.verb === 'converse',
-            );
-            if (selfTerm) {
-              s.autoEnd = Object.values(s.duties).some((d) => d.verb === 'converse')
-                ? 'conversation ends'
-                : 'line read';
+            // converse outlasts say, so its label wins when both are present
+            const duties = Object.values(s.duties);
+            const term =
+              duties.find((d) => d.verb === 'converse') ||
+              duties.find((d) => VERB_SPEC[d.verb].selfTerm);
+            if (term) {
+              s.autoEnd = VERB_SPEC[term.verb].selfTerm;
             } else {
               errors.push({
                 line: s.line,
@@ -834,7 +828,44 @@
             }
           }
         });
+        resolveDuties(stages);
         return { meta, stages, errors };
+      }
+
+      // Sticky-duty semantics in one pass: explicit duties carry into later
+      // stages, converse pulls the partner in, free releases, the call-off
+      // section starts with a clean slate. Everything downstream (storyboard,
+      // map, simulate) reads s.resolved instead of re-deriving this.
+      function resolveDuties(stages) {
+        const carried = {};
+        let lastSection = null;
+        stages.forEach((s) => {
+          if (s.section !== lastSection) {
+            lastSection = s.section;
+            Object.keys(carried).forEach((k) => delete carried[k]);
+          }
+          s.resolved = {};
+          ROLES.forEach((r) => {
+            const d = s.duties[r];
+            const conv = ROLES.find(
+              (o) => o !== r && s.duties[o]?.verb === 'converse' && s.duties[o]?.partner === r,
+            );
+            if (d && d.verb === 'free') {
+              delete carried[r];
+              s.resolved[r] = { d: null, mode: 'released' };
+            } else if (d) {
+              carried[r] = d;
+              s.resolved[r] = { d, mode: 'explicit' };
+            } else if (conv) {
+              carried[r] = { verb: 'converse', partner: conv, params: {} };
+              s.resolved[r] = { d: carried[r], mode: 'partner' };
+            } else if (carried[r]) {
+              s.resolved[r] = { d: carried[r], mode: 'carried' };
+            } else {
+              s.resolved[r] = { d: null, mode: 'free' };
+            }
+          });
+        });
       }
 
       function parseEnd(rest, n, errors) {
@@ -860,7 +891,6 @@
 
       function parseFail(rest, n, errors) {
         const [kind, ...args] = rest.split(/\s+/);
-        const grace = (args.join(' ').match(/grace=(\d+)/) || [])[1];
         if (kind === 'timeout') {
           if (!args[0] || isNaN(+args[0])) {
             errors.push({ line: n, msg: 'timeout needs a number of minutes' });
@@ -868,6 +898,7 @@
           }
           return { kind: 'timeout', min: +args[0] };
         }
+        const grace = (args.join(' ').match(/grace=(\d+)/) || [])[1];
         if (kind === 'unreachable') return { kind: 'unreachable', grace };
         if (kind === 'role-lost') {
           const role = args.find((a) => ROLES.includes(a));
@@ -907,7 +938,7 @@
         if (!DUTIES.includes(verb)) {
           errors.push({
             line: n,
-            msg: `unknown duty "${verb || '(none)'}" (goto|stay|say|converse|do|free)`,
+            msg: `unknown duty "${verb || '(none)'}" (${DUTIES.join('|')})`,
           });
           return;
         }
@@ -920,48 +951,46 @@
         }
         const unquote = (t) =>
           t.length > 1 && t.startsWith('"') && t.endsWith('"') ? t.slice(1, -1) : t;
+        const spec = VERB_SPEC[verb];
         const duty = { verb, params };
-        if (verb === 'goto' || verb === 'stay') {
-          duty.target = text.split(/\s+/)[0] || null;
-          if (verb === 'goto' && !duty.target)
-            errors.push({
-              line: n,
-              msg: `goto needs a room or character (stage "${stage.name}")`,
-            });
-        } else if (verb === 'do') {
-          duty.activity = text.split(/\s+/)[0] || null;
-          if (!duty.activity)
-            errors.push({ line: n, msg: `do needs an activity (stage "${stage.name}")` });
-        } else if (verb === 'say') {
-          if (!text) {
-            errors.push({ line: n, msg: `say needs a line (stage "${stage.name}")` });
-          } else {
-            duty.line = unquote(text);
-          }
-        } else if (verb === 'converse') {
-          const partner = text.split(/\s+/)[0] || null;
-          duty.partner = partner;
-          if (!partner) {
-            errors.push({ line: n, msg: `converse needs a partner (stage "${stage.name}")` });
-          } else {
-            const lineText = text.slice(partner.length).trim();
-            if (lineText) duty.line = unquote(lineText);
-          }
+        if (spec.arg) {
+          const arg = text.split(/\s+/)[0] || null;
+          duty[spec.arg] = arg;
+          if (arg) text = text.slice(arg.length).trim();
         }
+        if (spec.text && text) duty.line = unquote(text);
+        const missing = spec.arg ? !duty[spec.arg] : spec.text && !text;
+        if (spec.required && missing)
+          errors.push({ line: n, msg: `${verb} needs ${spec.required} (stage "${stage.name}")` });
         stage.duties[role] = duty;
       }
 
       function dutyText(d) {
+        const spec = VERB_SPEC[d.verb];
         let s = `<span class="dw">${d.verb}</span>`;
-        if (d.target) s += ' ' + esc(d.target);
-        if (d.partner) s += ' ' + esc(d.partner);
-        if (d.activity) {
-          s += ' ' + esc(d.activity);
-          if (!KNOWN_ACTIVITIES.includes(d.activity)) s += ' <span class="stub">stub</span>';
+        const arg = spec.arg && d[spec.arg];
+        if (arg) {
+          s += ' ' + esc(arg);
+          if (spec.catalog && !spec.catalog.has(arg)) s += ' <span class="stub">stub</span>';
         }
         for (const [k, v] of Object.entries(d.params)) s += ` ${esc(k)}=${esc(v)}`;
         if (d.line !== undefined) s += `<span class="quote">"${esc(d.line)}"</span>`;
         return s;
+      }
+
+      // One lane body per resolution mode.
+      const LANE_HTML = {
+        released: () => '<span class="dw">free</span> (own AI)',
+        free: () => 'free (own AI)',
+        partner: (res) => `<span class="dw">converse</span> ${esc(res.d.partner)} (partner)`,
+        explicit: (res) => dutyText(res.d),
+        carried: (res) => dutyText(res.d),
+      };
+      const LANE_CLASS = { released: ' idle', free: ' idle', carried: ' carried' };
+
+      function endLabel(s) {
+        if (s.ends.length) return s.ends.map(endText).join(' OR ');
+        return s.autoEnd ? `auto: ${s.autoEnd}` : '(never ends)';
       }
 
       function endText(t) {
@@ -982,20 +1011,25 @@
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
 
-      let model = { stages: [], errors: [], meta: {} };
+      const model = { stages: [] };
       let sel = 0;
       let playing = null;
 
+      let saveTimer = null;
+      function scheduleSave(text) {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => localStorage.setItem(LS_KEY, text), 300);
+      }
+
       function render() {
         const text = $('src').value;
-        localStorage.setItem(LS_KEY, text);
+        scheduleSave(text);
         const { meta, stages, errors } = parse(text);
-        model = { meta, stages, errors };
+        model.stages = stages;
         const board = $('board');
         let html = '';
         if (meta.visit)
           html += `<div class="visit-title">${esc(meta.visit)}${meta.title ? ' - ' + esc(meta.title) : ''}</div>`;
-        const carried = {};
         let lastSection = null;
         stages.forEach((s, idx) => {
           if (s.section !== lastSection) {
@@ -1004,45 +1038,17 @@
               s.section === 'calloff'
                 ? '<div class="section-label calloff">Call-off (every fail trigger routes here)</div>'
                 : '<div class="section-label">Stages</div>';
-            Object.keys(carried).forEach((k) => delete carried[k]);
           } else if (idx > 0) {
             html += '<div class="arrow">&darr;</div>';
           }
           const hasErr = errors.some((e) => e.stage === s);
           html += `<div class="stage ${s.section === 'calloff' ? 'calloff' : ''} ${hasErr ? 'has-error' : ''}" data-idx="${idx}">`;
           html += `<div class="stage-head"><span class="idx">${idx + 1}</span><span class="name">${s.auto ? '==' : '== ' + esc(s.name)}</span>`;
-          const endLabel = s.ends.length
-            ? s.ends.map(endText).join(' OR ')
-            : s.autoEnd
-              ? `auto: ${s.autoEnd}`
-              : '(never ends)';
-          html += `<span class="endt ${s.ends.length ? '' : 'auto'}">${endLabel}</span></div>`;
+          html += `<span class="endt ${s.ends.length ? '' : 'auto'}">${endLabel(s)}</span></div>`;
           html += '<div class="lanes">';
-          s.resolved = {};
           ROLES.forEach((r) => {
-            const d = s.duties[r];
-            const conv = ROLES.find(
-              (o) => o !== r && s.duties[o]?.verb === 'converse' && s.duties[o]?.partner === r,
-            );
-            if (d && d.verb === 'free') {
-              delete carried[r];
-              s.resolved[r] = { d: null, mode: 'free' };
-              html += `<div class="lane ${r} idle"><div class="who">${r}</div><div class="duty"><span class="dw">free</span> (own AI)</div></div>`;
-            } else if (d) {
-              carried[r] = d;
-              s.resolved[r] = { d, mode: 'explicit' };
-              html += `<div class="lane ${r}"><div class="who">${r}</div><div class="duty">${dutyText(d)}</div></div>`;
-            } else if (conv) {
-              carried[r] = { verb: 'converse', partner: conv, params: {} };
-              s.resolved[r] = { d: carried[r], mode: 'partner' };
-              html += `<div class="lane ${r}"><div class="who">${r}</div><div class="duty"><span class="dw">converse</span> ${conv} (partner)</div></div>`;
-            } else if (carried[r]) {
-              s.resolved[r] = { d: carried[r], mode: 'carried' };
-              html += `<div class="lane ${r} carried"><div class="who">${r}</div><div class="duty">${dutyText(carried[r])}</div></div>`;
-            } else {
-              s.resolved[r] = { d: null, mode: 'free' };
-              html += `<div class="lane ${r} idle"><div class="who">${r}</div><div class="duty">free (own AI)</div></div>`;
-            }
+            const res = s.resolved[r];
+            html += `<div class="lane ${r}${LANE_CLASS[res.mode] || ''}"><div class="who">${r}</div><div class="duty">${LANE_HTML[res.mode](res)}</div></div>`;
           });
           html += '</div>';
           const fails = s.fails.map((f) => `<span class="failt">&#9888; ${failText(f)}</span>`);
@@ -1061,18 +1067,62 @@
       }
 
       /* ---- choreography preview ---- */
-      const ROOM_XY = {
-        kitchen: { x: 22, y: 16 },
-        grete_room: { x: 72, y: 17 },
-        living_room: { x: 21, y: 60 },
-        bathroom: { x: 60, y: 52 },
-        elling_room: { x: 86, y: 57 },
-        entrance: { x: 57, y: 78 },
-        hallway: { x: 57, y: 94 },
-        outside: { x: 57, y: 94 },
+      // Single source for the floorplan: these rects render the room divs, and
+      // the walk anchors are derived as rect centers. Props are seat/landmark
+      // points; any seat= value that names a prop places the token there.
+      const ROOMS = {
+        kitchen: { x: 2, y: 2, w: 44, h: 30 },
+        grete_room: { x: 48, y: 2, w: 50, h: 34 },
+        living_room: { x: 2, y: 34, w: 42, h: 52 },
+        bathroom: { x: 48, y: 38, w: 26, h: 30 },
+        elling_room: { x: 76, y: 38, w: 22, h: 40 },
+        entrance: { x: 46, y: 70, w: 24, h: 18 },
+        hallway: { x: 36, y: 90, w: 44, h: 9 },
       };
+      const PROPS = { sofa: { x: 12, y: 60 }, door: { x: 60, y: 88 } };
+      const ROOM_XY = Object.fromEntries(
+        Object.entries(ROOMS).map(([k, r]) => [k, { x: r.x + r.w / 2, y: r.y + r.h / 2 }]),
+      );
       const SLOT = { frank: { x: -6, y: 6 }, grete: { x: 0, y: -6 }, elling: { x: 7, y: 5 } };
-      const SOFA = { x: 12, y: 60 };
+      // Preview-only room implications for do activities. The eventual home for
+      // this is a room/anchor column in the core-loop activity catalog export.
+      const ACTIVITY_ROOM = {
+        answer_door: 'entrance',
+        make_tea: 'kitchen',
+        leave: 'hallway',
+        exit: 'hallway',
+      };
+
+      $('map').insertAdjacentHTML(
+        'afterbegin',
+        Object.entries(ROOMS)
+          .map(
+            ([name, r]) =>
+              `<div class="room" style="left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%"><div class="rlabel">${name}</div></div>`,
+          )
+          .join('') +
+          Object.entries(PROPS)
+            .map(([name, p]) => `<div class="prop" style="left:${p.x}%;top:${p.y}%">${name}</div>`)
+            .join(''),
+      );
+
+      // Tokens and bubbles are created once and patched per stage, so the CSS
+      // left/top transitions actually animate the choreography.
+      const tokenEls = {};
+      const bubbleEls = {};
+      ROLES.forEach((r) => {
+        const t = document.createElement('div');
+        t.className = `token ${r}`;
+        t.innerHTML = `${r}<div class="tduty"></div>`;
+        t.style.display = 'none';
+        $('tokens').appendChild(t);
+        tokenEls[r] = t;
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        b.style.display = 'none';
+        $('bubbles').appendChild(b);
+        bubbleEls[r] = b;
+      });
 
       function simulate(stages, upto) {
         const pos = {
@@ -1083,7 +1133,7 @@
         for (let i = 0; i <= upto && i < stages.length; i++) {
           const s = stages[i];
           ROLES.forEach((r) => {
-            const d = s.duties[r];
+            const d = s.resolved[r].d;
             if (!d) return;
             if (d.verb === 'goto' && d.target) {
               const t = d.target.startsWith('@') ? d.target.slice(1) : d.target;
@@ -1097,10 +1147,8 @@
               if (d.target) pos[r] = { ...pos[r], room: d.target };
               if (d.params.seat) pos[r] = { ...pos[r], seat: d.params.seat };
             }
-            if (d.verb === 'do' && d.activity === 'answer_door') pos[r] = { room: 'entrance' };
-            if (d.verb === 'do' && d.activity === 'make_tea') pos[r] = { room: 'kitchen' };
-            if (d.verb === 'do' && (d.activity === 'leave' || d.activity === 'exit'))
-              pos[r] = { room: 'hallway' };
+            if (d.verb === 'do' && ACTIVITY_ROOM[d.activity])
+              pos[r] = { room: ACTIVITY_ROOM[d.activity] };
           });
         }
         return pos;
@@ -1110,8 +1158,10 @@
         const stages = model.stages;
         const svg = $('convo-svg');
         if (!stages.length) {
-          $('tokens').innerHTML = '';
-          $('bubbles').innerHTML = '';
+          ROLES.forEach((r) => {
+            tokenEls[r].style.display = 'none';
+            bubbleEls[r].style.display = 'none';
+          });
           svg.innerHTML = '';
           $('pv-stage').textContent = 'no stages';
           $('pv-end').textContent = '';
@@ -1123,8 +1173,9 @@
         const pts = {};
         ROLES.forEach((r) => {
           const p = pos[r];
-          if (p.seat === 'sofa') {
-            pts[r] = { x: SOFA.x + SLOT[r].x * 0.5, y: SOFA.y + SLOT[r].y * 0.5 };
+          if (p.seat && PROPS[p.seat]) {
+            const prop = PROPS[p.seat];
+            pts[r] = { x: prop.x + SLOT[r].x * 0.5, y: prop.y + SLOT[r].y * 0.5 };
             return;
           }
           const base = ROOM_XY[p.room] || ROOM_XY.living_room;
@@ -1134,25 +1185,32 @@
           const p = pos[r];
           if (p.near && pts[p.near]) pts[r] = { x: pts[p.near].x - 9, y: pts[p.near].y - 3 };
         });
-        let th = '';
         ROLES.forEach((r) => {
-          const res = s.resolved?.[r];
+          const res = s.resolved[r];
           let label = 'free';
-          if (res && res.d) {
+          if (res.d) {
             label = res.d.verb + (res.d.activity ? ' ' + res.d.activity : '');
-            if (res.d.activity && !KNOWN_ACTIVITIES.includes(res.d.activity)) label += ' (stub)';
+            if (res.d.activity && !KNOWN_ACTIVITY_SET.has(res.d.activity)) label += ' (stub)';
             if (res.mode === 'carried') label += ' ..';
           }
-          th += `<div class="token ${r}" style="left:${pts[r].x}%;top:${pts[r].y}%">${r}<div class="tduty">${esc(label)}</div></div>`;
+          const t = tokenEls[r];
+          t.style.display = '';
+          t.style.left = pts[r].x + '%';
+          t.style.top = pts[r].y + '%';
+          t.querySelector('.tduty').textContent = label;
         });
-        $('tokens').innerHTML = th;
-        let bh = '';
         ROLES.forEach((r) => {
           const d = s.duties[r];
-          if (d && d.line !== undefined && (d.verb === 'say' || d.verb === 'converse'))
-            bh += `<div class="bubble" style="left:${pts[r].x}%;top:${pts[r].y}%">"${esc(d.line)}"</div>`;
+          const b = bubbleEls[r];
+          if (d && d.line !== undefined && VERB_SPEC[d.verb].text) {
+            b.style.display = '';
+            b.style.left = pts[r].x + '%';
+            b.style.top = pts[r].y + '%';
+            b.textContent = `"${d.line}"`;
+          } else {
+            b.style.display = 'none';
+          }
         });
-        $('bubbles').innerHTML = bh;
         let lines = '';
         ROLES.forEach((r) => {
           const d = s.duties[r];
@@ -1162,11 +1220,7 @@
         svg.innerHTML = lines;
         $('pv-stage').textContent =
           `stage ${sel + 1}/${stages.length}${s.auto ? '' : ' == ' + s.name}${s.section === 'calloff' ? ' (call-off)' : ''}`;
-        $('pv-end').textContent = s.ends.length
-          ? s.ends.map(endText).join(' OR ')
-          : s.autoEnd
-            ? `auto: ${s.autoEnd}`
-            : '(never ends)';
+        $('pv-end').textContent = endLabel(s);
         document
           .querySelectorAll('.stage')
           .forEach((el) => el.classList.toggle('sel', +el.dataset.idx === sel));
@@ -1214,7 +1268,10 @@
       });
 
       $('src').value = localStorage.getItem(LS_KEY) || seed;
-      $('src').addEventListener('input', render);
+      $('src').addEventListener('input', () => {
+        render();
+        acCheck();
+      });
       $('btn-reset').addEventListener('click', () => {
         if (confirm('Discard your rewrite and restore the seed markup?')) {
           $('src').value = seed;
@@ -1227,29 +1284,32 @@
         setTimeout(() => ($('btn-copy').textContent = 'Copy markup'), 1200);
       });
       $('btn-ref').addEventListener('click', () => $('ref').classList.toggle('open'));
-      /* ---- activity picker (after "do ") ---- */
+      /* ---- activity picker (after the catalog-backed verb, "do ") ---- */
+      const AC_VERB = DUTIES.find((v) => VERB_SPEC[v].catalog);
+      const AC_RE = new RegExp(`-\\s*\\w+:\\s*${AC_VERB}\\s+([a-z0-9_]*)$`, 'i');
       const AC = $('ac');
       let acItems = [];
       let acOn = -1;
       let acStart = 0;
       const mirror = document.createElement('div');
+      const taStyle = getComputedStyle($('src'));
+      for (const k of [
+        'fontFamily',
+        'fontSize',
+        'lineHeight',
+        'paddingTop',
+        'paddingLeft',
+        'paddingRight',
+        'tabSize',
+      ])
+        mirror.style[k] = taStyle[k];
+      mirror.style.position = 'absolute';
+      mirror.style.visibility = 'hidden';
+      mirror.style.whiteSpace = 'pre';
+      const taLineHeight = parseFloat(taStyle.lineHeight) || 18;
       document.body.appendChild(mirror);
 
       function caretXY(ta) {
-        const cs = getComputedStyle(ta);
-        for (const k of [
-          'fontFamily',
-          'fontSize',
-          'lineHeight',
-          'paddingTop',
-          'paddingLeft',
-          'paddingRight',
-          'tabSize',
-        ])
-          mirror.style[k] = cs[k];
-        mirror.style.position = 'absolute';
-        mirror.style.visibility = 'hidden';
-        mirror.style.whiteSpace = 'pre';
         mirror.style.width = ta.clientWidth + 'px';
         mirror.textContent = ta.value.slice(0, ta.selectionStart);
         const marker = document.createElement('span');
@@ -1257,7 +1317,7 @@
         mirror.appendChild(marker);
         return {
           x: marker.offsetLeft - ta.scrollLeft,
-          y: marker.offsetTop - ta.scrollTop + (parseFloat(cs.lineHeight) || 18),
+          y: marker.offsetTop - ta.scrollTop + taLineHeight,
         };
       }
 
@@ -1289,7 +1349,7 @@
         if (document.activeElement !== ta) return acClose();
         const upto = ta.value.slice(0, ta.selectionStart);
         const line = upto.slice(upto.lastIndexOf('\n') + 1);
-        const m = line.match(/-\s*\w+:\s*do\s+([a-z0-9_]*)$/i);
+        const m = line.match(AC_RE);
         if (!m) return acClose();
         const prefix = m[1].toLowerCase();
         acStart = ta.selectionStart - m[1].length;
@@ -1308,7 +1368,6 @@
         acRender();
       }
 
-      $('src').addEventListener('input', acCheck);
       $('src').addEventListener('click', acCheck);
       $('src').addEventListener('blur', () => setTimeout(acClose, 150));
       $('src').addEventListener('keydown', (e) => {
