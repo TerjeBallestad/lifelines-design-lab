@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visit Syntax Probe (SB-107)</title>
+    <title>Goal Syntax Probe (SB-114)</title>
     <style>
       :root {
         --bg: #14161a;
@@ -451,6 +451,128 @@
         border-color: var(--ink-dim);
         box-shadow: 0 0 0 1px var(--ink-dim);
       }
+      /* ---- goal cards & director pass ---- */
+      .goal-card {
+        background: var(--panel-2);
+        border: 1px solid var(--end);
+        border-radius: 6px;
+        padding: 7px 10px;
+        margin: 16px 0 6px;
+      }
+      .goal-card .g-line {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .goal-card .g-name {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--end);
+      }
+      .goal-card .g-plan {
+        font-size: 12px;
+        font-style: italic;
+        color: var(--ink-dim);
+      }
+      .g-verdict {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 10.5px;
+      }
+      .g-verdict.ok {
+        color: var(--ok);
+      }
+      .g-verdict.den {
+        color: var(--fail);
+      }
+      .g-verdict.skip {
+        color: var(--ink-faint);
+      }
+      .goal-card .g-meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-dim);
+      }
+      .goal-card .g-meta b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .goal-card .derived {
+        color: var(--ink-faint);
+      }
+      #director {
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+        padding: 8px 18px 9px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+      }
+      .d-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .d-lab {
+        color: var(--ink-faint);
+        margin-left: 8px;
+      }
+      .d-lab:first-child {
+        margin-left: 0;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1px 8px;
+        cursor: pointer;
+        color: var(--ink-faint);
+        background: var(--panel-2);
+        user-select: none;
+      }
+      .chip.on {
+        color: var(--ink);
+        border-color: var(--ink-dim);
+      }
+      .chip.fail.on {
+        color: var(--fail);
+        border-color: var(--fail);
+      }
+      #d-budget {
+        width: 52px;
+        background: var(--panel-2);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        padding: 1px 4px;
+      }
+      .d-run {
+        margin-top: 6px;
+        line-height: 1.9;
+        color: var(--ink-dim);
+      }
+      .d-run .g-ok {
+        color: var(--ok);
+      }
+      .d-run .g-den {
+        color: var(--fail);
+      }
+      .d-run .g-end {
+        color: var(--end);
+      }
+      .d-run .g-skip {
+        color: var(--ink-faint);
+      }
+      .d-run .g-arr {
+        color: var(--ink-faint);
+      }
       /* ---- reference drawer ---- */
       #ref {
         border-top: 1px solid var(--line);
@@ -488,11 +610,11 @@
   </head>
   <body>
     <header>
-      <h1>Visit syntax probe</h1>
+      <h1>Goal syntax probe</h1>
       <div class="q">
-        Does the stage/role/duty grammar feel like "Frank: go to Elling, when there say this; both
-        to the sofa"? Rewrite the markup on the left. The storyboard is the parse. Rule on feel, not
-        on polish.
+        An Oppdrag is goals, not a spine (DD-010). Does the goal wrapper - need / cost / yield -
+        read like the plan Frank carries in? Rewrite the goals on the left. The director pass shows
+        what a visit does with them. Rule on feel, not on polish.
       </div>
       <div class="actions">
         <button id="btn-ref">Reference</button>
@@ -503,10 +625,18 @@
     <main>
       <div id="editor-pane">
         <div id="cheat">
+          <span class="kw">## Goal: name</span> opens a goal - its stages are one scene ·
+          <span class="kw">plan:</span> the line on Frank's plan screen ·
+          <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
+          denial, comma list (<span class="kw">? item</span> per line also parses) ·
+          <span class="kw">cost: 8</span> minutes, omit = derived from the scene (~) ·
+          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks
+          (<span class="kw">+ item</span> also parses)<br />
           <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
           <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
-          stage, unnamed characters continue) &nbsp;·&nbsp;
-          <span class="kw">## Call-off</span> where every fail goes<br />
+          stage, unnamed characters continue) &nbsp;·&nbsp; a fail inside a goal
+          <b>denies the goal</b> (back to selection); <span class="kw">## Call-off</span> is
+          visit-level only<br />
           <b>duties</b>: <span class="kw">goto</span> room|character (seat=) ·
           <span class="kw">stay</span> · <span class="kw">say</span> line (dwell=, quotes optional)
           · <span class="kw">converse</span> partner opening-line-spoken-by-this-character ·
@@ -515,7 +645,8 @@
           <b>-&gt; advance</b> (several = first wins):
           <span class="kw">arrived | duration N | event name</span> - optional when the stage has a
           say/converse (it ends itself: line read / conversation over), required otherwise<br />
-          <b>!&gt; give up</b> -&gt; call-off (optional, a default timeout is always on):
+          <b>!&gt; give up</b> -&gt; denied in a goal, call-off outside (optional, a default
+          timeout is always on):
           <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
         </div>
         <textarea id="src" spellcheck="false"></textarea>
@@ -537,13 +668,20 @@
             <span id="pv-end"></span>
           </div>
         </div>
+        <div id="director">
+          <div class="d-row" id="d-controls"></div>
+          <div class="d-run" id="d-run"></div>
+        </div>
         <div id="board"></div>
       </div>
     </main>
     <div id="ref">
       <div class="cols">
         <div class="col">
-          <h2>Current markup (serial queue) - oppdrag_alene, verbatim from tiny-olsen.case.md</h2>
+          <h2>
+            Current markup (serial queue) - the three oppdrag blocks, verbatim from
+            tiny-olsen.case.md
+          </h2>
           <pre id="ref-old"></pre>
         </div>
         <div class="col">
@@ -554,30 +692,16 @@
     </div>
 
     <script type="text/plain" id="seed">
-      # Visit: oppdrag_alene
+      # Oppdrag: alene
       Title: Klarer han seg alene?
+      Blurb: Se på Elling. Hva klarer han, hva klarer han ikke.
+      Offer: Godt spørsmål. Vil du at jeg skal se på hva han faktisk klarer, ved neste besøk?
 
-      ==
-      - frank: goto entrance
-      - grete: do answer_door
-      -> event answer_door
-      !> timeout 8
-
-      ==
-      - grete: converse frank du ringte i sted - kom inn.
-      - elling: stay living_room
-
-      ==
-      - grete: say Jeg har ikke rukket å rydde.
-
-      ==
-      - frank: goto living_room
-      - grete: goto living_room
-      -> arrived
-      !> unreachable grace=4
-
-      ==
-      - grete: say Elling! Frank er her.
+      ## Goal: nansen
+      plan: Se hva han leser
+      need: elling
+      cost: 6
+      yield: f_bok, open q_evner
 
       ==
       - frank: goto elling
@@ -585,48 +709,37 @@
       !> unreachable grace=2
 
       ==
-      - frank: say hei, Elling.
-
-      ==
-      - frank: goto living_room seat=sofa
-      - grete: do make_tea
-      -> arrived
-
-      ==
-      - grete: goto living_room
-      -> arrived
-      !> timeout 14
-
-      ==
-      - grete: converse frank han spiser lite om dagen.
-
-      ==
       - frank: say Er det Nansen du leser om?
 
       ==
       - elling: say Nansen lot Fram fryse fast i isen. 1893. Det var planen hele tiden.
+
+      ## Goal: trives
+      plan: Spør om han trives
+      need: elling, grete, f_bok
+      yield: f_svarer_for_ham
 
       ==
       - frank: say Liker du å bo her, Elling?
 
       ==
       - grete: say Han har det fint her. Han har alt han trenger.
+      - elling: free
+
+      ## Goal: avstand
+      plan: Se hvordan han beveger seg
+      need: elling, not f_avstand
+      cost: 8
+      yield: f_avstand
 
       ==
-      - grete: say Jeg må bare sette meg litt.
-
-      ==
-      - frank: goto entrance
-      - grete: goto entrance
+      - frank: goto living_room seat=sofa
       -> arrived
-      !> timeout 10
 
       ==
-      - grete: say Du så hvordan han er. Han er en smart gutt.
-
-      ==
-      - frank: do leave
-      -> event left
+      - frank: stay
+      - elling: free
+      -> duration 8
 
       ## Call-off
 
@@ -652,6 +765,35 @@
       - elling: "Nansen lot Fram fryse fast i isen. 1893. Det var planen hele tiden." [id=opp_a3 beat=a3 dwell=4]
       - frank: "Liker du å bo her, Elling?" [id=opp_a4 beat=a4 dwell=4]
       - grete: "Han har det fint her. Han har alt han trenger." [id=opp_a5 beat=a5 dwell=4]
+
+      # Visit: oppdrag_okonomi
+
+      Title: Se på økonomien
+      Blurb: Papirene. Hvem betaler hva, og hvem vet hvordan.
+      Offer: "Tallene, ja. Vil du at jeg skal se på økonomien ved neste besøk?"
+      Unlocks: q_okonomi
+      Stub: yes
+
+      - ! grete: finner frem esken @ kitchen [id=opp_p1a duration=3]
+      - ! grete: blir ved bordet @ kitchen [id=opp_p_hold duration=24 no_wait]
+      - ? elling @ kitchen [id=opp_p6 beat=p6 duration=6]
+      - ! frank: ser på papirene @ kitchen [id=opp_p1b duration=3]
+      - grete: "Alt ligger i esken. Ferdig utfylt, sortert på forfall." [id=opp_p2 beat=p2 dwell=4]
+      - frank: "Vet Elling hvor esken står?" [id=opp_p3 beat=p3 dwell=4]
+      - grete: "Elling? Nei da." [id=opp_p4 beat=p4 dwell=4]
+
+      # Visit: oppdrag_tillit
+
+      Title: Ikke press. Bygg tillit.
+      Blurb: Sitt. Ta kaffen. La henne snakke.
+      Offer: Skjønner. Ikke press. Vil du at jeg skal bygge tillit ved neste besøk?
+      Unlocks: q_grete_dor
+      Stub: yes
+
+      - ! grete: blir sittende @ living_room [id=opp_t_hold duration=17 no_wait]
+      - grete: "Legen sier det er kort tid. Elling vet ikke." [id=opp_t3 beat=t3 dwell=5]
+      - grete: "Han var ikke sånn før. Han var på skolen, han hadde venner." [id=opp_t4 beat=t4 dwell=5]
+      - grete: "Jeg tenker på hva som skjer. Hele tiden." [id=opp_t5 beat=t5 dwell=5]
     </script>
 
     <script type="text/plain" id="spine-steps">
@@ -680,7 +822,9 @@
     <script>
       const ROLES = ['frank', 'grete', 'elling'];
       // Snake-cased from core-loop ActivityIds (activity_ids.gd) + leave.
-      // Hand-typed snapshot 2026-08-13; re-sync when the catalog changes.
+      // Hand-typed snapshot 2026-08-13. SB-110: production consumers import
+      // src/content/generated/activityCatalog.ts (npm run gen:activities);
+      // this probe stays a frozen inline copy.
       const KNOWN_ACTIVITIES = [
         'answer_the_phone',
         'answer_door',
@@ -747,7 +891,7 @@
         free: {},
       };
       const DUTIES = Object.keys(VERB_SPEC);
-      const LS_KEY = 'visit-syntax-probe-v1';
+      const LS_KEY = 'goal-syntax-probe-v1';
 
       const $ = (id) => document.getElementById(id);
       const seed =
@@ -759,30 +903,68 @@
 
       function parse(text) {
         const stages = [];
+        const goals = [];
         const errors = [];
         let meta = { visit: '', title: '' };
         let section = 'main';
         let cur = null;
+        let curGoal = null;
         const lines = text.split('\n');
         lines.forEach((raw, i) => {
           const n = i + 1;
           const line = raw.trim();
           if (!line) return;
-          if (line.startsWith('# Visit:')) {
-            meta.visit = line.slice(8).trim();
+          let m;
+          if ((m = line.match(/^#\s*(?:visit|oppdrag)\s*:\s*(.*)$/i))) {
+            meta.visit = m[1].trim();
             return;
           }
-          if (/^title:/i.test(line)) {
-            meta.title = line.slice(6).trim();
+          if ((m = line.match(/^(title|blurb|offer)\s*:\s*(.*)$/i)) && !curGoal) {
+            meta[m[1].toLowerCase()] = m[2].trim();
             return;
           }
           if (/^##\s*call-?off/i.test(line)) {
             section = 'calloff';
             cur = null;
+            curGoal = null;
             return;
+          }
+          if ((m = line.match(/^##\s*goal\s*:?\s*(.*)$/i))) {
+            const name = m[1].trim() || 'goal_' + (goals.length + 1);
+            if (goals.some((g) => g.name === name))
+              errors.push({ line: n, msg: `duplicate goal name "${name}"` });
+            curGoal = { name, line: n, plan: '', needs: [], cost: null, yields: [], stages: [] };
+            goals.push(curGoal);
+            section = 'goal:' + goals.length;
+            cur = null;
+            return;
+          }
+          if (curGoal && section.startsWith('goal:')) {
+            if ((m = line.match(/^plan\s*:\s*(.*)$/i))) {
+              curGoal.plan = m[1].trim();
+              return;
+            }
+            if ((m = line.match(/^need\s*:\s*(.*)$/i)) || (m = line.match(/^\?\s+(.*)$/))) {
+              parseNeeds(m[1], curGoal, n, errors);
+              return;
+            }
+            if ((m = line.match(/^cost\s*:\s*(.*)$/i))) {
+              if (isNaN(+m[1].trim()))
+                errors.push({ line: n, msg: `cost needs a number of minutes ("${m[1].trim()}")` });
+              else curGoal.cost = +m[1].trim();
+              return;
+            }
+            if ((m = line.match(/^yield\s*:\s*(.*)$/i)) || (m = line.match(/^\+\s+(.*)$/))) {
+              parseYields(m[1], curGoal, n);
+              return;
+            }
           }
           if (line.startsWith('==')) {
             cur = { name: line.slice(2).trim(), line: n, section, duties: {}, ends: [], fails: [] };
+            if (curGoal && section.startsWith('goal:')) {
+              cur.goal = curGoal;
+              curGoal.stages.push(cur);
+            }
             stages.push(cur);
             return;
           }
@@ -828,8 +1010,84 @@
             }
           }
         });
+        goals.forEach((g) => {
+          if (!g.stages.length)
+            errors.push({ line: g.line, msg: `goal "${g.name}" has no stages (a goal owns one scene)` });
+        });
         resolveDuties(stages);
-        return { meta, stages, errors };
+        return { meta, stages, goals, errors };
+      }
+
+      // A need is presence (a character name), a fact id, or "denied <goal>".
+      // "not" negates. Comma list on need:, or one per "? " line.
+      function parseNeeds(rest, goal, n, errors) {
+        rest
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((item) => {
+            const toks = item.split(/\s+/);
+            const neg = toks[0] === 'not';
+            if (neg) toks.shift();
+            if (toks[0] === 'denied') {
+              if (!toks[1]) {
+                errors.push({ line: n, msg: 'denied needs a goal name ("denied nansen")' });
+                return;
+              }
+              goal.needs.push({ neg, kind: 'denied', id: toks[1] });
+              return;
+            }
+            if (!toks[0]) return;
+            const kind = ROLES.includes(toks[0]) ? 'presence' : 'fact';
+            goal.needs.push({ neg, kind, id: toks[0] });
+          });
+      }
+
+      // A yield is a fact id or "open <question>". Comma list on yield:, or "+ " lines.
+      function parseYields(rest, goal, n) {
+        rest
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((item) => {
+            const toks = item.split(/\s+/);
+            if (toks[0] === 'open' && toks[1]) {
+              goal.yields.push({ kind: 'open', id: toks[1] });
+              return;
+            }
+            if (toks[0] === 'fact' && toks[1]) {
+              goal.yields.push({ kind: 'fact', id: toks[1] });
+              return;
+            }
+            goal.yields.push({ kind: 'fact', id: toks[0] });
+          });
+      }
+
+      function needText(nd) {
+        return (nd.neg ? 'not ' : '') + (nd.kind === 'denied' ? 'denied ' + nd.id : nd.id);
+      }
+
+      function yieldText(y) {
+        return y.kind === 'open' ? 'open ' + y.id : y.id;
+      }
+
+      // Rough per-stage minutes when cost: is not authored - enough to feel
+      // whether deriving from the scene is viable, not a real estimator.
+      function stageCost(s) {
+        const dur = s.ends.find((e) => e.kind === 'duration');
+        if (dur) return dur.min;
+        const verbs = Object.values(s.duties).map((d) => d.verb);
+        if (verbs.includes('converse')) return 3;
+        if (verbs.includes('do')) return 2;
+        return 1;
+      }
+
+      function derivedCost(g) {
+        return g.stages.reduce((sum, s) => sum + stageCost(s), 0);
+      }
+
+      function goalCost(g) {
+        return g.cost != null ? g.cost : derivedCost(g);
       }
 
       // Sticky-duty semantics in one pass: explicit duties carry into later
@@ -999,21 +1257,162 @@
         return `event:${esc(t.name)}`;
       }
 
-      function failText(t) {
+      // Inside a goal a fail denies the goal (DD-010); only visit-level fails
+      // route to the call-off.
+      function failText(t, target) {
         let s = t.kind;
         if (t.min) s += ` ${t.min}m`;
         if (t.role) s += ` ${esc(t.role)}`;
         if (t.grace) s += ` grace=${t.grace}m`;
-        return s + ' -> call-off';
+        return s + ' -> ' + (target || 'call-off');
+      }
+
+      function failTarget(s) {
+        return s.goal ? 'denied' : 'call-off';
       }
 
       function esc(s) {
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
 
-      const model = { stages: [] };
+      const model = { stages: [], goals: [] };
       let sel = 0;
       let playing = null;
+
+      /* ---- director pass (DD-010 selection loop) ---- */
+      // World state the pass runs against. Chips and the budget input mutate
+      // this; it survives re-parses so toggles do not reset while typing.
+      const world = {
+        budget: 30,
+        present: { grete: true, elling: true },
+        facts: new Set(),
+        fails: new Set(),
+      };
+
+      function needCheck(g, facts, denied) {
+        for (const nd of g.needs) {
+          let ok;
+          if (nd.kind === 'presence') ok = nd.id === 'frank' || world.present[nd.id] !== false;
+          else if (nd.kind === 'denied') ok = denied.has(nd.id);
+          else ok = facts.has(nd.id);
+          if (nd.neg) ok = !ok;
+          if (!ok) return needText(nd) + ' fails';
+        }
+        return null;
+      }
+
+      // Walks the strict player order: play the first goal whose needs hold
+      // and whose cost fits, spend its cost, add its yields to the known
+      // facts (so goals can chain), repeat until nothing is attemptable.
+      function directorRun(goals) {
+        let time = world.budget;
+        const facts = new Set(world.facts);
+        const denied = new Set();
+        const done = new Set();
+        const seq = [];
+        let timeBlocked = false;
+        let guard = 0;
+        while (guard++ < 60) {
+          let picked = null;
+          timeBlocked = false;
+          for (const g of goals) {
+            if (done.has(g.name) || denied.has(g.name)) continue;
+            if (needCheck(g, facts, denied)) continue;
+            if (goalCost(g) > time) {
+              timeBlocked = true;
+              continue;
+            }
+            picked = g;
+            break;
+          }
+          if (!picked) break;
+          if (world.fails.has(picked.name)) {
+            const spent = Math.ceil(goalCost(picked) / 2);
+            denied.add(picked.name);
+            time -= spent;
+            seq.push({ name: picked.name, denied: true, spent });
+          } else {
+            done.add(picked.name);
+            time -= goalCost(picked);
+            picked.yields.forEach((y) => {
+              if (y.kind === 'fact') facts.add(y.id);
+            });
+            seq.push({ name: picked.name, spent: goalCost(picked) });
+          }
+        }
+        const skipped = {};
+        const left = goals.filter((g) => !done.has(g.name) && !denied.has(g.name));
+        left.forEach((g) => {
+          skipped[g.name] = needCheck(g, facts, denied) || (goalCost(g) > time ? 'no time' : '?');
+        });
+        let end;
+        if (!goals.length) end = { label: 'no goals - stages run as an authored spine', dim: true };
+        else if (!left.length) end = { label: 'visit ends: plan done', ok: true };
+        else if (timeBlocked) end = { label: 'call-off: time spent' };
+        else end = { label: 'call-off: nothing attemptable' };
+        return { seq, end, time, skipped };
+      }
+
+      let dControlsKey = '';
+      function renderDirector(goals, run) {
+        const factIds = [
+          ...new Set(
+            goals.flatMap((g) => g.needs.filter((nd) => nd.kind === 'fact').map((nd) => nd.id)),
+          ),
+        ];
+        const key = JSON.stringify([factIds, goals.map((g) => g.name)]);
+        if (key !== dControlsKey) {
+          dControlsKey = key;
+          const chip = (kind, id, on, cls) =>
+            `<span class="chip ${cls || ''} ${on ? 'on' : ''}" data-kind="${kind}" data-id="${esc(id)}">${esc(id)}</span>`;
+          let html = `<span class="d-lab">time</span><input id="d-budget" type="number" value="${world.budget}" />m`;
+          html += `<span class="d-lab">present</span>`;
+          html += ['grete', 'elling']
+            .map((r) => chip('present', r, world.present[r] !== false))
+            .join('');
+          html += `<span class="d-lab">facts at start</span>`;
+          html += factIds.length
+            ? factIds.map((f) => chip('fact', f, world.facts.has(f))).join('')
+            : '<span class="d-lab">(none referenced)</span>';
+          html += `<span class="d-lab">simulate fail</span>`;
+          html += goals.map((g) => chip('fail', g.name, world.fails.has(g.name), 'fail')).join('');
+          $('d-controls').innerHTML = html;
+        } else {
+          // Cheap patch: chip on/off state without rebuilding (keeps input focus).
+          $('d-controls')
+            .querySelectorAll('.chip')
+            .forEach((c) => {
+              const { kind, id } = c.dataset;
+              const on =
+                kind === 'present'
+                  ? world.present[id] !== false
+                  : kind === 'fact'
+                    ? world.facts.has(id)
+                    : world.fails.has(id);
+              c.classList.toggle('on', on);
+            });
+          const bd = $('d-budget');
+          if (bd && document.activeElement !== bd) bd.value = world.budget;
+        }
+        const steps = run.seq.map((e) =>
+          e.denied
+            ? `<span class="g-den">${esc(e.name)} &#10007; denied (${e.spent}m)</span>`
+            : `<span class="g-ok">${esc(e.name)} &#10003; ${e.spent}m</span>`,
+        );
+        steps.push(
+          `<span class="${run.end.ok ? 'g-ok' : run.end.dim ? 'g-skip' : 'g-end'}">${esc(run.end.label)}</span>`,
+        );
+        let tail = '';
+        const skippedNames = Object.keys(run.skipped);
+        if (skippedNames.length)
+          tail = `<span class="g-skip"> · never played: ${skippedNames
+            .map((nm) => `${esc(nm)} (${esc(run.skipped[nm])})`)
+            .join(', ')}</span>`;
+        $('d-run').innerHTML =
+          steps.join(' <span class="g-arr">&rarr;</span> ') +
+          (run.end.dim ? '' : ` <span class="g-skip">(${run.time}m left)</span>`) +
+          tail;
+      }
 
       let saveTimer = null;
       function scheduleSave(text) {
@@ -1021,11 +1420,44 @@
         saveTimer = setTimeout(() => localStorage.setItem(LS_KEY, text), 300);
       }
 
+      function goalCard(g, run) {
+        const cost =
+          g.cost != null
+            ? `${g.cost}m`
+            : `~${derivedCost(g)}m <span class="derived">(derived from the scene)</span>`;
+        const needs = g.needs.length
+          ? g.needs.map((nd) => esc(needText(nd))).join(', ')
+          : '<span class="derived">(none - always attemptable)</span>';
+        const yields = g.yields.length
+          ? g.yields.map((y) => esc(yieldText(y))).join(', ')
+          : '<span class="derived">(none)</span>';
+        let verdict = '';
+        if (run) {
+          const played = run.seq.findIndex((e) => e.name === g.name);
+          if (played >= 0 && !run.seq[played].denied)
+            verdict = `<span class="g-verdict ok">plays #${played + 1}</span>`;
+          else if (played >= 0) verdict = '<span class="g-verdict den">denied</span>';
+          else {
+            const why = run.skipped[g.name] || 'never reached';
+            verdict = `<span class="g-verdict skip">skipped: ${esc(why)}</span>`;
+          }
+        }
+        return (
+          `<div class="goal-card"><div class="g-line"><span class="g-name">## Goal: ${esc(g.name)}</span>` +
+          `${g.plan ? `<span class="g-plan">${esc(g.plan)}</span>` : ''}${verdict}</div>` +
+          `<div class="g-meta"><span><b>need</b> ${needs}</span><span><b>cost</b> ${cost}</span>` +
+          `<span><b>yield</b> ${yields}</span></div></div>`
+        );
+      }
+
       function render() {
         const text = $('src').value;
         scheduleSave(text);
-        const { meta, stages, errors } = parse(text);
+        const { meta, stages, goals, errors } = parse(text);
         model.stages = stages;
+        model.goals = goals;
+        const run = directorRun(goals);
+        renderDirector(goals, run);
         const board = $('board');
         let html = '';
         if (meta.visit)
@@ -1034,10 +1466,11 @@
         stages.forEach((s, idx) => {
           if (s.section !== lastSection) {
             lastSection = s.section;
-            html +=
-              s.section === 'calloff'
-                ? '<div class="section-label calloff">Call-off (every fail trigger routes here)</div>'
-                : '<div class="section-label">Stages</div>';
+            if (s.section === 'calloff')
+              html +=
+                '<div class="section-label calloff">Call-off (visit-level fails route here)</div>';
+            else if (s.goal) html += goalCard(s.goal, run);
+            else html += '<div class="section-label">Stages (outside any goal)</div>';
           } else if (idx > 0) {
             html += '<div class="arrow">&darr;</div>';
           }
@@ -1051,9 +1484,13 @@
             html += `<div class="lane ${r}${LANE_CLASS[res.mode] || ''}"><div class="who">${r}</div><div class="duty">${LANE_HTML[res.mode](res)}</div></div>`;
           });
           html += '</div>';
-          const fails = s.fails.map((f) => `<span class="failt">&#9888; ${failText(f)}</span>`);
+          const fails = s.fails.map(
+            (f) => `<span class="failt">&#9888; ${failText(f, failTarget(s))}</span>`,
+          );
           if (!s.fails.some((f) => f.kind === 'timeout'))
-            fails.push('<span class="failt implicit">&#9888; timeout (engine default)</span>');
+            fails.push(
+              `<span class="failt implicit">&#9888; timeout (engine default) -> ${failTarget(s)}</span>`,
+            );
           html += `<div class="stage-foot">${fails.join('')}`;
           if (hasErr) html += '<span class="serr">needs an end trigger</span>';
           html += '</div></div>';
@@ -1062,7 +1499,7 @@
         board.innerHTML = html;
         $('errors').innerHTML = errors.length
           ? errors.map((e) => `<div class="e">line ${e.line}: ${esc(e.msg)}</div>`).join('')
-          : `<div class="ok">parses clean - ${stages.length} stages</div>`;
+          : `<div class="ok">parses clean - ${goals.length} goals, ${stages.length} stages</div>`;
         renderMap();
       }
 
@@ -1219,7 +1656,8 @@
         });
         svg.innerHTML = lines;
         $('pv-stage').textContent =
-          `stage ${sel + 1}/${stages.length}${s.auto ? '' : ' == ' + s.name}${s.section === 'calloff' ? ' (call-off)' : ''}`;
+          `stage ${sel + 1}/${stages.length}${s.auto ? '' : ' == ' + s.name}` +
+          `${s.goal ? ' · goal ' + s.goal.name : ''}${s.section === 'calloff' ? ' (call-off)' : ''}`;
         $('pv-end').textContent = endLabel(s);
         document
           .querySelectorAll('.stage')
@@ -1284,6 +1722,21 @@
         setTimeout(() => ($('btn-copy').textContent = 'Copy markup'), 1200);
       });
       $('btn-ref').addEventListener('click', () => $('ref').classList.toggle('open'));
+      $('d-controls').addEventListener('click', (e) => {
+        const c = e.target.closest('.chip');
+        if (!c) return;
+        const { kind, id } = c.dataset;
+        if (kind === 'present') world.present[id] = world.present[id] === false;
+        else if (kind === 'fact') world.facts.has(id) ? world.facts.delete(id) : world.facts.add(id);
+        else if (kind === 'fail') world.fails.has(id) ? world.fails.delete(id) : world.fails.add(id);
+        render();
+      });
+      $('d-controls').addEventListener('input', (e) => {
+        if (e.target.id === 'd-budget') {
+          world.budget = Math.max(0, +e.target.value || 0);
+          render();
+        }
+      });
       /* ---- activity picker (after the catalog-backed verb, "do ") ---- */
       const AC_VERB = DUTIES.find((v) => VERB_SPEC[v].catalog);
       const AC_RE = new RegExp(`-\\s*\\w+:\\s*${AC_VERB}\\s+([a-z0-9_]*)$`, 'i');
