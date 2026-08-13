@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visit Syntax Probe (SB-107)</title>
+    <style>
+      :root {
+        --bg: #14161a;
+        --panel: #1c1f25;
+        --panel-2: #22262e;
+        --line: #2e333d;
+        --ink: #d8dbe2;
+        --ink-dim: #8a919e;
+        --ink-faint: #5c626e;
+        --frank: #5b8fc4;
+        --grete: #a57bc2;
+        --elling: #6fa66f;
+        --end: #c8a24e;
+        --fail: #c86244;
+        --err: #e07a5f;
+        --ok: #7aa66f;
+        --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+        --sans: system-ui, sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      header .q {
+        font-size: 12.5px;
+        color: var(--ink-dim);
+        max-width: 60ch;
+      }
+      header .actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+      }
+      button {
+        background: var(--panel-2);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: var(--ink-faint);
+      }
+      main {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(380px, 34%) 1fr;
+        min-height: 0;
+      }
+      /* ---- editor pane ---- */
+      #editor-pane {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--line);
+        min-height: 0;
+      }
+      #cheat {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+        font-family: var(--mono);
+        font-size: 11px;
+        line-height: 1.7;
+        color: var(--ink-dim);
+        background: var(--panel);
+      }
+      #cheat b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      #cheat .kw {
+        color: var(--end);
+      }
+      textarea {
+        flex: 1;
+        background: var(--bg);
+        color: var(--ink);
+        border: 0;
+        outline: none;
+        resize: none;
+        padding: 12px 14px;
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.55;
+        tab-size: 2;
+        white-space: pre;
+      }
+      #ac {
+        position: absolute;
+        z-index: 20;
+        background: var(--panel-2);
+        border: 1px solid var(--ink-faint);
+        border-radius: 5px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        min-width: 190px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+      #ac .it {
+        padding: 3px 9px;
+        cursor: pointer;
+      }
+      #ac .it.on {
+        background: var(--panel);
+        color: var(--end);
+      }
+      #ac .hint {
+        padding: 3px 9px;
+        color: var(--ink-faint);
+        border-top: 1px solid var(--line);
+        font-size: 10px;
+      }
+      #errors {
+        max-height: 130px;
+        overflow-y: auto;
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+        font-family: var(--mono);
+        font-size: 11.5px;
+        padding: 6px 12px;
+      }
+      #errors .e {
+        color: var(--err);
+        padding: 1px 0;
+      }
+      #errors .ok {
+        color: var(--ok);
+      }
+      /* ---- storyboard pane ---- */
+      #board-pane {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+      }
+      #board {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 18px 40px;
+      }
+      .visit-title {
+        font-size: 13px;
+        color: var(--ink-dim);
+        margin-bottom: 10px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-faint);
+        margin: 18px 0 8px;
+      }
+      .section-label.calloff {
+        color: var(--fail);
+      }
+      .stage {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        margin-bottom: 4px;
+        overflow: hidden;
+      }
+      .stage.calloff {
+        border-color: #4a2f28;
+      }
+      .stage.has-error {
+        border-color: var(--err);
+      }
+      .stage-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 6px 10px;
+        background: var(--panel-2);
+        border-bottom: 1px solid var(--line);
+      }
+      .stage-head .idx {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--ink-faint);
+      }
+      .stage-head .name {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .stage-head .endt {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--end);
+      }
+      .stage-head .endt.auto {
+        color: var(--ink-faint);
+      }
+      .lanes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .lane {
+        padding: 7px 10px;
+        border-right: 1px solid var(--line);
+        min-height: 44px;
+      }
+      .lane:last-child {
+        border-right: 0;
+      }
+      .lane .who {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+        margin-bottom: 3px;
+      }
+      .lane.frank .who {
+        color: var(--frank);
+      }
+      .lane.grete .who {
+        color: var(--grete);
+      }
+      .lane.elling .who {
+        color: var(--elling);
+      }
+      .lane .duty {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        line-height: 1.45;
+      }
+      .lane .duty .dw {
+        color: var(--end);
+        font-weight: 600;
+      }
+      .lane .duty .quote {
+        color: var(--ink-dim);
+        font-style: italic;
+        display: block;
+        margin-top: 2px;
+        white-space: normal;
+      }
+      .lane.carried {
+        opacity: 0.42;
+      }
+      .lane.carried .duty::after {
+        content: ' (continues)';
+        color: var(--ink-faint);
+        font-size: 10px;
+      }
+      .lane.idle .duty {
+        color: var(--ink-faint);
+      }
+      .stub {
+        color: var(--end);
+        border: 1px solid var(--end);
+        border-radius: 3px;
+        padding: 0 3px;
+        font-size: 9px;
+        letter-spacing: 0.04em;
+      }
+      .stage-foot {
+        display: flex;
+        gap: 14px;
+        padding: 4px 10px;
+        border-top: 1px solid var(--line);
+        font-family: var(--mono);
+        font-size: 10.5px;
+      }
+      .stage-foot .failt {
+        color: var(--fail);
+      }
+      .stage-foot .failt.implicit {
+        color: var(--ink-faint);
+      }
+      .stage-foot .serr {
+        color: var(--err);
+      }
+      .arrow {
+        text-align: center;
+        color: var(--ink-faint);
+        font-size: 11px;
+        line-height: 1.2;
+        padding: 1px 0 5px;
+      }
+      /* ---- choreography preview ---- */
+      #preview {
+        flex: 0 0 auto;
+        background: var(--bg);
+        padding: 14px 18px 10px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 12px;
+      }
+      #map {
+        position: relative;
+        height: 340px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background-image:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+        background-size: 36px 36px;
+        background-color: var(--panel);
+        overflow: hidden;
+      }
+      .room {
+        position: absolute;
+        border: 1px dashed var(--ink-faint);
+        border-radius: 8px;
+        opacity: 0.85;
+      }
+      .room .rlabel {
+        position: absolute;
+        left: 8px;
+        bottom: 4px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--ink-faint);
+        letter-spacing: 0.05em;
+      }
+      .prop {
+        position: absolute;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        color: var(--ink-dim);
+        padding: 3px 7px;
+      }
+      .token {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--ink);
+        border: 2px solid;
+        transform: translate(-50%, -50%);
+        transition:
+          left 0.7s ease,
+          top 0.7s ease;
+        z-index: 3;
+      }
+      .token.frank {
+        background: #2c3e52;
+        border-color: var(--frank);
+      }
+      .token.grete {
+        background: #3d3049;
+        border-color: var(--grete);
+      }
+      .token.elling {
+        background: #2c3d2c;
+        border-color: var(--elling);
+      }
+      .token .tduty {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 3px;
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 400;
+        color: var(--ink-dim);
+        white-space: nowrap;
+      }
+      .bubble {
+        position: absolute;
+        transform: translate(-50%, -100%);
+        margin-top: -30px;
+        max-width: 190px;
+        background: var(--panel-2);
+        border: 1px solid var(--ink-faint);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 10.5px;
+        font-style: italic;
+        color: var(--ink);
+        z-index: 4;
+        transition:
+          left 0.7s ease,
+          top 0.7s ease;
+      }
+      #convo-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+      }
+      #convo-svg line {
+        stroke: var(--ink-faint);
+        stroke-width: 1.5;
+        stroke-dasharray: 4 4;
+      }
+      #pv-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 2px 0;
+        font-family: var(--mono);
+        font-size: 11.5px;
+      }
+      #pv-stage {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      #pv-end {
+        color: var(--end);
+        margin-left: auto;
+      }
+      .stage.sel {
+        border-color: var(--ink-dim);
+        box-shadow: 0 0 0 1px var(--ink-dim);
+      }
+      .stage {
+        cursor: pointer;
+      }
+      /* ---- reference drawer ---- */
+      #ref {
+        border-top: 1px solid var(--line);
+        background: var(--panel);
+        max-height: 40vh;
+        overflow-y: auto;
+        display: none;
+      }
+      #ref.open {
+        display: block;
+      }
+      #ref .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+      #ref .col {
+        padding: 10px 14px;
+        border-right: 1px solid var(--line);
+      }
+      #ref h2 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-faint);
+        margin-bottom: 6px;
+      }
+      #ref pre {
+        font-family: var(--mono);
+        font-size: 11px;
+        line-height: 1.55;
+        color: var(--ink-dim);
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Visit syntax probe</h1>
+      <div class="q">
+        Does the stage/role/duty grammar feel like "Frank: go to Elling, when there say this; both
+        to the sofa"? Rewrite the markup on the left. The storyboard is the parse. Rule on feel, not
+        on polish.
+      </div>
+      <div class="actions">
+        <button id="btn-ref">Reference</button>
+        <button id="btn-copy">Copy markup</button>
+        <button id="btn-reset">Reset to seed</button>
+      </div>
+    </header>
+    <main>
+      <div id="editor-pane">
+        <div id="cheat">
+          <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
+          <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
+          stage, unnamed characters continue) &nbsp;·&nbsp;
+          <span class="kw">## Call-off</span> where every fail goes<br />
+          <b>duties</b>: <span class="kw">goto</span> room|character (seat=) ·
+          <span class="kw">stay</span> · <span class="kw">say</span> line (dwell=, quotes optional)
+          · <span class="kw">converse</span> partner opening-line-spoken-by-this-character ·
+          <span class="kw">do</span> activity (picker pops after do, unknown = stub) ·
+          <span class="kw">free</span> release to own AI (duties otherwise carry)<br />
+          <b>-&gt; advance</b> (several = first wins):
+          <span class="kw">arrived | duration N | event name</span> - optional when the stage has a
+          say/converse (it ends itself: line read / conversation over), required otherwise<br />
+          <b>!&gt; give up</b> -&gt; call-off (optional, a default timeout is always on):
+          <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
+        </div>
+        <textarea id="src" spellcheck="false"></textarea>
+        <div id="ac"></div>
+        <div id="errors"></div>
+      </div>
+      <div id="board-pane">
+        <div id="preview">
+          <div id="map">
+            <svg id="convo-svg"></svg>
+            <div class="room" style="left: 2%; top: 2%; width: 44%; height: 30%">
+              <div class="rlabel">kitchen</div>
+            </div>
+            <div class="room" style="left: 48%; top: 2%; width: 50%; height: 34%">
+              <div class="rlabel">grete_room</div>
+            </div>
+            <div class="room" style="left: 2%; top: 34%; width: 42%; height: 52%">
+              <div class="rlabel">living_room</div>
+            </div>
+            <div class="room" style="left: 48%; top: 38%; width: 26%; height: 30%">
+              <div class="rlabel">bathroom</div>
+            </div>
+            <div class="room" style="left: 76%; top: 38%; width: 22%; height: 40%">
+              <div class="rlabel">elling_room</div>
+            </div>
+            <div class="room" style="left: 46%; top: 70%; width: 24%; height: 18%">
+              <div class="rlabel">entrance</div>
+            </div>
+            <div class="room" style="left: 36%; top: 90%; width: 44%; height: 9%">
+              <div class="rlabel">hallway</div>
+            </div>
+            <div class="prop" style="left: 5%; top: 56%">sofa</div>
+            <div class="prop" style="left: 53%; top: 86%">door</div>
+            <div id="tokens"></div>
+            <div id="bubbles"></div>
+          </div>
+          <div id="pv-controls">
+            <button id="pv-prev">&#8676; Prev</button>
+            <button id="pv-play">&#9654; Play</button>
+            <button id="pv-next">Next &#8677;</button>
+            <span id="pv-stage"></span>
+            <span id="pv-end"></span>
+          </div>
+        </div>
+        <div id="board"></div>
+      </div>
+    </main>
+    <div id="ref">
+      <div class="cols">
+        <div class="col">
+          <h2>Current markup (serial queue) - oppdrag_alene</h2>
+          <pre id="ref-old"></pre>
+        </div>
+        <div class="col">
+          <h2>Hardcoded arrival spine (social_visit_director.gd)</h2>
+          <pre id="ref-spine"></pre>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/plain" id="seed">
+      # Visit: oppdrag_alene
+      Title: Klarer han seg alene?
+
+      ==
+      - frank: goto entrance
+      - grete: do answer_door
+      -> event answer_door
+      !> timeout 8
+
+      ==
+      - grete: converse frank du ringte i sted - kom inn.
+      - elling: stay living_room
+
+      ==
+      - grete: say Jeg har ikke rukket å rydde.
+
+      ==
+      - frank: goto living_room
+      - grete: goto living_room
+      -> arrived
+      !> unreachable grace=4
+
+      ==
+      - grete: say Elling! Frank er her.
+
+      ==
+      - frank: goto elling
+      -> arrived
+      !> unreachable grace=2
+
+      ==
+      - frank: say hei, Elling.
+
+      ==
+      - frank: goto living_room seat=sofa
+      - grete: do make_tea
+      -> arrived
+
+      ==
+      - grete: goto living_room
+      -> arrived
+      !> timeout 14
+
+      ==
+      - grete: converse frank han spiser lite om dagen.
+
+      ==
+      - frank: say Er det Nansen du leser om?
+
+      ==
+      - elling: say Nansen lot Fram fryse fast i isen. 1893. Det var planen hele tiden.
+
+      ==
+      - frank: say Liker du å bo her, Elling?
+
+      ==
+      - grete: say Han har det fint her. Han har alt han trenger.
+
+      ==
+      - grete: say Jeg må bare sette meg litt.
+
+      ==
+      - frank: goto entrance
+      - grete: goto entrance
+      -> arrived
+      !> timeout 10
+
+      ==
+      - grete: say Du så hvordan han er. Han er en smart gutt.
+
+      ==
+      - frank: do leave
+      -> event left
+
+      ## Call-off
+
+      ==
+      - frank: goto entrance
+      - grete: stay
+      -> arrived
+      !> timeout 6
+    </script>
+
+    <script type="text/plain" id="old-markup">
+      # Visit: oppdrag_alene
+
+      Title: Klarer han seg alene?
+      Blurb: Se på Elling. Hva klarer han, hva klarer han ikke.
+
+      - ! grete: blir i stua @ living_room [id=opp_a_hold duration=18 no_wait]
+      - ? elling @ living_room [id=opp_a6 beat=a6 duration=8]
+      - frank: "Er det Nansen du leser om?" [id=opp_a2 beat=a2 dwell=4]
+      - elling: "Nansen lot Fram fryse fast i isen. 1893." [id=opp_a3 beat=a3 dwell=4]
+      - frank: "Liker du å bo her, Elling?" [id=opp_a4 beat=a4 dwell=4]
+      - grete: "Han har det fint her." [id=opp_a5 beat=a5 dwell=4]
+    </script>
+
+    <script type="text/plain" id="spine-steps">
+      frank_door_wait   urgent  frank  entrance, 2 min
+      grete_answer      await_answer
+      grete_hold_door   urgent  grete  entrance, 8 min, no_wait   (band-aid)
+      hallway_talk      conversation  frank->grete
+      grete_host_hold   urgent  grete  living_room, 30 min, no_wait  (band-aid)
+      gang_rydde        line    grete
+      move_in           urgent  frank  living_room, 2 min
+      rope_elling       line    grete
+      venter_elling     line    grete
+      greet_elling      urgent  frank  @elling, 2 min
+      frank_sofa        urgent  frank  seat, complete_on_seat
+      tea_prep          catalog grete  MAKE_TEA
+      grete_tea_hold    urgent  grete  living_room, 14 min, no_wait  (band-aid)
+      tea_serve         urgent  frank  tea=true (posture hack)
+      grete_join        urgent  grete  living_room, 2 min
+      sofa_talk         conversation  grete->frank
+      [oppdrag beats spliced here]
+      grete_sette_seg   line    grete
+      escort            urgent  grete  entrance, 2 min
+      frank_exit        urgent  frank  entrance, 1 min
+    </script>
+
+    <script>
+      const ROLES = ['frank', 'grete', 'elling'];
+      const DUTIES = ['goto', 'stay', 'say', 'converse', 'do', 'free'];
+      // Snake-cased from core-loop ActivityIds (activity_ids.gd) + leave.
+      const KNOWN_ACTIVITIES = [
+        'answer_the_phone',
+        'answer_door',
+        'bake',
+        'check_on_elling',
+        'check_windows',
+        'cook_meal',
+        'create_routine',
+        'daydream',
+        'do_crossword',
+        'do_the_shopping',
+        'drink_tea',
+        'eat_meal',
+        'go_to_the_shop',
+        'grab_a_snack',
+        'get_delivery_from_door',
+        'hide',
+        'knit',
+        'check_locks',
+        'look_through_window',
+        'make_brodskive',
+        'make_tea',
+        'pace_the_apartment',
+        'paint_at_easel',
+        'read_book',
+        'read_magazine',
+        'read_poem_aloud',
+        'rest_nap',
+        'sew_mend',
+        'sit_on_porch',
+        'small_talk',
+        'take_a_walk',
+        'tidy_up',
+        'wash_dishes',
+        'sort_post',
+        'shelve_books',
+        'try_new_recipe',
+        'turn_off_radio',
+        'turn_on_radio',
+        'use_bathroom',
+        'wash_hands',
+        'use_telescope',
+        'watch_tv',
+        'water_plants',
+        'write_in_journal',
+        'write_poetry',
+        'leave',
+      ];
+      const END_KINDS = ['arrived', 'roles-arrived', 'duration', 'event'];
+      const FAIL_KINDS = ['timeout', 'unreachable', 'role-lost'];
+      const LS_KEY = 'visit-syntax-probe-v1';
+
+      const $ = (id) => document.getElementById(id);
+      const seed =
+        $('seed')
+          .textContent.split('\n')
+          .map((l) => l.trimStart())
+          .join('\n')
+          .trim() + '\n';
+
+      function parse(text) {
+        const stages = [];
+        const errors = [];
+        let meta = { visit: '', title: '' };
+        let section = 'main';
+        let cur = null;
+        const lines = text.split('\n');
+        lines.forEach((raw, i) => {
+          const n = i + 1;
+          const line = raw.trim();
+          if (!line) return;
+          if (line.startsWith('# Visit:')) {
+            meta.visit = line.slice(8).trim();
+            return;
+          }
+          if (/^title:/i.test(line)) {
+            meta.title = line.slice(6).trim();
+            return;
+          }
+          if (/^##\s*call-?off/i.test(line)) {
+            section = 'calloff';
+            cur = null;
+            return;
+          }
+          if (line.startsWith('==')) {
+            cur = { name: line.slice(2).trim(), line: n, section, duties: {}, ends: [], fails: [] };
+            stages.push(cur);
+            return;
+          }
+          if (!cur) {
+            errors.push({ line: n, msg: `line outside a stage: "${line}"` });
+            return;
+          }
+          if (line.startsWith('->')) {
+            const t = parseEnd(line.slice(2).trim(), n, errors);
+            if (t) cur.ends.push(t);
+            return;
+          }
+          if (line.startsWith('!>')) {
+            const t = parseFail(line.slice(2).trim(), n, errors);
+            if (t) cur.fails.push(t);
+            return;
+          }
+          if (line.startsWith('-')) {
+            parseDuty(line.slice(1).trim(), cur, n, errors);
+            return;
+          }
+          errors.push({ line: n, msg: `unrecognized line: "${line}"` });
+        });
+        stages.forEach((s, i) => {
+          if (!s.name) {
+            s.name = String(i + 1);
+            s.auto = true;
+          }
+          if (s.ends.length === 0) {
+            const selfTerm = Object.values(s.duties).some(
+              (d) => d.verb === 'say' || d.verb === 'converse',
+            );
+            if (selfTerm) {
+              s.autoEnd = Object.values(s.duties).some((d) => d.verb === 'converse')
+                ? 'conversation ends'
+                : 'line read';
+            } else {
+              errors.push({
+                line: s.line,
+                msg: `stage "${s.name}" never ends: no end trigger and nothing self-terminating (say/converse)`,
+                stage: s,
+              });
+            }
+          }
+        });
+        return { meta, stages, errors };
+      }
+
+      function parseEnd(rest, n, errors) {
+        const [kind, ...args] = rest.split(/\s+/);
+        if (kind === 'arrived' || kind === 'roles-arrived') return { kind: 'arrived' };
+        if (kind === 'duration') {
+          if (!args[0] || isNaN(+args[0])) {
+            errors.push({ line: n, msg: 'duration needs a number of minutes' });
+            return null;
+          }
+          return { kind: 'duration', min: +args[0] };
+        }
+        if (kind === 'event') {
+          if (!args[0]) {
+            errors.push({ line: n, msg: 'event needs a name' });
+            return null;
+          }
+          return { kind: 'event', name: args[0] };
+        }
+        errors.push({ line: n, msg: `unknown end trigger "${kind}" (arrived | duration | event)` });
+        return null;
+      }
+
+      function parseFail(rest, n, errors) {
+        const [kind, ...args] = rest.split(/\s+/);
+        const grace = (args.join(' ').match(/grace=(\d+)/) || [])[1];
+        if (kind === 'timeout') {
+          if (!args[0] || isNaN(+args[0])) {
+            errors.push({ line: n, msg: 'timeout needs a number of minutes' });
+            return null;
+          }
+          return { kind: 'timeout', min: +args[0] };
+        }
+        if (kind === 'unreachable') return { kind: 'unreachable', grace };
+        if (kind === 'role-lost') {
+          const role = args.find((a) => ROLES.includes(a));
+          if (!role) {
+            errors.push({ line: n, msg: 'role-lost needs a role (frank|grete|elling)' });
+            return null;
+          }
+          return { kind: 'role-lost', role, grace };
+        }
+        errors.push({
+          line: n,
+          msg: `unknown fail trigger "${kind}" (timeout | unreachable | role-lost)`,
+        });
+        return null;
+      }
+
+      function parseDuty(rest, stage, n, errors) {
+        const m = rest.match(/^(\w+):\s*(.*)$/);
+        if (!m) {
+          errors.push({ line: n, msg: `duty line needs "character: duty ..." ("${rest}")` });
+          return;
+        }
+        const role = m[1].toLowerCase();
+        if (!ROLES.includes(role)) {
+          errors.push({ line: n, msg: `unknown character "${role}" (frank|grete|elling)` });
+          return;
+        }
+        if (stage.duties[role]) {
+          errors.push({
+            line: n,
+            msg: `${role} already has a duty in stage "${stage.name}" (one duty per character per stage)`,
+          });
+          return;
+        }
+        const body = m[2].trim();
+        const verb = body.split(/\s+/)[0] || '';
+        if (!DUTIES.includes(verb)) {
+          errors.push({
+            line: n,
+            msg: `unknown duty "${verb || '(none)'}" (goto|stay|say|converse|do|free)`,
+          });
+          return;
+        }
+        let text = body.slice(verb.length).trim();
+        const params = {};
+        let pm;
+        while ((pm = text.match(/(?:^|\s)(\w+)=(\S+)$/))) {
+          params[pm[1]] = pm[2];
+          text = text.slice(0, pm.index).trim();
+        }
+        const unquote = (t) =>
+          t.length > 1 && t.startsWith('"') && t.endsWith('"') ? t.slice(1, -1) : t;
+        const duty = { verb, params };
+        if (verb === 'goto' || verb === 'stay') {
+          duty.target = text.split(/\s+/)[0] || null;
+          if (verb === 'goto' && !duty.target)
+            errors.push({
+              line: n,
+              msg: `goto needs a room or character (stage "${stage.name}")`,
+            });
+        } else if (verb === 'do') {
+          duty.activity = text.split(/\s+/)[0] || null;
+          if (!duty.activity)
+            errors.push({ line: n, msg: `do needs an activity (stage "${stage.name}")` });
+        } else if (verb === 'say') {
+          if (!text) {
+            errors.push({ line: n, msg: `say needs a line (stage "${stage.name}")` });
+          } else {
+            duty.line = unquote(text);
+          }
+        } else if (verb === 'converse') {
+          const partner = text.split(/\s+/)[0] || null;
+          duty.partner = partner;
+          if (!partner) {
+            errors.push({ line: n, msg: `converse needs a partner (stage "${stage.name}")` });
+          } else {
+            const lineText = text.slice(partner.length).trim();
+            if (lineText) duty.line = unquote(lineText);
+          }
+        }
+        stage.duties[role] = duty;
+      }
+
+      function dutyText(d) {
+        let s = `<span class="dw">${d.verb}</span>`;
+        if (d.target) s += ' ' + esc(d.target);
+        if (d.partner) s += ' ' + esc(d.partner);
+        if (d.activity) {
+          s += ' ' + esc(d.activity);
+          if (!KNOWN_ACTIVITIES.includes(d.activity)) s += ' <span class="stub">stub</span>';
+        }
+        for (const [k, v] of Object.entries(d.params)) s += ` ${esc(k)}=${esc(v)}`;
+        if (d.line !== undefined) s += `<span class="quote">"${esc(d.line)}"</span>`;
+        return s;
+      }
+
+      function endText(t) {
+        if (t.kind === 'arrived') return 'roles-arrived';
+        if (t.kind === 'duration') return `duration ${t.min}m`;
+        return `event:${esc(t.name)}`;
+      }
+
+      function failText(t) {
+        let s = t.kind;
+        if (t.min) s += ` ${t.min}m`;
+        if (t.role) s += ` ${esc(t.role)}`;
+        if (t.grace) s += ` grace=${t.grace}m`;
+        return s + ' -> call-off';
+      }
+
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      let model = { stages: [], errors: [], meta: {} };
+      let sel = 0;
+      let playing = null;
+
+      function render() {
+        const text = $('src').value;
+        localStorage.setItem(LS_KEY, text);
+        const { meta, stages, errors } = parse(text);
+        model = { meta, stages, errors };
+        const board = $('board');
+        let html = '';
+        if (meta.visit)
+          html += `<div class="visit-title">${esc(meta.visit)}${meta.title ? ' - ' + esc(meta.title) : ''}</div>`;
+        const carried = {};
+        let lastSection = null;
+        stages.forEach((s, idx) => {
+          if (s.section !== lastSection) {
+            lastSection = s.section;
+            html +=
+              s.section === 'calloff'
+                ? '<div class="section-label calloff">Call-off (every fail trigger routes here)</div>'
+                : '<div class="section-label">Stages</div>';
+            Object.keys(carried).forEach((k) => delete carried[k]);
+          } else if (idx > 0) {
+            html += '<div class="arrow">&darr;</div>';
+          }
+          const hasErr = errors.some((e) => e.stage === s);
+          html += `<div class="stage ${s.section === 'calloff' ? 'calloff' : ''} ${hasErr ? 'has-error' : ''}" data-idx="${idx}">`;
+          html += `<div class="stage-head"><span class="idx">${idx + 1}</span><span class="name">${s.auto ? '==' : '== ' + esc(s.name)}</span>`;
+          const endLabel = s.ends.length
+            ? s.ends.map(endText).join(' OR ')
+            : s.autoEnd
+              ? `auto: ${s.autoEnd}`
+              : '(never ends)';
+          html += `<span class="endt ${s.ends.length ? '' : 'auto'}">${endLabel}</span></div>`;
+          html += '<div class="lanes">';
+          s.resolved = {};
+          ROLES.forEach((r) => {
+            const d = s.duties[r];
+            const conv = ROLES.find(
+              (o) => o !== r && s.duties[o]?.verb === 'converse' && s.duties[o]?.partner === r,
+            );
+            if (d && d.verb === 'free') {
+              delete carried[r];
+              s.resolved[r] = { d: null, mode: 'free' };
+              html += `<div class="lane ${r} idle"><div class="who">${r}</div><div class="duty"><span class="dw">free</span> (own AI)</div></div>`;
+            } else if (d) {
+              carried[r] = d;
+              s.resolved[r] = { d, mode: 'explicit' };
+              html += `<div class="lane ${r}"><div class="who">${r}</div><div class="duty">${dutyText(d)}</div></div>`;
+            } else if (conv) {
+              carried[r] = { verb: 'converse', partner: conv, params: {} };
+              s.resolved[r] = { d: carried[r], mode: 'partner' };
+              html += `<div class="lane ${r}"><div class="who">${r}</div><div class="duty"><span class="dw">converse</span> ${conv} (partner)</div></div>`;
+            } else if (carried[r]) {
+              s.resolved[r] = { d: carried[r], mode: 'carried' };
+              html += `<div class="lane ${r} carried"><div class="who">${r}</div><div class="duty">${dutyText(carried[r])}</div></div>`;
+            } else {
+              s.resolved[r] = { d: null, mode: 'free' };
+              html += `<div class="lane ${r} idle"><div class="who">${r}</div><div class="duty">free (own AI)</div></div>`;
+            }
+          });
+          html += '</div>';
+          const fails = s.fails.map((f) => `<span class="failt">&#9888; ${failText(f)}</span>`);
+          if (!s.fails.some((f) => f.kind === 'timeout'))
+            fails.push('<span class="failt implicit">&#9888; timeout (engine default)</span>');
+          html += `<div class="stage-foot">${fails.join('')}`;
+          if (hasErr) html += '<span class="serr">needs an end trigger</span>';
+          html += '</div></div>';
+        });
+        if (!stages.length) html += '<div class="section-label">Nothing parsed yet.</div>';
+        board.innerHTML = html;
+        $('errors').innerHTML = errors.length
+          ? errors.map((e) => `<div class="e">line ${e.line}: ${esc(e.msg)}</div>`).join('')
+          : `<div class="ok">parses clean - ${stages.length} stages</div>`;
+        renderMap();
+      }
+
+      /* ---- choreography preview ---- */
+      const ROOM_XY = {
+        kitchen: { x: 22, y: 16 },
+        grete_room: { x: 72, y: 17 },
+        living_room: { x: 21, y: 60 },
+        bathroom: { x: 60, y: 52 },
+        elling_room: { x: 86, y: 57 },
+        entrance: { x: 57, y: 78 },
+        hallway: { x: 57, y: 94 },
+        outside: { x: 57, y: 94 },
+      };
+      const SLOT = { frank: { x: -6, y: 6 }, grete: { x: 0, y: -6 }, elling: { x: 7, y: 5 } };
+      const SOFA = { x: 12, y: 60 };
+
+      function simulate(stages, upto) {
+        const pos = {
+          frank: { room: 'hallway' },
+          grete: { room: 'living_room' },
+          elling: { room: 'living_room' },
+        };
+        for (let i = 0; i <= upto && i < stages.length; i++) {
+          const s = stages[i];
+          ROLES.forEach((r) => {
+            const d = s.duties[r];
+            if (!d) return;
+            if (d.verb === 'goto' && d.target) {
+              const t = d.target.startsWith('@') ? d.target.slice(1) : d.target;
+              if (ROLES.includes(t)) {
+                pos[r] = { room: (pos[t] || {}).room || 'living_room', near: t };
+              } else {
+                pos[r] = { room: d.target, seat: d.params.seat };
+              }
+            }
+            if (d.verb === 'stay') {
+              if (d.target) pos[r] = { ...pos[r], room: d.target };
+              if (d.params.seat) pos[r] = { ...pos[r], seat: d.params.seat };
+            }
+            if (d.verb === 'do' && d.activity === 'answer_door') pos[r] = { room: 'entrance' };
+            if (d.verb === 'do' && d.activity === 'make_tea') pos[r] = { room: 'kitchen' };
+            if (d.verb === 'do' && (d.activity === 'leave' || d.activity === 'exit'))
+              pos[r] = { room: 'hallway' };
+          });
+        }
+        return pos;
+      }
+
+      function renderMap() {
+        const stages = model.stages;
+        const svg = $('convo-svg');
+        if (!stages.length) {
+          $('tokens').innerHTML = '';
+          $('bubbles').innerHTML = '';
+          svg.innerHTML = '';
+          $('pv-stage').textContent = 'no stages';
+          $('pv-end').textContent = '';
+          return;
+        }
+        sel = Math.max(0, Math.min(sel, stages.length - 1));
+        const s = stages[sel];
+        const pos = simulate(stages, sel);
+        const pts = {};
+        ROLES.forEach((r) => {
+          const p = pos[r];
+          if (p.seat === 'sofa') {
+            pts[r] = { x: SOFA.x + SLOT[r].x * 0.5, y: SOFA.y + SLOT[r].y * 0.5 };
+            return;
+          }
+          const base = ROOM_XY[p.room] || ROOM_XY.living_room;
+          pts[r] = { x: base.x + SLOT[r].x, y: base.y + SLOT[r].y };
+        });
+        ROLES.forEach((r) => {
+          const p = pos[r];
+          if (p.near && pts[p.near]) pts[r] = { x: pts[p.near].x - 9, y: pts[p.near].y - 3 };
+        });
+        let th = '';
+        ROLES.forEach((r) => {
+          const res = s.resolved?.[r];
+          let label = 'free';
+          if (res && res.d) {
+            label = res.d.verb + (res.d.activity ? ' ' + res.d.activity : '');
+            if (res.d.activity && !KNOWN_ACTIVITIES.includes(res.d.activity)) label += ' (stub)';
+            if (res.mode === 'carried') label += ' ..';
+          }
+          th += `<div class="token ${r}" style="left:${pts[r].x}%;top:${pts[r].y}%">${r}<div class="tduty">${esc(label)}</div></div>`;
+        });
+        $('tokens').innerHTML = th;
+        let bh = '';
+        ROLES.forEach((r) => {
+          const d = s.duties[r];
+          if (d && d.line !== undefined && (d.verb === 'say' || d.verb === 'converse'))
+            bh += `<div class="bubble" style="left:${pts[r].x}%;top:${pts[r].y}%">"${esc(d.line)}"</div>`;
+        });
+        $('bubbles').innerHTML = bh;
+        let lines = '';
+        ROLES.forEach((r) => {
+          const d = s.duties[r];
+          if (d && d.verb === 'converse' && d.partner && pts[d.partner])
+            lines += `<line x1="${pts[r].x}%" y1="${pts[r].y}%" x2="${pts[d.partner].x}%" y2="${pts[d.partner].y}%"></line>`;
+        });
+        svg.innerHTML = lines;
+        $('pv-stage').textContent =
+          `stage ${sel + 1}/${stages.length}${s.auto ? '' : ' == ' + s.name}${s.section === 'calloff' ? ' (call-off)' : ''}`;
+        $('pv-end').textContent = s.ends.length
+          ? s.ends.map(endText).join(' OR ')
+          : s.autoEnd
+            ? `auto: ${s.autoEnd}`
+            : '(never ends)';
+        document
+          .querySelectorAll('.stage')
+          .forEach((el) => el.classList.toggle('sel', +el.dataset.idx === sel));
+      }
+
+      function setSel(i, scroll) {
+        sel = i;
+        renderMap();
+        if (scroll) {
+          const el = document.querySelector(`.stage[data-idx="${sel}"]`);
+          if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+
+      function stopPlay() {
+        clearInterval(playing);
+        playing = null;
+        $('pv-play').innerHTML = '&#9654; Play';
+      }
+
+      $('pv-prev').addEventListener('click', () => {
+        stopPlay();
+        setSel(Math.max(0, sel - 1), true);
+      });
+      $('pv-next').addEventListener('click', () => {
+        stopPlay();
+        setSel(Math.min(model.stages.length - 1, sel + 1), true);
+      });
+      $('pv-play').addEventListener('click', () => {
+        if (playing) return stopPlay();
+        if (sel >= model.stages.length - 1) sel = -1;
+        $('pv-play').innerHTML = '&#10074;&#10074; Pause';
+        playing = setInterval(() => {
+          if (sel >= model.stages.length - 1) return stopPlay();
+          setSel(sel + 1, true);
+        }, 1300);
+        setSel(sel + 1, true);
+      });
+      $('board').addEventListener('click', (e) => {
+        const st = e.target.closest('.stage');
+        if (st) {
+          stopPlay();
+          setSel(+st.dataset.idx, false);
+        }
+      });
+
+      $('src').value = localStorage.getItem(LS_KEY) || seed;
+      $('src').addEventListener('input', render);
+      $('btn-reset').addEventListener('click', () => {
+        if (confirm('Discard your rewrite and restore the seed markup?')) {
+          $('src').value = seed;
+          render();
+        }
+      });
+      $('btn-copy').addEventListener('click', () => {
+        navigator.clipboard.writeText($('src').value);
+        $('btn-copy').textContent = 'Copied';
+        setTimeout(() => ($('btn-copy').textContent = 'Copy markup'), 1200);
+      });
+      $('btn-ref').addEventListener('click', () => $('ref').classList.toggle('open'));
+      /* ---- activity picker (after "do ") ---- */
+      const AC = $('ac');
+      let acItems = [];
+      let acOn = -1;
+      let acStart = 0;
+      const mirror = document.createElement('div');
+      document.body.appendChild(mirror);
+
+      function caretXY(ta) {
+        const cs = getComputedStyle(ta);
+        for (const k of [
+          'fontFamily',
+          'fontSize',
+          'lineHeight',
+          'paddingTop',
+          'paddingLeft',
+          'paddingRight',
+          'tabSize',
+        ])
+          mirror.style[k] = cs[k];
+        mirror.style.position = 'absolute';
+        mirror.style.visibility = 'hidden';
+        mirror.style.whiteSpace = 'pre';
+        mirror.style.width = ta.clientWidth + 'px';
+        mirror.textContent = ta.value.slice(0, ta.selectionStart);
+        const marker = document.createElement('span');
+        marker.textContent = '\u200b';
+        mirror.appendChild(marker);
+        return {
+          x: marker.offsetLeft - ta.scrollLeft,
+          y: marker.offsetTop - ta.scrollTop + (parseFloat(cs.lineHeight) || 18),
+        };
+      }
+
+      function acClose() {
+        AC.style.display = 'none';
+        acItems = [];
+        acOn = -1;
+      }
+
+      function acRender() {
+        AC.innerHTML =
+          acItems
+            .map(
+              (a, i) => `<div class="it ${i === acOn ? 'on' : ''}" data-i="${i}">${esc(a)}</div>`,
+            )
+            .join('') + '<div class="hint">anything else = stub</div>';
+      }
+
+      function acAccept(i) {
+        const ta = $('src');
+        ta.setRangeText(acItems[i], acStart, ta.selectionStart, 'end');
+        acClose();
+        render();
+        ta.focus();
+      }
+
+      function acCheck() {
+        const ta = $('src');
+        if (document.activeElement !== ta) return acClose();
+        const upto = ta.value.slice(0, ta.selectionStart);
+        const line = upto.slice(upto.lastIndexOf('\n') + 1);
+        const m = line.match(/-\s*\w+:\s*do\s+([a-z0-9_]*)$/i);
+        if (!m) return acClose();
+        const prefix = m[1].toLowerCase();
+        acStart = ta.selectionStart - m[1].length;
+        acItems = KNOWN_ACTIVITIES.filter((a) => a.includes(prefix))
+          .sort(
+            (a, b) =>
+              (b.startsWith(prefix) ? 1 : 0) - (a.startsWith(prefix) ? 1 : 0) || a.localeCompare(b),
+          )
+          .slice(0, 8);
+        if (!acItems.length) return acClose();
+        acOn = 0;
+        const pos = caretXY(ta);
+        AC.style.left = Math.min(ta.offsetLeft + pos.x, ta.clientWidth - 200) + 'px';
+        AC.style.top = ta.offsetTop + pos.y + 'px';
+        AC.style.display = 'block';
+        acRender();
+      }
+
+      $('src').addEventListener('input', acCheck);
+      $('src').addEventListener('click', acCheck);
+      $('src').addEventListener('blur', () => setTimeout(acClose, 150));
+      $('src').addEventListener('keydown', (e) => {
+        if (AC.style.display !== 'block') {
+          if (e.key === 'Tab') {
+            const ta = e.target;
+            ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end');
+            e.preventDefault();
+            render();
+          }
+          return;
+        }
+        if (e.key === 'ArrowDown') {
+          acOn = (acOn + 1) % acItems.length;
+          acRender();
+          e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
+          acOn = (acOn - 1 + acItems.length) % acItems.length;
+          acRender();
+          e.preventDefault();
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+          acAccept(acOn);
+          e.preventDefault();
+        } else if (e.key === 'Escape') {
+          acClose();
+          e.preventDefault();
+        }
+      });
+      AC.addEventListener('mousedown', (e) => {
+        const it = e.target.closest('.it');
+        if (it) {
+          acAccept(+it.dataset.i);
+          e.preventDefault();
+        }
+      });
+
+      $('ref-old').textContent = $('old-markup').textContent.trim();
+      $('ref-spine').textContent = $('spine-steps').textContent.trim();
+      render();
+    </script>
+  </body>
+</html>
