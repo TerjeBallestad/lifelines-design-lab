@@ -512,6 +512,69 @@
         padding: 8px 18px 9px;
         font-family: var(--mono);
         font-size: 11.5px;
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+      }
+      .d-main {
+        flex: 1;
+        min-width: 0;
+      }
+      /* Mock of the planning screen (game UI, engine-side SDD territory):
+         where Title/Blurb and the goals' plan: lines land for the player. */
+      #plan-mock {
+        flex: 0 0 260px;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px 9px;
+        font-family: var(--sans);
+        font-size: 11.5px;
+      }
+      .pm-kind {
+        font-family: var(--mono);
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--ink-faint);
+        margin-bottom: 4px;
+      }
+      .pm-title {
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .pm-blurb {
+        font-style: italic;
+        color: var(--ink-dim);
+        margin: 2px 0 6px;
+      }
+      .pm-goals {
+        list-style: none;
+      }
+      .pm-goals li {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+        padding: 3px 0;
+        border-top: 1px dashed var(--line);
+      }
+      .pm-goals .n {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--ink-faint);
+      }
+      .pm-goals .v {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .pm-offer {
+        margin-top: 6px;
+        padding-top: 5px;
+        border-top: 1px solid var(--line);
+        color: var(--ink-dim);
+        font-size: 10.5px;
       }
       .d-row {
         display: flex;
@@ -558,19 +621,19 @@
         line-height: 1.9;
         color: var(--ink-dim);
       }
-      .d-run .g-ok {
+      #director .g-ok {
         color: var(--ok);
       }
-      .d-run .g-den {
+      #director .g-den {
         color: var(--fail);
       }
-      .d-run .g-end {
+      #director .g-end {
         color: var(--end);
       }
-      .d-run .g-skip {
+      #director .g-skip {
         color: var(--ink-faint);
       }
-      .d-run .g-arr {
+      #director .g-arr {
         color: var(--ink-faint);
       }
       /* ---- reference drawer ---- */
@@ -669,8 +732,11 @@
           </div>
         </div>
         <div id="director">
-          <div class="d-row" id="d-controls"></div>
-          <div class="d-run" id="d-run"></div>
+          <div id="plan-mock"></div>
+          <div class="d-main">
+            <div class="d-row" id="d-controls"></div>
+            <div class="d-run" id="d-run"></div>
+          </div>
         </div>
         <div id="board"></div>
       </div>
@@ -1353,6 +1419,35 @@
         return { seq, end, time, skipped };
       }
 
+      // The planning screen, mocked: Title/Blurb head the card, each goal
+      // contributes its plan: line in player order, the Offer sits below as
+      // Frank's spoken proposal. Verdicts double as the visit report
+      // (planned vs achieved vs denied, DD-010).
+      function renderPlanMock(meta, goals, run) {
+        const el = $('plan-mock');
+        let html = '<div class="pm-kind">Planning screen - Frank\'s plan</div>';
+        if (meta.title) html += `<div class="pm-title">${esc(meta.title)}</div>`;
+        if (meta.blurb) html += `<div class="pm-blurb">${esc(meta.blurb)}</div>`;
+        if (!goals.length) {
+          el.innerHTML = html + '<div class="pm-blurb">(no goals parsed)</div>';
+          return;
+        }
+        html += '<ul class="pm-goals">';
+        goals.forEach((g, i) => {
+          const played = run.seq.findIndex((e) => e.name === g.name);
+          let v;
+          if (played >= 0 && !run.seq[played].denied)
+            v = '<span class="v g-ok">&#10003; done</span>';
+          else if (played >= 0) v = '<span class="v g-den">&#10007; denied</span>';
+          else v = '<span class="v g-skip">not reached</span>';
+          html += `<li><span class="n">${i + 1}.</span><span>${esc(g.plan || g.name)}</span>${v}</li>`;
+        });
+        html += '</ul>';
+        if (meta.offer)
+          html += `<div class="pm-offer">Offered in conversation: <i>"${esc(meta.offer)}"</i></div>`;
+        el.innerHTML = html;
+      }
+
       let dControlsKey = '';
       function renderDirector(goals, run) {
         const factIds = [
@@ -1458,6 +1553,7 @@
         model.goals = goals;
         const run = directorRun(goals);
         renderDirector(goals, run);
+        renderPlanMock(meta, goals, run);
         const board = $('board');
         let html = '';
         if (meta.visit)
