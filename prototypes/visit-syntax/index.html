@@ -692,7 +692,7 @@
     <header>
       <h1>Goal syntax probe</h1>
       <div class="q">
-        An Oppdrag is goals, not a spine (DD-010). Does the goal wrapper - need / cost / yield -
+        An Oppdrag is goals, not a spine (DD-010). Does the goal wrapper - plan / need / yield -
         read like the plan Frank carries in? Rewrite the goals on the left. The director pass shows
         what a visit does with them. Rule on feel, not on polish.
       </div>
@@ -712,8 +712,8 @@
           <span class="kw">plan:</span> the line on Frank's plan screen ·
           <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
           denial, comma list ·
-          <span class="kw">cost: 8</span> minutes, omit = derived from the scene (~) ·
-          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks<br />
+          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks · time cost is not
+          authored - it derives from the scene (~ on the card)<br />
           <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
           <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
           stage, unnamed characters continue) &nbsp;·&nbsp; a fail inside a goal
@@ -784,7 +784,6 @@
       ## Goal: nansen
       plan: Se hva han leser
       need: elling
-      cost: 6
       yield: f_bok, open q_evner
 
       ==
@@ -813,7 +812,6 @@
       ## Goal: avstand
       plan: Se hvordan han beveger seg
       need: elling, not f_avstand
-      cost: 8
       yield: f_avstand
 
       ==
@@ -1017,7 +1015,7 @@
             const name = m[1].trim() || 'goal_' + (goals.length + 1);
             if (goals.some((g) => g.name === name))
               errors.push({ line: n, msg: `duplicate goal name "${name}"` });
-            curGoal = { name, line: n, plan: '', needs: [], cost: null, yields: [], stages: [] };
+            curGoal = { name, line: n, plan: '', needs: [], yields: [], stages: [] };
             goals.push(curGoal);
             section = 'goal:' + goals.length;
             cur = null;
@@ -1032,10 +1030,11 @@
               parseNeeds(m[1], curGoal, n, errors);
               return;
             }
-            if ((m = line.match(/^cost\s*:\s*(.*)$/i))) {
-              if (isNaN(+m[1].trim()))
-                errors.push({ line: n, msg: `cost needs a number of minutes ("${m[1].trim()}")` });
-              else curGoal.cost = +m[1].trim();
+            if (line.match(/^cost\s*:/i)) {
+              errors.push({
+                line: n,
+                msg: 'cost is not authored - it derives from the scene (ruled in this probe)',
+              });
               return;
             }
             if ((m = line.match(/^yield\s*:\s*(.*)$/i)) || (m = line.match(/^\+\s+(.*)$/))) {
@@ -1171,7 +1170,7 @@
       }
 
       function goalCost(g) {
-        return g.cost != null ? g.cost : derivedCost(g);
+        return derivedCost(g);
       }
 
       // Sticky-duty semantics in one pass: explicit duties carry into later
@@ -1534,10 +1533,7 @@
       }
 
       function goalCard(g, run) {
-        const cost =
-          g.cost != null
-            ? `${g.cost}m`
-            : `~${derivedCost(g)}m <span class="derived">(derived from the scene)</span>`;
+        const cost = `~${derivedCost(g)}m <span class="derived">(from the scene)</span>`;
         const needs = g.needs.length
           ? g.needs.map((nd) => esc(needText(nd))).join(', ')
           : '<span class="derived">(none - always attemptable)</span>';
