@@ -4,7 +4,13 @@
 import { render } from 'lit-html';
 import { describe, expect, it } from 'vitest';
 import type { StringTableOut } from '../../src/compiler/emit-visit.ts';
-import { emptyRowCount, stringRows, stringsPreview } from './strings-views.ts';
+import {
+  FAMILY_INFO,
+  emptyRowCount,
+  stringRows,
+  stringsPreview,
+  tiltakGroups,
+} from './strings-views.ts';
 
 const table = (over: Partial<StringTableOut> = {}): StringTableOut => ({
   id: 'strings_notat',
@@ -61,5 +67,102 @@ describe('stringsPreview', () => {
   it('says so when no entries are authored yet', () => {
     const host = renderInto(table({ entries: {} }));
     expect(host.querySelector('.sv-empty')?.textContent).toContain('no entries authored yet');
+  });
+});
+
+// SB-103: per-family context from the SB-101 liveness map.
+describe('FAMILY_INFO', () => {
+  it('covers all ten authored families', () => {
+    expect(Object.keys(FAMILY_INFO).sort()).toEqual([
+      'dagsrapport',
+      'frank_actions',
+      'handbok',
+      'handbok_tiltak',
+      'notat',
+      'notat_fragments',
+      'prologue',
+      'sim_text',
+      'tiltak_visits',
+      'visit',
+    ]);
+  });
+
+  it('flags exactly one family display-dead: tiltak_visits', () => {
+    const dead = Object.entries(FAMILY_INFO).filter(([, i]) => i.displayDead);
+    expect(dead.map(([id]) => id)).toEqual(['tiltak_visits']);
+  });
+});
+
+describe('tiltakGroups', () => {
+  it('groups <id>.<field> keys into book rows, first-seen order, krav in authored order', () => {
+    const groups = tiltakGroups({
+      'alarm.navn': 'TRYGGHETSALARM',
+      'alarm.ytelse': 'alarm ved fall; utrykning.',
+      'alarm.krav.0': 'bruker bærer alarmen',
+      'alarm.krav.1': 'noe annet',
+      'alarm.dawn': 'alarm montert.',
+      'tt.navn': 'TT-KORT',
+      dotless: 'ignored',
+    });
+    expect(groups.map((g) => g.id)).toEqual(['alarm', 'tt']);
+    expect(groups[0]).toEqual({
+      id: 'alarm',
+      navn: 'TRYGGHETSALARM',
+      ytelse: 'alarm ved fall; utrykning.',
+      dawn: 'alarm montert.',
+      krav: ['bruker bærer alarmen', 'noe annet'],
+    });
+    expect(groups[1].krav).toEqual([]);
+  });
+});
+
+describe('stringsPreview family context', () => {
+  const renderInto = (t: StringTableOut): HTMLElement => {
+    const host = document.createElement('div');
+    render(stringsPreview(t), host);
+    return host;
+  };
+
+  it('renders the what/where header for a mapped family', () => {
+    const host = renderInto(table({ id: 'notat' }));
+    expect(host.querySelector('.sv-family-what')?.textContent).toContain('notat body');
+    expect(host.querySelector('.sv-family-surface')?.textContent).toContain('DocReader');
+    expect(host.querySelector('.sv-dead')).toBeNull();
+  });
+
+  it('says so for a family the liveness map does not know', () => {
+    const host = renderInto(table({ id: 'strings_notat' }));
+    expect(host.querySelector('.sv-family-what')?.textContent).toContain('unmapped family');
+  });
+
+  it('flags tiltak_visits display-dead instead of pretending it renders', () => {
+    const host = renderInto(table({ id: 'tiltak_visits' }));
+    expect(host.querySelector('.sv-dead')?.textContent).toContain('display-dead');
+  });
+
+  it('renders håndbok book rows for the TILTAK catalog family', () => {
+    const host = renderInto(
+      table({
+        id: 'handbok_tiltak',
+        entries: {
+          'alarm.navn': 'TRYGGHETSALARM',
+          'alarm.ytelse': 'alarm ved fall; utrykning.',
+          'alarm.krav.0': 'bruker bærer alarmen',
+          'alarm.dawn': 'alarm montert.',
+        },
+      }),
+    );
+    const row = host.querySelector('.sv-tiltak')!;
+    expect(row.querySelector('.sv-tiltak-navn')?.textContent).toBe('TRYGGHETSALARM');
+    expect(row.querySelector('.sv-tiltak-ytelse')?.textContent).toContain('alarm ved fall');
+    expect(row.querySelector('.sv-tiltak-krav-row')?.textContent).toContain('bruker bærer alarmen');
+    expect(row.querySelector('.sv-tiltak-dawn')?.textContent).toContain('alarm montert.');
+    // The flat table still renders below the sketch.
+    expect(host.querySelector('.sv-table')).not.toBeNull();
+  });
+
+  it('keeps other families on the flat table only', () => {
+    const host = renderInto(table({ id: 'notat' }));
+    expect(host.querySelector('.sv-tiltak-list')).toBeNull();
   });
 });
