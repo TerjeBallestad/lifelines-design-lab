@@ -370,6 +370,44 @@
         border-radius: 6px;
         padding: 3px 7px;
       }
+      /* SB-102: trigger context — who thinks this, when (SB-099 map) */
+      #preview .tv-trigger {
+        margin-bottom: 10px;
+        padding: 8px 10px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--purple);
+        border-radius: 8px;
+      }
+      #preview .tv-trigger-label {
+        font: 500 11px/1.5 var(--sans);
+        color: var(--text);
+      }
+      #preview .tv-trigger-caveat {
+        margin-top: 3px;
+        font: 400 10px/1.5 var(--mono);
+        color: var(--text-3);
+      }
+      #preview .tv-trigger-dead {
+        border-left-color: var(--orange);
+      }
+      #preview .tv-trigger-dead .tv-trigger-label {
+        color: var(--orange);
+      }
+      /* SB-102: real icon art (base64 export of the .aseprite source) */
+      #preview .tv-icon-img {
+        width: 32px;
+        height: 32px;
+        image-rendering: pixelated;
+        display: block;
+      }
+      #preview .tv-feed-icon-img {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        image-rendering: pixelated;
+        align-self: center;
+      }
       #preview .tv-icon-fallback {
         margin-left: 6px;
         font: 500 8.5px var(--mono);

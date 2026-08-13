@@ -7,6 +7,7 @@
 import { html, nothing } from 'lit-html';
 import type { TemplateResult } from 'lit-html';
 import type { BarkPoolOut, ThoughtPoolOut } from '../../src/compiler/emit-character.ts';
+import { iconArt } from '../shared/thought-icon-art.ts';
 
 // ---- pure logic ---------------------------------------------------------
 
@@ -66,6 +67,79 @@ export function groupThoughtHeadings(
   return groups;
 }
 
+/** The firing context for one pool — who thinks this, when (SB-102).
+ *  `dead: true` marks a pool the engine loads but can never select. */
+export interface TriggerContext {
+  label: string;
+  dead?: boolean;
+  caveats: string[];
+}
+
+/**
+ * The trigger map from the engine (SB-099 research: thought_stream_manager
+ * selects `char|key_type|key` exact-first, else `char|key_type|*`), folded to
+ * a one-line label per pool plus the authoring caveats worth surfacing.
+ */
+export function triggerContext(pool: {
+  character: string;
+  key_type: string;
+  key: string;
+}): TriggerContext {
+  const { character, key_type: keyType, key } = pool;
+  const any = key === '*';
+  const caveats: string[] = [];
+  let label: string;
+  let dead = false;
+  switch (keyType) {
+    case 'need':
+      label = any
+        ? `fires when any of ${character}'s needs crosses its threshold downward`
+        : `fires when ${character}'s ${key} need crosses its threshold downward`;
+      caveats.push('need keys are case-sensitive: Hunger, Bladder, Energy, Social, Security');
+      break;
+    case 'activity':
+      label = any
+        ? `fires when ${character} starts any activity (wildcard fallback)`
+        : `fires when ${character} starts "${key}"`;
+      if (!any)
+        caveats.push(
+          'the key is the raw activity display name, case-sensitive — a mismatch silently falls back to activity/*',
+        );
+      break;
+    case 'aversion':
+      label = any
+        ? `fires when ${character} abandons an activity or an object claim fails`
+        : `fires when ${character} abandons "${key}" or a claim on a "${key}" object fails`;
+      caveats.push('abandoned-activity names and failed-claim object types share this key namespace');
+      break;
+    case 'relational':
+      label = any
+        ? `fires when any visitor rings the doorbell, enters, or leaves a room`
+        : `fires when ${key} rings the doorbell, enters, or leaves a room`;
+      caveats.push('enter and leave share one pool — the cooldown usually eats the second thought');
+      break;
+    case 'want':
+    case 'dagsform':
+      if (any) {
+        label = `fires on the idle heartbeat, every 90 sim minutes (want/* and dagsform/* draw together)`;
+      } else {
+        label = `never fires — the heartbeat only draws ${keyType}/* (wildcard-only, documented IOU)`;
+        dead = true;
+      }
+      break;
+    case 'ambient':
+      label = `bubble layer only — every 15 to 25 wall seconds when idle; lines are icon keys, not prose, and never reach TANKER`;
+      break;
+    default:
+      label = `no trigger map for key type "${keyType}"`;
+  }
+  if (character === 'frank') {
+    dead = true;
+    caveats.push('frank never thinks — his pools are refused at load and at fire (lint-asserted)');
+  }
+  return { label, ...(dead ? { dead: true as const } : {}), caveats };
+}
+
 /** Advance a variant index one step, wrapping. Empty pools stay at 0. */
 export const nextVariant = (current: number, count: number): number =>
   count <= 0 ? 0 : (current + 1) % count;
@@ -118,20 +192,30 @@ export function thoughtPreview(
 ): TemplateResult {
   const icon = pool.icon_key ?? FALLBACK_ICON;
   const fallback = pool.icon_key === undefined;
+  const art = iconArt(icon);
   const variant = variantAt(pool.lines, variantIndex);
-  return html`<div class="surface-label">above the head — icon only ${stubChip(pool.stub)}</div>
+  const trigger = triggerContext(pool);
+  return html`<div class="tv-trigger ${trigger.dead ? 'tv-trigger-dead' : ''}">
+      <span class="tv-trigger-label">${trigger.dead ? '⚠ ' : nothing}${trigger.label}</span>
+      ${trigger.caveats.map((c) => html`<div class="tv-trigger-caveat">${c}</div>`)}
+    </div>
+    <div class="surface-label">above the head — icon only ${stubChip(pool.stub)}</div>
     <div class="tv-stage">
       <div class="tv-bubble tv-thought">
-        <span class="tv-icon" title=${fallback ? 'no Icon: line — loader falls back' : icon}
-          >${icon}</span
-        >${fallback ? html`<span class="tv-icon-fallback">fallback</span>` : nothing}
+        ${art
+          ? html`<img class="tv-icon-img" src=${art} alt=${icon} title=${icon} />`
+          : html`<span class="tv-icon" title=${fallback ? 'no Icon: line — loader falls back' : `${icon} — no art exported yet`}
+              >${icon}</span
+            >`}${fallback ? html`<span class="tv-icon-fallback">fallback</span>` : nothing}
       </div>
       <div class="tv-dots"><span></span><span></span></div>
       ${figure(pool.character)}
     </div>
     <div class="surface-label">TANKER — text feed row</div>
     <div class="tv-feed-row">
-      <span class="tv-feed-icon">${icon}</span>
+      ${art
+        ? html`<img class="tv-feed-icon-img" src=${art} alt=${icon} title=${icon} />`
+        : html`<span class="tv-feed-icon">${icon}</span>`}
       ${variant
         ? html`<span class="tv-feed-text">${variant.text}</span>`
         : html`<span class="tv-feed-text tv-feed-empty">no variants authored yet</span>`}

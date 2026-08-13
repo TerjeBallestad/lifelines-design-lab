@@ -13,8 +13,10 @@ import {
   parseThoughtHeader,
   thoughtPoolKey,
   thoughtPreview,
+  triggerContext,
   variantAt,
 } from './character-views.ts';
+import { ICON_ART } from '../shared/thought-icon-art.ts';
 
 describe('parseThoughtHeader', () => {
   it('splits a well-formed header into its three parts', () => {
@@ -85,6 +87,39 @@ describe('variant cycling', () => {
   });
 });
 
+// SB-102: the trigger map (SB-099) folded to per-pool firing context.
+describe('triggerContext', () => {
+  const ctx = (key_type: string, key: string, character = 'elling') =>
+    triggerContext({ character, key_type, key });
+
+  it('labels each key type with its firing rule', () => {
+    expect(ctx('need', 'Hunger').label).toContain('Hunger need crosses its threshold downward');
+    expect(ctx('activity', 'Lese').label).toContain('starts "Lese"');
+    expect(ctx('activity', '*').label).toContain('any activity');
+    expect(ctx('aversion', 'Lese').label).toContain('abandons "Lese"');
+    expect(ctx('relational', 'frank').label).toContain('frank rings the doorbell');
+    expect(ctx('want', '*').label).toContain('idle heartbeat');
+    expect(ctx('dagsform', '*').label).toContain('idle heartbeat');
+    expect(ctx('ambient', '*').label).toContain('bubble layer only');
+  });
+
+  it('marks specific want/dagsform keys dead — the heartbeat is wildcard-only', () => {
+    expect(ctx('want', 'Read').dead).toBe(true);
+    expect(ctx('dagsform', 'tired').dead).toBe(true);
+    expect(ctx('want', '*').dead).toBeUndefined();
+  });
+
+  it('marks every frank pool dead — frank never thinks', () => {
+    const c = ctx('need', 'Hunger', 'frank');
+    expect(c.dead).toBe(true);
+    expect(c.caveats.join(' ')).toContain('frank never thinks');
+  });
+
+  it('is honest about an unknown key type', () => {
+    expect(ctx('mystery', 'x').label).toContain('no trigger map');
+  });
+});
+
 const pool = (over: Partial<ThoughtPoolOut> = {}): ThoughtPoolOut => ({
   character: 'elling',
   key_type: 'need',
@@ -143,6 +178,51 @@ describe('thoughtPreview', () => {
     (el.querySelector('.tv-cycle-btn') as HTMLButtonElement).click();
     expect(el.querySelector('.tv-feed-text')!.textContent).toBe('Mat. Snart.');
     expect(el.querySelector('.tv-cycle-count')!.textContent).toContain('variant 2 of 2');
+  });
+
+  it('renders the trigger context line above the sketches', () => {
+    const el = host();
+    render(
+      thoughtPreview(pool(), 0, () => {}),
+      el,
+    );
+    expect(el.querySelector('.tv-trigger-label')!.textContent).toContain(
+      "elling's Hunger need crosses its threshold downward",
+    );
+    expect(el.querySelector('.tv-trigger-dead')).toBeNull();
+  });
+
+  it('paints a dead pool as a warning', () => {
+    const el = host();
+    render(
+      thoughtPreview(pool({ key_type: 'want', key: 'Read' }), 0, () => {}),
+      el,
+    );
+    expect(el.querySelector('.tv-trigger-dead')).not.toBeNull();
+    expect(el.querySelector('.tv-trigger-label')!.textContent).toContain('never fires');
+  });
+
+  it('renders real icon art when the key has an exported PNG', () => {
+    const el = host();
+    render(
+      thoughtPreview(pool({ icon_key: 'thought_doorbell' }), 0, () => {}),
+      el,
+    );
+    const img = el.querySelector('.tv-icon-img') as HTMLImageElement;
+    expect(img).not.toBeNull();
+    expect(img.src).toBe(ICON_ART.thought_doorbell);
+    expect(el.querySelector('.tv-icon')).toBeNull();
+    expect(el.querySelector('.tv-feed-icon-img')).not.toBeNull();
+  });
+
+  it('keeps the text chip for keys without exported art', () => {
+    const el = host();
+    render(
+      thoughtPreview(pool({ icon_key: 'icon_hunger' }), 0, () => {}),
+      el,
+    );
+    expect(el.querySelector('.tv-icon-img')).toBeNull();
+    expect(el.querySelector('.tv-icon')!.textContent).toBe('icon_hunger');
   });
 
   it('shows the stub chip and an honest empty state', () => {
