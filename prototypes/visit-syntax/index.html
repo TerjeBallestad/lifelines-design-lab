@@ -113,8 +113,7 @@
         display: block;
         width: 100%;
         min-height: 70vh;
-        overflow-y: hidden;
-        overflow-x: auto;
+        overflow: hidden;
         background: var(--bg);
         color: var(--ink);
         border: 0;
@@ -125,7 +124,8 @@
         font-size: 13px;
         line-height: 1.55;
         tab-size: 2;
-        white-space: pre;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
       }
       #ac {
         position: absolute;
@@ -1882,7 +1882,8 @@
         mirror.style[k] = taStyle[k];
       mirror.style.position = 'absolute';
       mirror.style.visibility = 'hidden';
-      mirror.style.whiteSpace = 'pre';
+      mirror.style.whiteSpace = 'pre-wrap';
+      mirror.style.overflowWrap = 'break-word';
       const taLineHeight = parseFloat(taStyle.lineHeight) || 18;
       document.body.appendChild(mirror);
 
