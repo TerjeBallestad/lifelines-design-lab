@@ -1039,32 +1039,27 @@ Frank: "Jeg tror ikke vi finner det med spørsmål. Jeg tror vi finner det ved �
 # Conversation: call:grete
 
 gate: f_grete_baerer
-Soft reject: "… Jeg vet ikke hva du mener med det."
+Soft reject: Jeg vet ikke hva du mener med det.
 
 Ja, hallo?
 du: Det gjelder Elling. Dr. Haug har meldt bekymring.
 [Han klarer seg. Han har alltid klart seg.](fact:f_klarer_seg)
 
 * f_grete_baerer: Hvem overtar hvis du skulle bli innlagt?
-    [… (det blir stille i den andre enden)](fact:f_ingen_plan)
+    [(det blir stille i den andre enden)](fact:f_ingen_plan)
 
 * f_klarer_seg: Kan jeg få hilse på Elling?
     [Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.](fact:f_elling_tlf)
 
 * f_saarbar: Vi vil gjerne komme på hjemmebesøk.
     [Betyr dette at noen kommer til å ta ham fra leiligheten?](fact:f_grete_redd)
-    … Hvis det må til.
-
-// SB-072 migration (PLAN-009 Task 3): the SocialVisitDirector Oppdrag catalog
-// (OPPDRAG_TITLES, OPPDRAG_OFFER_LINES, OPPDRAG_UNLOCK_QUESTIONS,
-// OPPDRAG_BEATS) and the hosting-spine LINE_* literals live here now,
-// verbatim modulo the typography convention (straight quotes, hyphens).
+     Hvis det må til.
 
 # Visit: oppdrag_alene
 
 Title: Klarer han seg alene?
 Blurb: Se på Elling. Hva klarer han, hva klarer han ikke.
-Offer: "Godt spørsmål. Vil du at jeg skal se på hva han faktisk klarer, ved neste besøk?"
+Offer: Godt spørsmål. Vil du at jeg skal se på hva han faktisk klarer, ved neste besøk?
 Unlocks: q_evner
 Stub: yes
 
@@ -1095,7 +1090,7 @@ Stub: yes
 
 Title: Ikke press. Bygg tillit.
 Blurb: Sitt. Ta kaffen. La henne snakke.
-Offer: "Skjønner. Ikke press. Vil du at jeg skal bygge tillit ved neste besøk?"
+Offer: Skjønner. Ikke press. Vil du at jeg skal bygge tillit ved neste besøk?
 Unlocks: q_grete_dor
 Stub: yes
 
@@ -1107,21 +1102,15 @@ Stub: yes
 # Strings: visit
 
 Stub: yes
-hallway_announced: "du ringte i sted - kom inn."
-hallway_unannounced: "frank? nå? ...vent litt, jeg rydder en stol."
-greet: "hei, Elling."
-sofa_talk: "han spiser lite om dagen."
-escort: "Du så hvordan han er. Han er en smart gutt."
-gang_rydde: "Jeg har ikke rukket å rydde."
-rope_elling: "Elling! Frank er her."
-venter_elling: "Han kommer. Han liker ikke uventet besøk."
-sette_seg: "Jeg må bare sette meg litt."
-
-// SB-072 migration (PLAN-009 Task 4): notat glue (notat_composer consts +
-// doc header), the notat-fragment run texts, and the prologue scene copy
-// live here now, verbatim modulo the typography convention. Fact couplings,
-// beat keys, observable keys and run ids stay engine data in core-loop -
-// only the TEXT migrated.
+hallway_announced: du ringte i sted - kom inn.
+hallway_unannounced: frank? nå? ...vent litt, jeg rydder en stol.
+greet: hei, Elling.
+sofa_talk: han spiser lite om dagen.
+escort: Du så hvordan han er. Han er en smart gutt.
+gang_rydde: Jeg har ikke rukket å rydde.
+rope_elling: Elling! Frank er her.
+venter_elling: Han kommer. Han liker ikke uventet besøk.
+sette_seg: Jeg må bare sette meg litt.
 
 # Strings: notat
 
@@ -1188,11 +1177,6 @@ beat_14: "Dere får gjøre det dere må."
 beat_15: "Etter at hun har gått, blir Haug sittende litt. Så skriver han. To avsnitt. Han leser dem en gang til og stryker ordet \"alvorlig\". Sender."
 beat_16: "MOTTATT - SOSIALKONTORET"
 stamp_end: "Meldingen ligger på pulten din."
-
-// SB-072 migration (PLAN-009 Task 5): the håndbok family. handbok_state
-// log/slip templates (interpolation slots intact), tiltak text fields
-// (navn/ytelse/dawn/krav display), frank-action navn/gate_note. The .tres
-// keep data (costs, krav predicates, ids); text overlays at catalog load.
 
 # Strings: handbok_tiltak
 
@@ -1359,11 +1343,6 @@ dawn_hours_left: "%dt til overs - [papirarbeid på de ti andre]"
 mat_ok: "kassen kom inn - det ble mat i dag."
 mat_fail_prev: "ny kasse levert kl 11. den forrige står der fortsatt."
 mat_blocked: "ingen ny levering - kassen fra sist står fortsatt ute."
-
-// SB-072 migration (PLAN-009 Task 6): sibling handlers - frank_action_handlers,
-// tiltak_dawn_handlers, report_composer, tiltak_visit_director step labels,
-// case_engine/case_host strays. DD-004 duplicate kill rides the same step:
-// raw frank-action navn literals resolve from frank_actions.<id>.navn.
 
 # Strings: sim_text
 
