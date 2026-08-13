@@ -100,8 +100,21 @@
       #cheat .kw {
         color: var(--end);
       }
-      textarea {
+      /* The pane scrolls, not the textarea: the textarea auto-grows to its
+         content (JS sets height), so the cheat sheet sits at the bottom of
+         the script scroll and only appears when you scroll past the end. */
+      #editor-scroll {
         flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        position: relative;
+      }
+      textarea {
+        display: block;
+        width: 100%;
+        min-height: 70vh;
+        overflow-y: hidden;
+        overflow-x: auto;
         background: var(--bg);
         color: var(--ink);
         border: 0;
@@ -691,10 +704,10 @@
     </header>
     <main>
       <div id="editor-pane">
-        <textarea id="src" spellcheck="false"></textarea>
-        <div id="ac"></div>
-        <div id="errors"></div>
-        <div id="cheat">
+        <div id="editor-scroll">
+          <textarea id="src" spellcheck="false"></textarea>
+          <div id="ac"></div>
+          <div id="cheat">
           <span class="kw">## Goal: name</span> opens a goal - its stages are one scene ·
           <span class="kw">plan:</span> the line on Frank's plan screen ·
           <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
@@ -717,7 +730,9 @@
           <b>!&gt; give up</b> -&gt; denied in a goal, call-off outside (optional, a default
           timeout is always on):
           <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
+          </div>
         </div>
+        <div id="errors"></div>
       </div>
       <div id="board-pane">
         <div id="preview">
@@ -1548,7 +1563,17 @@
         );
       }
 
+      function autoGrow() {
+        const ta = $('src');
+        const sc = $('editor-scroll');
+        const keep = sc.scrollTop;
+        ta.style.height = 'auto';
+        ta.style.height = ta.scrollHeight + 4 + 'px';
+        sc.scrollTop = keep;
+      }
+
       function render() {
+        autoGrow();
         const text = $('src').value;
         scheduleSave(text);
         const { meta, stages, goals, errors } = parse(text);
