@@ -11,6 +11,8 @@
     "lint": "tsc -b --noEmit && prettier --check .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "gen:activities": "node scripts/sync-activity-catalog.mjs",
+    "gen:activities:check": "node scripts/sync-activity-catalog.mjs --check",
     "gen:content": "node scripts/blueprint/compile-content.mjs",
     "gen:content:check": "node scripts/blueprint/compile-content.mjs --check",
     "gen:olsen": "npm run gen:content",
