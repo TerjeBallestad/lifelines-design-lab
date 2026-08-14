@@ -129,6 +129,21 @@ export const codes = {
    * instead; the composite-field separator ` · Key:` is grammar and exempt.
    */
   LINT_BANNED_TYPOGRAPHY: 'lint-banned-typography',
+  // SB-109 visit stage/goal grammar (PLAN-010; ruled by SB-107 + SB-114).
+  // Parse-level errors come from visit-grammar.ts; misplaced or malformed
+  // lines reuse LINE_UNPARSED, duplicate goal names reuse DUPLICATE_ID.
+  VISIT_UNKNOWN_DUTY: 'visit-unknown-duty',
+  VISIT_UNKNOWN_CHARACTER: 'visit-unknown-character',
+  VISIT_DUTY_CONFLICT: 'visit-duty-conflict',
+  VISIT_DUTY_ARG_MISSING: 'visit-duty-arg-missing',
+  VISIT_UNKNOWN_TRIGGER: 'visit-unknown-trigger',
+  VISIT_TRIGGER_ARG_INVALID: 'visit-trigger-arg-invalid',
+  VISIT_STAGE_NEVER_ENDS: 'visit-stage-never-ends',
+  VISIT_GOAL_EMPTY: 'visit-goal-empty',
+  /** SB-114: cost is derived from the scene, never authored. */
+  VISIT_COST_AUTHORED: 'visit-cost-authored',
+  /** A goto target in neither the room nor the cast namespace (warns). */
+  VISIT_TARGET_UNKNOWN: 'visit-target-unknown',
 } as const;
 
 export type DiagnosticCode = (typeof codes)[keyof typeof codes];

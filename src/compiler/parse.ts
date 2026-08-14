@@ -76,6 +76,13 @@ export interface RawBlock {
   pair?: [string, string];
   /** Thoughts/barks variants and visit steps (see RawBullet). */
   bullets?: RawBullet[];
+  /**
+   * SB-109: this visit body is the stage/goal grammar (sniffed by `==` lines
+   * or `## Goal:`/`## Call-off` headers). The body is captured verbatim in
+   * proseLines (weave precedent) for visit-grammar.ts; legacy visit bodies
+   * stay on the fields+bullets path.
+   */
+  stageGrammar?: true;
   /** Thoughts only: the `<char>/<key_type>/<key>` header split. */
   thoughtKey?: { character: string; keyType: string; key: string };
 }
@@ -121,6 +128,9 @@ const FIELD_RE = /^([A-Za-zÆØÅæøå][A-Za-zÆØÅæøå ]*?):\s?(.*)$/;
 const STRINGS_FIELD_RE = /^([A-Za-z0-9ÆØÅæøå_.-]+):\s?(.*)$/;
 
 const BULLET_BLOCK_TYPES = new Set<BlockType>(['thoughts', 'barks', 'visit']);
+
+// SB-109 sniff: a visit body holding any of these lines is stage-grammar.
+const STAGE_GRAMMAR_LINE = /^\s*(?:==|##\s*(?:goal\s*:|call-?off))/i;
 
 function stripComment(line: string): string {
   if (/^\s*\/\//.test(line)) return '';
@@ -435,8 +445,19 @@ function parseSource(
         }
         if (kind === 'Visit') {
           // SDD-130: visit choreography — fields, then ordered `- ` step
-          // bullets kept verbatim for the visit emitter.
-          openSimpleBlock('visit', rest, lineNo, '# Visit:');
+          // bullets kept verbatim for the visit emitter. SB-109: a body in
+          // the stage/goal grammar is sniffed by lookahead and captured
+          // verbatim instead (see the stageGrammar branch below).
+          if (openSimpleBlock('visit', rest, lineNo, '# Visit:')) {
+            for (let j = i + 1; j < lines.length; j += 1) {
+              const ahead = lines[j];
+              if (/^#\s+/.test(ahead) && !ahead.startsWith('## ')) break;
+              if (STAGE_GRAMMAR_LINE.test(ahead)) {
+                (current as RawBlock | null)!.stageGrammar = true;
+                break;
+              }
+            }
+          }
           continue;
         }
         if (kind === 'Strings') {
@@ -474,6 +495,16 @@ function parseSource(
     // Conversation bodies are weave, not fields: keep every line verbatim
     // (including `##`-looking lines) for weave.ts.
     if (current !== null && (current as RawBlock).type === 'conversation') {
+      const block: RawBlock = current;
+      if (raw.trim() !== '') block.endLine = lineNo;
+      block.proseLines.push({ text: raw, line: lineNo });
+      continue;
+    }
+
+    // SB-109 stage-grammar visit bodies follow the same verbatim contract:
+    // `## Goal:`/`## Call-off` must not open generic sub-blocks, and
+    // visit-grammar.ts needs true file line numbers for its diagnostics.
+    if (current !== null && (current as RawBlock).stageGrammar) {
       const block: RawBlock = current;
       if (raw.trim() !== '') block.endLine = lineNo;
       block.proseLines.push({ text: raw, line: lineNo });
