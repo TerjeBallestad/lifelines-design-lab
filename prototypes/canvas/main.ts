@@ -37,6 +37,7 @@ import { mountScriptLens } from '../script-editor/lens.ts';
 import { buildSymbols } from '../script-editor/symbols.ts';
 import { initPreview } from './preview.ts';
 import { initJump } from './jump.ts';
+import * as scopeMod from './scope.ts';
 import { buildWorklist, buildStubWorklist } from './worklist.ts';
 import {
   activeCasePath,
@@ -156,6 +157,8 @@ initJump({
     if (!model.state.nodeById.has(id)) return;
     select(id);
     camera.centerOn(id);
+    // SB-077 (d): jump-first navigation — the landing node becomes the focus.
+    if (scopeMod.scope.jumpFocuses) scopeMod.setScope({ focusOn: true });
   },
 });
 
@@ -355,6 +358,7 @@ export function relayout(): void {
   layout.relayoutState();
   render.renderWorld();
   applySelectionStyles();
+  scopeMod.applyScope();
   camera.fit();
 }
 
@@ -370,6 +374,7 @@ export function setLayoutMode(mode: LayoutMode): void {
   reflectModeButtons();
   render.renderWorld();
   applySelectionStyles();
+  scopeMod.applyScope();
   camera.fit();
 }
 
@@ -574,6 +579,7 @@ const nodeDrag = dragBehavior<HTMLElement, unknown>()
       layout.startSimLoop();
     }
     render.syncPositions();
+    scopeMod.syncFrames();
   })
   .on('end', (event: NodeDragEvent) => {
     if (gesture === null) return;
@@ -868,7 +874,15 @@ render.initRenderer({
   },
 });
 render.initLegend($('legend'));
-layout.setFrameCallback(render.syncPositions);
+layout.setFrameCallback(() => {
+  render.syncPositions();
+  scopeMod.syncFrames();
+});
+// SB-077: the scope bar + question-cluster frame layer.
+scopeMod.initScope({
+  bar: $('scopebar'),
+  framesSvg: $('frames') as unknown as SVGSVGElement,
+});
 
 editing.initEditing({
   syncLens: (text) => scriptLens.setText(text),
@@ -906,6 +920,13 @@ autorun(() => {
 autorun(() => {
   void model.state.graph;
   applySelectionStyles();
+});
+
+// SB-077 scoping pass: scope state, selection, and rebuilds all re-scope.
+// applyScope reads the scope observables and model.ui/state itself.
+autorun(() => {
+  void model.state.graph;
+  scopeMod.applyScope();
 });
 
 // Inspector: the delete-confirm surface wins while a delete is pending

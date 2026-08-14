@@ -470,6 +470,99 @@
         color: var(--teal);
       }
 
+      /* SB-077: the scope bar — focus, kind chips, frames, jump-first */
+      #scopebar {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 2px;
+        align-items: center;
+        background: var(--panel);
+        border: 1px solid var(--border-2);
+        border-radius: 7px;
+        padding: 2px;
+        font: 500 10.5px var(--mono);
+        z-index: 5;
+        max-width: calc(100% - 24px);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      #scopebar button {
+        all: unset;
+        padding: 3px 8px;
+        border-radius: 5px;
+        color: var(--text-2);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #scopebar button:hover {
+        background: var(--panel-hover);
+        color: var(--text);
+      }
+      #scopebar button.active {
+        background: var(--panel-hover);
+        color: var(--text);
+        box-shadow: inset 0 0 0 1px var(--border-2);
+      }
+      #scopebar .ssep {
+        width: 1px;
+        height: 14px;
+        background: var(--border-2);
+        margin: 0 4px;
+      }
+      #scopebar .chip .dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-right: 4px;
+        vertical-align: 0;
+      }
+      #scopebar .chip.off {
+        opacity: 0.38;
+        text-decoration: line-through;
+      }
+      #scopebar .hint {
+        color: var(--text-3);
+        padding: 0 6px;
+        font-style: italic;
+      }
+      #scopebar .scount {
+        padding: 0 8px;
+        color: var(--text-3);
+      }
+      #scopebar .scount.scoped {
+        color: var(--text);
+      }
+      /* scoped-out node/edge DOM stays in place, just not rendered — the
+         force sim and saved positions never notice scoping */
+      .node.scoped-out,
+      #edges path.scoped-out,
+      #edges text.scoped-out {
+        display: none;
+      }
+      /* SB-077 frames: question-cluster outlines behind the edges */
+      #frames {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: visible;
+        pointer-events: none;
+      }
+      #frames .frame {
+        fill: color-mix(in srgb, var(--yellow) 4%, transparent);
+        stroke-width: 1.2;
+        stroke-dasharray: 5 4;
+        opacity: 0.55;
+      }
+      #frames .frame-label {
+        font: 600 11px var(--mono);
+        letter-spacing: 0.04em;
+        opacity: 0.8;
+      }
+
       /* zoom overlay + legend */
       #zoombar {
         position: absolute;
@@ -950,9 +1043,11 @@
       <div id="script-pane"></div>
       <div id="viewport">
         <div id="world">
+          <svg id="frames"></svg>
           <svg id="edges"></svg>
           <div id="nodes"></div>
         </div>
+        <div id="scopebar"></div>
         <div id="zoombar">
           <button id="z-out" title="zoom out">−</button>
           <span class="pct" id="z-pct">100%</span>
