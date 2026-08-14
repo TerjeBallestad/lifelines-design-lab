@@ -40,9 +40,14 @@
       ],
       "verification": "judge: test. command: npx vitest run src/compiler/__tests__/ && npm run lint. proves: the ruled grammar parses with correct models and diagnostics, and legacy parsing is unchanged. fake_evidence: tests that assert against the probe's HTML output or that only exercise the happy path; a green run with the legacy visit tests deleted or skipped.",
       "blockedBy": [],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Grammar module landed as src/compiler/visit-grammar.ts (probe port: VERB_SPEC, needs/yields, end/fail triggers, anonymous st<N> ids, quote strip via stripGuillemets, resolveStageDuties for sticky semantics). parse.ts sniffs stage bodies (== / ## Goal / ## Call-off lookahead) and captures them verbatim in proseLines with real line numbers; legacy visits untouched (bullets path). namespaces.ts seeds cast+rooms from the probe (IOU, gap filed in Task 3). Ten new stable visit-* diagnostic codes; misplaced lines reuse line-unparsed, duplicate goal names + second Call-off reuse duplicate-id. 33 tests, red-green verified 2026-08-14 (sniff nulled -> 30 failures). Deviations: sigil need/yield forms (? / +) intentionally NOT ported (SB-114 dropped them); goto target in neither namespace warns (visit-target-unknown) instead of silent-unknown; Unlocks rejection deferred to TASK-048 per plan. Pre-existing reds found and handled outside the task: provenance.test.mjs cross-repo drift (pm issue filed, still red by design), npm run lint was red on 5 committed files (fixed in chore commit 13d093e). Note: emit-visit.ts still emits an empty legacy shape for stage-grammar blocks until TASK-048.",
+          "timestamp": "2026-08-14T11:37:47.350Z"
+        }
+      ]
     },
     {
       "id": "TASK-048",
@@ -82,5 +87,5 @@
   ],
   "comments": [],
   "createdAt": "2026-08-14T10:23:09.184Z",
-  "updatedAt": "2026-08-14T10:23:09.184Z"
+  "updatedAt": "2026-08-14T11:37:47.350Z"
 }
