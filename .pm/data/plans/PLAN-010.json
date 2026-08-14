@@ -1,0 +1,86 @@
+{
+  "id": "PLAN-010",
+  "title": "PLAN — SB-109: compile the stage/goal grammar in Visit blocks",
+  "sddId": null,
+  "stage": "planned",
+  "sprintId": "SPRINT-003",
+  "context": {
+    "setupNotes": "## Design summary\nThe compiler learns the ruled SB-107 stage grammar plus the SB-114 goal tier inside `# Visit:` blocks, and emits goal-tier visit data for the pack. The reference implementation of the line grammar is the probe parser in prototypes/visit-syntax/index.html (functions parse/parseDuty/parseEnd/parseFail/parseNeeds/parseYields, VERB_SPEC). Port its behavior, do not link to it.\n\n## The ruled grammar (condensed from SB-107 + SB-114 resolutions)\nVisit-level fields: Title/Blurb/Offer stay at oppdrag level. `Unlocks:` is NOT valid in the new grammar — it dissolved into `yield: open q_x` (SB-114). `Stub:` stays.\nGoal tier: `## Goal: name` opens a goal that owns exactly one scene (>=1 stage). Goal fields: `plan:` (planning-screen line), `need:` (comma list: presence by character name, fact ids, `denied <goal>`, `not` negates), `yield:` (comma list: fact ids, `open <question>`). The sigil spellings (`? item` / `+ item`) are dropped. `cost:` is a pack error: cost is always derived from the scene.\nStage grammar: bare `==` opens an anonymous stage (stable ids generated on compile). `- character: duty` with six duty words: goto/stay/say/converse/do/free. Trailing `key=value` tokens are params (dwell=, seat=, grace=). Dialogue is quoteless (quotes stripped when they wrap the whole line). goto takes a bare room or character name (`@` optional disambiguator). say/converse are self-terminating; a stage containing one needs no `->` line. `-> arrived | duration N | event name` end triggers (multiple = OR). `!> timeout N | unreachable [grace=N] | role-lost <char> [grace=N]` fail triggers, optional (the engine-default timeout always guards). Inside a goal a fail denies the goal (semantic only — no new syntax). One `## Call-off` section per visit, visit-level, holding stages outside any goal. Duties are sticky. free releases.\nValidation (pack diagnostics): a stage with nothing self-terminating must author an end trigger (error); one duty per character per stage (error); duplicate goal names (error); a goal with no stages (error); a room may never share a name with a character (error); unknown duty or trigger words (error); unknown do-activities emit as stubs (warning, not error) checked against ACTIVITY_CATALOG (src/content/generated/activityCatalog.ts, SB-110). Typography lint already runs on the whole file text (lintBannedTypography in index.ts) so dialogue lines are covered without new wiring — verify, do not duplicate.\n\n## Cost derivation (graduated from SB-114)\nDerived per goal = sum over its stages. Reference heuristic from the probe (stageCost): an authored `-> duration N` wins; else converse ~3 min, do ~2, else 1; say read-time may scale with line length with dwell= as override. Keep it deterministic, put the constants in one place, and document the rule next to them — the engine SDD (SB-113) will read this.\n\n## Legacy coexistence (plan decision)\nThe three tiny-olsen `# Visit:` blocks still use the legacy step grammar (`- speaker: line`, `! actor: label @ room`, `? elling @ room`). SB-111 rewrites them AFTER this plan. So both grammars must compile: sniff per visit block — a body containing a `==` line or a `## Goal`/`## Call-off` header is stage-grammar; else legacy. Legacy parse and emit stay byte-identical (npm run case:check is the proof). Emit both under the `visits` slice key as a discriminated union (e.g. format: 'steps' | 'goals') so a consumer can never misread one shape as the other; the executor picks the exact discriminant.\n\n## Parse capture\nparse.ts currently parses visit bodies as fields + bullets. Stage-grammar lines (`==`, `->`, `!>`, `## Goal: x`) do not survive that path. Follow the weave/conversation precedent: capture stage-grammar visit bodies verbatim with real line numbers and let a new module (suggest src/compiler/visit-grammar.ts) parse them, so diagnostics point at true file lines. Note: `## Goal: x` and `## Call-off` must not fall into the generic `^##\\s+(\\S+)` sub-block opener while inside a visit block.\n\n## Character and room namespaces\nThe compiler has no cast or room list today. Add one small module seeding cast (frank, grete, elling) and rooms from the probe's ROLES/ROOMS lists. This is a hand-copied IOU like the pre-SB-110 activity list: Task 3 files a pm gap for a core-loop cast/room catalog export.\n\n## Boundaries (do not build here)\nEditor visit lens and patch/round-trip editing of the new grammar = SB-112. Content rewrite of tiny-olsen = SB-111. Engine-side director = SB-113 (core-loop SDD, consumes the emit shape). patch.ts keeps working for legacy visit blocks only — leave its visit handling untouched.\n\n## Evidence strategy\nNo designer-visible surface changes in this plan (the editor lens is SB-112), so the top rung is pipeline, not screenshot: judges are test (new grammar) and pipeline (legacy unchanged + round-trip).",
+    "relevantFiles": [
+      "src/compiler/parse.ts",
+      "src/compiler/emit-visit.ts",
+      "src/compiler/emit.ts",
+      "src/compiler/diagnostics.ts",
+      "src/compiler/index.ts",
+      "src/content/generated/activityCatalog.ts",
+      "prototypes/visit-syntax/index.html",
+      "content/cases/olsen/tiny-olsen.case.md",
+      "docs/markup-0.2-reference.md",
+      "src/compiler/__tests__/sim-content-parse.test.ts",
+      "src/compiler/__tests__/sim-content-emit.test.ts"
+    ],
+    "designDecisions": [
+      "DD-010: an Oppdrag is composed of goals; each goal owns one scene plus need/yield; denial returns to selection; the call-off is visit-level.",
+      "SB-107 resolution: stage grammar surface as ruled (==, - character: duty, six duty words, quoteless dialogue, bare goto targets, self-terminating say/converse, -> arrived|duration|event, !> timeout|unreachable|role-lost, ## Call-off).",
+      "SB-114 resolution: field words plan:/need:/yield:, sigils dropped, cost never authored (derived), yield lives on the goal, Unlocks dissolves into 'yield: open q_x'.",
+      "Plan decision: both grammars coexist until SB-111; per-block sniff; legacy emit byte-identical.",
+      "Plan decision: emit shape is a discriminated union under the existing visits slice key."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-047",
+      "title": "Task 1: Stage/goal grammar parses from Visit blocks into a typed scene model",
+      "description": "A `# Visit:` block written in the ruled grammar parses into a typed model (visit meta, goals with plan/needs/yields, stages with duties/ends/fails, call-off stages) with diagnostics pointing at true file lines. Legacy step-grammar blocks are untouched: they still parse as fields + bullets exactly as today. New module (suggest src/compiler/visit-grammar.ts) ports the probe parser's behavior including anonymous-stage id generation, param extraction, quote stripping, and all parse-level validations (unknown duty/trigger words, one duty per character per stage, duplicate goal names, goal with no stages, stage that never ends, cost: rejection). Namespace module seeds cast and rooms.",
+      "steps": [
+        "Write focused vitest tests (new file under src/compiler/__tests__/) against the ruled grammar: happy-path visit with two goals + call-off, every duty word, every end and fail trigger, sticky/free, quoteless and quoted dialogue, params, and one test per validation error. Confirm they fail red before the module exists.",
+        "Teach parse.ts to sniff stage-grammar visit bodies and capture them verbatim with line numbers (weave precedent), leaving legacy visit bodies on the existing fields+bullets path.",
+        "Implement the grammar module and make the tests green.",
+        "Run the full compiler test suite to prove no legacy regression."
+      ],
+      "verification": "judge: test. command: npx vitest run src/compiler/__tests__/ && npm run lint. proves: the ruled grammar parses with correct models and diagnostics, and legacy parsing is unchanged. fake_evidence: tests that assert against the probe's HTML output or that only exercise the happy path; a green run with the legacy visit tests deleted or skipped.",
+      "blockedBy": [],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-048",
+      "title": "Task 2: Goal-tier visits emit into the CaseSlice with derived cost and pack-level validation",
+      "description": "emit-visit.ts emits stage-grammar visits as the goal-tier shape: visit meta (Title/Blurb/Offer/Stub), goals with plan line, needs, yields, derived cost minutes, scene stages, and the call-off — as a discriminated union beside the legacy steps shape under the visits slice key. `yield: open q_x` feeds questionRefs (shared stub resolution), `Unlocks:` in a stage-grammar visit is a pack error with a pointer to yield: open. Pack-level checks land here: room/character name collision (error), unknown do-activity → stub warning against ACTIVITY_CATALOG. Cost derivation constants live in one documented place. Legacy visit emit stays byte-identical.",
+      "steps": [
+        "Extend the emit tests red-green: goal-tier slice output shape, derived cost numbers, questionRefs from open-yields, Unlocks rejection, room/character collision error, activity stub warning, and a snapshot-style assertion that a legacy visit block's emitted object is unchanged.",
+        "Implement the emit path and types; export the new types from src/compiler/index.ts.",
+        "Run the full suite plus npm run lint."
+      ],
+      "verification": "judge: test. command: npx vitest run src/compiler/__tests__/ && npm run lint. proves: the emitted goal-tier shape is complete, validated, and type-exported, and the legacy shape did not move. fake_evidence: asserting only that emit does not throw; a hand-built expected object copied from the implementation rather than from the rulings.",
+      "blockedBy": [
+        "TASK-047"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    },
+    {
+      "id": "TASK-049",
+      "title": "Task 3: The pipeline stays green, the grammar is documented, and the namespace IOU is filed",
+      "description": "Prove the transition state end to end: the untouched legacy tiny-olsen case still round-trips, a checked-in fixture case written in the full new grammar compiles clean, and the markup reference documents the stage/goal grammar so SB-111 (content rewrite) and SB-113 (engine SDD) can read it instead of the probe. File the cast/room catalog export as a pm gap (core-loop IOU, mirrors SB-110's activity catalog).",
+      "steps": [
+        "Add a fixture case (src/compiler/__tests__/fixtures/) exercising the full grammar — all six duties, all triggers, goals with denied-need (the observere pattern), call-off — and a test compiling it with zero errors and the expected warnings only.",
+        "Run npm run case:check and confirm the generated tiny-olsen output is unchanged.",
+        "Update docs/markup-0.2-reference.md Appendix A with the visit stage/goal grammar, including the validation table and the cost-derivation rule.",
+        "File the gap: pm gap \"Cast/room catalog export from core-loop (compiler namespaces are hand-copied from the probe)\" and link it to SB-109 in a ticket comment."
+      ],
+      "verification": "judge: pipeline. command: npm run case:check && npx vitest run src/compiler/__tests__/. proves: legacy content round-trips unchanged while the new grammar compiles clean from a real file. fake_evidence: a green case:check after regenerating the checked-in output instead of leaving it untouched; documentation that restates the probe UI instead of the compiler's actual accepted grammar.",
+      "blockedBy": [
+        "TASK-048"
+      ],
+      "passes": false,
+      "status": "pending",
+      "progressNotes": []
+    }
+  ],
+  "comments": [],
+  "createdAt": "2026-08-14T10:23:09.184Z",
+  "updatedAt": "2026-08-14T10:23:09.184Z"
+}
