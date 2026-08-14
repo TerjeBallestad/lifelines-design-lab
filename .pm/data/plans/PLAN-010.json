@@ -62,9 +62,14 @@
       "blockedBy": [
         "TASK-047"
       ],
-      "passes": false,
-      "status": "pending",
-      "progressNotes": []
+      "passes": true,
+      "status": "done",
+      "progressNotes": [
+        {
+          "text": "Emit path landed in emit-visit.ts: emitGoalVisit beside the untouched legacy map (split on RawBlock.stageGrammar). Discriminant decision: format:'goals' on the NEW shape only - adding format:'steps' to legacy would have broken byte-identity with the shipped slice (case:check); consumers discriminate with 'format' in v / v.format==='goals'. Shape: GoalVisitOut{id,format,name,blurb,offer_line?,goals[{name,plan,needs,yields,cost_minutes,stages}],spine_stages?,calloff_stages?,stub?}; snake_case keys per slice convention; duty params verbatim incl dwell. Cost rule + constants in visit-grammar.ts (duration wins; converse 3; do 2; say max dwell= else 1; goal=sum) documented for SB-113. yield:open -> questionRefs (span=goal header line; yields carry no line numbers). Unlocks: in stage grammar errors visit-unlocks-dissolved (implemented in visit-grammar since fields live in the verbatim body). checkNamespaceCollisions exported+injectable (static lists never collide today; tested with an injected pair). do-activity vs ACTIVITY_IDS -> visit-activity-stub warning + activity_stub:true. Typography lint verified covering say lines (test), no new wiring. 11 tests, red first (9 failures pre-implementation). Consumer fallout fixed: sim-content-emit.test narrows via legacySteps() helper (no assertion weakened); prototypes/script-editor/main.ts guards the visit preview to legacy shape (goal lens = SB-112). Legacy emit object unchanged - mixed-file test asserts deep equality and absence of format key.",
+          "timestamp": "2026-08-14T11:43:55.665Z"
+        }
+      ]
     },
     {
       "id": "TASK-049",
@@ -87,5 +92,5 @@
   ],
   "comments": [],
   "createdAt": "2026-08-14T10:23:09.184Z",
-  "updatedAt": "2026-08-14T11:37:47.350Z"
+  "updatedAt": "2026-08-14T11:43:55.666Z"
 }
