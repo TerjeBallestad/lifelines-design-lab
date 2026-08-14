@@ -742,7 +742,7 @@ gate: f_grete_baerer
 Title: Hjemmebesøk
 Sim hook: case.olsen.dispatch.hjemmebesok
 Description: Frank drar på uanmeldt besøk til leiligheten.
-Activity: "HJEMMEBESØK"
+Activity: HJEMMEBESØK
 Channel: now · Delay: 0m · Duration: 2h · Occupies: 2h
 Reception: -1
 gate: f_saarbar
