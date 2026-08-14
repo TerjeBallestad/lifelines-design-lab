@@ -557,3 +557,124 @@ templates, field patches (strings keys are id-shaped, no `·` composite
 split), and `bulletAdd`/`bulletEdit`/`bulletRemove` for variants and visit
 steps; a shared character id (`# Barks: elling` vs `# Phone: elling`) is
 disambiguated by the optional `kind` argument.
+
+### Visit stage/goal grammar (SB-109; ruled by SB-107 + SB-114, DD-010)
+
+A `# Visit:` body can also use the stage/goal grammar. The parser sniffs per
+block: a body that contains a `==` line, a `## Goal:` header, or a
+`## Call-off` header is stage grammar. The body is then captured verbatim
+(weave precedent) and parsed by `visit-grammar.ts` with true file line
+numbers. A legacy body stays on the fields+bullets path above, and its
+emitted object does not change (`npm run case:check` is the proof). Both
+grammars coexist until SB-111 rewrites the tiny-olsen content. The patch
+layer (SB-031) speaks only the legacy grammar; the stage-grammar editor lens
+is SB-112.
+
+```
+# Visit: opp_alene
+
+Title: Klarer han seg alene?          ← visit level: Title/Blurb/Offer/Stub only
+Blurb: Se på Elling.
+Offer: "Vil du at jeg skal se…"       ← quotes strip when they wrap the line
+                                        (Unlocks: is a pack ERROR here — SB-114
+                                        dissolved it into `yield: open q_x`)
+
+## Goal: nansen                       ← a goal owns exactly one scene (>= 1 stage)
+plan: Se hva han leser                ← the line on Frank's planning screen
+need: elling, not f_avstand, denied trives
+yield: f_bok, open q_evner            ← facts, plus `open <question>` unlocks
+
+==                                    ← bare == opens an anonymous stage (id stN)
+- frank: goto elling                  ← `- character: duty`, six duty words
+-> arrived                            ← end trigger; several `->` lines = OR
+!> unreachable grace=2                ← fail trigger; in a goal a fail DENIES it
+
+== lese                               ← `== name` keeps the authored stage id
+- elling: say Nansen lot Fram fryse fast i isen.
+
+## Call-off                           ← visit-level, one per visit; a fail
+                                        outside any goal routes here
+==
+- frank: goto entrance
+-> arrived
+```
+
+Goal fields: `plan:` (planning-screen line), `need:` (comma list: presence by
+cast name, fact ids, `denied <goal>`; `not` negates), `yield:` (comma list:
+fact ids, `open <question>` — the open-yield feeds the shared stub
+resolution). The SB-114 sigil forms (`? item` / `+ item`) are gone. `cost:`
+is a pack error: cost is always derived from the scene.
+
+Duty words (`- character: duty [args] [key=value …]`; trailing `key=value`
+tokens are params — `dwell=`, `seat=`, `grace=`):
+
+- **goto** `room|character` — `@name` forces the character reading; a bare
+  name resolves cast first, then rooms; neither warns `visit-target-unknown`
+- **stay** — optional target
+- **say** `line` — quoteless (a wrapping quote pair strips); self-terminating
+- **converse** `partner opening-line` — the line is spoken by this character;
+  self-terminating (outlasts say when both are present)
+- **do** `activity` — checked against the SB-110 catalog
+  (`src/content/generated/activityCatalog.ts`); unknown ids warn
+  `visit-activity-stub` and emit with `activity_stub: true`
+- **free** — releases the character to their own AI
+
+Duties are sticky: an unnamed character carries their previous duty forward
+within a section (spine, each goal, the call-off each reset the slate), a
+converse pulls its partner in, free releases. Stickiness is engine semantics
+(SB-113); `resolveStageDuties` in `visit-grammar.ts` documents it. The
+emitted slice carries only the explicit duties.
+
+Triggers: `-> arrived | duration N | event name` (several = OR, first wins).
+`!> timeout N | unreachable [grace=N] | role-lost <char> [grace=N]` —
+optional, the engine-default timeout always guards. A stage with an authored
+end needs nothing else; a stage with no end and no say/converse never ends
+(error). Inside a goal a fail denies the goal (semantic only, no extra
+syntax); outside, it routes to the call-off.
+
+Validation (pack diagnostics, codes in `diagnostics.ts`):
+
+| Check                                                                         | Code                        | Severity |
+| ----------------------------------------------------------------------------- | --------------------------- | -------- |
+| unknown duty word                                                             | `visit-unknown-duty`        | error    |
+| unknown character on a duty line                                              | `visit-unknown-character`   | error    |
+| two duties for one character in one stage                                     | `visit-duty-conflict`       | error    |
+| missing required duty arg                                                     | `visit-duty-arg-missing`    | error    |
+| unknown end/fail trigger word                                                 | `visit-unknown-trigger`     | error    |
+| bad trigger arg (NaN minutes, no event name, role-lost without a cast member) | `visit-trigger-arg-invalid` | error    |
+| stage never ends                                                              | `visit-stage-never-ends`    | error    |
+| goal with no stages                                                           | `visit-goal-empty`          | error    |
+| authored `cost:`                                                              | `visit-cost-authored`       | error    |
+| `Unlocks:` in a stage-grammar visit                                           | `visit-unlocks-dissolved`   | error    |
+| room/character name collision                                                 | `visit-namespace-collision` | error    |
+| duplicate goal name; second `## Call-off`                                     | `duplicate-id`              | error    |
+| misplaced or malformed line                                                   | `line-unparsed`             | error    |
+| goto target in neither namespace                                              | `visit-target-unknown`      | warning  |
+| unknown `do` activity                                                         | `visit-activity-stub`       | warning  |
+
+The typography lint (`lint-banned-typography`) runs on the whole file text,
+so stage-grammar dialogue is covered without extra wiring.
+
+Derived cost (SB-114 — the engine SDD SB-113 reads this rule from
+`visit-grammar.ts`, where the constants live): per stage, in order, an
+authored `-> duration N` wins; else converse = 3 min; else do = 2 min; else
+a say stage costs its largest numeric `dwell=` when authored; else 1 min.
+Goal cost = the sum over its stages.
+
+Emit: the `visits` slice key becomes a discriminated union. Only the
+goal-tier shape carries `format: 'goals'`; the legacy steps shape is
+unchanged and has no `format` key, so a consumer discriminates with
+`'format' in visit`. The goal-tier shape (snake_case, sparse fields):
+
+```
+GoalVisitOut { id, format: 'goals', name, blurb, offer_line?,
+               goals: [{ name, plan, needs, yields, cost_minutes, stages }],
+               spine_stages?, calloff_stages?, stub? }
+stage:  { id, duties, ends, fails, auto_end? }
+duty:   { character, verb, target?, target_kind?, activity?, activity_stub?,
+          partner?, line?, params? }
+```
+
+Cast and room namespaces are seeded lists in `src/compiler/namespaces.ts` —
+a hand-copied IOU from the probe, pending a core-loop cast/room catalog
+export (pm gap filed by PLAN-010; mirrors the SB-110 activity catalog).
