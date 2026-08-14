@@ -152,6 +152,18 @@ export function parseVisitGrammar(block: RawBlock, diag: DiagnosticBag): StageGr
       continue;
     }
 
+    if (/^unlocks\s*:/i.test(line)) {
+      // SB-114: Unlocks dissolved into the goal tier.
+      diag.add(
+        codes.VISIT_UNLOCKS_DISSOLVED,
+        'error',
+        `Unlocks: is not part of the stage grammar in visit ${visitId} — author "yield: open <question>" on the goal instead (SB-114).`,
+        span(n),
+        [visitId],
+      );
+      continue;
+    }
+
     if (/^##\s*call-?off/i.test(line)) {
       if (calloffSeen) {
         diag.add(
@@ -548,6 +560,37 @@ function parseDuty(
     );
   }
   stage.duties[character] = duty;
+}
+
+// ---- Derived cost (SB-114: cost is never authored) -------------------------
+// The rule, checked in order per stage: an authored `-> duration N` end wins;
+// else a converse stage costs COST_CONVERSE_MINUTES; else a do stage costs
+// COST_DO_MINUTES; else a say stage costs its largest numeric dwell= override
+// when authored; else COST_BASE_MINUTES. Goal cost = the sum over its stages.
+// Deterministic on purpose: the engine director (SB-113) reads this rule, so
+// the constants and the order live here and nowhere else.
+export const COST_CONVERSE_MINUTES = 3;
+export const COST_DO_MINUTES = 2;
+export const COST_BASE_MINUTES = 1;
+
+export function stageCostMinutes(stage: VisitStage): number {
+  const authored = stage.ends.find(
+    (end): end is Extract<StageEndTrigger, { kind: 'duration' }> => end.kind === 'duration',
+  );
+  if (authored) return authored.minutes;
+  const duties = Object.values(stage.duties);
+  if (duties.some((d) => d.verb === 'converse')) return COST_CONVERSE_MINUTES;
+  if (duties.some((d) => d.verb === 'do')) return COST_DO_MINUTES;
+  const dwells = duties
+    .filter((d) => d.verb === 'say')
+    .map((d) => Number(d.params.dwell))
+    .filter((minutes) => Number.isFinite(minutes));
+  if (dwells.length > 0) return Math.max(...dwells);
+  return COST_BASE_MINUTES;
+}
+
+export function goalCostMinutes(goal: VisitGoal): number {
+  return goal.stages.reduce((sum, stage) => sum + stageCostMinutes(stage), 0);
 }
 
 export type DutyResolutionMode = 'explicit' | 'carried' | 'partner' | 'released' | 'free';

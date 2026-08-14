@@ -144,6 +144,12 @@ export const codes = {
   VISIT_COST_AUTHORED: 'visit-cost-authored',
   /** A goto target in neither the room nor the cast namespace (warns). */
   VISIT_TARGET_UNKNOWN: 'visit-target-unknown',
+  /** SB-114: `Unlocks:` dissolved into `yield: open q_x` (error in stage grammar). */
+  VISIT_UNLOCKS_DISSOLVED: 'visit-unlocks-dissolved',
+  /** A name in both the room and the cast namespace: bare goto targets become ambiguous. */
+  VISIT_NAMESPACE_COLLISION: 'visit-namespace-collision',
+  /** A `do` activity missing from the SB-110 catalog: emits as a stub (warns). */
+  VISIT_ACTIVITY_STUB: 'visit-activity-stub',
 } as const;
 
 export type DiagnosticCode = (typeof codes)[keyof typeof codes];

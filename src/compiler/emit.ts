@@ -16,7 +16,7 @@ import { deliverEffect, emitEffects, parseEffectLine } from './effects.ts';
 import type { ParsedCase, RawBlock, RawField } from './parse.ts';
 import { FieldMap, blockSpan, stripGuillemets, warnLeftovers } from './emit-shared.ts';
 import { emitSimContent } from './emit-visit.ts';
-import type { StringTableOut, VisitSceneOut } from './emit-visit.ts';
+import type { StringTableOut, VisitOut } from './emit-visit.ts';
 
 export { stripGuillemets } from './emit-shared.ts';
 export type {
@@ -25,6 +25,13 @@ export type {
   VisitQueueStepOut,
   VisitStepOut,
   VisitSceneOut,
+  VisitOut,
+  GoalVisitOut,
+  GoalVisitGoalOut,
+  GoalVisitStageOut,
+  GoalVisitDutyOut,
+  GoalVisitEndOut,
+  GoalVisitFailOut,
   StringTableOut,
 } from './emit-visit.ts';
 import type { CallOut, ChatEntryOut } from './weave.ts';
@@ -203,8 +210,8 @@ export interface CaseSlice {
   recipes?: RecipeOut[];
   /** §8 weave (call:… conversations). Omitted when the case authors none. */
   calls?: CallOut[];
-  /** `# Visit:` blocks (SDD-130). Omitted when the case authors none. */
-  visits?: VisitSceneOut[];
+  /** `# Visit:` blocks: legacy steps or SB-109 goal tier. Omitted when the case authors none. */
+  visits?: VisitOut[];
   /** `# Strings:` blocks (SDD-130). Omitted when the case authors none. */
   strings?: StringTableOut[];
 }

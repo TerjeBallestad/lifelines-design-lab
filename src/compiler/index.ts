@@ -95,6 +95,35 @@ export type {
   PhoneLinesOut,
 } from './emit-character.ts';
 export type { PredicateSpec } from './condition.ts';
+// SB-109 visit stage/goal grammar (PLAN-010).
+export type {
+  VisitOut,
+  GoalVisitOut,
+  GoalVisitGoalOut,
+  GoalVisitStageOut,
+  GoalVisitDutyOut,
+  GoalVisitEndOut,
+  GoalVisitFailOut,
+} from './emit-visit.ts';
+export type {
+  StageGrammarVisit,
+  VisitGoal,
+  VisitStage,
+  StageDuty,
+  StageEndTrigger,
+  StageFailTrigger,
+  GoalNeed,
+  GoalYield,
+  DutyWord,
+  TargetKind,
+} from './visit-grammar.ts';
+export {
+  parseVisitGrammar,
+  resolveStageDuties,
+  stageCostMinutes,
+  goalCostMinutes,
+} from './visit-grammar.ts';
+export { CAST_IDS, ROOM_IDS } from './namespaces.ts';
 export type { EffectSpec } from './effects.ts';
 export type {
   CallOut,

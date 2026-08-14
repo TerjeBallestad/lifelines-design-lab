@@ -12,6 +12,14 @@ import ellingText from './fixtures/elling.sim.md?raw';
 const caseResult = compileCase(oppdragText);
 const characterResult = compileCharacter(ellingText);
 
+// SB-109 made `visits` a union (legacy steps | goal tier); every visit in
+// this file is legacy, so narrow with a check instead of a cast.
+function legacySteps(result: ReturnType<typeof compileCase>) {
+  const visit = result.slice.visits?.[0];
+  if (!visit || !('steps' in visit)) throw new Error('expected a legacy steps visit');
+  return visit.steps;
+}
+
 describe('VisitSceneOut — the OPPDRAG_ALENE transcription round-trips losslessly', () => {
   it('carries the catalog fields and every step payload value', () => {
     expect(caseResult.slice.visits).toEqual([
@@ -117,7 +125,7 @@ describe('VisitSceneOut — the OPPDRAG_ALENE transcription round-trips lossless
         '- grete: «Alltid.» [dwell=2 id=s2]',
       ].join('\n'),
     );
-    const steps = result.slice.visits?.[0]?.steps ?? [];
+    const steps = legacySteps(result);
     expect(steps[0]).toMatchObject({
       id: 's1',
       when: { op: 'fact_lifted', args: { fact_id: 'f_a' } },
@@ -130,14 +138,14 @@ describe('VisitSceneOut — the OPPDRAG_ALENE transcription round-trips lossless
       '# Case: c_x\nTitle: X\n\n# Visit: opp_x\nTitle: T\nBlurb: B\n\n- frank: «A.» [id=s1]\n- grete: «B.» [id=s1]\n',
     );
     expect(result.diagnostics.some((d) => d.code === 'duplicate-id')).toBe(true);
-    expect(result.slice.visits?.[0]?.steps.map((step) => step.id)).toEqual(['s1']);
+    expect(legacySteps(result).map((step) => step.id)).toEqual(['s1']);
   });
 
   it('skips a queue step for anyone but elling (DD-120)', () => {
     const result = compileCase(
       '# Case: c_x\nTitle: X\n\n# Visit: opp_x\nTitle: T\nBlurb: B\n\n- ? grete @ kitchen [duration=5 id=s1]\n',
     );
-    expect(result.slice.visits?.[0]?.steps).toEqual([]);
+    expect(legacySteps(result)).toEqual([]);
     expect(result.diagnostics.some((d) => d.code === 'line-unparsed')).toBe(true);
   });
 
@@ -147,7 +155,7 @@ describe('VisitSceneOut — the OPPDRAG_ALENE transcription round-trips lossless
     );
     const warning = result.diagnostics.find((d) => d.code === 'field-missing');
     expect(warning?.subjectIds).toEqual(['opp_x', 's1']);
-    expect(result.slice.visits?.[0]?.steps[0]).toMatchObject({ duration: 0 });
+    expect(legacySteps(result)[0]).toMatchObject({ duration: 0 });
   });
 
   it('marks stub: true on a Stub: yes visit and omits it otherwise', () => {

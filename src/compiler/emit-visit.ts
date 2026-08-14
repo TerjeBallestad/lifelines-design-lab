@@ -11,6 +11,18 @@ import type { RawBlock } from './parse.ts';
 import { parseHeaderMeta } from './parse.ts';
 import type { GateSite } from './lints.ts';
 import { FieldMap, readStubMarker, stripGuillemets, warnLeftovers } from './emit-shared.ts';
+import { goalCostMinutes, parseVisitGrammar } from './visit-grammar.ts';
+import type {
+  DutyWord,
+  GoalNeed,
+  GoalYield,
+  StageDuty,
+  StageEndTrigger,
+  TargetKind,
+  VisitStage,
+} from './visit-grammar.ts';
+import { CAST_IDS, ROOM_IDS, namespaceCollisions } from './namespaces.ts';
+import { ACTIVITY_IDS } from '../content/generated/activityCatalog.ts';
 
 // ---- SDD-130 `# Visit:` — choreography played by SocialVisitDirector.
 // Step payloads mirror the OPPDRAG_BEATS tables verbatim
@@ -65,6 +77,96 @@ export interface VisitSceneOut {
   stub?: true;
 }
 
+// ---- SB-109 goal-tier visits (PLAN-010) — the ruled stage/goal grammar.
+// Emitted beside the legacy steps shape as a discriminated union: only the
+// goal-tier shape carries `format: 'goals'`, and the legacy shape stays
+// byte-identical to its PLAN-006 form (npm run case:check is the proof), so
+// a consumer can never misread one shape as the other.
+
+export interface GoalVisitDutyOut {
+  character: string;
+  verb: DutyWord;
+  /** goto/stay target with its namespace resolution. */
+  target?: string;
+  target_kind?: TargetKind;
+  /** do: the activity id; activity_stub marks an id missing from SB-110's catalog. */
+  activity?: string;
+  activity_stub?: true;
+  /** converse partner. */
+  partner?: string;
+  /** say line / converse opening line. */
+  line?: string;
+  /** Authored `key=value` params (dwell=, seat=, grace=), verbatim. Omitted when empty. */
+  params?: Record<string, string>;
+}
+
+export type GoalVisitEndOut = StageEndTrigger;
+
+export type GoalVisitFailOut =
+  | { kind: 'timeout'; minutes: number }
+  | { kind: 'unreachable'; grace_minutes?: number }
+  | { kind: 'role-lost'; role: string; grace_minutes?: number };
+
+export interface GoalVisitStageOut {
+  id: string;
+  duties: GoalVisitDutyOut[];
+  /** Multiple end triggers = OR (first wins). */
+  ends: GoalVisitEndOut[];
+  /** Optional; the engine-default timeout always guards (SB-107). */
+  fails: GoalVisitFailOut[];
+  /** Self-termination label when no ends are authored (say/converse stages). */
+  auto_end?: string;
+}
+
+export interface GoalVisitGoalOut {
+  name: string;
+  plan: string;
+  needs: GoalNeed[];
+  yields: GoalYield[];
+  /** Derived, never authored (SB-114) — see the cost rule in visit-grammar.ts. */
+  cost_minutes: number;
+  stages: GoalVisitStageOut[];
+}
+
+/** One stage-grammar `# Visit:` block — the goal tier (DD-010). */
+export interface GoalVisitOut {
+  id: string;
+  format: 'goals';
+  name: string;
+  blurb: string;
+  offer_line?: string;
+  goals: GoalVisitGoalOut[];
+  /** Stages outside any goal, before the goals: an authored spine. Omitted when none. */
+  spine_stages?: GoalVisitStageOut[];
+  /** The visit-level `## Call-off` stages. Omitted when none. */
+  calloff_stages?: GoalVisitStageOut[];
+  stub?: true;
+}
+
+/** The `visits` slice entry: legacy steps or the SB-109 goal tier. */
+export type VisitOut = VisitSceneOut | GoalVisitOut;
+
+/**
+ * SB-107: a room may never share a name with a character — a bare `goto`
+ * target could not be disambiguated. The namespaces are seeded lists today
+ * (namespaces.ts IOU), so this guards the future catalog import too.
+ */
+export function checkNamespaceCollisions(
+  diag: DiagnosticBag,
+  cast: readonly string[] = CAST_IDS,
+  rooms: readonly string[] = ROOM_IDS,
+): void {
+  for (const name of namespaceCollisions(cast, rooms)) {
+    diag.add(
+      codes.VISIT_NAMESPACE_COLLISION,
+      'error',
+      `"${name}" is both a room and a character — bare goto targets cannot be disambiguated.`,
+      span(1),
+      [name],
+    );
+  }
+}
+
 /** One `# Strings:` block — flat id-keyed table (SDD-130; DD-004 scopes the families). */
 export interface StringTableOut {
   id: string;
@@ -84,7 +186,7 @@ export function emitSimContent(
   stringsBlocks: RawBlock[],
   diag: DiagnosticBag,
 ): {
-  visits: VisitSceneOut[];
+  visits: VisitOut[];
   strings: StringTableOut[];
   questionRefs: QuestionRef[];
   gateSites: GateSite[];
@@ -234,7 +336,84 @@ export function emitSimContent(
     return null;
   };
 
-  const visits: VisitSceneOut[] = visitBlocks.map((block) => {
+  const emitGoalVisit = (block: RawBlock): GoalVisitOut => {
+    const model = parseVisitGrammar(block, diag);
+    for (const goal of model.goals) {
+      for (const y of goal.yields) {
+        if (y.kind === 'open') {
+          // Shared stub resolution in emit.ts — `yield: open q_x` is what
+          // dissolved Unlocks: (SB-114).
+          questionRefs.push({ id: y.id, where: span(goal.lineNo), ownerId: block.id });
+        }
+      }
+    }
+
+    const dutyOut = (character: string, duty: StageDuty): GoalVisitDutyOut => {
+      const out: GoalVisitDutyOut = { character, verb: duty.verb };
+      if (duty.target !== undefined) {
+        out.target = duty.target;
+        out.target_kind = duty.targetKind;
+      }
+      if (duty.activity !== undefined) {
+        out.activity = duty.activity;
+        if (!ACTIVITY_IDS.has(duty.activity)) {
+          out.activity_stub = true;
+          diag.add(
+            codes.VISIT_ACTIVITY_STUB,
+            'warning',
+            `Unknown do-activity "${duty.activity}" in visit ${block.id} — emitted as a stub (SB-110 catalog).`,
+            span(duty.lineNo),
+            [block.id, duty.activity],
+          );
+        }
+      }
+      if (duty.partner !== undefined) out.partner = duty.partner;
+      if (duty.line !== undefined) out.line = duty.line;
+      if (Object.keys(duty.params).length > 0) out.params = duty.params;
+      return out;
+    };
+
+    const stageOut = (stage: VisitStage): GoalVisitStageOut => ({
+      id: stage.id,
+      duties: Object.entries(stage.duties).map(([character, duty]) => dutyOut(character, duty)),
+      ends: stage.ends,
+      fails: stage.fails.map((fail) =>
+        fail.kind === 'timeout'
+          ? { kind: fail.kind, minutes: fail.minutes }
+          : {
+              kind: fail.kind,
+              ...(fail.kind === 'role-lost' ? { role: fail.role } : {}),
+              ...(fail.graceMinutes !== undefined ? { grace_minutes: fail.graceMinutes } : {}),
+            },
+      ) as GoalVisitFailOut[],
+      ...(stage.autoEnd !== undefined ? { auto_end: stage.autoEnd } : {}),
+    });
+
+    return {
+      id: model.id,
+      format: 'goals',
+      name: model.title,
+      blurb: model.blurb,
+      ...(model.offer !== undefined ? { offer_line: model.offer } : {}),
+      goals: model.goals.map((goal) => ({
+        name: goal.name,
+        plan: goal.plan,
+        needs: goal.needs,
+        yields: goal.yields,
+        cost_minutes: goalCostMinutes(goal),
+        stages: goal.stages.map(stageOut),
+      })),
+      ...(model.spineStages.length > 0 ? { spine_stages: model.spineStages.map(stageOut) } : {}),
+      ...(model.calloffStages.length > 0
+        ? { calloff_stages: model.calloffStages.map(stageOut) }
+        : {}),
+      ...(model.stub ? { stub: true as const } : {}),
+    };
+  };
+
+  if (visitBlocks.some((block) => block.stageGrammar)) checkNamespaceCollisions(diag);
+
+  const emitLegacyVisit = (block: RawBlock): VisitSceneOut => {
     const fields = new FieldMap(block.fields);
     const unlocksField = fields.find('Unlocks');
     if (unlocksField?.value) {
@@ -276,7 +455,11 @@ export function emitSimContent(
     };
     warnLeftovers(fields, diag, block.id);
     return out;
-  });
+  };
+
+  const visits: VisitOut[] = visitBlocks.map((block) =>
+    block.stageGrammar ? emitGoalVisit(block) : emitLegacyVisit(block),
+  );
 
   const stringTables: StringTableOut[] = stringsBlocks.map((block) => {
     let stub = false;

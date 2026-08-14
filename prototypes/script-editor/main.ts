@@ -292,7 +292,9 @@ function renderPreview(line: number) {
   }
   if (h.kind === 'Visit') {
     const visit = (result.slice.visits ?? []).find((v) => v.id === h.id);
-    if (visit) {
+    // SB-109 goal-tier visits get their editor lens in SB-112; the preview
+    // renders the legacy steps shape only.
+    if (visit && !('format' in visit)) {
       renderVisitPreview(visit);
       return;
     }
