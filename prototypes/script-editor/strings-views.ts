@@ -169,16 +169,21 @@ const tiltakPreview = (entries: Record<string, string>): TemplateResult => {
   return html`<div class="surface-label">håndbok — book rows</div>
     <div class="sv-tiltak-list">
       ${groups.map(
-        (t) => html`<div class="sv-tiltak">
-          <div class="sv-tiltak-navn">${t.navn ?? html`<span class="sv-hole">— no navn</span>`}</div>
-          ${t.ytelse ? html`<div class="sv-tiltak-ytelse">${t.ytelse}</div>` : nothing}
-          ${t.krav.length
-            ? html`<div class="sv-tiltak-krav">
-                ${t.krav.map((k) => html`<div class="sv-tiltak-krav-row">□ ${k}</div>`)}
-              </div>`
-            : nothing}
-          ${t.dawn ? html`<div class="sv-tiltak-dawn" title="dawn line">☀ ${t.dawn}</div>` : nothing}
-        </div>`,
+        (t) =>
+          html`<div class="sv-tiltak">
+            <div class="sv-tiltak-navn">
+              ${t.navn ?? html`<span class="sv-hole">— no navn</span>`}
+            </div>
+            ${t.ytelse ? html`<div class="sv-tiltak-ytelse">${t.ytelse}</div>` : nothing}
+            ${t.krav.length
+              ? html`<div class="sv-tiltak-krav">
+                  ${t.krav.map((k) => html`<div class="sv-tiltak-krav-row">□ ${k}</div>`)}
+                </div>`
+              : nothing}
+            ${t.dawn
+              ? html`<div class="sv-tiltak-dawn" title="dawn line">☀ ${t.dawn}</div>`
+              : nothing}
+          </div>`,
       )}
     </div>`;
 };
@@ -195,9 +200,7 @@ export function stringsPreview(table: StringTableOut): TemplateResult {
   const empties = emptyRowCount(rows);
   return html`${familyHeader(table.id)}
     ${table.id === 'handbok_tiltak' && rows.length ? tiltakPreview(table.entries) : nothing}
-    <div class="surface-label">
-      string table — flat id-keyed UI copy ${stubChip(table.stub)}
-    </div>
+    <div class="surface-label">string table — flat id-keyed UI copy ${stubChip(table.stub)}</div>
     ${rows.length === 0
       ? html`<div class="sv-empty">no entries authored yet</div>`
       : html`<div class="sv-table-wrap">

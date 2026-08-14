@@ -708,28 +708,28 @@
           <textarea id="src" spellcheck="false"></textarea>
           <div id="ac"></div>
           <div id="cheat">
-          <span class="kw">## Goal: name</span> opens a goal - its stages are one scene ·
-          <span class="kw">plan:</span> the line on Frank's plan screen ·
-          <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
-          denial, comma list ·
-          <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks · time cost is not
-          authored - it derives from the scene (~ on the card)<br />
-          <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
-          <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
-          stage, unnamed characters continue) &nbsp;·&nbsp; a fail inside a goal
-          <b>denies the goal</b> (back to selection); <span class="kw">## Call-off</span> is
-          visit-level only<br />
-          <b>duties</b>: <span class="kw">goto</span> room|character (seat=) ·
-          <span class="kw">stay</span> · <span class="kw">say</span> line (dwell=, quotes optional)
-          · <span class="kw">converse</span> partner opening-line-spoken-by-this-character ·
-          <span class="kw">do</span> activity (picker pops after do, unknown = stub) ·
-          <span class="kw">free</span> release to own AI (duties otherwise carry)<br />
-          <b>-&gt; advance</b> (several = first wins):
-          <span class="kw">arrived | duration N | event name</span> - optional when the stage has a
-          say/converse (it ends itself: line read / conversation over), required otherwise<br />
-          <b>!&gt; give up</b> -&gt; denied in a goal, call-off outside (optional, a default
-          timeout is always on):
-          <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
+            <span class="kw">## Goal: name</span> opens a goal - its stages are one scene ·
+            <span class="kw">plan:</span> the line on Frank's plan screen ·
+            <span class="kw">need: elling, not f_avstand, denied nansen</span> presence | fact |
+            denial, comma list · <span class="kw">yield: f_bok, open q_evner</span> facts / unlocks
+            · time cost is not authored - it derives from the scene (~ on the card)<br />
+            <span class="kw">==</span> new stage (id auto-generated) &nbsp;·&nbsp;
+            <span class="kw">- frank: goto entrance</span> a duty line (a character max once per
+            stage, unnamed characters continue) &nbsp;·&nbsp; a fail inside a goal
+            <b>denies the goal</b> (back to selection); <span class="kw">## Call-off</span> is
+            visit-level only<br />
+            <b>duties</b>: <span class="kw">goto</span> room|character (seat=) ·
+            <span class="kw">stay</span> · <span class="kw">say</span> line (dwell=, quotes
+            optional) · <span class="kw">converse</span> partner
+            opening-line-spoken-by-this-character · <span class="kw">do</span> activity (picker pops
+            after do, unknown = stub) · <span class="kw">free</span> release to own AI (duties
+            otherwise carry)<br />
+            <b>-&gt; advance</b> (several = first wins):
+            <span class="kw">arrived | duration N | event name</span> - optional when the stage has
+            a say/converse (it ends itself: line read / conversation over), required otherwise<br />
+            <b>!&gt; give up</b> -&gt; denied in a goal, call-off outside (optional, a default
+            timeout is always on):
+            <span class="kw">timeout N | unreachable | role-lost role</span> (grace=N)
           </div>
         </div>
         <div id="errors"></div>
@@ -1109,7 +1109,10 @@
         });
         goals.forEach((g) => {
           if (!g.stages.length)
-            errors.push({ line: g.line, msg: `goal "${g.name}" has no stages (a goal owns one scene)` });
+            errors.push({
+              line: g.line,
+              msg: `goal "${g.name}" has no stages (a goal owns one scene)`,
+            });
         });
         resolveDuties(stages);
         return { meta, stages, goals, errors };
@@ -1861,8 +1864,10 @@
         if (!c) return;
         const { kind, id } = c.dataset;
         if (kind === 'present') world.present[id] = world.present[id] === false;
-        else if (kind === 'fact') world.facts.has(id) ? world.facts.delete(id) : world.facts.add(id);
-        else if (kind === 'fail') world.fails.has(id) ? world.fails.delete(id) : world.fails.add(id);
+        else if (kind === 'fact')
+          world.facts.has(id) ? world.facts.delete(id) : world.facts.add(id);
+        else if (kind === 'fail')
+          world.fails.has(id) ? world.fails.delete(id) : world.fails.add(id);
         render();
       });
       $('d-controls').addEventListener('input', (e) => {

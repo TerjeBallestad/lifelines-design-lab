@@ -153,7 +153,7 @@ describe('stringsPreview family context', () => {
       }),
     );
     const row = host.querySelector('.sv-tiltak')!;
-    expect(row.querySelector('.sv-tiltak-navn')?.textContent).toBe('TRYGGHETSALARM');
+    expect(row.querySelector('.sv-tiltak-navn')?.textContent?.trim()).toBe('TRYGGHETSALARM');
     expect(row.querySelector('.sv-tiltak-ytelse')?.textContent).toContain('alarm ved fall');
     expect(row.querySelector('.sv-tiltak-krav-row')?.textContent).toContain('bruker bærer alarmen');
     expect(row.querySelector('.sv-tiltak-dawn')?.textContent).toContain('alarm montert.');

@@ -110,7 +110,9 @@ export function triggerContext(pool: {
       label = any
         ? `fires when ${character} abandons an activity or an object claim fails`
         : `fires when ${character} abandons "${key}" or a claim on a "${key}" object fails`;
-      caveats.push('abandoned-activity names and failed-claim object types share this key namespace');
+      caveats.push(
+        'abandoned-activity names and failed-claim object types share this key namespace',
+      );
       break;
     case 'relational':
       label = any
@@ -204,7 +206,11 @@ export function thoughtPreview(
       <div class="tv-bubble tv-thought">
         ${art
           ? html`<img class="tv-icon-img" src=${art} alt=${icon} title=${icon} />`
-          : html`<span class="tv-icon" title=${fallback ? 'no Icon: line — loader falls back' : `${icon} — no art exported yet`}
+          : html`<span
+              class="tv-icon"
+              title=${fallback
+                ? 'no Icon: line — loader falls back'
+                : `${icon} — no art exported yet`}
               >${icon}</span
             >`}${fallback ? html`<span class="tv-icon-fallback">fallback</span>` : nothing}
       </div>
