@@ -25,13 +25,6 @@ export type {
   VisitQueueStepOut,
   VisitStepOut,
   VisitSceneOut,
-  VisitOut,
-  GoalVisitOut,
-  GoalVisitGoalOut,
-  GoalVisitStageOut,
-  GoalVisitDutyOut,
-  GoalVisitEndOut,
-  GoalVisitFailOut,
   StringTableOut,
 } from './emit-visit.ts';
 import type { CallOut, ChatEntryOut } from './weave.ts';

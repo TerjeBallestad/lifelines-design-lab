@@ -113,6 +113,15 @@ const VERB_SPEC: Record<
 
 const DUTY_WORDS = Object.keys(VERB_SPEC) as DutyWord[];
 
+// One home for the section-header matchers. parse.ts's per-block sniff and
+// this parser MUST agree on what opens the stage grammar, so the sniff regex
+// is built from the same pieces and exported (review finding: the two had
+// already drifted on the goal colon).
+const GOAL_HEADER = /^##\s*goal\s*:\s*(.*)$/i;
+const CALLOFF_HEADER = /^##\s*call-?off/i;
+/** A visit body holding any of these lines is stage grammar (SB-109 sniff). */
+export const STAGE_GRAMMAR_LINE = /^\s*(?:==|##\s*(?:goal\s*:|call-?off))/i;
+
 const castList = (): string => [...CAST_SET].join('|');
 
 export function parseVisitGrammar(block: RawBlock, diag: DiagnosticBag): StageGrammarVisit {
@@ -139,7 +148,10 @@ export function parseVisitGrammar(block: RawBlock, diag: DiagnosticBag): StageGr
     if (!line) continue;
     let m: RegExpMatchArray | null;
 
-    if ((m = line.match(/^(title|blurb|offer|stub)\s*:\s*(.*)$/i)) && !curGoal) {
+    // Visit-level fields live in the header preamble only — never inside a
+    // goal, a stage, or the call-off (review finding: a Title: after
+    // ## Call-off silently hijacked the visit title).
+    if ((m = line.match(/^(title|blurb|offer|stub)\s*:\s*(.*)$/i)) && section === 'spine' && !cur) {
       const key = m[1].toLowerCase();
       const value = m[2].trim();
       if (key === 'title') visit.title = value;
@@ -164,7 +176,7 @@ export function parseVisitGrammar(block: RawBlock, diag: DiagnosticBag): StageGr
       continue;
     }
 
-    if (/^##\s*call-?off/i.test(line)) {
+    if (CALLOFF_HEADER.test(line)) {
       if (calloffSeen) {
         diag.add(
           codes.DUPLICATE_ID,
@@ -182,7 +194,7 @@ export function parseVisitGrammar(block: RawBlock, diag: DiagnosticBag): StageGr
       continue;
     }
 
-    if ((m = line.match(/^##\s*goal\s*:?\s*(.*)$/i))) {
+    if ((m = line.match(GOAL_HEADER))) {
       const name = m[1].trim() || `goal_${visit.goals.length + 1}`;
       if (visit.goals.some((g) => g.name === name)) {
         diag.add(
@@ -373,7 +385,9 @@ function parseEnd(
   diag: DiagnosticBag,
 ): StageEndTrigger | null {
   const [kind, ...args] = rest.split(/\s+/);
-  if (kind === 'arrived' || kind === 'roles-arrived') return { kind: 'arrived' };
+  // The probe also accepted a 'roles-arrived' alias; the SB-107 ruling names
+  // exactly arrived | duration | event, so the ruling wins over the port.
+  if (kind === 'arrived') return { kind: 'arrived' };
   if (kind === 'duration') {
     if (!args[0] || Number.isNaN(Number(args[0]))) {
       diag.add(
@@ -526,12 +540,17 @@ function parseDuty(
     if (arg) {
       text = text.slice(arg.length).trim();
       if (spec.arg === 'target') {
-        // `@` is the optional character disambiguator on bare goto targets.
-        const forced = arg.startsWith('@');
-        const target = forced ? arg.slice(1) : arg;
+        // An optional leading `@` marks a character target; it strips, and
+        // namespace membership decides the kind (cast first, then rooms) —
+        // the probe's authority order. `@` never overrides membership, so a
+        // known room stays a room even when written `@kitchen`.
+        const target = arg.startsWith('@') ? arg.slice(1) : arg;
         duty.target = target;
-        duty.targetKind =
-          forced || CAST_SET.has(target) ? 'character' : ROOM_SET.has(target) ? 'room' : 'unknown';
+        duty.targetKind = CAST_SET.has(target)
+          ? 'character'
+          : ROOM_SET.has(target)
+            ? 'room'
+            : 'unknown';
         if (duty.targetKind === 'unknown') {
           diag.add(
             codes.VISIT_TARGET_UNKNOWN,
@@ -544,6 +563,19 @@ function parseDuty(
       } else if (spec.arg === 'activity') {
         duty.activity = arg;
       } else {
+        // The converse partner names a second character; the sticky-duty rule
+        // pulls them in by name, so an unknown partner would be a silent
+        // runtime no-op. Validate like the duty subject.
+        if (!CAST_SET.has(arg)) {
+          diag.add(
+            codes.VISIT_UNKNOWN_CHARACTER,
+            'error',
+            `Unknown converse partner "${arg}" in visit ${visitId} (${castList()}).`,
+            span(n),
+            [visitId, arg],
+          );
+          return;
+        }
         duty.partner = arg;
       }
     }

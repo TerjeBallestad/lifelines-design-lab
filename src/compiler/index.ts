@@ -95,7 +95,9 @@ export type {
   PhoneLinesOut,
 } from './emit-character.ts';
 export type { PredicateSpec } from './condition.ts';
-// SB-109 visit stage/goal grammar (PLAN-010).
+// SB-109 goal-tier visit wire shapes (PLAN-010). The parse-model types and
+// helpers stay in visit-grammar.ts until a consumer (SB-112 editor lens)
+// actually needs them exported.
 export type {
   VisitOut,
   GoalVisitOut,
@@ -105,25 +107,7 @@ export type {
   GoalVisitEndOut,
   GoalVisitFailOut,
 } from './emit-visit.ts';
-export type {
-  StageGrammarVisit,
-  VisitGoal,
-  VisitStage,
-  StageDuty,
-  StageEndTrigger,
-  StageFailTrigger,
-  GoalNeed,
-  GoalYield,
-  DutyWord,
-  TargetKind,
-} from './visit-grammar.ts';
-export {
-  parseVisitGrammar,
-  resolveStageDuties,
-  stageCostMinutes,
-  goalCostMinutes,
-} from './visit-grammar.ts';
-export { CAST_IDS, ROOM_IDS } from './namespaces.ts';
+export type { GoalNeed, GoalYield, DutyWord, TargetKind } from './visit-grammar.ts';
 export type { EffectSpec } from './effects.ts';
 export type {
   CallOut,

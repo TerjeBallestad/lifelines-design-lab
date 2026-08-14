@@ -337,6 +337,50 @@ describe('visit-grammar — validation errors', () => {
     expect(errors(diag)).toContain('line-unparsed');
   });
 
+  it('resolves an @-marked target by namespace membership, like a bare one', () => {
+    // Review fix: `@` strips, membership decides (probe authority order) —
+    // a known room stays a room even when written `@kitchen`.
+    const { visit, diag } = grammar(
+      wrap('==\n- frank: goto @elling\n-> arrived\n\n==\n- frank: goto @kitchen\n-> arrived'),
+    );
+    expect(errors(diag)).toEqual([]);
+    expect(visit.spineStages[0].duties.frank).toMatchObject({
+      target: 'elling',
+      targetKind: 'character',
+    });
+    expect(visit.spineStages[1].duties.frank).toMatchObject({
+      target: 'kitchen',
+      targetKind: 'room',
+    });
+  });
+
+  it('rejects the probe-only roles-arrived alias (the SB-107 ruling wins)', () => {
+    const { diag } = grammar(wrap('==\n- frank: stay\n-> roles-arrived'));
+    expect(errors(diag)).toContain('visit-unknown-trigger');
+  });
+
+  it('errors on a converse partner outside the cast', () => {
+    const { diag } = grammar(wrap('==\n- frank: converse sofa Hei du.'));
+    expect(errors(diag)).toContain('visit-unknown-character');
+  });
+
+  it('rejects a visit-level field after ## Call-off instead of hijacking the title', () => {
+    const { visit, diag } = grammar(
+      wrap(
+        'Title: Ekte\n\n==\n- frank: say Hei.\n\n## Call-off\nTitle: HIJACK\n==\n- frank: say Ha det.',
+      ),
+    );
+    expect(visit.title).toBe('Ekte');
+    expect(errors(diag)).toContain('line-unparsed');
+  });
+
+  it('does not sniff a goal header without the colon (one matcher definition)', () => {
+    // `## Goal nansen` is not the ruled header; the body has no other stage
+    // marker, so the block stays on the legacy path.
+    const block = visitBlock(wrap('## Goal nansen\n- frank: say Hei.'));
+    expect(block.stageGrammar).toBeUndefined();
+  });
+
   it('warns (never errors) on a goto target in neither namespace', () => {
     const { visit, diag } = grammar(wrap('==\n- frank: goto attic\n-> arrived'));
     expect(errors(diag)).toEqual([]);

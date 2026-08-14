@@ -175,6 +175,16 @@ describe('goal-tier emit — the discriminated visits shape', () => {
     expect(warning?.subjectIds).toContain('q_missing');
   });
 
+  it('derives converse cost from the constant when no duration is authored', () => {
+    // Review fix: every other converse stage in the corpus carries an
+    // authored duration, so the 3-minute rule was never asserted.
+    const talked = compileCase(
+      '# Case: c\nTitle: X\n\n# Visit: v\nTitle: T\nBlurb: B\n\n## Goal: a\nplan: P\n\n==\n- frank: converse grete Hei du.\n',
+    );
+    const visit = talked.slice.visits?.[0];
+    expect(visit && 'goals' in visit ? visit.goals[0].cost_minutes : undefined).toBe(3);
+  });
+
   it('derives say cost from dwell= when authored', () => {
     const dwelled = compileCase(
       '# Case: c\nTitle: X\n\n# Visit: v\nTitle: T\nBlurb: B\n\n## Goal: a\nplan: P\n\n==\n- frank: say Hei. dwell=4\n',

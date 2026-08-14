@@ -12,3 +12,5 @@ content/characters/*.sim.md
 src/compiler/__tests__/fixtures/*.sim.md
 # vendored design-canvas export (inspiration reference, not maintained source)
 prototypes/paper-reference/
+# vendored verbatim from the shipped tiny_olsen_slice.json — byte-comparable, do not reformat
+src/compiler/__tests__/fixtures/shipped-fragments.json

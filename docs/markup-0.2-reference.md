@@ -608,12 +608,15 @@ is a pack error: cost is always derived from the scene.
 Duty words (`- character: duty [args] [key=value …]`; trailing `key=value`
 tokens are params — `dwell=`, `seat=`, `grace=`):
 
-- **goto** `room|character` — `@name` forces the character reading; a bare
-  name resolves cast first, then rooms; neither warns `visit-target-unknown`
+- **goto** `room|character` — a leading `@` marks a character target and
+  strips; namespace membership decides the kind (cast first, then rooms), so
+  `@` never overrides a known room; neither namespace warns
+  `visit-target-unknown`
 - **stay** — optional target
 - **say** `line` — quoteless (a wrapping quote pair strips); self-terminating
-- **converse** `partner opening-line` — the line is spoken by this character;
-  self-terminating (outlasts say when both are present)
+- **converse** `partner opening-line` — the partner must be a cast member;
+  the line is spoken by this character; self-terminating (outlasts say when
+  both are present)
 - **do** `activity` — checked against the SB-110 catalog
   (`src/content/generated/activityCatalog.ts`); unknown ids warn
   `visit-activity-stub` and emit with `activity_stub: true`
@@ -637,7 +640,7 @@ Validation (pack diagnostics, codes in `diagnostics.ts`):
 | Check                                                                         | Code                        | Severity |
 | ----------------------------------------------------------------------------- | --------------------------- | -------- |
 | unknown duty word                                                             | `visit-unknown-duty`        | error    |
-| unknown character on a duty line                                              | `visit-unknown-character`   | error    |
+| unknown character on a duty line or as a converse partner                     | `visit-unknown-character`   | error    |
 | two duties for one character in one stage                                     | `visit-duty-conflict`       | error    |
 | missing required duty arg                                                     | `visit-duty-arg-missing`    | error    |
 | unknown end/fail trigger word                                                 | `visit-unknown-trigger`     | error    |

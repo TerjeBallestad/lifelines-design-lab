@@ -5,6 +5,9 @@
 
 import type { DiagnosticBag } from './diagnostics.ts';
 import { codes, span } from './diagnostics.ts';
+// Type-only cycle with visit-grammar.ts is erased at runtime; the value
+// import keeps the sniff and the parser on one header definition.
+import { STAGE_GRAMMAR_LINE } from './visit-grammar.ts';
 
 export type BlockType =
   | 'case'
@@ -129,9 +132,6 @@ const STRINGS_FIELD_RE = /^([A-Za-z0-9ÆØÅæøå_.-]+):\s?(.*)$/;
 
 const BULLET_BLOCK_TYPES = new Set<BlockType>(['thoughts', 'barks', 'visit']);
 
-// SB-109 sniff: a visit body holding any of these lines is stage-grammar.
-const STAGE_GRAMMAR_LINE = /^\s*(?:==|##\s*(?:goal\s*:|call-?off))/i;
-
 function stripComment(line: string): string {
   if (/^\s*\/\//.test(line)) return '';
   return line.replace(/\s+\/\/.*$/, '');
@@ -210,7 +210,7 @@ function parseSource(
     rest: string,
     lineNo: number,
     headerForm: string,
-  ): boolean => {
+  ): RawBlock | null => {
     if (!/^\S+$/.test(rest)) {
       diag.add(
         codes.LINE_UNPARSED,
@@ -220,9 +220,9 @@ function parseSource(
         [rest],
       );
       skippingDeferredBlock = true;
-      return false;
+      return null;
     }
-    openBlock({
+    return openBlock({
       type,
       id: rest,
       startLine: lineNo,
@@ -231,7 +231,6 @@ function parseSource(
       effects: [],
       proseLines: [],
     });
-    return true;
   };
 
   for (let i = 0; i < lines.length; i += 1) {
@@ -448,12 +447,12 @@ function parseSource(
           // bullets kept verbatim for the visit emitter. SB-109: a body in
           // the stage/goal grammar is sniffed by lookahead and captured
           // verbatim instead (see the stageGrammar branch below).
-          if (openSimpleBlock('visit', rest, lineNo, '# Visit:')) {
+          const visitBlock = openSimpleBlock('visit', rest, lineNo, '# Visit:');
+          if (visitBlock) {
             for (let j = i + 1; j < lines.length; j += 1) {
-              const ahead = lines[j];
-              if (/^#\s+/.test(ahead) && !ahead.startsWith('## ')) break;
-              if (STAGE_GRAMMAR_LINE.test(ahead)) {
-                (current as RawBlock | null)!.stageGrammar = true;
+              if (/^#\s+/.test(lines[j])) break;
+              if (STAGE_GRAMMAR_LINE.test(lines[j])) {
+                visitBlock.stageGrammar = true;
                 break;
               }
             }

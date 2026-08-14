@@ -18,6 +18,7 @@ import type {
   GoalYield,
   StageDuty,
   StageEndTrigger,
+  StageFailTrigger,
   TargetKind,
   VisitStage,
 } from './visit-grammar.ts';
@@ -369,23 +370,35 @@ export function emitSimContent(
       }
       if (duty.partner !== undefined) out.partner = duty.partner;
       if (duty.line !== undefined) out.line = duty.line;
-      if (Object.keys(duty.params).length > 0) out.params = duty.params;
+      if (Object.keys(duty.params).length > 0) out.params = { ...duty.params };
       return out;
     };
 
+    const failOut = (fail: StageFailTrigger): GoalVisitFailOut => {
+      switch (fail.kind) {
+        case 'timeout':
+          return { kind: 'timeout', minutes: fail.minutes };
+        case 'unreachable':
+          return {
+            kind: 'unreachable',
+            ...(fail.graceMinutes !== undefined ? { grace_minutes: fail.graceMinutes } : {}),
+          };
+        case 'role-lost':
+          return {
+            kind: 'role-lost',
+            role: fail.role,
+            ...(fail.graceMinutes !== undefined ? { grace_minutes: fail.graceMinutes } : {}),
+          };
+      }
+    };
+
+    // The slice must not alias parser-owned objects — everything is cloned so
+    // a later mutation of the parse model can never leak into the emit.
     const stageOut = (stage: VisitStage): GoalVisitStageOut => ({
       id: stage.id,
       duties: Object.entries(stage.duties).map(([character, duty]) => dutyOut(character, duty)),
-      ends: stage.ends,
-      fails: stage.fails.map((fail) =>
-        fail.kind === 'timeout'
-          ? { kind: fail.kind, minutes: fail.minutes }
-          : {
-              kind: fail.kind,
-              ...(fail.kind === 'role-lost' ? { role: fail.role } : {}),
-              ...(fail.graceMinutes !== undefined ? { grace_minutes: fail.graceMinutes } : {}),
-            },
-      ) as GoalVisitFailOut[],
+      ends: stage.ends.map((end) => ({ ...end })),
+      fails: stage.fails.map(failOut),
       ...(stage.autoEnd !== undefined ? { auto_end: stage.autoEnd } : {}),
     });
 
@@ -398,8 +411,8 @@ export function emitSimContent(
       goals: model.goals.map((goal) => ({
         name: goal.name,
         plan: goal.plan,
-        needs: goal.needs,
-        yields: goal.yields,
+        needs: goal.needs.map((need) => ({ ...need })),
+        yields: goal.yields.map((y) => ({ ...y })),
         cost_minutes: goalCostMinutes(goal),
         stages: goal.stages.map(stageOut),
       })),
@@ -410,8 +423,6 @@ export function emitSimContent(
       ...(model.stub ? { stub: true as const } : {}),
     };
   };
-
-  if (visitBlocks.some((block) => block.stageGrammar)) checkNamespaceCollisions(diag);
 
   const emitLegacyVisit = (block: RawBlock): VisitSceneOut => {
     const fields = new FieldMap(block.fields);
@@ -456,6 +467,8 @@ export function emitSimContent(
     warnLeftovers(fields, diag, block.id);
     return out;
   };
+
+  if (visitBlocks.some((block) => block.stageGrammar)) checkNamespaceCollisions(diag);
 
   const visits: VisitOut[] = visitBlocks.map((block) =>
     block.stageGrammar ? emitGoalVisit(block) : emitLegacyVisit(block),
