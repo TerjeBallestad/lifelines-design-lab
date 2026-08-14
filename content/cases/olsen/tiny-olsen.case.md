@@ -730,7 +730,7 @@ Sim hook: case.olsen.tiltak.institusjon
 Title: Be om økonomisk oversikt
 Sim hook: case.olsen.dispatch.account_overview
 Description: Frank ringer til Grete og spør om hun kan skaffe en bankutskrift. Utskriften kommer i morgen.
-Activity: "BE OM BANKUTSKRIFT"
+Activity: BE OM BANKUTSKRIFT
 Channel: scheduled · Delay: 480m · Duration: 1h · Occupies: 3h
 Reception: +1
 gate: f_grete_baerer
