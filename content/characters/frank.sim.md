@@ -1,11 +1,5 @@
 # Character: frank
 
-// Frank never thinks (SDD-110 #10) - phone and barks only.
-// SB-072 migration (PLAN-009 Task 1): the conversation_manager BARK_TEXTS
-// pool lives here now, verbatim. The Phone block below is PLAN-006 seed
-// content - Frank is the caller, never a responder, so it has no legacy
-// counterpart; it stays a stub for Terje's SB-073 pass.
-
 # Barks: frank
 
 Stub: yes

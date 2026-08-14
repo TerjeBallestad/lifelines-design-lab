@@ -4148,14 +4148,14 @@ export const tinyOlsenGodotSource = {
           fact_id: 'f_klarer_seg',
         },
       ],
-      soft_reject: '… Jeg vet ikke hva du mener med det.',
+      soft_reject: 'Jeg vet ikke hva du mener med det.',
       exchanges: [
         {
           card_id: 'f_grete_baerer',
           ask: 'Hvem overtar hvis du skulle bli innlagt?',
           reply: [
             {
-              text: '… (det blir stille i den andre enden)',
+              text: '(det blir stille i den andre enden)',
               fact_id: 'f_ingen_plan',
             },
           ],
@@ -4179,7 +4179,7 @@ export const tinyOlsenGodotSource = {
               fact_id: 'f_grete_redd',
             },
             {
-              text: '… Hvis det må til.',
+              text: 'Hvis det må til.',
             },
           ],
         },

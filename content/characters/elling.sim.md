@@ -1,35 +1,33 @@
 # Character: elling
 
-// SB-072 migration (PLAN-009 Tasks 1-2): the conversation_manager BARK_TEXTS
-// pool, the phone_call_director answer/close lines, the hand-edited
-// resources/thoughts/*.tres pools and the MTG ambient icon fold live here
-// now, verbatim. The ambient/* bullets are ICON KEYS (not prose): Elling's
-// color identity is Blue/Green, so both AMBIENT_POOLS colors fold in.
-
 # Thoughts: elling/need/Hunger
 
 Icon: icon_hunger
 Stub: yes
 
-- Sulten. Kjøleskapet er langt unna.
-- Burde spise noe snart.
+- Nå hadde det jaggu smakt med en liten matbit.
+- Magen rumler.
 - Maten står der. Kanskje senere.
+- Skal ikke mor gjøre i stand noe mat til oss da?
+- Skal jeg spise nå, eller kan jeg vente litt?
 
 # Thoughts: elling/need/Energy
 
 Icon: icon_energy
 Stub: yes
 
-- Tung i kroppen i dag.
-- Trenger å sitte litt.
+- Det ble nok litt sent i går.
+- Nei, skulle jeg lagt meg nedtpå litt da?
+- Nå hadde det vært fint med en liten blund egentlig.
 
 # Thoughts: elling/need/Social
 
 Icon: icon_social
 Stub: yes
 
-- Stille her.
+- Det er som regel litt stille her på denne tiden av døgnet.
 - Lurer på hva mor gjør.
+- Jeg kunne jo tatt en tur ut? Er det ikke det folk gjør?
 
 # Thoughts: elling/activity/*
 
@@ -61,8 +59,9 @@ Stub: yes
 Icon: icon_peace
 Stub: yes
 
-- I dag er en innedag.
-- Dagen er tung.
+- Det skal nok gå bra.
+- Har egentlig ikke lyst til så mye i dag.
+- Tror sannelig jeg blir inne i dag jeg.
 
 # Thoughts: elling/relational/frank
 
@@ -71,6 +70,9 @@ Stub: yes
 
 - Det ringer. Jeg er ikke hjemme.
 - Han igjen.
+- Må han virkelig drive å blande seg på denne måten?
+- Huff, det må da finnes bedre ting å ta seg til enn å komme busende inn her
+- Jaha, skal dette liksom være en representant fra Oslo kommune? Arven etter Gerhardsen er sannelig vasket ut.
 
 # Thoughts: elling/relational/grete
 
@@ -79,6 +81,9 @@ Stub: yes
 
 - Mor er her.
 - Hun ordner ting igjen.
+- Hva er det hun stresser med?
+- Ja, hun får det jo til som regel.
+- Jeg kan ikke si jeg har sett henne slik før
 
 # Thoughts: elling/ambient/*
 
@@ -95,11 +100,11 @@ Stub: yes
 
 Stub: yes
 
-- Nice weather today
-- Smells good in here
-- How's it going?
-- Looking good!
-- Isn't this nice?
+- Fint vær da. Skal sies.
+- Hva er den duften?
+- Hvordan har du det i dag da?
+- Dette ser jo sannelig bra ut
+- 
 - Good to see you
 - Keep it up!
 - Having a good day?

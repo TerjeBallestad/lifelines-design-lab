@@ -1,13 +1,5 @@
 # Character: grete
 
-// SB-072 migration (PLAN-009 Tasks 1-2): the conversation_manager BARK_TEXTS
-// pool, the phone_call_director answer/close lines, the hand-edited
-// resources/thoughts/*.tres pools and the MTG ambient icon fold live here
-// now, verbatim. Grete's missing pools (need/Hunger, need/Social,
-// relational/elling) stay missing - Terje authors them in the SB-073 gate
-// session. The ambient/* bullets are ICON KEYS (not prose): Grete's color
-// identity is White.
-
 # Thoughts: grete/need/Energy
 
 Icon: icon_energy
