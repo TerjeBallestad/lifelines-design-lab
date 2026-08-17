@@ -28,7 +28,7 @@ Frank: "'Kort forventet forløp', og ikke noe mer. Så vagt skriver man bare nå
 
 ## f_grete_baerer
 Label: Grete bærer rutiner
-Summary: Grete bistår med gjøremål, økonomi og kontakt med tjenester.
+Summary: Grete er hovedansvarlig for økonomi og husholdning.
 Domain: Hverdag/rutine · Category: Dokument
 Supports: q_grete_dor, q_okonomi
 Frank: "'Omfanget er ikke kartlagt'. Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller."
@@ -297,7 +297,7 @@ Supports: q_bolig
 Kind: RAPPORT · Register: notat
 Title: Frank - hjemmebesøk Ammerudveien 47
 Peek: "Hun hadde dekket på med tre kopper."
-Meta: HJEMMEBESØK - 4012 F. ÅSLI
+Meta: HJEMMEBESØK F. ÅSLI
 
 Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin.
 
