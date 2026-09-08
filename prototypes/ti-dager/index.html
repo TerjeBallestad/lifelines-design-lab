@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lifelines - Ti dager</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Caveat:wght@400;500;600;700&family=Architects+Daughter&family=Gloock&display=swap');
+      :root {
+        --paper: #f5f1e8;
+        --paper-shade: #ece7d8;
+        --paper-fold: #dcd5c2;
+        --ink: #2a2520;
+        --ink-dim: #6b6259;
+        --ink-faint: #a49a8c;
+        --desk: #463c31;
+        --desk-dark: #382f26;
+        --hint-gold: #c89a2e;
+        --hint-warn: #c86244;
+        --hint-green: #7aa66f;
+        --hint-blue: #5b7fc4;
+        --mark: #fff8b0;
+        --hand-1: 'Kalam', cursive;
+        --hand-2: 'Caveat', cursive;
+        --hand-3: 'Architects Daughter', cursive;
+        --hand-title: 'Gloock', serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--desk-dark);
+        color: var(--ink);
+        font-family: var(--hand-1);
+        font-size: 15px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        background: var(--paper);
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 3px 6px 4px 7px;
+        padding: 6px 12px;
+        box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.3);
+      }
+      button:hover {
+        background: var(--mark);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+        box-shadow: none;
+      }
+      button.primary {
+        background: var(--hint-gold);
+        font-weight: 700;
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--paper);
+        border-color: var(--paper-fold);
+        box-shadow: none;
+      }
+      /* ---------- top bar ---------- */
+      #top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 10px 18px;
+        background: var(--desk);
+        color: var(--paper);
+        border-bottom: 3px solid var(--ink);
+        flex: 0 0 auto;
+      }
+      #top .dag {
+        font-family: var(--hand-title);
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+      #top .frank-state {
+        font-family: var(--hand-3);
+        font-size: 13px;
+        padding: 3px 10px;
+        border: 1.5px dashed var(--paper-fold);
+        border-radius: 4px;
+      }
+      #top .frank-state.ute {
+        color: var(--hint-gold);
+        border-color: var(--hint-gold);
+      }
+      #top .spacer {
+        flex: 1;
+      }
+      /* ---------- layout ---------- */
+      #main {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr) 260px;
+        gap: 14px;
+        padding: 14px;
+        min-height: 0;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+      }
+      .frame {
+        background: var(--paper);
+        border: 2.5px solid var(--ink);
+        border-radius: 4px 7px 5px 8px;
+        padding: 14px;
+        box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .frame-title {
+        font-family: var(--hand-title);
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-bottom: 1.5px solid var(--ink);
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .scroll {
+        overflow-y: auto;
+        min-height: 0;
+        flex: 1;
+      }
+      /* ---------- inbox ---------- */
+      #inbox {
+        flex: 1;
+      }
+      .doc-row {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        background: var(--paper-shade);
+        border-width: 1.5px;
+      }
+      .doc-row.unread {
+        background: var(--paper);
+        border-left: 5px solid var(--hint-gold);
+      }
+      .doc-row.open {
+        background: var(--mark);
+      }
+      .doc-row .kind {
+        font-family: var(--hand-3);
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: var(--ink-dim);
+      }
+      .doc-row .title {
+        font-family: var(--hand-2);
+        font-size: 18px;
+        line-height: 1.1;
+      }
+      .doc-row .meta {
+        font-size: 12px;
+        color: var(--ink-faint);
+      }
+      /* ---------- phone ---------- */
+      #phone {
+        flex: 0 0 auto;
+        max-height: 40%;
+      }
+      .call-row {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 6px;
+        font-family: var(--hand-2);
+        font-size: 17px;
+      }
+      .call-row small {
+        display: block;
+        font-family: var(--hand-3);
+        font-size: 11px;
+        color: var(--ink-dim);
+      }
+      /* ---------- center ---------- */
+      #center {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+      }
+      #reader {
+        flex: 1 1 0;
+        min-height: 0;
+      }
+      #reader .page {
+        font-size: 17px;
+        line-height: 1.6;
+        max-width: 62ch;
+      }
+      #reader .page p {
+        margin-bottom: 14px;
+      }
+      #reader .doc-head {
+        font-family: var(--hand-3);
+        font-size: 12px;
+        color: var(--ink-dim);
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      #reader h2 {
+        font-family: var(--hand-title);
+        font-size: 24px;
+        margin-bottom: 16px;
+      }
+      .anchor {
+        border-bottom: 2px dotted var(--hint-blue);
+        cursor: pointer;
+      }
+      .anchor:hover {
+        background: var(--paper-shade);
+      }
+      .anchor.lifted {
+        background: var(--mark);
+        border-bottom-color: transparent;
+        cursor: default;
+      }
+      .empty {
+        color: var(--ink-faint);
+        font-style: italic;
+      }
+      /* ---------- frank ---------- */
+      #frank {
+        flex: 0 0 auto;
+        max-height: 46%;
+        min-height: 260px;
+      }
+      #frank-log {
+        min-height: 90px;
+      }
+      #frank.drop {
+        outline: 3px dashed var(--hint-gold);
+        outline-offset: -6px;
+      }
+      #frank .line {
+        margin-bottom: 8px;
+        line-height: 1.45;
+      }
+      #frank .line .who {
+        font-family: var(--hand-3);
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--ink-dim);
+        margin-right: 6px;
+      }
+      #frank .line.du {
+        color: var(--ink-dim);
+      }
+      #frank .line.du .card-ref {
+        display: inline-block;
+        background: var(--paper-shade);
+        border: 1.5px solid var(--ink);
+        border-radius: 3px;
+        padding: 0 6px;
+        font-size: 13px;
+      }
+      #briefs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1.5px dashed var(--paper-fold);
+      }
+      #briefs button {
+        text-align: left;
+        font-size: 14px;
+        max-width: 100%;
+      }
+      #briefs button b {
+        font-family: var(--hand-3);
+        font-size: 10px;
+        letter-spacing: 1px;
+        display: block;
+        color: var(--ink-dim);
+      }
+      /* ---------- hand ---------- */
+      #hand {
+        flex: 1;
+      }
+      .card {
+        background: var(--paper);
+        border: 2px solid var(--ink);
+        border-radius: 3px 6px 4px 6px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        font-family: var(--hand-2);
+        font-size: 17px;
+        line-height: 1.15;
+        cursor: grab;
+        box-shadow: 1.5px 2px 0 rgba(0, 0, 0, 0.2);
+        transform: rotate(var(--rot, 0deg));
+      }
+      .card.handed {
+        background: var(--paper-shade);
+        color: var(--ink-dim);
+        cursor: default;
+      }
+      .card .fact-meta {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--hand-3);
+        font-size: 10px;
+        color: var(--ink-faint);
+        margin-top: 4px;
+      }
+      .card button {
+        font-size: 12px;
+        padding: 1px 7px;
+        box-shadow: none;
+      }
+      /* ---------- overlay / scene ---------- */
+      #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 24, 18, 0.82);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      #overlay.on {
+        display: flex;
+      }
+      .scene {
+        width: min(680px, 92vw);
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .scene .caption {
+        font-family: var(--hand-3);
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--ink-dim);
+        margin-bottom: 12px;
+      }
+      .scene .beats {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 120px;
+      }
+      .beat {
+        margin-bottom: 14px;
+        line-height: 1.55;
+        font-size: 17px;
+      }
+      .beat .who {
+        font-family: var(--hand-3);
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: var(--ink-dim);
+        display: block;
+      }
+      .beat.stage {
+        color: var(--ink-dim);
+        font-style: italic;
+      }
+      .beat.new {
+        animation: ink 0.25s ease-out;
+      }
+      @keyframes ink {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+      }
+      .scene .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1.5px dashed var(--paper-fold);
+      }
+      .scene .replies {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .scene .replies button {
+        font-family: var(--hand-2);
+        font-size: 17px;
+      }
+      /* ---------- morning ---------- */
+      .morning .landed {
+        margin: 10px 0;
+      }
+      .morning .landed div {
+        font-family: var(--hand-2);
+        font-size: 18px;
+      }
+      .morning .report {
+        background: var(--paper-shade);
+        padding: 12px;
+        border-left: 4px solid var(--ink);
+        margin-top: 10px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+      /* ---------- verdict ---------- */
+      .verdict {
+        display: grid;
+        grid-template-columns: 1fr 240px;
+        gap: 18px;
+      }
+      .verdict .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .verdict .options button {
+        text-align: left;
+        font-family: var(--hand-2);
+        font-size: 19px;
+        padding: 12px 14px;
+      }
+      .verdict .options button.picked {
+        background: var(--mark);
+      }
+      .verdict .hand-side {
+        font-size: 14px;
+        border-left: 1.5px dashed var(--paper-fold);
+        padding-left: 14px;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      .verdict .hand-side div {
+        margin-bottom: 6px;
+      }
+      .ending {
+        font-size: 18px;
+        line-height: 1.65;
+        white-space: pre-wrap;
+      }
+      .ending h2 {
+        font-family: var(--hand-title);
+        font-size: 24px;
+        margin-bottom: 14px;
+      }
+      #banner {
+        display: none;
+        background: var(--hint-warn);
+        color: var(--paper);
+        padding: 6px 18px;
+        font-size: 13px;
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--ink);
+        color: var(--paper);
+        padding: 8px 16px;
+        border-radius: 4px;
+        opacity: 0;
+        transition: all 0.25s;
+        pointer-events: none;
+        z-index: 20;
+        font-family: var(--hand-2);
+        font-size: 17px;
+      }
+      #toast.vis {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="banner"></div>
+    <div id="top">
+      <div class="dag" id="dag">DAG 1</div>
+      <div class="frank-state" id="frank-state">Frank er på pulten</div>
+      <div class="spacer"></div>
+      <button class="ghost" id="btn-restart">Start på nytt</button>
+      <button class="primary" id="btn-end">Avslutt dagen</button>
+    </div>
+
+    <div id="main">
+      <div class="col">
+        <div class="frame" id="inbox">
+          <div class="frame-title"><span>Pulten</span><span id="unread"></span></div>
+          <div class="scroll" id="inbox-list"></div>
+        </div>
+        <div class="frame" id="phone">
+          <div class="frame-title"><span>Telefon</span></div>
+          <div class="scroll" id="phone-list"></div>
+        </div>
+      </div>
+
+      <div id="center">
+        <div class="frame" id="reader">
+          <div class="frame-title"><span>Leser</span><span id="reader-meta"></span></div>
+          <div class="scroll" id="reader-body">
+            <p class="empty">Åpne et dokument fra pulten.</p>
+          </div>
+        </div>
+        <div class="frame" id="frank">
+          <div class="frame-title">
+            <span>Frank</span><span style="font-weight: 400">slipp et kort her</span>
+          </div>
+          <div class="scroll" id="frank-log"></div>
+          <div id="briefs"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="frame" id="hand">
+          <div class="frame-title"><span>Fakta</span><span id="hand-count"></span></div>
+          <div class="scroll" id="hand-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay"><div class="frame scene" id="scene"></div></div>
+    <div id="toast"></div>
+
+    <script type="module">
+      import CASE from './case.json';
+      import * as E from './engine.js';
+      import { validateCase } from './validate.js';
+
+      const SAVE_KEY = 'ti-dager-state-v1';
+      const $ = (id) => document.getElementById(id);
+
+      /* ---------- content check ---------- */
+      const problems = validateCase(CASE);
+      if (problems.length) {
+        console.warn('case.json problems', problems);
+        $('banner').style.display = 'block';
+        $('banner').textContent = `case.json: ${problems.length} problem(er). Se konsollen.`;
+      }
+
+      /* ---------- state ---------- */
+      let S = load() || E.createState(CASE);
+      let openDocId = null;
+
+      function load() {
+        try {
+          const raw = localStorage.getItem(SAVE_KEY);
+          return raw ? JSON.parse(raw) : null;
+        } catch {
+          return null;
+        }
+      }
+      function save() {
+        try {
+          localStorage.setItem(SAVE_KEY, JSON.stringify(S));
+        } catch {
+          /* ignore */
+        }
+      }
+      function restart() {
+        S = E.createState(CASE);
+        openDocId = null;
+        save();
+        renderAll();
+      }
+
+      /* ---------- helpers ---------- */
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      // Markdown-lite: paragraphs on blank lines, anchors become spans.
+      function prose(text) {
+        return text
+          .split(/\n\s*\n/)
+          .map((para) => `<p>${inline(para)}</p>`)
+          .join('');
+      }
+      function inline(text) {
+        let out = '';
+        let last = 0;
+        for (const m of text.matchAll(E.ANCHOR_RE)) {
+          out += esc(text.slice(last, m.index));
+          const lifted = !!S.facts[m[2]];
+          out += `<span class="anchor${lifted ? ' lifted' : ''}" data-fact="${m[2]}">${esc(m[1])}</span>`;
+          last = m.index + m[0].length;
+        }
+        out += esc(text.slice(last));
+        return out.replace(/\n/g, '<br />');
+      }
+      function toast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('vis');
+        clearTimeout(t._h);
+        t._h = setTimeout(() => t.classList.remove('vis'), 2200);
+      }
+      function lift(factId, source) {
+        if (E.liftFact(S, factId, source)) {
+          toast('Fakta: ' + CASE.facts[factId].label);
+          save();
+          renderHand();
+        }
+      }
+      // Any anchor anywhere on the page lifts on click.
+      document.addEventListener('click', (ev) => {
+        const a = ev.target.closest('.anchor');
+        if (a && !a.classList.contains('lifted')) {
+          lift(a.dataset.fact, a.closest('[data-source]')?.dataset.source || null);
+          a.classList.add('lifted');
+        }
+      });
+
+      /* ---------- render ---------- */
+      function renderAll() {
+        renderTop();
+        renderInbox();
+        renderPhone();
+        renderReader();
+        renderFrank();
+        renderHand();
+        if (S.ended === 'verdict') showVerdict();
+        else if (S.ended === 'signed') showEnding(E.signVerdict(CASE, S, S.verdict));
+      }
+
+      function renderTop() {
+        $('dag').textContent = 'DAG ' + S.day;
+        const fs = $('frank-state');
+        fs.textContent = S.fieldUsed ? 'Frank er ute i dag' : 'Frank er på pulten';
+        fs.classList.toggle('ute', S.fieldUsed);
+        $('btn-end').disabled = !!S.ended;
+      }
+
+      function renderInbox() {
+        const list = $('inbox-list');
+        list.innerHTML = '';
+        for (const id of S.docOrder) {
+          const d = CASE.documents[id];
+          const st = S.docs[id];
+          const b = document.createElement('button');
+          b.className = 'doc-row' + (st.read ? '' : ' unread') + (id === openDocId ? ' open' : '');
+          b.innerHTML = `<div class="kind">${esc(d.kind)}</div><div class="title">${esc(d.title)}</div><div class="meta">${esc(d.from)} - dag ${st.day}</div>`;
+          b.onclick = () => {
+            openDocId = id;
+            E.openDoc(S, id);
+            save();
+            renderInbox();
+            renderReader();
+          };
+          list.appendChild(b);
+        }
+        const n = E.unreadCount(S);
+        $('unread').textContent = n ? n + ' ulest' : '';
+      }
+
+      function renderPhone() {
+        const list = $('phone-list');
+        list.innerHTML = '';
+        const avail = E.availableCalls(CASE, S);
+        if (!avail.length) list.innerHTML = '<p class="empty">Ingen numre å ringe.</p>';
+        for (const cid of avail) {
+          const c = CASE.calls[cid];
+          const b = document.createElement('button');
+          b.className = 'call-row';
+          b.innerHTML = `${esc(c.to)}<small>${c.ladder ? 'ring igjen når du vil' : 'ring'}</small>`;
+          b.onclick = () => startCall(cid);
+          list.appendChild(b);
+        }
+      }
+
+      function renderReader() {
+        const body = $('reader-body');
+        if (!openDocId || !S.docs[openDocId]) {
+          body.innerHTML = '<p class="empty">Åpne et dokument fra pulten.</p>';
+          $('reader-meta').textContent = '';
+          return;
+        }
+        const d = CASE.documents[openDocId];
+        $('reader-meta').textContent = d.kind;
+        body.innerHTML = `<div class="page" data-source="${openDocId}"><div class="doc-head">${esc(d.from)}</div><h2>${esc(d.title)}</h2>${prose(d.text)}</div>`;
+      }
+
+      function renderFrank() {
+        const log = $('frank-log');
+        log.innerHTML = S.frank
+          .map((l) => {
+            if (l.who === 'Du')
+              return `<div class="line du"><span class="who">DU</span><span class="card-ref">${esc(l.text)}</span></div>`;
+            return `<div class="line"><span class="who">FRANK</span>${esc(l.text)}</div>`;
+          })
+          .join('');
+        log.scrollTop = log.scrollHeight;
+        const briefs = $('briefs');
+        briefs.innerHTML = '';
+        const avail = E.availableBriefs(CASE, S);
+        for (const vid of avail) {
+          const v = CASE.visits[vid];
+          const b = document.createElement('button');
+          b.disabled = S.fieldUsed || !!S.ended;
+          b.innerHTML = `<b>SEND FRANK${v.scene === false ? ' - papir i morgen' : ''}</b>${esc(v.brief)}`;
+          b.onclick = () => startVisit(vid);
+          briefs.appendChild(b);
+        }
+        if (!avail.length && !S.fieldUsed)
+          briefs.innerHTML =
+            '<span class="empty">Frank har ikke noe oppdrag. Gi ham et kort.</span>';
+        if (S.fieldUsed)
+          briefs.innerHTML =
+            '<span class="empty">Frank er ute. Avslutt dagen når du er klar.</span>';
+      }
+
+      function renderHand() {
+        const list = $('hand-list');
+        list.innerHTML = '';
+        const ids = Object.keys(S.facts).sort((a, b) => S.facts[b].day - S.facts[a].day);
+        $('hand-count').textContent = ids.length ? ids.length + ' kort' : '';
+        if (!ids.length) list.innerHTML = '<p class="empty">Løft fakta fra dokumentene.</p>';
+        ids.forEach((fid, i) => {
+          const f = CASE.facts[fid];
+          const st = S.facts[fid];
+          const c = document.createElement('div');
+          c.className = 'card' + (st.handed ? ' handed' : '');
+          c.style.setProperty('--rot', ((i % 3) - 1) * 0.6 + 'deg');
+          c.draggable = !st.handed;
+          c.dataset.fact = fid;
+          c.innerHTML = `${esc(f.label)}<div class="fact-meta"><span>dag ${st.day}</span>${st.handed ? '<span>hos Frank</span>' : '<button data-hand>gi til Frank</button>'}</div>`;
+          c.addEventListener('dragstart', (ev) => ev.dataTransfer.setData('text/plain', fid));
+          c.querySelector('[data-hand]')?.addEventListener('click', () => handFact(fid));
+          list.appendChild(c);
+        });
+      }
+
+      /* ---------- Frank drop ---------- */
+      const frankEl = $('frank');
+      frankEl.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+        frankEl.classList.add('drop');
+      });
+      frankEl.addEventListener('dragleave', () => frankEl.classList.remove('drop'));
+      frankEl.addEventListener('drop', (ev) => {
+        ev.preventDefault();
+        frankEl.classList.remove('drop');
+        handFact(ev.dataTransfer.getData('text/plain'));
+      });
+      function handFact(fid) {
+        const r = E.handToFrank(CASE, S, fid);
+        if (!r) return;
+        save();
+        renderFrank();
+        renderHand();
+        renderPhone();
+      }
+
+      /* ---------- overlay ---------- */
+      const overlay = $('overlay');
+      const scene = $('scene');
+      function openOverlay(html) {
+        scene.innerHTML = html;
+        overlay.classList.add('on');
+      }
+      function closeOverlay() {
+        overlay.classList.remove('on');
+        scene.innerHTML = '';
+      }
+
+      // Beats one at a time. onDone(skipped).
+      function playBeats(caption, beats, onDone, source) {
+        let i = 0;
+        const draw = () => {
+          const shown = beats.slice(0, i + 1);
+          const last = i + 1 >= beats.length;
+          openOverlay(`<div class="caption">${esc(caption)}</div>
+            <div class="beats" data-source="${source || ''}">${shown
+              .map(
+                (b, k) =>
+                  `<div class="beat${b.who ? '' : ' stage'}${k === i ? ' new' : ''}">${b.who ? `<span class="who">${esc(b.who.toUpperCase())}</span>` : ''}${inline(b.text)}</div>`,
+              )
+              .join('')}</div>
+            <div class="actions">
+              ${last ? '' : '<button id="sc-skip">Hopp over</button>'}
+              <button class="primary" id="sc-next">${last ? 'Tilbake til pulten' : 'Videre'}</button>
+            </div>`);
+          const beatsEl = scene.querySelector('.beats');
+          beatsEl.scrollTop = beatsEl.scrollHeight;
+          $('sc-next').onclick = () => {
+            i++;
+            if (i < beats.length) draw();
+            else {
+              closeOverlay();
+              onDone(false);
+            }
+          };
+          $('sc-skip')?.addEventListener('click', () => {
+            closeOverlay();
+            onDone(true);
+          });
+        };
+        if (!beats.length) return onDone(false);
+        draw();
+      }
+
+      /* ---------- calls ---------- */
+      function startCall(cid) {
+        const node = E.ringCall(CASE, S, cid);
+        if (!node) return;
+        save();
+        renderPhone();
+        const c = CASE.calls[cid];
+        if (node.kind === 'ladder') {
+          playBeats('Telefon - ' + c.to, node.lines, () => renderAll(), cid);
+          return;
+        }
+        showCallNode(cid, node);
+      }
+      function showCallNode(cid, node) {
+        const c = CASE.calls[cid];
+        openOverlay(`<div class="caption">Telefon - ${esc(c.to)}</div>
+          <div class="beats" data-source="${cid}">${node.lines
+            .map(
+              (l) =>
+                `<div class="beat new"><span class="who">${esc((l.who || c.to).toUpperCase())}</span>${inline(l.text)}</div>`,
+            )
+            .join('')}</div>
+          <div class="actions"><div class="replies">${
+            node.replies.length
+              ? node.replies
+                  .map((r, k) => `<button data-reply="${k}">${esc(r.text)}</button>`)
+                  .join('')
+              : '<button class="primary" id="sc-hangup">Legg på</button>'
+          }</div></div>`);
+        scene.querySelectorAll('[data-reply]').forEach((b) =>
+          b.addEventListener('click', () => {
+            const r = node.replies[Number(b.dataset.reply)];
+            showCallNode(cid, E.callNode(CASE, S, cid, r.next));
+          }),
+        );
+        $('sc-hangup')?.addEventListener('click', () => {
+          closeOverlay();
+          save();
+          renderAll();
+        });
+      }
+
+      /* ---------- visits ---------- */
+      function startVisit(vid) {
+        const wasWitnessed = S.witnessed;
+        const r = E.sendFrank(CASE, S, vid);
+        if (!r) return;
+        const v = CASE.visits[vid];
+        const finish = (skipped) => {
+          // Witnessing needs the scene watched to the end.
+          if (skipped && r.moved > 0 && !wasWitnessed) S.witnessed = false;
+          save();
+          renderAll();
+          if (r.delivered.length)
+            toast('Nytt på pulten: ' + r.delivered.map((d) => CASE.documents[d].title).join(', '));
+        };
+        if (!r.scene) {
+          save();
+          renderAll();
+          toast('Frank er sendt. Papiret kommer i morgen.');
+          return;
+        }
+        playBeats('Hjemmebesøk - ' + v.brief, r.beats, finish, vid);
+      }
+
+      /* ---------- day boundary ---------- */
+      $('btn-end').onclick = () => {
+        const m = E.endDay(CASE, S);
+        if (!m) return;
+        save();
+        if (m.atVerdict) {
+          renderAll();
+          return;
+        }
+        openOverlay(`<div class="caption">Dag ${m.day} - morgen</div>
+          <div class="morning">
+            ${
+              m.landed.length
+                ? `<div class="landed">${m.landed.map((d) => `<div>${esc(CASE.documents[d].kind)} - ${esc(CASE.documents[d].title)}</div>`).join('')}</div>`
+                : '<p class="empty">Ingen ny post.</p>'
+            }
+            ${m.report ? `<div class="report"><b>DAGSRAPPORT</b>\n${esc(m.report.join('\n\n'))}</div>` : ''}
+          </div>
+          <div class="actions"><button class="primary" id="sc-next">Til pulten</button></div>`);
+        $('sc-next').onclick = () => {
+          closeOverlay();
+          renderAll();
+        };
+      };
+
+      /* ---------- verdict ---------- */
+      function showVerdict() {
+        let picked = null;
+        const draw = () => {
+          openOverlay(`<div class="caption">Dag 10 - Vurdering</div>
+            <div class="verdict">
+              <div class="options">${CASE.case.verdicts
+                .map(
+                  (v) =>
+                    `<button data-v="${v.id}" class="${picked === v.id ? 'picked' : ''}">${esc(v.label)}</button>`,
+                )
+                .join('')}</div>
+              <div class="hand-side"><div class="caption">Det du holder</div>${
+                Object.keys(S.facts)
+                  .map((f) => `<div>${esc(CASE.facts[f].label)}</div>`)
+                  .join('') || '<div class="empty">Ingenting.</div>'
+              }</div>
+            </div>
+            <div class="actions"><button class="primary" id="sc-sign" ${picked ? '' : 'disabled'}>Skriv under</button></div>`);
+          scene.querySelectorAll('[data-v]').forEach((b) =>
+            b.addEventListener('click', () => {
+              picked = b.dataset.v;
+              draw();
+            }),
+          );
+          $('sc-sign').onclick = () => {
+            const page = E.signVerdict(CASE, S, picked);
+            save();
+            showEnding(page);
+          };
+        };
+        draw();
+      }
+      function showEnding(page) {
+        openOverlay(`<div class="caption">Vedtak</div>
+          <div class="ending"><h2>${esc(page.label)}</h2>${esc(page.text)}</div>
+          <div class="actions"><button id="sc-restart">Start på nytt</button></div>`);
+        $('sc-restart').onclick = () => {
+          closeOverlay();
+          restart();
+        };
+      }
+
+      $('btn-restart').onclick = () => {
+        closeOverlay();
+        restart();
+      };
+
+      renderAll();
+    </script>
+  </body>
+</html>

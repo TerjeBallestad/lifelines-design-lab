@@ -1,0 +1,902 @@
+{
+  "_readme": [
+    "Ti dager (SDD-012). Content for the prologue probe. Prose is STUB text laid out from Terje's day table; replace it, keep the ids.",
+    "Anchors in prose: [visible text](f_id). Conditions: `has f_x`, `fired t_x`, `visited v_x`, `called c_x`, `door >= n`, `day >= n`, `witnessed`, `any_visit`, prefix `not`, join with `and`.",
+    "Door ladder (hidden): 0 stille, 1 ved døren, 2 snakker gjennom døren, 3 døren på gløtt, 4 slipper Frank inn."
+  ],
+  "case": {
+    "id": "ti_dager",
+    "title": "Saken Olsen",
+    "days": 10,
+    "opening": {
+      "documents": ["doc_bekymring"],
+      "door": 0
+    },
+    "verdicts": [
+      {
+        "id": "vd_selv",
+        "label": "Elling er i stand til å ta vare på seg selv",
+        "pages": [
+          {
+            "when": "door >= 4 and witnessed",
+            "text": "Du så ham åpne døren. Du skrev det ned, og du skrev under.\n\nFrank går dit hver tirsdag. Elling har begynt å stå i vinduet når han kommer. Leien er betalt av kommunen for tre måneder. Etterpå vet ingen.\n\nSpørsmålet du sitter igjen med: åpnet han døren for deg, eller for Frank?"
+          },
+          {
+            "when": "door >= 4",
+            "text": "Notatet sier at han slapp Frank inn. Du leste det. Du var ikke der.\n\nVedtaket står. Frank går dit hver tirsdag.\n\nDu vet at døren åpnet seg. Du vet ikke hvordan det så ut."
+          },
+          {
+            "when": "door >= 2",
+            "text": "Han snakker gjennom døren. Det er alt du har. Du skrev under likevel.\n\nHuseieren ringte fredag. Leien er ikke betalt. Frank sto utenfor i tjue minutter. Ingen svarte.\n\nHva var det du sa i vedtaket, og hva var det du hadde sett?"
+          },
+          {
+            "text": "Du har aldri hørt stemmen hans. Du skrev under på at han klarer seg.\n\nDagsrapporten dag tolv: Ingen har sett Elling siden tirsdag. Posten ligger i gangen. Huseieren har byttet lås på kjellerdøren.\n\nHvem var det du skrev om?"
+          }
+        ]
+      },
+      {
+        "id": "vd_ikke_selv",
+        "label": "Elling er ikke i stand til å ta vare på seg selv",
+        "pages": [
+          {
+            "when": "door >= 4",
+            "text": "Han hadde begynt å åpne. Du skrev at han ikke klarer seg.\n\nFrank leverte vedtaket selv. Elling leste det ved kjøkkenbordet. Han sa ingenting. Neste tirsdag var døren låst igjen.\n\nDet står ingenting feil i vedtaket. Hva var det som var riktig?"
+          },
+          {
+            "text": "Vedtaket står. Saken går videre til bydelen. Noen andre tar over.\n\nFrank rydder skrivebordet. Han spør om du vil ha kopi av notatene.\n\nDu vet hva Elling ikke klarer. Vet du hva han klarer?"
+          }
+        ]
+      },
+      {
+        "id": "vd_samtykke",
+        "label": "Elling samtykker til å flytte til kommunalt behandlingshjem",
+        "pages": [
+          {
+            "when": "door >= 3",
+            "text": "Frank spurte gjennom døren på gløtt. Elling sa ja. Det tok fire sekunder.\n\nHan flytter torsdag. Frank kjører. Elling tar med seg utklippsboken og ingenting fra kjøkkenet.\n\nDu fikk et ja. Hva var spørsmålet han hørte?"
+          },
+          {
+            "text": "Samtykket ble hentet inn skriftlig. Brevet lå i gangen i tre dager. Så kom det tilbake, signert, i en konvolutt som var åpnet og lukket igjen med tape.\n\nHan flytter torsdag.\n\nDu har underskriften hans. Har du snakket med ham?"
+          }
+        ]
+      },
+      {
+        "id": "vd_tvang",
+        "label": "Elling flyttes til behandlingshjem uten samtykke",
+        "pages": [
+          {
+            "when": "door >= 3",
+            "text": "Døren sto på gløtt da de kom. De trengte ikke låsesmeden.\n\nElling sa ikke noe. Frank sto bakerst. Han hadde bedt om å få være med, og fått nei.\n\nDu hadde et menneske som var i ferd med å åpne en dør. Hva var det du trengte som ikke kunne vente?"
+          },
+          {
+            "text": "Låsesmeden brukte elleve minutter. Elling satt i stolen med ryggen til.\n\nFrank var der. Han sier ikke så mye om det.\n\nVedtaket var riktig etter papirene. Sitter du igjen med noe annet?"
+          }
+        ]
+      }
+    ]
+  },
+  "frank": {
+    "opening": [
+      "Ny sak på pulten. Olsen, Frogner. Jeg leser den samtidig som deg.",
+      "Løft det du tror betyr noe, og gi det til meg. Så sier jeg hva vi bør finne ut."
+    ],
+    "shrug": "Frank leser kortet to ganger og legger det i bunken. \"Kan være noe. Vi ser.\""
+  },
+  "documents": {
+    "doc_bekymring": {
+      "kind": "BEKYMRINGSMELDING",
+      "from": "Legesenteret, dr. J. Haug",
+      "title": "Bekymringsmelding",
+      "text": "Under behandling av pasient Grete Olsen (f. 1927) for en [sykdom med kort forventet forløp](f_grete_syk) kommer det frem at hun bor sammen med sin sønn, Elling Olsen (f. 1964).\n\nSønnen har etter det jeg forstår [aldri bodd alene](f_aldri_alene). Fru Olsen oppgir at hun [tar seg av det meste i huset](f_grete_baerer), innkjøp, økonomi og kontakt med det offentlige. Hun har ikke ønsket å snakke om hva som skjer etter henne.\n\nJeg melder bekymring for sønnens situasjon ved bortfall av mor. Jeg ber om at bydelen tar kontakt."
+    },
+    "doc_notat_1": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, første besøk",
+      "text": "Grete åpnet. Kaffe sto klart. Elling satt i stuen og reiste seg ikke.\n\nPå skoskapet i gangen ligger [en bunke uåpnet post](f_post), flere med rødt stempel. Grete flyttet den ut av synsfeltet mitt da hun hengte opp jakken min.\n\nElling [holdt alltid et møbel mellom oss](f_avstand). Når jeg satte meg, flyttet han seg til den andre siden av bordet. Han svarte på spørsmål med ett ord, og så på moren etter hvert svar.\n\nPå bokhyllen står [ti permer med avisutklipp, datert og sortert](f_utklipp). Grete sa: han er en smart gutt. Elling sa ingenting."
+    },
+    "doc_konto": {
+      "kind": "KONTOUTSKRIFT",
+      "from": "Sparebanken, ved fullmakt",
+      "title": "Økonomisk oversikt, Elling Olsen",
+      "text": "Konto 1: Trygd inn den 20. hver måned, [kr 8 340](f_trygd). Uttak: kontant, samme dag, hele beløpet, i filial. Fullmakt: Grete Olsen.\n\nKort er ikke utstedt. Nettbank er ikke opprettet. [Alt går gjennom Grete](f_alt_via_grete).\n\nHusleie: ingen spør på kontoen. Ifølge Grete betales den [kontant til huseier den første](f_husleie)."
+    },
+    "doc_innleggelse": {
+      "kind": "MELDING",
+      "from": "Ullevål sykehus",
+      "title": "Innleggelse",
+      "text": "Grete Olsen ble [innlagt i går kveld](f_innlagt). Tilstanden er stabil men alvorlig.\n\nPasienten oppgir at sønnen er hjemme. [Sønnen er ikke varslet](f_elling_uvarslet). Pasienten ba oss la det være."
+    },
+    "doc_dodsfall": {
+      "kind": "MELDING",
+      "from": "Ullevål sykehus",
+      "title": "Dødsfall",
+      "text": "Grete Olsen [døde i natt](f_dod).\n\nVi har forsøkt å nå sønnen på telefon. Ingen svar. En beskjed ble [lagt gjennom brevsprekken](f_brevsprekken) av hjemmetjenesten i morges."
+    },
+    "doc_huseier": {
+      "kind": "BREV",
+      "from": "T. Bakkerud, huseier",
+      "title": "Håndskrevet brev",
+      "text": "Til bydelen.\n\nJeg har leid ut til Grete Olsen i tjueto år. [Leien har ikke kommet denne måneden](f_leie_stoppet). Jeg har hørt at hun er død. Jeg kondolerer.\n\nJeg vet ikke hvem som bor der nå, formelt. [Jeg kommer torsdag](f_huseier_kommer) for å se på leiligheten. Om noen fra dere vil være der, gi beskjed."
+    },
+    "doc_huseier_svar": {
+      "kind": "NOTAT",
+      "from": "Frank",
+      "title": "Møte med Bakkerud",
+      "text": "Bakkerud er ikke ute etter noen. Han vil ha en å forholde seg til.\n\n[Kontrakten står i Gretes navn](f_kontrakt_grete). Elling står ikke på den. Bakkerud sier han kan vente en måned om noen sier at det finnes en plan."
+    },
+    "doc_kontakt_0": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, døren",
+      "text": "Ringte på 10:00. Ventet. Ringte igjen 10:10. [Ingenting](f_stille). Ikke lys, ikke lyd.\n\nSå gjennom brevsprekken: gangen er ryddig. Posten er tatt inn.\n\nJeg la igjen et kort med navn og tid for neste gang."
+    },
+    "doc_kontakt_1": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, døren",
+      "text": "Ringte på 10:00. [Lyset i gangen ble slått av](f_lys) i det jeg ringte. Han var ved døren.\n\nJeg sa hvem jeg var og at jeg kom tilbake. Ingen svar. Jeg ble stående i fem minutter og gikk.\n\nKortet fra sist var tatt inn."
+    },
+    "doc_kontakt_2": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, døren",
+      "text": "Han [svarte gjennom døren](f_stemme). \"Mor er ikke hjemme.\" Jeg sa at jeg visste det. Stillhet. Så: \"Hva vil du.\"\n\nJeg sa at jeg ikke ville noe, at jeg kom for å hilse. Han sa at det var greit. Døren forble lukket.\n\nHan snakker som en som ikke har brukt stemmen på flere dager."
+    },
+    "doc_kontakt_3": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, døren",
+      "text": "[Døren på gløtt](f_dor_glott). Sikkerhetslenken på. Jeg så ansiktet hans for første gang siden Grete.\n\nHan spurte om jeg hadde med noe. Jeg hadde med avisen. Han tok den gjennom åpningen.\n\nKjøkkenet bak ham: brødpose, en tallerken. [Han spiser](f_spiser_snacks), men ikke mat."
+    },
+    "doc_kontakt_4": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, inne",
+      "text": "[Han slapp meg inn](f_inne). Han gikk foran meg inn i stuen og satte seg i sin stol. Jeg satte meg i Gretes. Han så på det, men sa ingenting.\n\nVi satt i tjue minutter. Han fortalte om et utklipp fra 1987. Jeg hørte på.\n\nDa jeg gikk, sa han: \"Tirsdag?\" Jeg sa tirsdag."
+    },
+    "doc_notat_press": {
+      "kind": "BESØKSNOTAT",
+      "from": "Frank",
+      "title": "Besøksnotat, skjemaer",
+      "text": "Jeg gjorde som du ba om. Sa hva kommunen trenger fra ham: samtykke, signatur, en avtale.\n\nHan trakk seg. [Døren gikk igjen](f_trakk_seg) og jeg hørte låsen. Jeg ble stående og sa at jeg kom tilbake uten papirene.\n\nDu bestemmer. Men jeg tror ikke skjemaene er veien inn."
+    },
+    "doc_begravelse": {
+      "kind": "NOTAT",
+      "from": "Frank",
+      "title": "Begravelsen",
+      "text": "Han kom. Han sto bakerst. Han hadde på seg dress som ikke passet, hennes valg, kanskje for lenge siden.\n\nEtterpå sto han ved bilen og ventet på at noen skulle si hva som skjedde nå. [Ingen hadde sagt det til ham](f_ingen_sa_det). Jeg kjørte ham hjem. Han sa takk i trappen."
+    },
+    "doc_status": {
+      "kind": "STATUS",
+      "from": "Frank",
+      "title": "Statusnotat",
+      "text": "Det har gått en uke. Jeg har ikke fått noe oppdrag i saken.\n\nGrete Olsen er død. Sønnen bor alene i leiligheten. Ingen fra oss har sett ham.\n\n[Jeg trenger å vite hva du vil](f_frank_venter). Vurderingen skal skrives om to dager."
+    }
+  },
+  "facts": {
+    "f_grete_syk": {
+      "label": "Grete er alvorlig syk, kort forventet forløp",
+      "frank": {
+        "line": "Da har vi ikke uker på oss. Ring henne. Hun vet hvorfor du ringer, og hun vil si at alt går bra. Hør på hva hun ikke sier.",
+        "unlocks": {
+          "call": "call_grete"
+        }
+      }
+    },
+    "f_aldri_alene": {
+      "label": "Elling har aldri bodd alene",
+      "frank": {
+        "line": "Trettifem år. Det er ikke en mann som mangler en ferdighet. Det er en mann som aldri fikk begynne. Haug vet mer enn han skrev. Ring ham.",
+        "unlocks": {
+          "call": "call_lege"
+        }
+      }
+    },
+    "f_grete_baerer": {
+      "label": "Grete tar seg av det meste, omfang ukjent",
+      "frank": {
+        "line": "Det meste. Vi må finne ut hva det meste er, for det er det som forsvinner."
+      }
+    },
+    "f_klarer_seg": {
+      "label": "Han klarer seg (sagt to ganger)",
+      "frank": {
+        "line": "To ganger. Folk sier ting to ganger når de sier det til seg selv."
+      }
+    },
+    "f_samtykke": {
+      "label": "Grete samtykker til hjemmebesøk",
+      "frank": {
+        "line": "Bra. Jeg går dit som en som hilser, ikke som en som sjekker. Første gang ser jeg bare.",
+        "unlocks": {
+          "brief": "v_bli_kjent"
+        }
+      }
+    },
+    "f_elling_tlf": {
+      "label": "Elling tar ikke telefonen",
+      "frank": {
+        "line": "Han hører den. Det er ikke det samme som at han ikke vil svare."
+      }
+    },
+    "f_post": {
+      "label": "Uåpnet post på skoskapet, rødt stempel",
+      "frank": {
+        "line": "Rødt stempel er purringer. Det går penger inn og penger ut, og noen holder regnskapet i hodet. Vil du at jeg skal be om en oversikt?",
+        "unlocks": {
+          "brief": "v_kartlegg"
+        }
+      }
+    },
+    "f_avstand": {
+      "label": "Holder alltid et møbel mellom seg og andre",
+      "frank": {
+        "line": "Det er ikke frykt for meg. Det er avstand han er vant til. Det tar tid å bli en som får komme nærmere."
+      }
+    },
+    "f_utklipp": {
+      "label": "Ti permer avisutklipp, datert og sortert",
+      "frank": {
+        "line": "Ti permer. Det er en som kan holde orden, som kan folge noe over år. Hva mer klarer han, når ingen ser?"
+      }
+    },
+    "f_trygd": {
+      "label": "Trygd kr 8 340 inn den 20., kontant ut samme dag",
+      "frank": {
+        "line": "Hele beløpet, kontant. Han har aldri sett en kontoutskrift."
+      }
+    },
+    "f_alt_via_grete": {
+      "label": "Alt går gjennom Grete",
+      "frank": {
+        "line": "Alt gjennom Grete. Nå går det gjennom ingen. Det er dette bekymringsmeldingen egentlig handler om."
+      }
+    },
+    "f_husleie": {
+      "label": "Husleie betales kontant til huseier den første",
+      "frank": {
+        "line": "Kontant, til en huseier vi ikke har snakket med. Vi bør ringe ham før han ringer oss.",
+        "unlocks": {
+          "call": "call_huseier"
+        }
+      }
+    },
+    "f_ingen_plan": {
+      "label": "Grete har ingen plan for Elling",
+      "frank": {
+        "line": "Ingen plan. Da blir det var."
+      }
+    },
+    "f_innlagt": {
+      "label": "Grete innlagt",
+      "frank": {
+        "line": "Da er han alene i leiligheten for første gang. Jeg går dit. Ikke for å få noe, bare for å være en som står utenfor og kommer tilbake.",
+        "unlocks": {
+          "brief": "v_kontakt"
+        }
+      }
+    },
+    "f_elling_uvarslet": {
+      "label": "Elling er ikke varslet om innleggelsen",
+      "frank": {
+        "line": "Hun ba dem la det være. Hun beskytter ham fortsatt. Det er det siste hun kan gjøre."
+      }
+    },
+    "f_dod": {
+      "label": "Grete er død",
+      "frank": {
+        "line": "Nå begynner det. Vi kan gå med skjemaene, kommunen trenger samtykke. Eller vi kan fortsette å stå utenfor døren. Du velger.",
+        "unlocks": {
+          "brief": "v_kontakt_press"
+        }
+      }
+    },
+    "f_brevsprekken": {
+      "label": "Beskjeden om dødsfallet kom gjennom brevsprekken",
+      "frank": {
+        "line": "Gjennom brevsprekken. Ingen sa det til ham. Det må være en begravelse, og noen må sørge for at han kommer.",
+        "unlocks": {
+          "brief": "v_begravelse"
+        }
+      }
+    },
+    "f_leie_stoppet": {
+      "label": "Leien har stoppet",
+      "frank": {
+        "line": "Selvsagt har den det. Den lå i en skoeske."
+      }
+    },
+    "f_huseier_kommer": {
+      "label": "Huseier kommer torsdag",
+      "frank": {
+        "line": "Da er jeg der. Ikke for å forhandle, for å være den han kan forholde seg til.",
+        "unlocks": {
+          "brief": "v_huseier"
+        }
+      }
+    },
+    "f_kontrakt_grete": {
+      "label": "Kontrakten står i Gretes navn",
+      "frank": {
+        "line": "Da har Elling formelt ingen leilighet. Bakkerud vet det. Han sa det ikke."
+      }
+    },
+    "f_stille": {
+      "label": "Ingen reaksjon på døren",
+      "frank": {
+        "line": "Ingenting er ogsa et svar. Jeg går igjen."
+      }
+    },
+    "f_lys": {
+      "label": "Lyset i gangen slått av da Frank ringte på",
+      "frank": {
+        "line": "Han sto ved døren. Han hørte meg. Det er nok for i dag."
+      }
+    },
+    "f_stemme": {
+      "label": "Elling svarer gjennom døren",
+      "frank": {
+        "line": "\"Mor er ikke hjemme.\" Han sa det til meg. Det er det første han har sagt til noen fra oss."
+      }
+    },
+    "f_dor_glott": {
+      "label": "Døren på gløtt, lenken på",
+      "frank": {
+        "line": "Jeg så ansiktet hans. Neste gang tar jeg med avisen igjen."
+      }
+    },
+    "f_spiser_snacks": {
+      "label": "Spiser, men bare brødskiver og snacks",
+      "frank": {
+        "line": "Han sulter ikke. Han lever ikke heller. Det er forskjellen vi skal skrive om."
+      }
+    },
+    "f_inne": {
+      "label": "Elling slapp Frank inn",
+      "frank": {
+        "line": "Tjue minutter i Gretes stol. Han spurte om tirsdag. Det er et menneske som vil ha noen tilbake."
+      }
+    },
+    "f_trakk_seg": {
+      "label": "Trakk seg da Frank kom med skjemaer",
+      "frank": {
+        "line": "Jeg sa det. Skjemaene er ikke veien inn. Vil du at jeg skal gå tilbake uten dem?"
+      }
+    },
+    "f_ingen_sa_det": {
+      "label": "Ingen fortalte Elling hva som skjer nå",
+      "frank": {
+        "line": "Han ventet på instruks ved bilen. Han har alltid fått instruks. Det er det han kan."
+      }
+    },
+    "f_frank_venter": {
+      "label": "Frank venter på oppdrag",
+      "frank": {
+        "line": "Jeg venter fortsatt."
+      }
+    }
+  },
+  "calls": {
+    "call_grete": {
+      "to": "Grete Olsen",
+      "unlock": "frank",
+      "once": true,
+      "avail": "not fired innleggelse",
+      "start": "n1",
+      "nodes": {
+        "n1": {
+          "lines": [
+            {
+              "who": "Grete",
+              "text": "Ja, det er Olsen. Ja. Haug sa at dere kanskje ringte. Alt går bra her, det må De vite."
+            }
+          ],
+          "replies": [
+            {
+              "text": "Spør om Elling",
+              "next": "n2"
+            },
+            {
+              "text": "Be om å få komme på besøk",
+              "next": "n3"
+            }
+          ]
+        },
+        "n2": {
+          "lines": [
+            {
+              "who": "Grete",
+              "text": "Elling? [Han klarer seg](f_klarer_seg). Han er flink. Han leser mye. [Han klarer seg](f_klarer_seg), det gjør han."
+            },
+            {
+              "who": "Grete",
+              "text": "Nei, De får ikke snakke med ham nå. [Han tar ikke telefonen](f_elling_tlf). Det er jeg som tar den."
+            }
+          ],
+          "replies": [
+            {
+              "text": "Be om å få komme på besøk",
+              "next": "n3"
+            }
+          ]
+        },
+        "n3": {
+          "lines": [
+            {
+              "who": "Grete",
+              "text": "Besøk. Ja. Om det må til. Men ikke med papirer. Bare kom og [hils på](f_samtykke). Tirsdag. Jeg lager kaffe."
+            }
+          ],
+          "replies": []
+        }
+      }
+    },
+    "call_lege": {
+      "to": "Dr. Haug",
+      "unlock": "frank",
+      "once": true,
+      "avail": "not fired dodsfall",
+      "start": "n1",
+      "nodes": {
+        "n1": {
+          "lines": [
+            {
+              "who": "Haug",
+              "text": "Jeg kan si det jeg kan si. Hun har uker. Hun vet det."
+            },
+            {
+              "who": "Haug",
+              "text": "Jeg har spurt henne to ganger om sønnen. Om en plan. [Hun har ingen](f_ingen_plan). Hun sier han klarer seg, og så bytter hun tema."
+            }
+          ],
+          "replies": [
+            {
+              "text": "Takk for samtalen",
+              "next": "n2"
+            }
+          ]
+        },
+        "n2": {
+          "lines": [
+            {
+              "who": "Haug",
+              "text": "Ring meg om dere trenger noe skriftlig. Jeg skriver det."
+            }
+          ],
+          "replies": []
+        }
+      }
+    },
+    "call_huseier": {
+      "to": "T. Bakkerud",
+      "unlock": "frank",
+      "once": true,
+      "start": "n1",
+      "nodes": {
+        "n1": {
+          "lines": [
+            {
+              "who": "Bakkerud",
+              "text": "Olsen? Ja. Grete betaler den første, kontant, i konvolutt. Alltid. Har hun ikke i år?"
+            },
+            {
+              "who": "Bakkerud",
+              "text": "Kontrakten? Den er fra 1977. [Den står på henne](f_kontrakt_grete). Gutten står ikke på noe."
+            }
+          ],
+          "replies": [
+            {
+              "text": "Avslutt",
+              "next": "n2"
+            }
+          ]
+        },
+        "n2": {
+          "lines": [
+            {
+              "who": "Bakkerud",
+              "text": "Si fra om det er noe. Jeg er ikke ute etter noen."
+            }
+          ],
+          "replies": []
+        }
+      }
+    },
+    "call_elling": {
+      "to": "Leiligheten",
+      "avail": "fired innleggelse",
+      "ladder": {
+        "0": "Åtte ring. Fasttelefonen står to meter fra stolen hans. Ingen svarer.",
+        "1": "Fem ring. Så et klikk, som om røret ble løftet og lagt på igjen.",
+        "2": "Røret løftes. Stillhet. Pust. Så: \"Mor er ikke hjemme.\" Klikk.",
+        "3": "\"Ja?\" En pause. \"Er det Frank sin?\" Du sier ja. \"Tirsdag,\" sier han, og legger på.",
+        "4": "\"Olsen.\" Han sier navnet sitt. Han spør om Frank kommer tirsdag. Han sier at han har lest avisen. Samtalen varer i to minutter.",
+        "default": "Ingen svar."
+      }
+    }
+  },
+  "visits": {
+    "v_bli_kjent": {
+      "brief": "Bli kjent. Frank går dit som en som hilser, og ser.",
+      "avail": "not fired innleggelse",
+      "scene": true,
+      "beats": [
+        {
+          "who": "",
+          "text": "Tirsdag 10:00. Grete åpner før Frank ringer på. Kaffen står klar."
+        },
+        {
+          "who": "Grete",
+          "text": "Kom inn, kom inn. Elling, det er mannen fra bydelen. Han skal bare hilse."
+        },
+        {
+          "who": "",
+          "text": "Elling sitter i stuen. Han reiser seg ikke. Han ser på moren."
+        },
+        {
+          "who": "Frank",
+          "text": "Hei, Elling. Jeg heter Frank."
+        },
+        {
+          "who": "Elling",
+          "text": "Hei."
+        },
+        {
+          "who": "",
+          "text": "Frank setter seg. Elling flytter seg til den andre siden av bordet."
+        },
+        {
+          "who": "",
+          "text": "I gangen: en bunke post på skoskapet. Grete flytter den mens hun henger opp jakken."
+        },
+        {
+          "who": "",
+          "text": "På bokhyllen: ti permer, ryggene datert med tusj. 1987. 1988. 1989."
+        },
+        {
+          "who": "Grete",
+          "text": "Han er en smart gutt."
+        }
+      ],
+      "notat": [
+        {
+          "doc": "doc_notat_1"
+        }
+      ]
+    },
+    "v_kartlegg": {
+      "brief": "Kartlegg økonomien. Frank ber om fullmakt og innsyn. Papiret kommer i morgen.",
+      "scene": false,
+      "delivers": [
+        {
+          "doc": "doc_konto",
+          "delay": 1
+        }
+      ]
+    },
+    "v_kontakt": {
+      "brief": "Ikke press. Frank stiller på døren, sier hvem han er, og venter.",
+      "avail": "fired innleggelse",
+      "repeat": true,
+      "scene": true,
+      "advance": "door <= 3",
+      "beats": [
+        {
+          "who": "",
+          "text": "10:00. Frank ringer på."
+        },
+        {
+          "when": "door == 0",
+          "who": "",
+          "text": "Ingenting. Han ringer igjen. Ingenting. Ikke lys, ikke lyd."
+        },
+        {
+          "when": "door == 0",
+          "who": "Frank",
+          "text": "Elling? Det er Frank. Fra bydelen. Jeg kommer tilbake."
+        },
+        {
+          "when": "door == 0",
+          "who": "",
+          "text": "Han legger et kort i brevsprekken og går."
+        },
+        {
+          "when": "door == 1",
+          "who": "",
+          "text": "Lyset i gangen slas av i det klokken ringer. Noen står rett bak døren."
+        },
+        {
+          "when": "door == 1",
+          "who": "Frank",
+          "text": "Elling. Det er Frank. Jeg skal ikke inn. Jeg ville bare si at jeg var her."
+        },
+        {
+          "when": "door == 1",
+          "who": "",
+          "text": "Stillhet. Frank står i fem minutter. Så går han."
+        },
+        {
+          "when": "door == 2",
+          "who": "Elling",
+          "text": "Mor er ikke hjemme."
+        },
+        {
+          "when": "door == 2",
+          "who": "Frank",
+          "text": "Jeg vet det, Elling."
+        },
+        {
+          "when": "door == 2",
+          "who": "",
+          "text": "Lang pause."
+        },
+        {
+          "when": "door == 2",
+          "who": "Elling",
+          "text": "Hva vil du."
+        },
+        {
+          "when": "door == 2",
+          "who": "Frank",
+          "text": "Ingenting. Jeg kom for å hilse. Jeg kommer igjen tirsdag."
+        },
+        {
+          "when": "door == 3",
+          "who": "",
+          "text": "Døren går på gløtt. Sikkerhetslenken er på. Et ansikt."
+        },
+        {
+          "when": "door == 3",
+          "who": "Elling",
+          "text": "Har du med noe?"
+        },
+        {
+          "when": "door == 3",
+          "who": "",
+          "text": "Frank har med avisen. En hånd tar den gjennom åpningen."
+        },
+        {
+          "when": "door == 3",
+          "who": "",
+          "text": "Bak ham: kjøkkenet. Brødpose. En tallerken."
+        },
+        {
+          "when": "door == 4",
+          "who": "",
+          "text": "Døren åpnes. Elling går foran inn i stuen og setter seg i sin stol."
+        },
+        {
+          "when": "door == 4",
+          "who": "",
+          "text": "Frank setter seg i Gretes stol. Elling ser på det. Sier ingenting."
+        },
+        {
+          "when": "door == 4",
+          "who": "Elling",
+          "text": "Det var et utklipp i 1987. Om Gro. Vil du se?"
+        },
+        {
+          "when": "door == 4",
+          "who": "Frank",
+          "text": "Ja."
+        },
+        {
+          "when": "door == 4",
+          "who": "",
+          "text": "Tjue minutter. Da Frank går, sier Elling: Tirsdag?"
+        }
+      ],
+      "notat": [
+        {
+          "when": "door == 0",
+          "doc": "doc_kontakt_0"
+        },
+        {
+          "when": "door == 1",
+          "doc": "doc_kontakt_1"
+        },
+        {
+          "when": "door == 2",
+          "doc": "doc_kontakt_2"
+        },
+        {
+          "when": "door == 3",
+          "doc": "doc_kontakt_3"
+        },
+        {
+          "when": "door >= 4",
+          "doc": "doc_kontakt_4"
+        }
+      ]
+    },
+    "v_kontakt_press": {
+      "brief": "Med skjemaer. Frank forklarer hva kommunen trenger fra ham: samtykke, signatur, en avtale.",
+      "avail": "fired dodsfall",
+      "repeat": true,
+      "scene": true,
+      "advance": "door >= 3",
+      "setback": "door >= 1 and door <= 2",
+      "beats": [
+        {
+          "who": "",
+          "text": "10:00. Frank ringer på. Han har mappen under armen."
+        },
+        {
+          "when": "door == 0",
+          "who": "",
+          "text": "Ingenting. Frank leser opp gjennom døren hva kommunen trenger. Ingen svarer."
+        },
+        {
+          "when": "door >= 1 and door <= 2",
+          "who": "Frank",
+          "text": "Elling, jeg har noen papirer. Kommunen trenger et samtykke fra deg."
+        },
+        {
+          "when": "door >= 1 and door <= 2",
+          "who": "",
+          "text": "Et skritt bak døren. Så låsen. Han har vridd den to ganger."
+        },
+        {
+          "when": "door >= 1 and door <= 2",
+          "who": "Frank",
+          "text": "Jeg kommer tilbake uten papirene."
+        },
+        {
+          "when": "door >= 3",
+          "who": "",
+          "text": "Døren på gløtt. Frank holder opp mappen."
+        },
+        {
+          "when": "door >= 3",
+          "who": "Elling",
+          "text": "Er det fra mor?"
+        },
+        {
+          "when": "door >= 3",
+          "who": "Frank",
+          "text": "Nei. Det er fra oss. Kan jeg komme inn og forklare?"
+        },
+        {
+          "when": "door >= 3",
+          "who": "",
+          "text": "Lenken tas av."
+        }
+      ],
+      "notat": [
+        {
+          "when": "door >= 3",
+          "doc": "doc_kontakt_4"
+        },
+        {
+          "doc": "doc_notat_press"
+        }
+      ]
+    },
+    "v_begravelse": {
+      "brief": "Begravelsen. Frank sørger for at Elling kommer, og kjører ham hjem.",
+      "avail": "fired dodsfall and day >= 6",
+      "scene": true,
+      "advance": "door >= 2",
+      "beats": [
+        {
+          "who": "",
+          "text": "Kapellet. Syv mennesker. Elling står bakerst i en dress som ikke passer."
+        },
+        {
+          "who": "",
+          "text": "Frank står ved siden av ham. Ingen av dem sier noe."
+        },
+        {
+          "who": "",
+          "text": "Etterpå, ved bilen. Elling venter. Han ser på Frank som om Frank vet hva som skjer nå."
+        },
+        {
+          "who": "Frank",
+          "text": "Jeg kjører deg hjem."
+        },
+        {
+          "who": "Elling",
+          "text": "Takk."
+        },
+        {
+          "when": "door >= 2",
+          "who": "",
+          "text": "I trappen snur han seg. Han sier takk en gang til. Så går han inn."
+        }
+      ],
+      "notat": [
+        {
+          "doc": "doc_begravelse"
+        }
+      ]
+    },
+    "v_huseier": {
+      "brief": "Mot Bakkerud torsdag. Frank er der som den huseieren kan forholde seg til.",
+      "avail": "fired huseierbrev",
+      "scene": false,
+      "delivers": [
+        {
+          "doc": "doc_huseier_svar",
+          "delay": 1
+        }
+      ]
+    }
+  },
+  "triggers": [
+    {
+      "id": "grete_sliten",
+      "when": "visited v_bli_kjent",
+      "floor": 1,
+      "ceil": 2,
+      "effect": {
+        "report": "Grete ringte tilbake. Hun hørtes sliten ut. \"Det er ikke så farlig med meg,\" sa hun. To ganger."
+      }
+    },
+    {
+      "id": "frank_fallback_1",
+      "when": "not visited v_bli_kjent and not has f_samtykke",
+      "floor": 2,
+      "ceil": 2,
+      "effect": {
+        "brief": "v_bli_kjent",
+        "frank": "Vi har ikke tid til å vente på at hun skal ringe. Jeg går dit tirsdag og hilser. Si fra om du vil noe annet."
+      }
+    },
+    {
+      "id": "innleggelse",
+      "when": "has f_klarer_seg",
+      "floor": 2,
+      "ceil": 3,
+      "effect": {
+        "doc": "doc_innleggelse"
+      }
+    },
+    {
+      "id": "dodsfall",
+      "when": "fired innleggelse",
+      "floor": 3,
+      "ceil": 4,
+      "effect": {
+        "doc": "doc_dodsfall"
+      }
+    },
+    {
+      "id": "elling_stille",
+      "when": "fired dodsfall",
+      "floor": 4,
+      "ceil": 5,
+      "effect": {
+        "report": "Hjemmetjenesten gikk forbi. Gardinene er trukket for. Posten er tatt inn."
+      }
+    },
+    {
+      "id": "huseierbrev",
+      "when": "fired dodsfall",
+      "floor": 4,
+      "ceil": 5,
+      "effect": {
+        "doc": "doc_huseier"
+      }
+    },
+    {
+      "id": "frank_fallback_2",
+      "when": "fired dodsfall and not visited v_kontakt",
+      "floor": 5,
+      "ceil": 5,
+      "effect": {
+        "brief": "v_kontakt",
+        "frank": "Han er alene der inne. Jeg går dit i morgen og står utenfor døren. Si fra om du vil noe annet."
+      }
+    },
+    {
+      "id": "frank_status",
+      "when": "not any_visit",
+      "floor": 7,
+      "ceil": 0,
+      "effect": {
+        "doc": "doc_status"
+      }
+    }
+  ]
+}

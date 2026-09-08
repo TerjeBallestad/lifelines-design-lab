@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vedtaksform-probe - ti dager</title>
+<style>
+  :root{
+    --desk:#2b2620; --desk2:#231f1a; --paper:#f4eddc; --paper2:#efe6d0;
+    --ink:#2a2419; --ink2:#5c5342; --line:#c9bda0; --accent:#8a5a2b;
+    --red:#a33327; --green:#4a6b3a; --blue:#39557a; --gold:#b08d3f;
+    --card:#f7f1e2; --cardq:#e8eef5; --cardt:#f0e4ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--desk);color:var(--ink);font:14px/1.45 Georgia,'Times New Roman',serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  button{font:inherit;cursor:pointer}
+
+  /* ---------- top bar ---------- */
+  #top{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--desk2);color:#cfc4ad;border-bottom:1px solid #000;flex:0 0 auto}
+  #top .dag{font-size:19px;font-weight:bold;color:#efe6d0;letter-spacing:1px}
+  #top .felt{font-size:12px;padding:3px 9px;border:1px solid #6b5f4a;border-radius:3px}
+  #top .felt.brukt{color:#8a7d63}
+  #top .felt.ledig{color:#d8c98f;border-color:#a08c58}
+  #btn-dag{margin-left:auto;background:var(--gold);border:none;color:#241d10;padding:8px 16px;font-weight:bold;border-radius:3px}
+  #btn-dag:hover{filter:brightness(1.1)}
+  #variant{font-size:11px;color:#9a8d72;display:flex;gap:5px;align-items:center}
+  #btn-restart{background:none;border:1px solid #55493a;color:#8a7d63;font-size:11px;padding:3px 8px;border-radius:3px}
+
+  /* ---------- layout ---------- */
+  #main{flex:1;display:flex;min-height:0}
+  #col-inbox{flex:0 0 235px;background:#28231d;border-right:1px solid #17130f;display:flex;flex-direction:column;min-height:0}
+  #col-work{flex:1;display:flex;flex-direction:column;min-height:0}
+  #col-side{flex:0 0 235px;background:#28231d;border-left:1px solid #17130f;overflow-y:auto;padding:10px}
+
+  h3.colhead{margin:0;padding:8px 12px 6px;font-size:11px;letter-spacing:2px;color:#8a7d63;text-transform:uppercase;font-family:inherit}
+
+  /* inbox */
+  #inbox-list{overflow-y:auto;flex:1;padding:0 8px 8px}
+  .inbox-item{background:var(--paper);border-radius:2px;padding:7px 9px;margin-bottom:6px;cursor:pointer;box-shadow:1px 2px 3px rgba(0,0,0,.5);border-left:4px solid transparent}
+  .inbox-item:hover{filter:brightness(1.04)}
+  .inbox-item.uread{border-left-color:var(--red)}
+  .inbox-item.open{outline:2px solid var(--gold)}
+  .inbox-item .k{font-size:9px;letter-spacing:1.5px;color:var(--ink2)}
+  .inbox-item .t{font-size:13px}
+  .inbox-item .d{font-size:10px;color:var(--ink2)}
+  #logg{flex:0 0 32%;border-top:1px solid #17130f;display:flex;flex-direction:column;min-height:0}
+  #logg-list{overflow-y:auto;flex:1;padding:0 10px 10px;font-size:11px;color:#a99b7f}
+  #logg-list div{margin-bottom:4px;border-bottom:1px dotted #3a332a;padding-bottom:3px}
+
+  /* workspace tabs */
+  #tabs{display:flex;gap:2px;padding:8px 10px 0;flex:0 0 auto}
+  .tab{background:#38312a;border:none;color:#b3a68b;padding:7px 16px;border-radius:4px 4px 0 0;font-size:13px}
+  .tab.on{background:var(--paper);color:var(--ink);font-weight:bold}
+  .tab .badge{background:var(--red);color:#fff;border-radius:8px;font-size:10px;padding:0 5px;margin-left:4px}
+  #work{flex:1;background:var(--paper);margin:0 10px 6px;border-radius:0 4px 4px 4px;overflow-y:auto;padding:18px 26px;min-height:0;box-shadow:inset 0 0 40px rgba(0,0,0,.06)}
+
+  /* document reader */
+  .doc-meta{font-size:10px;letter-spacing:2px;color:var(--ink2);text-transform:uppercase}
+  .doc-kind{display:inline-block;font-size:10px;letter-spacing:2px;background:var(--ink);color:var(--paper);padding:2px 8px;margin-bottom:8px}
+  .doc-title{font-size:20px;margin:2px 0 10px;font-weight:bold}
+  .doc-body{max-width:620px;white-space:pre-wrap}
+  .ev{border-bottom:2px solid rgba(138,90,43,.55);cursor:pointer;padding:0 1px}
+  .ev:hover{background:rgba(176,141,63,.25)}
+  .ev.tatt{background:rgba(74,107,58,.18);border-bottom-color:var(--green);cursor:default}
+  .hint{font-size:11px;color:var(--ink2);font-style:italic;margin-top:14px}
+
+  /* phone */
+  .contacts{display:flex;gap:8px;margin-bottom:12px}
+  .contact{border:1px solid var(--line);background:var(--paper2);padding:6px 14px;border-radius:3px;font-size:13px}
+  .contact.on{background:var(--ink);color:var(--paper)}
+  .contact:disabled{opacity:.45;cursor:default}
+  #transcript{max-width:640px}
+  .line{margin:7px 0;max-width:82%}
+  .line .who{font-size:9px;letter-spacing:1.5px;color:var(--ink2);text-transform:uppercase}
+  .line .txt{background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:6px 11px;display:inline-block}
+  .line.du{margin-left:auto;text-align:right}
+  .line.du .txt{background:#e4dcc6}
+  .line .minicard{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:4px 9px;font-size:12px;box-shadow:1px 1px 2px rgba(0,0,0,.15)}
+  .line .lift-chip{display:inline-block;background:var(--gold);color:#241d10;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;margin-left:6px;font-weight:bold}
+  .line .lift-chip.tatt{background:var(--green);color:#fff;cursor:default}
+  .choices{margin:10px 0}
+  .choice{display:block;background:#e4dcc6;border:1px solid var(--line);border-radius:5px;padding:6px 12px;margin:5px 0;text-align:left;width:100%;max-width:520px}
+  .choice:hover{background:#dcd2b4}
+  .drop-hint{border:2px dashed var(--line);border-radius:6px;padding:10px;color:var(--ink2);font-size:12px;text-align:center;margin-top:14px;max-width:640px}
+  .drop-hint.armed{border-color:var(--gold);color:var(--accent);background:rgba(176,141,63,.08)}
+
+  /* vedtak form */
+  .formsheet{max-width:560px;background:#fbf6e9;border:1px solid var(--line);padding:26px 30px;box-shadow:2px 3px 8px rgba(0,0,0,.15)}
+  .formsheet .fh{display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;color:var(--ink2);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:14px}
+  .formsheet h2{font-size:16px;letter-spacing:1px;margin:0 0 16px}
+  .slotlabel{font-size:10px;letter-spacing:1.5px;color:var(--ink2);text-transform:uppercase;margin:14px 0 4px}
+  .slot{border:2px dashed var(--line);border-radius:4px;min-height:44px;padding:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:#b3a68b;font-size:12px}
+  .slot.armed{border-color:var(--gold);background:rgba(176,141,63,.1)}
+  .slot .slotted{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:5px 10px;font-size:12px;color:var(--ink);cursor:pointer;box-shadow:1px 1px 2px rgba(0,0,0,.15)}
+  .slot .slotted.tilt{background:var(--cardt)}
+  .prefill{font-size:12px;color:var(--ink2);margin-top:16px;border-top:1px dotted var(--line);padding-top:10px}
+  #btn-sendinn{margin-top:18px;background:var(--ink);color:var(--paper);border:none;padding:9px 22px;letter-spacing:2px;font-size:13px}
+  #btn-sendinn:disabled{opacity:.4;cursor:default}
+  .form-warn{color:var(--red);font-size:12px;margin-top:8px}
+  .tvang-mark{color:var(--red);font-weight:bold;letter-spacing:2px}
+  .sent-form{border:1px solid var(--line);background:var(--paper2);padding:8px 12px;margin-bottom:8px;font-size:12px;max-width:560px}
+
+  /* field actions */
+  .fieldbtns{display:flex;flex-direction:column;gap:8px;max-width:520px}
+  .fieldbtn{background:#e4dcc6;border:1px solid var(--line);border-radius:5px;padding:10px 14px;text-align:left}
+  .fieldbtn:hover{background:#dcd2b4}
+  .fieldbtn:disabled{opacity:.45;cursor:default}
+  .fieldbtn .fb-t{font-weight:bold}
+  .fieldbtn .fb-d{font-size:11px;color:var(--ink2)}
+
+  /* side */
+  .sidebox{background:#332c24;border-radius:4px;padding:9px 11px;margin-bottom:12px;color:#cfc4ad}
+  .sidebox h4{margin:0 0 7px;font-size:10px;letter-spacing:2px;color:#8a7d63;text-transform:uppercase}
+  .skill{display:flex;justify-content:space-between;font-size:12px;margin:3px 0}
+  .pips{letter-spacing:2px;color:var(--gold)}
+  .pips .off{color:#55493a}
+  .tilt-line{font-size:12px;margin:4px 0;color:#d8c98f}
+  .vict{font-size:12px;margin:4px 0;color:#9fbb8a}
+  .sidebox .none{font-size:11px;color:#6b5f4a;font-style:italic}
+
+  /* hand */
+  #hand-wrap{flex:0 0 auto;background:var(--desk2);border-top:1px solid #000;padding:8px 14px 12px}
+  #hand-label{font-size:10px;letter-spacing:2px;color:#8a7d63;margin-bottom:6px;display:flex;gap:14px}
+  #hand{display:flex;gap:8px;flex-wrap:wrap;min-height:64px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:7px 10px;width:128px;cursor:pointer;box-shadow:1px 2px 4px rgba(0,0,0,.45);position:relative}
+  .card:hover{transform:translateY(-3px)}
+  .card.sel{outline:3px solid var(--gold);transform:translateY(-5px)}
+  .card .ct{font-size:8px;letter-spacing:1.5px;color:var(--ink2);text-transform:uppercase}
+  .card .cl{font-size:12px;font-weight:bold;margin:2px 0}
+  .card .cq{font-size:10px;color:var(--ink2);font-style:italic}
+  .card.q{background:var(--cardq)}
+  .card.t{background:var(--cardt)}
+
+  /* scene overlay */
+  #overlay{position:fixed;inset:0;background:rgba(12,10,7,.88);display:none;align-items:center;justify-content:center;z-index:50}
+  #overlay.vis{display:flex}
+  #scene{width:min(760px,92vw);background:#1c1813;border:1px solid #443a2c;border-radius:6px;padding:18px 22px;color:#d8cdb6}
+  #scene h2{margin:0 0 4px;font-size:16px;letter-spacing:1px;color:#efe6d0}
+  #scene .sub{font-size:11px;color:#8a7d63;margin-bottom:12px}
+  #stage{display:flex;gap:4px;height:150px;margin-bottom:14px}
+  .room{flex:1;background:#2b2620;border:1px solid #443a2c;border-radius:3px;position:relative;padding:4px}
+  .room .rn{font-size:8px;letter-spacing:1.5px;color:#6b5f4a;text-transform:uppercase}
+  .actor{position:absolute;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#1c1813;transition:all 1.2s ease;box-shadow:0 2px 5px rgba(0,0,0,.6)}
+  .actor.E{background:#c8b06a}.actor.F{background:#7d9bc4}.actor.G{background:#c48a7d}.actor.H{background:#8fae85}
+  .actor .thought{position:absolute;top:-17px;right:-9px;font-size:13px}
+  #beat-text{min-height:58px;font-size:14px;line-height:1.5;border-left:3px solid var(--gold);padding-left:12px}
+  #beat-lifts{min-height:30px;margin:8px 0}
+  #beat-lifts .lift-chip{display:inline-block;background:var(--gold);color:#241d10;border-radius:3px;padding:3px 10px;font-size:12px;cursor:pointer;margin-right:8px;font-weight:bold}
+  #beat-lifts .lift-chip.tatt{background:var(--green);color:#fff;cursor:default}
+  #scene-controls{display:flex;gap:10px;margin-top:6px}
+  #scene-controls button{background:#38312a;border:1px solid #55493a;color:#cfc4ad;padding:6px 14px;border-radius:3px}
+  #scene-play-card{margin-top:8px}
+
+  /* morning + vurdering overlay reuse #scene */
+  .morning-doc{background:var(--paper);color:var(--ink);border-radius:3px;padding:10px 14px;margin:8px 0;font-size:13px}
+  .vurd-outcome{font-size:17px;color:#efe6d0;margin:12px 0;font-weight:bold}
+  .vurd-q{font-style:italic;color:#c8b06a;margin-top:16px;font-size:15px}
+
+  #toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#0f0d0a;color:#e6d9ba;border:1px solid var(--gold);padding:8px 18px;border-radius:4px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+  #toast.vis{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="top">
+  <span class="dag" id="ui-dag">Dag 1</span>
+  <span class="felt ledig" id="ui-felt">Feltaksjon: ledig</span>
+  <label id="variant"><input type="checkbox" id="chk-recipe" checked> Krev relevante fakta i begrunnelse</label>
+  <button id="btn-restart">Start på nytt</button>
+  <button id="btn-dag">AVSLUTT DAGEN</button>
+</div>
+
+<div id="main">
+  <div id="col-inbox">
+    <h3 class="colhead">Pulten - post</h3>
+    <div id="inbox-list"></div>
+    <div id="logg">
+      <h3 class="colhead">Logg</h3>
+      <div id="logg-list"></div>
+    </div>
+  </div>
+
+  <div id="col-work">
+    <div id="tabs">
+      <button class="tab on" data-tab="doc">Dokument</button>
+      <button class="tab" data-tab="phone">Telefon</button>
+      <button class="tab" data-tab="form">Vedtaksskjema</button>
+      <button class="tab" data-tab="field">Feltaksjoner</button>
+    </div>
+    <div id="work"></div>
+  </div>
+
+  <div id="col-side">
+    <div class="sidebox">
+      <h4>Elling - ferdigheter</h4>
+      <div id="ui-skills"></div>
+    </div>
+    <div class="sidebox">
+      <h4>Aktive tiltak</h4>
+      <div id="ui-tiltak"><div class="none">Ingen vedtak sendt.</div></div>
+    </div>
+    <div class="sidebox">
+      <h4>Små seire</h4>
+      <div id="ui-vict"><div class="none">Ingen ennå.</div></div>
+    </div>
+    <div class="sidebox">
+      <h4>Sendte vedtak</h4>
+      <div id="ui-sent"><div class="none">Ingen.</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="hand-wrap">
+  <div id="hand-label"><span>HÅNDEN</span><span id="hand-hint" style="color:#b08d3f"></span></div>
+  <div id="hand"></div>
+</div>
+
+<div id="overlay"><div id="scene"></div></div>
+<div id="toast"></div>
+
+<script>
+const CASE = {
+ "docs": {
+  "doc_bekymring": {
+   "kind": "BEKYMRINGSMELDING",
+   "title": "Bekymringsmelding",
+   "meta": "LEGESENTERET DR. J. HAUG, 11.02.1999",
+   "runs": [
+    {
+     "text": "Under behandling av pasient Grete Olsen (f. 1927) for en ",
+     "fact": ""
+    },
+    {
+     "text": "sykdom med kort forventet forløp",
+     "fact": "f_grete_syk"
+    },
+    {
+     "text": " kommer det frem at hun er ",
+     "fact": ""
+    },
+    {
+     "text": "primær omsorgsperson",
+     "fact": "f_saarbar"
+    },
+    {
+     "text": " for sin sønn Elling Olsen (f. 14.03.1964). ",
+     "fact": ""
+    },
+    {
+     "text": "Omfanget er ikke kartlagt",
+     "fact": "f_grete_baerer"
+    },
+    {
+     "text": ", men han kan ha behov for støtte ved mors bortfall. Jørgen Haug spes. allmennmedisin",
+     "fact": ""
+    }
+   ]
+  },
+  "doc_konto_elling": {
+   "kind": "KONTOUTSKRIFT",
+   "title": "KONTOUTSKRIFT",
+   "meta": "NR. 1/99 - ÅRSUTSKRIFT",
+   "runs": [
+    {
+     "text": "OLSEN ELLING V/ OLSEN GRETE (VERGE) AMMERUDVEIEN 47 0958 OSLO KONTO: 7024.31.55103 PERIODE: 01.10.98-31.01.99 UTSKR.DATO: 02.02.99 DATO TEKST UT INN SALDO 01.10 SALDO OVERFØRT 0 [icon=coin] 02.10 ",
+     "fact": ""
+    },
+    {
+     "text": "UFØRETRYGD RTV",
+     "fact": "f_trygd"
+    },
+    {
+     "text": " 90 [icon=coin] 90 [icon=coin] 02.10 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 02.11 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 02.11 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 02.12 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 02.12 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 04.01 UFØRETRYGD RTV 90 [icon=coin] 90 [icon=coin] 04.01 FAST OVERF. G. OLSEN (VERGE) 90 [icon=coin] 0 [icon=coin] 31.01 SALDO 0 [icon=coin] INGEN ANDRE BEVEGELSER I PERIODEN. ",
+     "fact": ""
+    },
+    {
+     "text": "KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.",
+     "fact": "f_alt_via_grete"
+    }
+   ]
+  },
+  "doc_huseier": {
+   "kind": "BREV",
+   "title": "Brev fra huseieren - T. Bakkerud",
+   "meta": "T. BAKKERUD - HÅNDSKREVET - LEVERT I POSTKASSEN - VIDEREFORMIDLET AV 4012",
+   "runs": [
+    {
+     "text": "Til Elling Olsen. Jeg hører at din mor er gått bort. Kondolerer. Grete var et ordensmenneske, det har vært en glede å ha dere i oppgangen. Jeg må likevel skrive om det praktiske. ",
+     "fact": ""
+    },
+    {
+     "text": "Leien for mars er ikke kommet.",
+     "fact": "f_leie_stoppet"
+    },
+    {
+     "text": " ",
+     "fact": ""
+    },
+    {
+     "text": "Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.",
+     "fact": "f_leie_privat"
+    },
+    {
+     "text": " Nå vet jeg ikke hvem jeg skal forholde meg til. Jeg vil ikke lage vanskeligheter. Men ",
+     "fact": ""
+    },
+    {
+     "text": "jeg kommer innom på torsdag, så får vi snakke om veien videre.",
+     "fact": "f_huseier_kommer"
+    },
+    {
+     "text": " Vennlig hilsen T. Bakkerud",
+     "fact": ""
+    }
+   ]
+  },
+  "doc_frank_visit": {
+   "kind": "RAPPORT",
+   "title": "Frank - hjemmebesøk Ammerudveien 47",
+   "meta": "HJEMMEBESØK - 4012 F. ÅSLI",
+   "runs": [
+    {
+     "text": "Grete åpnet før jeg fikk ringt på. Hun hadde dekket på med tre kopper. Elling brukte ikke sin. I gangen: ",
+     "fact": ""
+    },
+    {
+     "text": "en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.",
+     "fact": "f_post"
+    },
+    {
+     "text": " Grete flyttet bunken da hun så at jeg så. Elling satt i stuen med ",
+     "fact": ""
+    },
+    {
+     "text": "en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.",
+     "fact": "f_bok"
+    },
+    {
+     "text": " Jeg spurte om Nansen. Han svarte med tre presise setninger. Til veggen, ikke til meg. Over skrivebordet hans: ",
+     "fact": ""
+    },
+    {
+     "text": "avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.",
+     "fact": "f_utklipp"
+    },
+    {
+     "text": " Det er ikke rot. Det er et arkiv. ",
+     "fact": ""
+    },
+    {
+     "text": "Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.",
+     "fact": "f_avstand"
+    },
+    {
+     "text": " Ikke demonstrativt. Bare slik det ble. Grete fulgte meg ut. I trappen sa hun: ",
+     "fact": ""
+    },
+    {
+     "text": "\"Du så hvordan han er. Han er en smart gutt.\"",
+     "fact": "f_smart_gutt"
+    },
+    {
+     "text": " Hun er 72. Han er 35. Gutt.",
+     "fact": ""
+    }
+   ]
+  },
+  "doc_innleggelse": {
+   "kind": "MELDING",
+   "title": "OUS Ullevål - innleggelse",
+   "meta": "ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 14.02.1999",
+   "runs": [
+    {
+     "text": "MELDING OM INNLEGGELSE Grete Olsen (f. 1927) ble ",
+     "fact": ""
+    },
+    {
+     "text": "innlagt akutt 14.02",
+     "fact": "f_innlagt"
+    },
+    {
+     "text": ", kl. 06:50. Tilstanden er alvorlig, men avklart. Pårørende: sønn, Elling Olsen. ",
+     "fact": ""
+    },
+    {
+     "text": "Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.",
+     "fact": "f_elling_uvarslet"
+    },
+    {
+     "text": " Hun var tydelig på dette før hun ble lagt i behandling. SOSIALMEDISINSK ENHET - OUS",
+     "fact": ""
+    }
+   ]
+  },
+  "doc_dodsfall": {
+   "kind": "MELDING",
+   "title": "OUS Ullevål - dødsfall",
+   "meta": "ULLEVÅL SYKEHUS - TIL SOSIALKONTORET - 15.02.1999",
+   "runs": [
+    {
+     "text": "MELDING OM DØDSFALL Grete Olsen, f. 21.09.1927. ",
+     "fact": ""
+    },
+    {
+     "text": "Dødsfall konstatert 15.02 kl. 04:12.",
+     "fact": "f_dod"
+    },
+    {
+     "text": " Avdødes sønn er eneste nærmeste pårørende. Varsling ble forsøkt per telefon uten svar. Politiet bisto ved varsling på bopel. Sønnen åpnet ikke døren. ",
+     "fact": ""
+    },
+    {
+     "text": "Beskjeden ble gitt gjennom brevsprekken.",
+     "fact": "f_brevsprekken"
+    },
+    {
+     "text": " Saken overføres kommunen for videre oppfølging av gjenlevende. SOSIALMEDISINSK ENHET - OUS",
+     "fact": ""
+    }
+   ]
+  },
+  "doc_status": {
+   "kind": "STATUSRAPPORT",
+   "title": "Frank - status dag 8",
+   "meta": "STATUSRAPPORT - 4012 F. ÅSLI - DAG 8",
+   "runs": [
+    {
+     "text": "Det foreligger ikke iverksatte tiltak som dekker bolig eller hverdag. Restanse bygges. Posten vokser. Døren er lukket. Kommunen vet nå svært mye om Elling Olsen, og når ham ikke. Bekymringsmeldingen var berettiget. Det er den fortsatt.",
+     "fact": ""
+    }
+   ]
+  }
+ },
+ "facts": {
+  "f_grete_syk": {
+   "label": "Grete er alvorlig syk",
+   "summary": "Grete er alvorlig syk. Forventet forløp er kort.",
+   "quote": "sykdom med kort forventet forløp",
+   "frank": "'Kort forventet forløp', og ikke noe mer. Så vagt skriver man bare når man vil. Haug må si det høyt før vi planlegger noe."
+  },
+  "f_grete_baerer": {
+   "label": "Grete bærer rutiner",
+   "summary": "Grete bistår med gjøremål, økonomi og kontakt med tjenester.",
+   "quote": "Omfanget er ikke kartlagt",
+   "frank": "'Omfanget er ikke kartlagt'. Hun gjør alt, og ingen vet hvor mye alt er. Det tallet finnes ikke før noen står i leiligheten og teller."
+  },
+  "f_saarbar": {
+   "label": "Sårbar ved bortfall",
+   "summary": "Elling vurderes som sårbar ved bortfall av pårørende.",
+   "quote": "primær omsorgsperson",
+   "frank": "Det er en leges inntrykk, ikke en kartlegging. Vi fatter ikke vedtak på inntrykk. Men det holder til å dra på hjemmebesøk, og det er sånn en bekymringsmelding er ment å virke."
+  },
+  "f_husleie": {
+   "label": "Husleie betales av Grete",
+   "summary": "Husleien er 120 [icon=coin] og betales av Grete.",
+   "quote": "KONTANTUTTAK SKRANKE",
+   "frank": ""
+  },
+  "f_trygd": {
+   "label": "Ellings uføretrygd",
+   "summary": "Ellings uføretrygd: 90 [icon=coin] i måneden.",
+   "quote": "UFØRETRYGD RTV",
+   "frank": ""
+  },
+  "f_alt_via_grete": {
+   "label": "Grete er øknomisk verge",
+   "summary": "Hele trygden går rett inn i Gretes system. Alle avtaler står i hennes navn.",
+   "quote": "KONTOEN DISPONERES AV VERGE. KORT ER IKKE UTSTEDT.",
+   "frank": ""
+  },
+  "f_ingen_matkjop": {
+   "label": "Ingen egne matkjøp",
+   "summary": "Elling har aldri betalt for mat selv. Mat skjer gjennom Grete.",
+   "quote": "BANKKORT",
+   "frank": ""
+  },
+  "f_gap": {
+   "label": "100 [icon=coin] mangler",
+   "summary": "Uten Gretes pensjon mangler husholdet 100 [icon=coin] hver måned.",
+   "quote": "",
+   "frank": ""
+  },
+  "f_leie_stoppet": {
+   "label": "Husleien har stoppet",
+   "summary": "Husleien har stoppet. Betalingskjeden døde med Grete.",
+   "quote": "Leien for mars er ikke kommet.",
+   "frank": ""
+  },
+  "f_huseier_kommer": {
+   "label": "Huseieren kommer torsdag",
+   "summary": "Huseieren varsler at han kommer innom. Torsdag.",
+   "quote": "jeg kommer innom på torsdag, så får vi snakke om veien videre.",
+   "frank": ""
+  },
+  "f_leie_privat": {
+   "label": "Privat leieforhold",
+   "summary": "Leieforholdet er privat og muntlig innarbeidet siden 1971. Ingen kontrakt å lene seg på.",
+   "quote": "Din mor og jeg har holdt på siden -71 uten papirer. Det har aldri vært nødvendig.",
+   "frank": ""
+  },
+  "f_klarer_seg": {
+   "label": "\"Han klarer seg\"",
+   "summary": "Grete avviser bekymringen. Gjentar formuleringen.",
+   "quote": "\"Han klarer seg. Han har alltid klart seg.\" Hun sa det to ganger.",
+   "frank": ""
+  },
+  "f_ingen_plan": {
+   "label": "Ingen overtakelsesplan",
+   "summary": "Det finnes ingen plan for hvem som overtar etter Grete.",
+   "quote": "Jeg spurte hvem som overtar hvis hun skulle bli innlagt. Det ble stille. Hun svarte ikke på det.",
+   "frank": ""
+  },
+  "f_elling_tlf": {
+   "label": "Elling tar ikke telefonen",
+   "summary": "Elling tar ikke telefonen. Grete normaliserer det.",
+   "quote": "Jeg ba om å få hilse på Elling i telefonen. Hun sa han ikke tar telefonen. \"Det er ikke noe galt med ham. Han liker bare ikke apparatet.\"",
+   "frank": ""
+  },
+  "f_grete_redd": {
+   "label": "Grete er redd",
+   "summary": "Grete frykter at kommunen vil ta leiligheten, eller Elling.",
+   "quote": "spurte hun om dette betydde at noen kom til å ta ham fra leiligheten",
+   "frank": ""
+  },
+  "f_post": {
+   "label": "Uåpnet post",
+   "summary": "Uåpnet post samler seg. Grete håndterer den - og skjuler den.",
+   "quote": "en bunke uåpnet post på skoskapet. Øverst: Trygdekontoret, sosialkontoret, Oslo Energi.",
+   "frank": ""
+  },
+  "f_bok": {
+   "label": "Bok med notater",
+   "summary": "Elling leser krevende stoff og noterer systematisk. Konsentrasjonen er en ressurs.",
+   "quote": "en bok om polarekspedisjoner. Han noterte i margen. Systematisk, små bokstaver.",
+   "frank": ""
+  },
+  "f_utklipp": {
+   "label": "Avisutklipp-arkiv",
+   "summary": "Elling samler og systematiserer: utklipp av Gro og Arbeiderpartiet, datert og ordnet.",
+   "quote": "avisutklipp, sirlig montert. Gro, landsmøter, 1. mai-tog. Årstall i hjørnene, hans håndskrift.",
+   "frank": ""
+  },
+  "f_avstand": {
+   "label": "Holder avstand",
+   "summary": "Elling holder avstand til fremmede. Alltid et møbel mellom.",
+   "quote": "Han forlot ikke rommet, men flyttet seg slik at det alltid var et møbel mellom oss.",
+   "frank": ""
+  },
+  "f_dor_glott": {
+   "label": "En dør på gløtt",
+   "summary": "Elling kastet ikke Frank ut, og svarte da Frank spurte om noe han kunne. Kontakt er mulig - forsiktig.",
+   "quote": "han kastet meg ikke ut, og han svarte da jeg spurte om noe han kunne. Det er en dør på gløtt.",
+   "frank": ""
+  },
+  "f_smart_gutt": {
+   "label": "En smart gutt",
+   "summary": "Grete omtaler Elling (35) som \"gutt\". Rollene er fastlåst.",
+   "quote": "\"Du så hvordan han er. Han er en smart gutt.\"",
+   "frank": ""
+  },
+  "f_innlagt": {
+   "label": "Grete innlagt",
+   "summary": "Grete er akutt innlagt på Ullevål.",
+   "quote": "innlagt akutt 14.02",
+   "frank": ""
+  },
+  "f_elling_uvarslet": {
+   "label": "Elling uvarslet",
+   "summary": "Elling vet ikke at Grete er innlagt. Hun ber kommunen se til ham.",
+   "quote": "Pasienten oppgir at sønnen ikke er varslet. Hun ber om at kommunen ser til ham.",
+   "frank": ""
+  },
+  "f_dod": {
+   "label": "Grete er død",
+   "summary": "Grete Olsen døde 15.02 kl. 04:12.",
+   "quote": "Dødsfall konstatert 15.02 kl. 04:12.",
+   "frank": ""
+  },
+  "f_brevsprekken": {
+   "label": "Beskjed gjennom brevsprekken",
+   "summary": "Han åpent ikke døren, men beskjeden ble levert i brevsprekken.",
+   "quote": "Beskjeden ble gitt gjennom brevsprekken.",
+   "frank": ""
+  }
+ },
+ "tiltak": {
+  "t_forvaltning": {
+   "title": "Frivillig forvaltning av faste betalinger",
+   "desc": "Kommunen overtar skoesken. Trygt. Bygger ingenting."
+  },
+  "t_huseier": {
+   "title": "Snakk med huseieren",
+   "desc": "Bakkerud vil vite hvem han skal forholde seg til. La det bli Frank - ikke torsdagsbesøket."
+  },
+  "t_hjemmehjelp": {
+   "title": "Hjemmehjelp 2x uke - Frank",
+   "desc": "Fast person, fast tid. Den eneste kanalen inn som har virket hittil."
+  },
+  "t_matlevering": {
+   "title": "Matombringing",
+   "desc": "Bokser på døren, tre dager i uken. Forutsetter at døren er en kanal."
+  },
+  "t_brev": {
+   "title": "Åpne ett brev sammen med Frank",
+   "desc": "Ett brev. Ikke bunken. Frank legger det på bordet og venter."
+  },
+  "t_institusjon": {
+   "title": "Institusjonsvurdering / omsorgsbolig",
+   "desc": "Bureaukratisk lesbart. Trygt på papiret. Leiligheten blir i så fall et avsluttet kapittel."
+  }
+ },
+ "grete_call": {
+  "opening": [
+   {
+    "text": "Ja, hallo?"
+   },
+   {
+    "who": "du",
+    "text": "Det gjelder Elling. Dr. Haug har meldt bekymring."
+   },
+   {
+    "text": "Han klarer seg. Han har alltid klart seg.",
+    "fact_id": "f_klarer_seg"
+   }
+  ],
+  "exchanges": [
+   {
+    "card_id": "f_grete_baerer",
+    "ask": "Hvem overtar hvis du skulle bli innlagt?",
+    "reply": [
+     {
+      "text": "(det blir stille i den andre enden)",
+      "fact_id": "f_ingen_plan"
+     }
+    ]
+   },
+   {
+    "card_id": "f_klarer_seg",
+    "ask": "Kan jeg få hilse på Elling?",
+    "reply": [
+     {
+      "text": "Han tar ikke telefonen. Det er ikke noe galt med ham. Han liker bare ikke apparatet.",
+      "fact_id": "f_elling_tlf"
+     }
+    ]
+   },
+   {
+    "card_id": "f_saarbar",
+    "ask": "Vi vil gjerne komme på hjemmebesøk.",
+    "reply": [
+     {
+      "text": "Betyr dette at noen kommer til å ta ham fra leiligheten?",
+      "fact_id": "f_grete_redd"
+     },
+     {
+      "text": "Hvis det må til."
+     }
+    ]
+   }
+  ]
+ }
+};
+
+/* ============ authored additions (probe-only content) ============ */
+
+CASE.facts.f_spiser_lite = {label:"Spiser bare snacks", summary:"Bare knekkebrød og snacks i skapene. Ingen middagsrester, ingen oppvask.", quote:"", frank:"Det er ikke sult ennå. Men det er heller ikke mat. Noen må enten komme inn med mat, eller lære ham å lage den."};
+CASE.facts.f_nekter = {label:"Elling nekter å flytte", summary:"Konfrontert med behandlingshjem svarer Elling at han bor her, og at det ikke trengs.", quote:"Men jeg bor jo her", frank:"Da vet vi det. Et nei er også et svar - det er mer enn vi hadde i går. Skal vi tvinge, må det stå svart på hvitt hvorfor. Skal vi la være, må noe annet bære ham."};
+CASE.facts.f_samtykke = {label:"Elling samtykker", summary:"Elling har sagt ja til vurdering av behandlingshjem.", quote:"", frank:"Det der var ikke et lite øyeblikk. Ta vare på papiret."};
+CASE.facts.q_okonomi = {label:"Regnestykket Olsen", summary:"Inn, ut - og gjennom hvem?", quote:"", frank:""};
+CASE.facts.q_evner = {label:"Hva klarer Elling selv?", summary:"Hvilke ferdigheter finnes bak døren?", quote:"", frank:""};
+
+CASE.docs.doc_visit2 = {kind:"RAPPORT", title:"Frank - hjemmebesøk, alene", meta:"FELTNOTAT, FRANK", runs:[
+ {text:"Han åpnet ikke. Jeg brukte nøkkelen fra Bakkerud og sa fra i gangen. Han sto i stuen med ryggen til og flyttet seg ikke.\n\n", fact:""},
+ {text:"Kjøkkenet var rent, men skapene sto tomme for alt annet enn knekkebrød og snacks", fact:"f_spiser_lite"},
+ {text:". Ingen oppvask. Sengen var redd opp. Avisutklippene ligger i datert rekkefølge.\n\nHan sa ikke et ord mens jeg var der. Men han låste ikke døren bak meg før jeg var nede i oppgangen.\n\nFrank", fact:""}
+]};
+
+CASE.docs.doc_dagsrapport = {kind:"DAGSRAPPORT", title:"Dagsrapport", meta:"", runs:[]};
+
+/* fact spilt til Frank -> nytt kort (tiltak eller spørsmål) */
+const MINT = {
+  f_ingen_plan:   {mint:"t_hjemmehjelp", type:"t", line:"Ingen plan, ingen kanal. Da lager vi en: fast person, fast tid. Jeg kan gå selv."},
+  f_alt_via_grete:{mint:"t_forvaltning", type:"t", line:"Alt gikk gjennom Grete. Nå går det gjennom ingen. Kommunen kan overta de faste betalingene - trygt, men det bygger ingenting."},
+  f_leie_stoppet: {mint:"t_huseier",     type:"t", line:"Bakkerud vil ha en å forholde seg til. La det bli meg - ikke et inkassobyrå."},
+  f_post:         {mint:"q_okonomi",     type:"q", line:"Uåpnet post med rødt stempel. Regninger ingen leser. Det er et regnestykke her - inn, ut, og gjennom hvem? Vil du at jeg skal be om kontoutskrift?"},
+  f_brevsprekken: {mint:"t_brev",        type:"t", line:"Beskjeden om moren kom gjennom brevsprekken. La noe annet komme gjennom den også: ett brev, åpnet sammen med meg, på bordet. Ikke bunken. Ett."},
+  f_spiser_lite:  {mint:"t_matlevering", type:"t", line:"Matombringing, tre dager i uken. Men bokser på døren forutsetter at døren er en kanal."},
+  f_dod:          {mint:"t_institusjon", type:"t", line:"Nå må vi tenke det utenkelige også. Institusjonsvurdering. Byråkratisk lesbart, trygt på papiret. Si det ordet til ham, og se hva som skjer med ansiktet hans."},
+  f_husleie:      {mint:"q_okonomi",     type:"q", line:"Husleie kontant, trygd inn, og hvem teller? Det er et regnestykke her. Vil du at jeg skal be om kontoutskrift?"},
+  f_smart_gutt:   {mint:"q_evner",       type:"q", line:"En smart gutt, sa hun. Boken hans sier det samme. Spørsmålet er ikke om det finnes evner - det er hva de brukes til når ingen ser på."},
+  f_bok:          {mint:"q_evner",       type:"q", line:"Notater i margen. Det er ikke en som har sluttet å tenke. Hva mer klarer han - selv?"},
+  f_saarbar:      {oppdrag:"tillit", line:null},
+  f_grete_redd:   {oppdrag:"tillit", line:"Redd for at noen tar ham. Da går ikke jeg inn med skjemaer først. Ikke press - jeg blir med som en som hilser."}
+};
+
+/* begrunnelse-oppskrifter (variantbryter) */
+const RECIPES = {
+  t_huseier:     ["f_leie_stoppet","f_huseier_kommer","f_leie_privat","f_husleie"],
+  t_hjemmehjelp: ["f_ingen_plan","f_avstand","f_saarbar","f_grete_baerer"],
+  t_matlevering: ["f_spiser_lite","f_ingen_plan"],
+  t_forvaltning: ["f_alt_via_grete","f_trygd","f_husleie"],
+  t_brev:        ["f_post","f_brevsprekken","f_smart_gutt"],
+  t_institusjon: ["f_saarbar","f_spiser_lite","f_ingen_plan","f_nekter","f_samtykke"]
+};
+
+/* ============ state ============ */
+let S;
+function freshState(){ return {
+  day:1, fieldUsed:false, sel:null, tab:"doc", openDoc:null, phone:null,
+  hand:[], lifted:{}, minted:{}, active:[], sent:[],
+  inbox:[], fired:{}, queue:[], reportLines:[],
+  mat:{refusals:0, crack:false, active:false},
+  victories:[], skills:{Telefon:1, Kontakt:1, Post:0},
+  oppdrag:null, visitsDone:[], flags:{}, phoneTries:0,
+  transcript:{frank:[], grete:[], elling:[]}, elBranch:null
+};}
+
+/* ============ helpers ============ */
+const $=id=>document.getElementById(id);
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("vis"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("vis"),2600); }
+function log(msg){ S.logLines=S.logLines||[]; S.logLines.unshift("Dag "+S.day+": "+msg); renderLog(); }
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function has(f){ return !!S.lifted[f]; }
+function inHand(id){ return S.hand.some(c=>c.id===id); }
+function cardType(id){ return id.startsWith("t_")?"t":(id.startsWith("q_")?"q":"f"); }
+function gainCard(id, silent){
+  if(S.lifted[id]) return false;
+  S.lifted[id]=true;
+  S.hand.push({id, type:cardType(id)});
+  if(!silent) toast("Nytt kort: "+CASE.facts[id].label);
+  renderHand(); renderSide();
+  return true;
+}
+function firedDay(id){ return S.fired[id]; }
+
+/* ============ trigger table: condition + floor + ceiling ============ */
+const TRIGGERS = [
+  {id:"grete_sliten", cond:s=>s.visitsDone.includes("v1"), floor:2, ceil:3,
+   fire:()=>S.reportLines.push("Grete ringte tilbake. Hun hørtes sliten ut. \"Det er ikke så farlig med meg,\" sa hun. To ganger.")},
+  {id:"innleggelse", cond:s=>has("f_klarer_seg"), floor:3, ceil:4,
+   fire:()=>queueDoc("doc_innleggelse")},
+  {id:"dodsfall", cond:s=>!!firedDay("innleggelse"), floor:4, ceil:5,
+   fire:()=>{queueDoc("doc_dodsfall"); S.flags.greteDead=true;}},
+  {id:"huseierbrev", cond:s=>!!firedDay("dodsfall"), floor:5, ceil:6,
+   fire:()=>queueDoc("doc_huseier")},
+  {id:"frank_status", cond:s=>s.sent.length===0, floor:8, ceil:0,
+   fire:()=>queueDoc("doc_status")}
+];
+function queueDoc(docId){ S.queue.push(docId); }
+
+/* ============ day burst ============ */
+function endDay(){
+  if(S.day>=10){ return; }
+  // 1) triggers
+  for(const tr of TRIGGERS){
+    if(S.fired[tr.id]) continue;
+    const c = tr.cond(S);
+    const forced = tr.ceil && S.day+1 >= tr.ceil;
+    if((c && S.day+1 >= tr.floor) || forced){
+      S.fired[tr.id]=S.day+1; tr.fire();
+    }
+  }
+  // 2) sim runs the spent day headless: active tiltak produce witnessed lines
+  simBurst();
+  // 3) morning
+  S.day++; S.fieldUsed=false;
+  const morning=[];
+  if(S.reportLines.length){
+    morning.push({kind:"DAGSRAPPORT", title:"Dagsrapport - dag "+(S.day-1), body:S.reportLines.join("\n\n")});
+    S.reportLines=[];
+  }
+  for(const d of S.queue){ S.inbox.unshift({doc:d, day:S.day, read:false}); }
+  const landed=S.queue.slice(); S.queue=[];
+  showMorning(morning, landed);
+  renderAll();
+}
+
+function simBurst(){
+  const day=S.day;
+  if(S.active.includes("t_hjemmehjelp")){
+    if(!S.flags.hjemFirst){ S.flags.hjemFirst=true;
+      S.reportLines.push("Hjemmehjelp: Frank sto utenfor 10:00. Elling åpnet ikke, men lyset i gangen ble slått av da Frank ringte på - han var ved døren.");
+    } else {
+      S.reportLines.push("Hjemmehjelp: Frank var innom. Elling holder seg i stuen, men han låser ikke lenger døren mens Frank er der.");
+    }
+  }
+  if(S.active.includes("t_forvaltning") && !S.flags.forvFirst){ S.flags.forvFirst=true;
+    S.reportLines.push("Forvaltning: De faste betalingene går nå gjennom kommunen. Papiret er i orden. Ingenting annet flyttet på seg.");
+  }
+  if(S.active.includes("t_huseier") && !S.flags.husFirst){ S.flags.husFirst=true;
+    S.reportLines.push("Huseier: Frank har snakket med Bakkerud. Han avventer - "+'"'+"så lenge noen har en plan"+'"'+". Restansen står.");
+  }
+  if(S.active.includes("t_brev") && !S.flags.brevDone && S.visitsDone.includes("v1")){
+    // brev-seieren skjer på neste besøk, ikke headless - men Frank minner om den
+    S.reportLines.push("Frank: \"Brevbunken venter. Jeg tar det på neste besøk - bli med og se.\"");
+  }
+  if(S.mat.active && S.mat.attendedDay!==day){ matDelivery(false); }
+}
+
+/* matlevering: refusals -> crack. Witnessed only if player attended. */
+function matDelivery(witnessed){
+  if(witnessed) S.mat.attendedDay=S.day;
+  const support = S.active.includes("t_hjemmehjelp") || S.flags.brevDone;
+  const crackNow = !S.mat.crack && S.mat.refusals>=2 && support;
+  if(crackNow) S.mat.crack=true;
+  if(S.mat.crack){
+    if(witnessed && !S.flags.crackWitnessed){
+      S.flags.crackWitnessed=true;
+      victory("Døren på gløtt - du så det selv");
+      S.skills.Kontakt=Math.min(5,S.skills.Kontakt+1);
+      gainCard("f_dor_glott");
+    } else if(crackNow){
+      S.reportLines.push("Matlevering 16:05: Boksene var tatt inn i løpet av kvelden. Ingen så det skje.");
+      S.reportLines.push("Frank: \"Noe er i ferd med å skje med den døren. Vil du være der selv neste gang?\"");
+    } else {
+      S.reportLines.push("Matlevering 16:05: Døren på gløtt. En hånd tok boksene. Det tok fire sekunder.");
+    }
+    return;
+  }
+  S.mat.refusals++;
+  if(witnessed){ S.flags.sawRefusal=(S.flags.sawRefusal||0)+1; }
+  else S.reportLines.push("Matlevering 16:05: Han åpnet ikke. Maten sto igjen i gangen ved 21-tiden. ("+S.mat.refusals+". gang)");
+}
+function victory(label){
+  S.victories.push({label, day:S.day});
+  toast("LITEN SEIER: "+label);
+  renderSide();
+}
+
+/* ============ rendering ============ */
+function renderAll(){ renderTop(); renderInbox(); renderHand(); renderSide(); renderWork(); renderLog(); }
+function renderTop(){
+  $("ui-dag").textContent="Dag "+S.day;
+  const f=$("ui-felt");
+  f.textContent="Feltaksjon: "+(S.fieldUsed?"brukt":"ledig");
+  f.className="felt "+(S.fieldUsed?"brukt":"ledig");
+  $("btn-dag").textContent = S.day>=10 ? "VURDERING" : "AVSLUTT DAGEN";
+}
+function renderLog(){
+  $("logg-list").innerHTML=(S.logLines||[]).map(l=>"<div>"+esc(l)+"</div>").join("");
+}
+function renderInbox(){
+  const el=$("inbox-list"); el.innerHTML="";
+  for(const item of S.inbox){
+    const d=document.createElement("div");
+    const doc=CASE.docs[item.doc]||item;
+    d.className="inbox-item"+(item.read?"":" uread")+(S.openDoc===item?" open":"");
+    d.innerHTML="<div class='k'>"+esc(doc.kind||item.kind)+"</div><div class='t'>"+esc(doc.title||item.title)+"</div><div class='d'>ankom dag "+item.day+"</div>";
+    d.onclick=()=>{ item.read=true; S.openDoc=item; S.tab="doc"; renderAll(); };
+    el.appendChild(d);
+  }
+}
+function pips(n){ let s=""; for(let i=1;i<=5;i++) s+= i<=n?"●":"<span class='off'>●</span>"; return "<span class='pips'>"+s+"</span>"; }
+function renderSide(){
+  $("ui-skills").innerHTML=Object.entries(S.skills).map(([k,v])=>"<div class='skill'><span>"+k+"</span>"+pips(v)+"</div>").join("");
+  $("ui-tiltak").innerHTML=S.active.length?S.active.map(t=>"<div class='tilt-line'>"+esc(CASE.tiltak[t].title)+"</div>").join(""):"<div class='none'>Ingen vedtak sendt.</div>";
+  $("ui-vict").innerHTML=S.victories.length?S.victories.map(v=>"<div class='vict'>Dag "+v.day+": "+esc(v.label)+"</div>").join(""):"<div class='none'>Ingen ennå.</div>";
+  $("ui-sent").innerHTML=S.sent.length?S.sent.map(f=>"<div class='tilt-line'>"+esc(CASE.tiltak[f.tiltak].title)+(f.tvang?" <span class='tvang-mark'>TVANG</span>":"")+"</div>").join(""):"<div class='none'>Ingen.</div>";
+}
+function renderHand(){
+  const el=$("hand"); el.innerHTML="";
+  for(const c of S.hand){
+    const f=CASE.facts[c.id]||CASE.tiltak[c.id];
+    const d=document.createElement("div");
+    d.className="card "+c.type+(S.sel===c.id?" sel":"");
+    const tt=c.type==="t"?"TILTAK":(c.type==="q"?"SPØRSMÅL":"FUNN");
+    const label=c.type==="t"?CASE.tiltak[c.id].title:f.label;
+    const sub=c.type==="t"?CASE.tiltak[c.id].desc:(f.quote?'"'+f.quote+'"':f.summary||"");
+    d.innerHTML="<div class='ct'>"+tt+"</div><div class='cl'>"+esc(label)+"</div><div class='cq'>"+esc((sub||"").slice(0,64))+"</div>";
+    d.onclick=()=>{ S.sel = S.sel===c.id?null:c.id; renderHand(); renderWork();
+      $("hand-hint").textContent=S.sel?"Kortet er valgt - klikk der du vil spille det (telefon, skjema, samtale).":""; };
+    el.appendChild(d);
+  }
+  if(!S.hand.length) el.innerHTML="<span style='color:#55493a;font-size:12px;font-style:italic'>Tom hånd. Løft fakta fra dokumentene - klikk de understrekede linjene.</span>";
+}
+
+/* ---------- workspace ---------- */
+function setTab(t){ S.tab=t; renderWork(); document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t)); }
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+
+function renderWork(){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===S.tab));
+  const w=$("work");
+  if(S.tab==="doc") renderDoc(w);
+  else if(S.tab==="phone") renderPhone(w);
+  else if(S.tab==="form") renderForm(w);
+  else renderField(w);
+}
+
+function renderDoc(w){
+  if(!S.openDoc){ w.innerHTML="<div class='hint'>Ingen dokument åpent. Klikk et dokument i bunken til venstre.</div>"; return; }
+  const item=S.openDoc;
+  const doc=CASE.docs[item.doc]||item;
+  let html="<div class='doc-kind'>"+esc(doc.kind||"")+"</div>";
+  if(doc.meta) html+="<div class='doc-meta'>"+esc(doc.meta)+"</div>";
+  html+="<div class='doc-title'>"+esc(doc.title)+"</div><div class='doc-body'>";
+  if(doc.runs && doc.runs.length){
+    for(const r of doc.runs){
+      if(r.fact){ html+="<span class='ev"+(has(r.fact)?" tatt":"")+"' data-f='"+r.fact+"'>"+esc(r.text)+"</span>"; }
+      else html+=esc(r.text);
+    }
+  } else if(doc.body){ html+=esc(doc.body); }
+  html+="</div><div class='hint'>Understreket tekst kan løftes som kort.</div>";
+  w.innerHTML=html;
+  w.querySelectorAll(".ev").forEach(el=>{
+    el.onclick=()=>{ if(gainCard(el.dataset.f)) el.classList.add("tatt"); };
+  });
+}
+
+/* ---------- phone ---------- */
+function renderPhone(w){
+  const gretePossible=!S.flags.greteDead && has("f_grete_baerer");
+  let html="<div class='contacts'>";
+  html+="<button class='contact"+(S.phone==="frank"?" on":"")+"' data-c='frank'>Frank</button>";
+  html+="<button class='contact"+(S.phone==="grete"?" on":"")+"' data-c='grete' "+(gretePossible?"":"disabled")+">Grete"+(S.flags.greteDead?" (død)":"")+"</button>";
+  html+="<button class='contact"+(S.phone==="elling"?" on":"")+"' data-c='elling' "+(has("f_elling_tlf")?"":"disabled")+">Elling</button>";
+  html+="</div><div id='transcript'></div>";
+  w.innerHTML=html;
+  w.querySelectorAll(".contact").forEach(b=>b.onclick=()=>{ S.phone=b.dataset.c; openCall(b.dataset.c); renderWork(); });
+  const tr=$("transcript");
+  if(!S.phone){ tr.innerHTML="<div class='hint'>Velg en kontakt. Spill kort fra hånden inn i samtalen.</div>"; return; }
+  const lines=S.transcript[S.phone];
+  tr.innerHTML=lines.map(l=>lineHtml(l)).join("");
+  // drop target
+  const dz=document.createElement("div");
+  dz.className="drop-hint"+(S.sel?" armed":"");
+  dz.textContent=S.sel?("Spill \""+selLabel()+"\" til "+contactName(S.phone)):"Velg et kort i hånden og klikk her for å spille det inn i samtalen.";
+  dz.onclick=()=>{ if(S.sel) playCard(S.phone); };
+  tr.appendChild(dz);
+  wireChips(tr);
+  if(S.phone==="elling" && S.elBranch) renderBranch(tr);
+  tr.scrollTop=tr.scrollHeight;
+}
+function contactName(c){ return c==="frank"?"Frank":(c==="grete"?"Grete":"Elling"); }
+function selLabel(){ const c=S.hand.find(x=>x.id===S.sel); if(!c) return ""; return c.type==="t"?CASE.tiltak[c.id].title:CASE.facts[c.id].label; }
+function lineHtml(l){
+  let inner="";
+  if(l.card) inner+="<span class='minicard'>"+esc(l.card)+"</span> ";
+  if(l.text) inner+="<span class='txt'>"+esc(l.text)+"</span>";
+  if(l.lift && !has(l.lift)) inner+=" <span class='lift-chip' data-f='"+l.lift+"'>LØFT: "+esc(CASE.facts[l.lift].label)+"</span>";
+  else if(l.lift) inner+=" <span class='lift-chip tatt'>"+esc(CASE.facts[l.lift].label)+"</span>";
+  return "<div class='line "+(l.who==="du"?"du":"")+"'><div class='who'>"+(l.who==="du"?"DU":esc(l.whoName||""))+"</div>"+inner+"</div>";
+}
+function wireChips(root){
+  root.querySelectorAll(".lift-chip[data-f]").forEach(ch=>{
+    ch.onclick=()=>{ if(gainCard(ch.dataset.f)){ ch.classList.add("tatt"); renderWork(); } };
+  });
+}
+function say(c, l){ S.transcript[c].push(l); }
+
+function openCall(c){
+  if(c==="grete" && !S.flags.greteOpened){
+    S.flags.greteOpened=true;
+    for(const l of CASE.grete_call.opening){
+      say("grete",{who:l.who==="du"?"du":"g", whoName:"Grete", text:l.text, lift:l.fact_id||null});
+    }
+  }
+  if(c==="elling"){ ellingCallStep(); }
+}
+function ellingCallStep(){
+  if(S.flags.ellingAnswered && has("f_nekter") && !has("f_samtykke")){ consentAttempt("phone"); return; }
+  if(S.flags.ellingAnswered){ say("elling",{whoName:"ELLING", text:"...Hallo? ...Broytes?"}); return; }
+  ellingPhoneAttempt();
+}
+function ellingPhoneAttempt(){
+  S.phoneTries++;
+  const ready = S.flags.crackWitnessed || S.skills.Telefon>=2;
+  if(!ready || S.phoneTries<3){
+    say("elling",{whoName:"TELEFON", text:"Det ringer. Og ringer. Ingen svar. (forsøk "+S.phoneTries+")"});
+    if(S.phoneTries===2) say("elling",{whoName:"FRANK", text:"Han hører den. Jeg har sett ham se på den. En dag tar han den - hvis den dagen har skjedd noe først."});
+  } else {
+    say("elling",{whoName:"ELLING", text:"...Hallo? ...Broytes?"});
+    S.flags.ellingAnswered=true;
+    victory("Elling tok telefonen - på "+S.phoneTries+". forsøk");
+    S.skills.Telefon=Math.min(5,S.skills.Telefon+1);
+    say("elling",{whoName:"FRANK", text:"Han tok den. Noter deg dagen."});
+  }
+}
+
+function playCard(target){
+  const card=S.hand.find(c=>c.id===S.sel);
+  if(!card) return;
+  const id=card.id; S.sel=null; $("hand-hint").textContent="";
+  const label=card.type==="t"?CASE.tiltak[id].title:CASE.facts[id].label;
+  say(target,{who:"du", card:label});
+  if(target==="frank") frankRespond(card);
+  else if(target==="grete") greteRespond(card);
+  else ellingRespond(card);
+  renderHand(); renderWork();
+}
+
+function frankRespond(card){
+  const id=card.id;
+  if(card.type==="t"){
+    const t=CASE.tiltak[id];
+    say("frank",{whoName:"FRANK", text:t.desc+" Vil du gjøre det til et vedtak, fyller du ut skjemaet. Jeg gjør det som blir stående der."});
+    if(id==="t_institusjon" && has("f_nekter") && !has("f_samtykke")){
+      say("frank",{whoName:"FRANK", text:"Han har sagt nei. Uten samtykke er dette tvang. Det kan gjøres - men da må begrunnelsen bære det, og du må kunne se deg selv i speilet etterpå."});
+    }
+    return;
+  }
+  const f=CASE.facts[id];
+  if(f.frank) say("frank",{whoName:"FRANK", text:f.frank});
+  const m=MINT[id];
+  if(m){
+    if(m.oppdrag && !S.visitsDone.includes("v1") && !S.oppdrag){
+      S.oppdrag="v1";
+      if(m.line) say("frank",{whoName:"FRANK", text:m.line});
+      say("frank",{whoName:"FRANK", text:"Sett meg opp på et hjemmebesøk. Ikke press - jeg blir med og hilser. (Feltaksjon: Besøk 1 er låst opp.)"});
+      log("Oppdrag satt: Besøk 1 - bli kjent.");
+    } else if(m.mint && !S.minted[m.mint]){
+      S.minted[m.mint]=true;
+      if(m.line) say("frank",{whoName:"FRANK", text:m.line});
+      S.lifted[m.mint]=false;
+      S.hand.push({id:m.mint, type:m.type});
+      S.lifted[m.mint]=true;
+      toast("Nytt kort fra Frank: "+(m.type==="t"?CASE.tiltak[m.mint].title:CASE.facts[m.mint].label));
+      if(m.mint==="q_okonomi") log("Kartlegg økonomi er låst opp (feltaksjon).");
+      if(m.mint==="q_evner") log("Besøk 2 - alene er låst opp (feltaksjon).");
+    }
+  }
+  renderHand();
+}
+
+function greteRespond(card){
+  const ex=CASE.grete_call.exchanges.find(e=>e.card_id===card.id);
+  if(ex){
+    say("grete",{who:"du", text:ex.ask});
+    for(const r of ex.reply) say("grete",{whoName:"GRETE", text:r.text, lift:r.fact_id||null});
+  } else {
+    say("grete",{whoName:"GRETE", text:"Han klarer seg. Det har han alltid gjort."});
+  }
+}
+
+function ellingRespond(card){
+  if(card.type==="t" && card.id==="t_institusjon"){
+    if(S.flags.ellingAnswered){ startInstBranch("elling"); }
+    else say("elling",{whoName:"FRANK", text:"Han har ikke tatt telefonen ennå. Slikt må sies i samme rom - eller vente til den dagen han svarer."});
+    return;
+  }
+  say("elling",{whoName:"ELLING", text:"..."});
+  say("elling",{whoName:"FRANK", text:"Ikke på telefon. Slikt må sies i samme rom - eller ikke i det hele tatt."});
+}
+
+/* institusjon dialog branch (tee-up + tree) */
+function startInstBranch(where){
+  S.elBranch={where, step:0};
+  say(where,{whoName:"ELLING", text:"Broytes? Men jeg bor jo her... Det trengs ikke at Oslo kommune skal ta vare på meg."});
+  renderWork();
+}
+function renderBranch(root){
+  const b=S.elBranch;
+  const wrap=document.createElement("div"); wrap.className="choices";
+  const mk=(txt,fn)=>{ const btn=document.createElement("button"); btn.className="choice"; btn.textContent=txt; btn.onclick=fn; wrap.appendChild(btn); };
+  if(b.step===0){
+    mk('"Du kommer ikke til å kunne bli boende her, Elling."', ()=>branchPick("hard"));
+    mk('"Kanskje vi kan finne en ordning sammen?"', ()=>branchPick("soft"));
+    mk('"Glem at jeg sa noe. Fortell heller om utklippene dine."', ()=>branchPick("retreat"));
+  }
+  root.appendChild(wrap);
+}
+function branchPick(route){
+  const c=S.elBranch.where; S.elBranch=null;
+  if(route==="hard"){
+    say(c,{who:"du", text:"Du kommer ikke til å kunne bli boende her, Elling."});
+    say(c,{whoName:"ELLING", text:"(han snur seg mot vinduet og blir stående)"});
+    say(c,{whoName:"FRANK", text:"Det der lukket et rom det tok tre besøk å åpne."});
+  } else if(route==="soft"){
+    say(c,{who:"du", text:"Kanskje vi kan finne en ordning sammen?"});
+    say(c,{whoName:"ELLING", text:'"Mor sa alltid at det ordner seg." (pause) "Men mor sa også at jeg skulle spise middag."'});
+    say(c,{whoName:"FRANK", text:"Hørte du det? Det var det nærmeste et spørsmål han har stilt noen gang."});
+    S.flags.softRoute=true;
+  } else {
+    say(c,{who:"du", text:"Glem at jeg sa noe. Fortell heller om utklippene dine."});
+    say(c,{whoName:"ELLING", text:'"14. mars 1987. Broytes-saken. Jeg har alle."'});
+  }
+  say(c,{whoName:"FRANK", text:"Uansett: nå vet vi det.", lift:"f_nekter"});
+  renderWork();
+}
+
+/* samtykke-branch: phone or Frank mission */
+function consentAttempt(via){
+  const wins=S.victories.length;
+  if(wins>=2 && (S.flags.softRoute || via==="frank")){
+    gainCard("f_samtykke");
+    if(via==="frank"){
+      S.reportLines.push('Samtykke: Frank satt en time. Elling sa til slutt: "Hvis Frank også er der... da kan vi se på det." Det er et ja.');
+      log("Frank fikk samtykke.");
+    } else {
+      say("elling",{whoName:"ELLING", text:'"Hvis Frank også er der... da kan vi se på det."'});
+      say("elling",{whoName:"FRANK", text:"Det er et ja. Ta vare på det.", lift:null});
+      victory("Samtykke - over telefonen han aldri tok");
+    }
+  } else {
+    if(via==="frank"){
+      S.reportLines.push("Samtykke: Frank prøvde. Elling ble stående med ryggen til. Det er for tidlig - han må ha noe å tape først.");
+      log("Frank fikk ikke samtykke.");
+    } else {
+      say("elling",{whoName:"ELLING", text:'"Det trengs ikke." (klikk)'});
+    }
+  }
+}
+
+/* ---------- vedtak form ---------- */
+function renderForm(w){
+  const draft=S.draft||(S.draft={tiltak:null, facts:[]});
+  let html="<div class='formsheet'>";
+  html+="<div class='fh'><span>OSLO KOMMUNE - SOSIALKONTORET</span><span>SAK 99/2311 - OLSEN, E.</span></div>";
+  html+="<h2>VEDTAKSSKJEMA</h2>";
+  html+="<div class='slotlabel'>Oslo kommune fatter vedtak om:</div>";
+  html+="<div class='slot"+(S.sel&&cardType(S.sel)==="t"?" armed":"")+"' id='slot-t'>"+
+    (draft.tiltak?"<span class='slotted tilt' data-r='t'>"+esc(CASE.tiltak[draft.tiltak].title)+" &times;</span>":"(spill et tiltakskort hit)")+"</div>";
+  html+="<div class='slotlabel'>Begrunnelse (inntil to fakta):</div>";
+  html+="<div class='slot"+(S.sel&&cardType(S.sel)==="f"?" armed":"")+"' id='slot-f'>"+
+    (draft.facts.length?draft.facts.map(f=>"<span class='slotted' data-r='"+f+"'>"+esc(CASE.facts[f].label)+" &times;</span>").join(""):"(spill funn-kort hit)")+"</div>";
+  html+="<div class='prefill'>Saksbehandler: deg &nbsp;-&nbsp; Utførende: Frank &nbsp;-&nbsp; Dato: dag "+S.day+"<br>Vedtaket iverksettes fra neste morgen. Konsekvens rapporteres i dagsrapport.</div>";
+  const tvang = draft.tiltak==="t_institusjon" && !draft.facts.includes("f_samtykke") && !has("f_samtykke");
+  if(tvang && draft.tiltak) html+="<div class='form-warn'>Uten samtykke registreres dette som <span class='tvang-mark'>TVANGSVEDTAK</span>.</div>";
+  html+="<div class='form-warn' id='form-err'></div>";
+  html+="<button id='btn-sendinn' "+(draft.tiltak&&draft.facts.length?"":"disabled")+">SEND INN</button>";
+  html+="</div>";
+  w.innerHTML=html;
+  $("slot-t").onclick=()=>{ if(S.sel&&cardType(S.sel)==="t"){ draft.tiltak=S.sel; S.sel=null; renderHand(); renderWork(); } };
+  $("slot-f").onclick=()=>{ if(S.sel&&cardType(S.sel)==="f"&&draft.facts.length<2&&!draft.facts.includes(S.sel)){ draft.facts.push(S.sel); S.sel=null; renderHand(); renderWork(); } };
+  w.querySelectorAll(".slotted").forEach(sp=>sp.onclick=(e)=>{ e.stopPropagation();
+    const r=sp.dataset.r;
+    if(r==="t") draft.tiltak=null; else draft.facts=draft.facts.filter(x=>x!==r);
+    renderWork();
+  });
+  const send=$("btn-sendinn");
+  if(send) send.onclick=()=>submitForm(draft, tvang);
+}
+function submitForm(draft, tvang){
+  if(S.active.includes(draft.tiltak)){ $("form-err").textContent="Det tiltaket har allerede et stående vedtak."; return; }
+  if($("chk-recipe").checked){
+    const ok=draft.facts.every(f=>(RECIPES[draft.tiltak]||[]).includes(f));
+    if(!ok){ $("form-err").textContent='Frank leser over skulderen din: "Den begrunnelsen bærer ikke det tiltaket. Finn fakta som faktisk peker hit."'; return; }
+  }
+  S.sent.push({tiltak:draft.tiltak, facts:draft.facts.slice(), tvang, day:S.day});
+  S.active.push(draft.tiltak);
+  if(draft.tiltak==="t_matlevering") S.mat.active=true;
+  log("Vedtak sendt: "+CASE.tiltak[draft.tiltak].title+(tvang?" (TVANG)":""));
+  toast("Vedtaket er sendt. Iverksettes i morgen.");
+  S.draft={tiltak:null, facts:[]};
+  renderAll();
+}
+
+/* ---------- field actions ---------- */
+function renderField(w){
+  const acts=[];
+  acts.push({id:"v1", t:"Besøk 1 - bli kjent", d:"Frank blir med. Ikke press. Se hva rommet forteller.",
+    ok:S.oppdrag==="v1"&&!S.visitsDone.includes("v1"), lockMsg:"Krever oppdrag fra Frank (spill et funn som bekymrer ham)."});
+  acts.push({id:"kart", t:"Kartlegg økonomi", d:"Be om kontoutskrift. Papiret lander i morgen.",
+    ok:inHand("q_okonomi")&&!S.flags.kartDone, lockMsg:"Krever spørsmålskortet Regnestykket Olsen."});
+  acts.push({id:"v2", t:"Besøk 2 - alene", d:"Grete er borte. Se hva han klarer selv. Ta med kortene dine.",
+    ok:inHand("q_evner")&&S.visitsDone.includes("v1")&&!S.visitsDone.includes("v2"), lockMsg:"Krever spørsmålskortet Hva klarer Elling selv? og at Besøk 1 er gjort."});
+  acts.push({id:"v3", t:"Nytt besøk - oppfølging", d:"Tilbake til Ammerudveien. Se hvordan tiltakene lever - og legg noe på bordet om du vil.",
+    ok:S.visitsDone.includes("v2"), lockMsg:"Krever at Besøk 2 er gjort."});
+  acts.push({id:"mat", t:"Vær til stede ved matlevering (16:00)", d:"Stå i oppgangen med Frank. Se hva som skjer med døren.",
+    ok:S.mat.active, lockMsg:"Krever at matlevering har et stående vedtak."});
+  acts.push({id:"consent", t:"Send Frank for å hente samtykke", d:"Frank tar praten om behandlingshjem - hvis relasjonen bærer.",
+    ok:has("f_nekter"), lockMsg:"Krever at behandlingshjem er lagt på bordet for Elling (spill kortet i et besøk)."});
+  let html="<div class='fieldbtns'>";
+  for(const a of acts){
+    const dis=!a.ok||S.fieldUsed;
+    html+="<button class='fieldbtn' data-a='"+a.id+"' "+(dis?"disabled":"")+"><div class='fb-t'>"+a.t+"</div><div class='fb-d'>"+(a.ok?a.d:a.lockMsg)+"</div></button>";
+  }
+  html+="</div>";
+  if(S.fieldUsed) html+="<div class='hint'>Dagens feltaksjon er brukt. Skrivebordsarbeid er gratis - eller avslutt dagen.</div>";
+  else html+="<div class='hint'>Én feltaksjon per dag. Den koster dagen - resten er skrivebordsarbeid.</div>";
+  w.innerHTML=html;
+  w.querySelectorAll(".fieldbtn").forEach(b=>b.onclick=()=>doField(b.dataset.a));
+}
+function doField(a){
+  S.fieldUsed=true;
+  if(a==="kart"){ S.flags.kartDone=true; queueDoc("doc_konto_elling"); log("Bestilte kontoutskrift."); toast("Frank sender forespørselen. Papiret lander i morgen."); }
+  else if(a==="v1"){ runScene(sceneVisit1()); }
+  else if(a==="v2"){ runScene(sceneVisit2()); }
+  else if(a==="v3"){ runScene(sceneVisit3()); }
+  else if(a==="mat"){ runScene(sceneDelivery()); }
+  else if(a==="consent"){ consentAttempt("frank"); toast("Frank drar i kveld. Svaret står i morgenrapporten."); log("Sendte Frank for samtykke."); }
+  renderAll();
+}
+
+/* ============ scenes ============ */
+const ROOMS=["GANGEN","STUEN","KJØKKENET","SOVEROMMET"];
+function runScene(sc){
+  const ov=$("overlay"), sd=$("scene");
+  ov.classList.add("vis");
+  let i=-1, timer=null;
+  sd.innerHTML="<h2>"+esc(sc.title)+"</h2><div class='sub'>"+esc(sc.sub)+"</div>"+
+    "<div id='stage'>"+ROOMS.map(r=>"<div class='room' data-r='"+r+"'><div class='rn'>"+r+"</div></div>").join("")+"</div>"+
+    "<div id='beat-text'></div><div id='beat-lifts'></div>"+
+    "<div id='scene-play-card'></div>"+
+    "<div id='scene-controls'><button id='sc-next'>Neste</button><button id='sc-skip'>Hopp over</button></div>";
+  const stage=sd.querySelector("#stage");
+  function room(name){ return stage.querySelector("[data-r='"+name+"']"); }
+  const actors={};
+  function place(ch, rm, x, y, thought){
+    let a=actors[ch];
+    if(!a){ a=document.createElement("div"); a.className="actor "+ch; a.textContent=ch; actors[ch]=a; }
+    const t=room(rm); if(a.parentElement!==t){ t.appendChild(a); }
+    a.style.left=(x||30)+"%"; a.style.top=(y||45)+"%";
+    a.innerHTML=ch+(thought?"<span class='thought'>"+thought+"</span>":"");
+  }
+  function beat(){
+    i++;
+    if(i>=sc.beats.length){ finish(); return; }
+    const b=sc.beats[i];
+    if(b.place) for(const p of b.place) place(...p);
+    sd.querySelector("#beat-text").textContent=b.text||"";
+    const bl=sd.querySelector("#beat-lifts");
+    if(b.lift && !has(b.lift)){
+      const ch=document.createElement("span"); ch.className="lift-chip";
+      ch.textContent="LØFT: "+CASE.facts[b.lift].label;
+      ch.onclick=()=>{ gainCard(b.lift); ch.classList.add("tatt"); ch.textContent=CASE.facts[b.lift].label; };
+      bl.appendChild(ch);
+    }
+    const pc=sd.querySelector("#scene-play-card");
+    if(b.playable){
+      pc.innerHTML="";
+      if(inHand("t_institusjon") && !has("f_nekter")){
+        const btn=document.createElement("button"); btn.className="choice";
+        btn.textContent="Spill kort: Institusjonsvurdering - legg det på bordet nå";
+        btn.onclick=()=>{ clearTimeout(timer); sceneInstBranch(sd, ()=>{ beatAuto(); }); };
+        pc.appendChild(btn);
+      }
+    }
+    beatAuto();
+  }
+  function beatAuto(){ clearTimeout(timer); timer=setTimeout(beat, 3400); }
+  function finish(){
+    clearTimeout(timer);
+    if(sc.end) sc.end();
+    ov.classList.remove("vis");
+    renderAll();
+  }
+  sd.querySelector("#sc-next").onclick=()=>{ clearTimeout(timer); beat(); };
+  sd.querySelector("#sc-skip").onclick=()=>{ // skipping is a right - but auto-collect nothing
+    clearTimeout(timer);
+    for(let j=i+1;j<sc.beats.length;j++){ /* skipped beats do not lift */ }
+    finish();
+  };
+  beat();
+}
+
+function sceneInstBranch(sd, done){
+  const pc=sd.querySelector("#scene-play-card"); pc.innerHTML="";
+  const bt=sd.querySelector("#beat-text");
+  bt.textContent='Du legger kortet på bordet. Elling ser på det. "Broytes? Men jeg bor jo her... Det trengs ikke at Oslo kommune skal ta vare på meg."';
+  const mk=(txt,route)=>{ const b=document.createElement("button"); b.className="choice"; b.textContent=txt;
+    b.onclick=()=>{ pc.innerHTML="";
+      if(route==="hard"){ bt.textContent="(han snur seg mot vinduet og blir stående) Frank, lavt: \"Det der lukket et rom det tok tre besøk å åpne.\""; }
+      else if(route==="soft"){ bt.textContent='"Mor sa alltid at det ordner seg." (pause) "Men mor sa også at jeg skulle spise middag." Frank ser på deg.'; S.flags.softRoute=true; }
+      else { bt.textContent='"14. mars 1987. Broytes-saken. Jeg har alle." Han retter på bunken.'; }
+      const bl=sd.querySelector("#beat-lifts");
+      const ch=document.createElement("span"); ch.className="lift-chip"; ch.textContent="LØFT: Elling nekter å flytte";
+      ch.onclick=()=>{ gainCard("f_nekter"); ch.classList.add("tatt"); };
+      bl.appendChild(ch);
+      setTimeout(done, 3800);
+    };
+    pc.appendChild(b);
+  };
+  mk('"Du kommer ikke til å kunne bli boende her, Elling."',"hard");
+  mk('"Kanskje vi kan finne en ordning sammen?"',"soft");
+  mk('"Glem at jeg sa noe. Fortell heller om utklippene dine."',"retreat");
+}
+
+function sceneVisit1(){
+  return { title:"Besøk 1 - bli kjent", sub:"Ammerudveien 47. Frank ringer på. Du blir stående litt bak.",
+    beats:[
+      {text:"Grete åpner. Hun er mindre enn stemmen på telefonen. Elling står inne i stuen, halvt bak lenestolen.", place:[["G","GANGEN",35,40],["F","GANGEN",65,55],["E","STUEN",60,50,"💭"]]},
+      {text:"På skoskapet i gangen: en bunke uåpnet post. Øverst en konvolutt med rødt stempel.", lift:"f_post", place:[["F","GANGEN",30,40]]},
+      {text:"Frank hilser. Elling flytter seg - alltid slik at et møbel står mellom ham og gjestene.", lift:"f_avstand", place:[["F","STUEN",25,55],["E","STUEN",75,40]]},
+      {text:"På bordet ligger en bok med tett skrift i margen. Ved siden av: avisutklipp, sortert, datert.", lift:"f_bok", place:[["E","STUEN",70,60]]},
+      {text:"Utklippene går tiår tilbake. Ikke kaos - et arkiv.", lift:"f_utklipp"},
+      {text:'Grete, lavt, med ryggen til sønnen: "Han er en smart gutt. Det er ikke det det står på."', lift:"f_smart_gutt", place:[["G","KJØKKENET",40,50]]},
+      {text:"Frank blir stående ett minutt for lenge i gangen på vei ut. Elling låser ikke før dere er nede i oppgangen. Frank noterer.", place:[["F","GANGEN",70,55],["E","GANGEN",20,35]]}
+    ],
+    end:()=>{ S.visitsDone.push("v1"); S.oppdrag=null; queueDoc("doc_frank_visit"); log("Besøk 1 gjennomført. Frank skriver notat til i morgen."); }
+  };
+}
+function sceneVisit2(){
+  return { title:"Besøk 2 - alene", sub:"Grete er borte. Frank har nøkkelen fra Bakkerud. Du er med.",
+    beats:[
+      {text:"Ingen åpner. Frank venter, ringer på igjen, venter. Så bruker han nøkkelen og sier tydelig fra i gangen.", place:[["F","GANGEN",40,50],["E","STUEN",70,45]]},
+      {text:"Elling står i stuen med ryggen til. Han flytter seg ikke. Men han går ikke ut av rommet heller.", place:[["F","STUEN",20,60],["E","STUEN",70,45,"💭"]]},
+      {text:"Kjøkkenet: rent, men skapene er tomme for alt annet enn knekkebrød og snacks. Ingen oppvask å se.", lift:"f_spiser_lite", place:[["F","KJØKKENET",50,50]]},
+      {text:"Sengen er redd opp. Utklippene ligger i datert rekkefølge. Rutinene finnes - de er bare ikke hans egne ennå.", place:[["F","SOVEROMMET",50,50]]},
+      {text:"Dere står i stuen. Det er nå eller aldri, hvis du har noe du vil legge på bordet.", playable:true, place:[["F","STUEN",30,60],["E","STUEN",70,45]]},
+      {text:"Frank rygger rolig ut. \"Vi kommer tilbake,\" sier han - til rommet, ikke til Elling. Døren låses ikke bak dere med en gang.", place:[["F","GANGEN",60,55]]}
+    ],
+    end:()=>{ S.visitsDone.push("v2"); queueDoc("doc_visit2"); log("Besøk 2 gjennomført. Notat i morgen."); }
+  };
+}
+function sceneVisit3(){
+  const brevBeat = S.active.includes("t_brev") && !S.flags.brevDone;
+  const beats=[
+    {text:"Frank banker, venter, sier fra og går inn. Elling står ved vinduet. Han snur seg ikke - men han går ikke sin vei.", place:[["F","GANGEN",40,50],["E","STUEN",70,40]]}
+  ];
+  if(brevBeat){
+    beats.push({text:"Frank legger ETT brev på bordet. Ikke bunken. Ett. Så setter han seg og venter. Lenge.", place:[["F","STUEN",30,60],["E","STUEN",70,40,"💭"]]});
+    beats.push({text:"Elling kommer bort. Ser på brevet. Åpner det med en kniv fra kjøkkenet - presist, som et arkivstykke. Leser. Legger det fra seg. Nikker én gang.", place:[["E","STUEN",45,55]]});
+  } else {
+    beats.push({text:"Rutinene står der de sto. Utklippene har fått en ny dato øverst i bunken. Han følger med på verden - gjennom papir.", place:[["F","STUEN",30,60]]});
+  }
+  beats.push({text:"Dere blir stående i stuen. Om du har noe å legge på bordet, er det nå.", playable:true, place:[["F","STUEN",30,60],["E","STUEN",65,45]]});
+  beats.push({text:"Frank tar farvel - til rommet, som sist. Denne gangen svarer Elling. Ett ord: \"Ha det.\"", place:[["F","GANGEN",60,55]]});
+  return { title:"Nytt besøk - oppfølging", sub:"Ammerudveien 47. Du er med Frank.",
+    beats,
+    end:()=>{ if(brevBeat){ S.flags.brevDone=true; victory("Ett brev åpnet ved bordet"); S.skills.Post=Math.min(5,S.skills.Post+1); }
+      log("Oppfølgingsbesøk gjennomført."); }
+  };
+}
+function sceneDelivery(){
+  const willCrack = S.mat.crack || (S.mat.refusals>=2 && (S.active.includes("t_hjemmehjelp")||S.flags.brevDone));
+  const beats=[
+    {text:"15:58. Oppgangen lukter kokt kål fra naboen. Frank ser på klokken. \"De er presise,\" sier han.", place:[["F","GANGEN",25,60],["E","STUEN",70,45]]},
+    {text:"16:02. Budet setter boksene ved døren, banker to ganger, går. Skrittene dør ut i trappen.", place:[["H","GANGEN",60,40]]}
+  ];
+  if(willCrack){
+    beats.push({text:"Det er stille. Så: lyden av en lås. Døren åpner seg - på gløtt. En hånd. Boksene forsvinner inn. Fire sekunder.", place:[["E","GANGEN",80,35]]});
+    beats.push({text:"Frank ser rett frem, som om ingenting har skjedd. \"Ikke si noe,\" hvisker han. \"Ikke rør deg.\" Døren lukkes - men den låses ikke.", lift:null});
+    beats.push({text:"Nede i oppgangen snur Frank seg. \"Det der,\" sier han, \"det var døren som svarte.\"", place:[["F","GANGEN",30,70]]});
+  } else {
+    beats.push({text:"Ingenting. Døren står like stille som veggen den sitter i. Boksene blir stående.", place:[["E","STUEN",70,45,"💭"]]});
+    beats.push({text:"Frank venter i tjue minutter. Så nikker han mot trappen. \"Han vet at de står der. Det er også noe.\"", place:[["F","GANGEN",30,70]]});
+  }
+  return { title:"Matlevering - 16:00", sub:"Du står i oppgangen med Frank. Stille.",
+    beats,
+    end:()=>{ matDelivery(true); log(willCrack?"Du så døren åpne seg.":"Du så leveringen bli stående."); }
+  };
+}
+
+/* ============ morning + vurdering ============ */
+function showMorning(reports, landedDocs){
+  const ov=$("overlay"), sd=$("scene");
+  let html="<h2>Dag "+S.day+" - 08:00</h2><div class='sub'>Natten er simulert. Dette landet på pulten:</div>";
+  for(const r of reports){ html+="<div class='morning-doc'><b>"+esc(r.title)+"</b><br>"+esc(r.body).replace(/\n/g,"<br>")+"</div>"; }
+  for(const d of landedDocs){ const doc=CASE.docs[d]; if(doc) html+="<div class='morning-doc'><b>"+esc(doc.kind)+":</b> "+esc(doc.title)+" - ligger i bunken.</div>"; }
+  if(!reports.length && !landedDocs.length) html+="<div class='morning-doc'>Ingen ny post. Ingenting å rapportere.</div>";
+  html+="<div id='scene-controls'><button id='sc-ok'>Til pulten</button></div>";
+  sd.innerHTML=html; ov.classList.add("vis");
+  sd.querySelector("#sc-ok").onclick=()=>{ ov.classList.remove("vis");
+    if(S.day>=10) {/* siste dag: vurderingen ligger på AVSLUTT-knappen */}
+  };
+}
+
+function vurdering(){
+  const ov=$("overlay"), sd=$("scene");
+  const inst=S.active.includes("t_institusjon");
+  const instForm=S.sent.find(f=>f.tiltak==="t_institusjon");
+  const wins=S.victories.length;
+  let outcome, body;
+  if(inst && has("f_samtykke")){
+    outcome="Elling samtykker til å flytte til kommunalt behandlingshjem.";
+    body="Han pakket selv. Utklippene fikk egen eske. Frank bærer den. Ikke fordi Elling ikke kan - fordi Frank spurte om å få lov.";
+  } else if(inst && instForm && instForm.tvang){
+    outcome="Elling tvangsflyttes til behandlingshjem.";
+    body="Vedtaket er byråkratisk lesbart. Trygt på papiret. To menn han ikke kjenner hjelper ham inn i en bil. Begrunnelsen din blir liggende i mappen: "+(instForm.facts.map(f=>'"'+CASE.facts[f].label+'"').join(", "))+". Den bærer vedtaket. Om den bærer noe mer, står det ingenting om.";
+  } else if(wins>=2){
+    outcome="Elling er i stand til å ta vare på seg selv - med det som nå står rundt ham.";
+    body="Ikke alene. Ingen klarer seg alene. Men døren er en kanal, "+(S.victories.map(v=>v.label.toLowerCase()).join(", "))+" - det er ikke ingenting. Det er en begynnelse som kan evalueres om tre måneder.";
+  } else {
+    outcome="Elling er ikke i stand til å ta vare på seg selv.";
+    body="Papirene dine er i orden. Men gjennom ti dager åpnet ingen dør seg, og ingen telefon ble tatt. Saken går videre til ny vurdering - med en annen saksbehandler.";
+  }
+  let html="<h2>Dag 10 - VURDERING</h2><div class='sub'>Ingen poengsum. Bare det som skjedde.</div>";
+  html+="<div class='vurd-outcome'>"+esc(outcome)+"</div>";
+  html+="<div style='max-width:600px'>"+esc(body)+"</div>";
+  html+="<div class='morning-doc'><b>Små seire:</b> "+(wins? S.victories.map(v=>"dag "+v.day+": "+esc(v.label)).join(" - ") : "ingen.")+"<br><b>Vedtak sendt:</b> "+(S.sent.length? S.sent.map(f=>esc(CASE.tiltak[f.tiltak].title)).join(", ") : "ingen.")+"</div>";
+  html+="<div class='vurd-q'>Han bor der han bor. Var det du som hjalp ham over terskelen - eller var det han som til slutt slapp deg inn?</div>";
+  html+="<div id='scene-controls'><button id='sc-re'>Spill igjen</button></div>";
+  sd.innerHTML=html; ov.classList.add("vis");
+  sd.querySelector("#sc-re").onclick=()=>{ ov.classList.remove("vis"); boot(); };
+}
+
+/* ============ boot ============ */
+$("btn-dag").onclick=()=>{ if(S.day>=10) vurdering(); else endDay(); };
+$("btn-restart").onclick=()=>boot();
+
+function boot(){
+  S=freshState();
+  S.inbox.push({doc:"doc_bekymring", day:1, read:false});
+  S.inbox.push({kind:"NOTAT", title:"Fra enhetsleder - med skjemabunke", day:1, read:false,
+    runs:[{text:"Ny sak: Olsen, Elling (f. 1964). Bekymringsmelding vedlagt.\n\nVedlagt ligger også en bunke blanke vedtaksskjemaer. Alt denne etaten til slutt GJØR, går gjennom dem: ett skjema per tiltak, med begrunnelse i fakta. Resten - lesing, telefoner, samtaler - koster ingenting. Feltarbeid koster dagen.\n\nDu har ti dager til vurderingsfristen.\n\nKortene dine er hukommelsen din. Skjemaene er signaturen din. Ikke bland dem sammen før du må.", fact:""}]});
+  S.openDoc=null; S.tab="doc"; S.phone=null; S.logLines=[];
+  log("Saken er åpnet. Vurderingsfrist: dag 10.");
+  renderAll();
+}
+boot();
+</script>
+</body>
+</html>
