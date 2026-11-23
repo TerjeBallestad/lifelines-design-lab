@@ -7,7 +7,7 @@ description: Explore ideas and turn them into SDDs filed in the PM dashboard. Us
 
 <!-- Adapted from lifelines-core-loop .agents/skills/brainstorming. Godot gym/zoo/museum verification is replaced with this repo's HTML-prototype workflow; /plan routing is replaced with wayfinder or a normal build session. -->
 
-Turn ideas into validated designs filed as SDDs in the PM dashboard (localhost:3333). This replaces generic design-doc workflows — everything routes through the project's issue tracker.
+Turn ideas into validated designs filed as SDDs on the PM board (https://pm.godstemning.dev/lifelines-design-lab). This replaces generic design-doc workflows — everything routes through the project's issue tracker.
 
 ## Why This Exists
 
@@ -39,7 +39,7 @@ This phase is the most important part of the entire skill. The goal is to reach 
 Most questions you're tempted to ask are **already answered somewhere**. Asking the user something you could have found yourself wastes the session and reads as bullshit. Before the first question, mine all four sources:
 
 1. **The code** — read the files this idea touches and recent commits (`git log`). Form your own model of how it works today. If a question can be answered by reading code, read the code instead.
-2. **The PM dashboard** — `pm list project`, `pm list`, `pm get <ID>`, `pm prompt sdd <ID>`. The active project, related SDDs / issues / decisions / gaps. This is the source of truth for what's already decided and in-flight; avoid duplicating it. (If a project is already scoped above, skip re-fetching.)
+2. **The PM dashboard** — `pm project`, `pm list`, `pm get <ID>`. The active project, related SDDs / issues / decisions / gaps. This is the source of truth for what's already decided and in-flight; avoid duplicating it. (If a project is already scoped above, skip re-fetching.)
 3. **The Obsidian vault** — `qmd query "..."` (semantic) and `qmd search "DD-054"` (exact) for design docs, locked decisions, and prior art; `obsidian read file="..."` for a named doc.
 4. **Claude memories** — the recalled memories already in your context (project direction, locked decisions, past feedback). Check them before asking about design intent or prior choices.
 
@@ -135,7 +135,7 @@ If the user says standalone tests are sufficient, that's fine — note it and mo
 Once the user approves the design, file it in the dashboard:
 
 ```bash
-pm design create "<descriptive title>" \
+pm sdd create "<descriptive title>" \
   --body "<the full design in markdown>" \
   --items SB-NNN \
   --sprint SPRINT-NNN
@@ -146,7 +146,7 @@ pm design create "<descriptive title>" \
 
 If the design surfaces new issues or gaps, file those too:
 ```bash
-pm gap "..." --body "..." --pillar "..."
+pm create gap "..." --body "..." --pillar "..."
 ```
 
 Print the SDD ID and a summary when done.
@@ -166,7 +166,7 @@ If yes: for foggy multi-session scope, load `wayfinder` and chart it as a map; f
 - **The code is evidence** — use the codebase to inform and challenge, not just the user's description
 - **Contradictions are gifts** — surfacing them early prevents implementation surprises
 - **YAGNI** — remove unnecessary features from designs
-- **Dashboard is truth** — everything goes through localhost:3333, not markdown files
+- **Dashboard is truth** — everything goes through the PM board, not markdown files
 - **Check before creating** — always scan existing items for duplicates or related work
 - **Design decisions are law** — proposals must not contradict locked DDs
 - **Open by default** — multiple choice only for enumerable, agreed-frame decisions; premise/feel/spatial questions go as prose

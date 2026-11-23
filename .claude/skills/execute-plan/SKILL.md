@@ -13,7 +13,7 @@ allowed-tools:
 
 # Execute Plan
 
-`$ARGUMENTS` — PLAN-NNN (required) + optional mode keyword `wave`. If empty, list plans with pending tasks (`pm plans`) and ask.
+`$ARGUMENTS` — PLAN-NNN (required) + optional mode keyword `wave`. If empty, list plans with pending tasks (`pm plan list`) and ask.
 
 Two modes:
 
@@ -26,7 +26,7 @@ If the plan contains UI/scene/player-facing tasks and the user asked for `wave`,
 
 ### Stage
 
-1. `pm health` — unreachable → tell user to run `./start-pm.sh`, stop.
+1. `pm health` — unreachable → tell user the pm server does not answer, stop.
 2. `pm get PLAN-NNN` — read title, context/setupNotes IN FULL (they carry load-bearing constraints: verified API names, off-limits files, single-writer chains, banned patterns), and all tasks with `status`/`blockedBy`/`progressNotes`.
 3. `git status` — require a clean tree on the expected branch. Dirty → stop and ask.
 4. **Compute the serial order** from `blockedBy` (topological; done tasks are satisfied dependencies — the command is naturally resumable mid-plan). Within a topological layer, prefer plan numbering.
@@ -41,12 +41,12 @@ House rules that override any shortcut instinct:
 
 - **Re-read hot files fresh** before editing — line anchors in task steps drift as earlier tasks land.
 - **Visual self-verification is mandatory** for anything player-visible: render the shot (shot_runner / ui_driver), OPEN IT, look at it at 100% before calling the task done. No tiny text (floor ~0.85x), no stylebox-less Buttons, reuse existing theme variations (resources/main_theme.tres, UITokens). You own cross-task cohesion — match the established surface grammar; do not invent a new style per panel.
-- **Tests:** new GATH tests get red-green verification (break production, watch it fail, restore) + `## Verified red-green: <date>` stamp. Never weaken an assertion; skip + `pm issue` instead.
+- **Tests:** new GATH tests get red-green verification (break production, watch it fail, restore) + `## Verified red-green: <date>` stamp. Never weaken an assertion; skip + `pm create issue` instead.
 - **Full suite green before every commit** (`./tests/run_tests.sh`, exit 0). Know the plan's named pre-existing flakes; a red that isn't one of them is yours.
 - **Atomic commit per task**, explicit paths (`git commit -m "feat: TASK-NNN — <summary>" -- path1 path2`).
 - **`pm task-done PLAN-NNN TASK-NNN "<note>"`** after each commit — the note is the handoff for a resumed session: what landed, what deviated, decisions made.
 - **Deviations:** small + faithful to intent → do it, record in the task-done note. Changes design intent → STOP and surface to the user; do not guess.
-- **Sim-IOU rule:** any mocked sim behavior = `pm gap` + SDD register comment, as the task specifies. Never silent.
+- **Sim-IOU rule:** any mocked sim behavior = `pm create gap` + SDD register comment, as the task specifies. Never silent.
 
 ### At a human gate
 

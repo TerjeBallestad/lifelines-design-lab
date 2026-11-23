@@ -35,7 +35,7 @@ Two modes — never both in one session.
 3. **Route by type — load the resolver from the Mode 1 table before starting:**
    - `[research]` → fan out Explore agents (or `deep-research` for web-heavy); write findings comment.
    - `[probe]` → load `two-track`; build the least HTML probe in `prototypes/` that lets the question be answered; Terje plays.
-   - `[grill]` → load `grill-with-docs`, with the **PM adaptation**: one question at a time with a recommended answer (never a bulk list); codebase-answerable questions get explored, not asked; but decisions/ADRs go to PM (`pm decision`, DD comments) — NOT to `CONTEXT.md`/`docs/adr/` as the skill's own text says. Keep its ADR test (hard to reverse / surprising later / real trade-off) as the bar for filing a DD vs a ticket comment.
+   - `[grill]` → load `grill-with-docs`, with the **PM adaptation**: one question at a time with a recommended answer (never a bulk list); codebase-answerable questions get explored, not asked; but decisions/ADRs go to PM (`pm create decision`, DD comments) — NOT to `CONTEXT.md`/`docs/adr/` as the skill's own text says. Keep its ADR test (hard to reverse / surprising later / real trade-off) as the bar for filing a DD vs a ticket comment.
    - `[task]` → load the `plan` skill: D0 inline for 1–2 settled tasks, D1 for anything bigger.
 4. **Record:** resolution comment on the ticket → close it → append the one-line decision to the project body's `## Decisions so far` (`pm project SPRINT-NNN --body @updated.md`) and log the session as a project comment.
 5. **Graduate the fog:** what the resolution revealed becomes new tickets (+ edges) or goes to `## Out of scope`. Ruling out is progress.

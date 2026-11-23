@@ -71,7 +71,7 @@ The point is the **game**, not the plan artifact. The executor gets freedom and 
    - *User-visible:* does the lab get more usable? Every visible beat has a requirement; evidence is not just tests/logs. If designer-facing and all judges are `test` → fix or justify.
    - *Mechanism fidelity:* the user approved the source's approach, not an alternative. Any deviation → `## SDD Deviations` in `setupNotes` (MECHANISM_DEVIATION: what/source-says/plan-does/reason). Ambiguity → route to Terje, never resolve by guessing.
    - *Split smell:* a requirement mixing >1 ownership boundary, migration+wiring, or broad verbs (integrate/migrate/wire/cleanup) hiding several seams — split it or justify. Prose never fixes a bundled seam.
-   - *Cross-repo IOU:* work that changes what lands in core-loop (`resources/cases/...`) without regenerating/verifying there = named debt (task step + `pm gap`).
+   - *Cross-repo IOU:* work that changes what lands in core-loop (`resources/cases/...`) without regenerating/verifying there = named debt (task step + `pm create gap`).
 8. **File** per `references/pm-plan-contract.md`. Essential requirements live ONLY in PM-supported fields (`setupNotes`, `relevantFiles`, `designDecisions`, task `description/steps/verification/blockedBy`) — executors cannot read anything else. File autonomously; ask only for NEEDS_DECISION-grade ambiguity, scope change without source support, or risk of clobbering others' PM records. Verify `blockedBy` resolved to TASK-NNN after create.
 
 ## 5. Non-goals
