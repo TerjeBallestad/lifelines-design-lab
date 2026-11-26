@@ -37,7 +37,7 @@ Two modes — never both in one session.
    - `[probe]` → load `two-track`; build the least HTML probe in `prototypes/` that lets the question be answered; Terje plays.
    - `[grill]` → load `grill-with-docs`, with the **PM adaptation**: one question at a time with a recommended answer (never a bulk list); codebase-answerable questions get explored, not asked; but decisions/ADRs go to PM (`pm create decision`, DD comments) — NOT to `CONTEXT.md`/`docs/adr/` as the skill's own text says. Keep its ADR test (hard to reverse / surprising later / real trade-off) as the bar for filing a DD vs a ticket comment.
    - `[task]` → load the `plan` skill: D0 inline for 1–2 settled tasks, D1 for anything bigger.
-4. **Record:** resolution comment on the ticket → close it → append the one-line decision to the project body's `## Decisions so far` (`pm project SPRINT-NNN --body @updated.md`) and log the session as a project comment.
+4. **Record:** resolution comment on the ticket → close it → append the one-line decision to the project body's `## Decisions so far` (`pm get SPRINT-NNN` prints the body and its `bodyHash`; write the new body with `pm project SPRINT-NNN --body @updated.md --base <bodyHash>`, and on exit 3 read it again and redo the edit) and log the session as a project comment.
 5. **Graduate the fog:** what the resolution revealed becomes new tickets (+ edges) or goes to `## Out of scope`. Ruling out is progress.
 6. **Session pacing (upstream key constraint, research excepted):**
    - Judgment tickets (`[grill]`, `[probe]`): **one per session, hard rule.** Decisions compound between sessions — a ruling needs to settle before it reshapes the next question; batching argues ticket 2 from ticket 1's momentum.
